@@ -2,7 +2,7 @@
     {
         "name": "Release Notes",
         "resourceType": "file",
-        "location": "../../release_notes_simplelink_cc13xx_cc26xx_sdk_7_40_00_77.html",
+        "location": "../../release_notes_simplelink_cc13xx_cc26xx_sdk_7_41_00_17.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -507,7 +507,7 @@
     {
         "name": "TI 15.4-Stack API Guide",
         "resourceType": "file",
-        "location": "../../docs/ti154stack/mac_api/html/index.html",
+        "location": "../../docs/ti154stack/html/index.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -650,6 +650,114 @@
         ],
         "subCategories": [
             "TI Wi-SUN FAN"
+        ]
+    },
+    {
+        "name": "TI Wireless Solar Management System Quick Start Guide",
+        "resourceType": "file",
+        "location": "../../docs/wsms/wsms-quick-start-guide.html",
+        "devices": [
+            "CC1314R10",
+            "CC1312R7",
+            "CC1352P7",
+            "CC1354P10"
+        ],
+        "devtools": [
+            "LP_EM_CC1314R10",
+            "LP_CC1312R7",
+            "LP_CC1352P7_1",
+            "LP_EM_CC1354P10_1",
+            "LP_EM_CC1354P10_6"
+        ],
+        "categories": [
+            "Documents"
+        ],
+        "mainCategories": [
+            "Documents"
+        ],
+        "subCategories": [
+            "TI Wireless Solar Management System"
+        ]
+    },
+    {
+        "name": "TI Wireless Solar Management System User's Guide",
+        "resourceType": "file",
+        "location": "../../docs/wsms/wsms-users-guide.html",
+        "devices": [
+            "CC1314R10",
+            "CC1312R7",
+            "CC1352P7",
+            "CC1354P10"
+        ],
+        "devtools": [
+            "LP_EM_CC1314R10",
+            "LP_CC1312R7",
+            "LP_CC1352P7_1",
+            "LP_EM_CC1354P10_1",
+            "LP_EM_CC1354P10_6"
+        ],
+        "categories": [
+            "Documents"
+        ],
+        "mainCategories": [
+            "Documents"
+        ],
+        "subCategories": [
+            "TI Wireless Solar Management System"
+        ]
+    },
+    {
+        "name": "TI Wireless Solar Management System Examples Application Guide",
+        "resourceType": "file",
+        "location": "../../docs/wsms/wsms-examples-guide.html",
+        "devices": [
+            "CC1314R10",
+            "CC1312R7",
+            "CC1352P7",
+            "CC1354P10"
+        ],
+        "devtools": [
+            "LP_EM_CC1314R10",
+            "LP_CC1312R7",
+            "LP_CC1352P7_1",
+            "LP_EM_CC1354P10_1",
+            "LP_EM_CC1354P10_6"
+        ],
+        "categories": [
+            "Documents"
+        ],
+        "mainCategories": [
+            "Documents"
+        ],
+        "subCategories": [
+            "TI Wireless Solar Management System"
+        ]
+    },
+    {
+        "name": "TI Wireless Solar Management System Technical Reference Manual",
+        "resourceType": "file",
+        "location": "../../docs/wsms/technical-reference-manual.html",
+        "devices": [
+            "CC1314R10",
+            "CC1312R7",
+            "CC1352P7",
+            "CC1354P10"
+        ],
+        "devtools": [
+            "LP_EM_CC1314R10",
+            "LP_CC1312R7",
+            "LP_CC1352P7_1",
+            "LP_EM_CC1354P10_1",
+            "LP_EM_CC1354P10_6"
+        ],
+        "categories": [
+            "Documents"
+        ],
+        "mainCategories": [
+            "Documents"
+        ],
+        "subCategories": [
+            "TI Wireless Solar Management System"
         ]
     },
     {
@@ -1010,7 +1118,7 @@
     {
         "name": "TI 15.4-Stack Release Notes",
         "resourceType": "file",
-        "location": "../../docs/ti154stack/release_notes_ti154stack_6_40_00_00.html",
+        "location": "../../docs/ti154stack/release_notes_ti154stack_6_41_00_00.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1024,6 +1132,25 @@
         ],
         "subCategories": [
             "TI 15.4-Stack"
+        ]
+    },
+    {
+        "name": "TI Wireless Solar Management System Release Notes",
+        "resourceType": "file",
+        "location": "../../docs/wsms/release_notes_wsms_2_41_00_00.html",
+        "devices": [
+            "CC1352R1F3",
+            "CC2642R1F"
+        ],
+        "devtools": [
+            "LAUNCHXL-CC13X2R1",
+            "LAUNCHXL-CC26X2R1"
+        ],
+        "mainCategories": [
+            "Documents"
+        ],
+        "subCategories": [
+            "TI Wireless Solar Management System"
         ]
     },
     {
@@ -1067,7 +1194,7 @@
     {
         "name": "SimpleLink Common Components Module (SCCM) Release Notes",
         "resourceType": "file",
-        "location": "../../docs/sccm/release_notes_sccm_5_40_00.html",
+        "location": "../../docs/sccm/release_notes_sccm_8_20_00.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1124,7 +1251,7 @@
     {
         "name": "TI Wi-SUN FAN Release Notes",
         "resourceType": "file",
-        "location": "../../docs/ti_wisunfan/release_notes_wisun_2_40_00_00.html",
+        "location": "../../docs/ti_wisunfan/release_notes_wisun_2_41_00_00.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"

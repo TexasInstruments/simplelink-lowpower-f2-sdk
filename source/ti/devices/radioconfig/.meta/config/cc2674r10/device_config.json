@@ -11,6 +11,7 @@
             },
             {
                 "_file": "device_description.json",
+                "_phy": "ble",
                 "$": ".\/..\/config\/cc2652p7_ble_pg10"
             },
             {

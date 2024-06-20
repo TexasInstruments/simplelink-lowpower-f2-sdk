@@ -41,11 +41,11 @@
 #include "mcuboot_config/mcuboot_logging.h"
 
 #ifndef EXCLUDE_GPIOS
-#include "common/cc26xx/debug/led_debug.h"
+#include "ti/common/cc26xx/debug/led_debug.h"
 #endif // EXCLUDE_GPIOS
 
 #ifdef MCUBOOT_DATA_SHARING
-#include "common/mcuboot/boot_seed/boot_seed.h"
+#include "ti/common/mcuboot/boot_seed/boot_seed.h"
 #endif
 #define BLINK_INTERVAL     500000  /* Set blink interval to 500000us or 500ms */
 

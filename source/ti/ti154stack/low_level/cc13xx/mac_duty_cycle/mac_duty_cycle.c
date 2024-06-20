@@ -72,7 +72,8 @@
 #define DUTYCYCLE_USECPERBYTE_150K     53
 #define DUTYCYCLE_USECPERBYTE_200K     40
 #define DUTYCYCLE_USECPERBYTE_100K     80
-#define DUTYCYCLE_USECPERBYTE_500K     16
+
+#define DUTYCYCLE_USECPERBYTE_CUSTOM   ((200/symbol_rate_custom) * 40)
 
 /* 54 sec in msec */
 #ifndef DUTY_CYCLE_THRESH_LIMITED
@@ -253,6 +254,9 @@ static void macDutyCycleUpdatePhy(void)
         case PHY_MODE_FSK_200K:
             phyMultiplier = DUTYCYCLE_USECPERBYTE_200K;
             break;
+        case PHY_MODE_CUSTOM:
+            phyMultiplier = DUTYCYCLE_USECPERBYTE_CUSTOM;
+            break;
         default:
             break;
         }
@@ -279,6 +283,9 @@ static void macDutyCycleUpdatePhy(void)
         break;
     case PHY_MODE_FSK_200K:
         phyMultiplier = DUTYCYCLE_USECPERBYTE_200K;
+        break;
+    case PHY_MODE_CUSTOM:
+        phyMultiplier = DUTYCYCLE_USECPERBYTE_CUSTOM;
         break;
     default:
         break;
@@ -348,6 +355,9 @@ void macDutyCycleInit(void)
         case PHY_MODE_FSK_200K:
             phyMultiplier = DUTYCYCLE_USECPERBYTE_200K;
             break;
+        case PHY_MODE_CUSTOM:
+            phyMultiplier = DUTYCYCLE_USECPERBYTE_CUSTOM;
+            break;
         default:
             break;
         }
@@ -384,6 +394,9 @@ void macDutyCycleInit(void)
         break;
     case PHY_MODE_FSK_200K:
         phyMultiplier = DUTYCYCLE_USECPERBYTE_200K;
+        break;
+    case PHY_MODE_CUSTOM:
+        phyMultiplier = DUTYCYCLE_USECPERBYTE_CUSTOM;
         break;
     default:
         break;

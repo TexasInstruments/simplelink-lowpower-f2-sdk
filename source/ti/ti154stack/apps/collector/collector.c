@@ -181,6 +181,9 @@ static uint32_t startTrackMsgTimeStamp = 0;
       (CONFIG_PHY_ID == APIMAC_5KBPS_868MHZ_PHY_131)
     #define SYMBOL_DURATION         (SYMBOL_DURATION_LRM)      //us
 
+#elif (CONFIG_PHY_ID == APIMAC_CUSTOM_PHY_ID)
+    #define SYMBOL_DURATION        (SYMBOL_DURATION_CUSTOM)   //us
+
 #elif (CONFIG_PHY_ID == APIMAC_250KBPS_IEEE_PHY_0)  // 2.4g
     #define SYMBOL_DURATION         (SYMBOL_DURATION_250_kbps)  //us
 #else

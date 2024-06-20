@@ -70,9 +70,9 @@
 #include "ti/common/cc26xx/debug/led_debug.h"
 #endif
 
-#include "sign_util.h"
+#include "ti/common/cc26xx/ecc/sign_util.h"
 #if defined(DeviceFamily_CC26X2) || defined(DeviceFamily_CC13X2) || defined(DeviceFamily_CC13X2X7) || defined(DeviceFamily_CC26X2X7)
-#include "sha2_driverlib.h"
+#include "ti/common/cc26xx/sha2/sha2_driverlib.h"
 #else
 #include DeviceFamily_constructPath(driverlib/rom_sha256.h)
 #endif /* DeviceFamily_CC26X2 || DeviceFamily_CC13X2 || DeviceFamily_CC13X2X7 || DeviceFamily_CC26X2X7 */
@@ -695,8 +695,10 @@ static void Bim_InvalidateFlashPageImage(uint8_t flashPageNum)
  */
 static void Bim_BootIntoImg(imgHdr_t new_image, imgHdr_t old_image, uint8_t newImgFlashPgNum)
 {
-    uint8_t secVer_new = 0, secVer_old = 0, verifStat_new = 0, verifStat_old = 0;
+    uint8_t secVer_new = 0, secVer_old = 0;
+#ifdef BIM_VERIFY_VERSION_IMAGE
     uint32_t softVer_new = 0, softVer_old = 0;
+#endif
     uint8_t oldImgFlashPgNum = IMAGE_2_HDR_START_PAGE_NUM;
 
     secVer_new = new_image.secInfoSeg.secVer;

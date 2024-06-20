@@ -374,6 +374,10 @@ extern uint8_t rRfPtr;
 extern uint8_t numRfCmdQueued;
 extern uint8_t macRfQueueSize;
 #endif
+
+/* Fake minTxOff PIB Variables */
+extern bool customMinTxOffEnabled;
+extern uint32_t minTxOffTime;
 /*******************************************************************************
  * APIs
  */

@@ -348,17 +348,17 @@ typedef struct {
 } coexMetricsStruct_t;
 
 typedef struct {
-    /* Total number of low priority PTA request */
+    /* Total number of low priority PTA requests */
     uint16_t pta_lo_pri_req;
-    /* Total number of high priority PTA request */
+    /* Total number of high priority PTA requests */
     uint16_t pta_hi_pri_req;
-    /* Total number of low priority PTA request denied by Controller */
+    /* Total number of low priority PTA requests denied by Controller */
     uint16_t pta_lo_pri_denied;
-    /* Total number of high priority PTA request denied by Controller */
+    /* Total number of high priority PTA requests denied by Controller */
     uint16_t pta_hi_pri_denied;
     /* Total number of CCA retries */
     uint16_t cca_retries;
-    /* Total number of CCA failure */
+    /* Total number of CCA failures */
     uint16_t cca_failures;
     /* Total number of Unicast retries at MAC layer */
     uint16_t mac_tx_ucast_retry;

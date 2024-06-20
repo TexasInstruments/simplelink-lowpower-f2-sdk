@@ -86,6 +86,7 @@ extern "C" {
 #include "sdata.h"
 
 #include "api_mac.h"
+
 /* ------------------------------------------------------------------------------------------------
  *                                           Constants
  * ------------------------------------------------------------------------------------------------
@@ -283,6 +284,8 @@ extern "C" {
 #define MAC_200KBPS_915MHZ_PHY_132      132
 /* 868MHz Frequency band operating mode #3 */
 #define MAC_200KBPS_868MHZ_PHY_133      133
+/* Configurable custom PHY*/
+#define MAC_CUSTOM_PHY_ID               134
 /* 920MHz Frequency band operating mode #4a */
 #define MAC_200KBPS_920MHZ_PHY_136      136
 
@@ -561,6 +564,11 @@ extern "C" {
 #define MAC_200K_DEFAULT_RESPONSE_WAIT_TIME     192     /* default responseWaitTime for 50kbps and 5kbps */
 #define MAC_200K_DEFAULT_FRAME_WAIT_TIME        32000   /* default maxFrameTotalWaitTime for 50kbps and 5kbps */
 #define MAC_2P4G_RESPONSE_WAIT_TIME             16      /* default responseWaitTime for 2.4G */
+
+#define MAC_CUSTOM_FRAME_WAIT_TIME ((symbol_rate_custom < 200) ? ((symbol_rate_custom/200) * 32000) : (32001))
+
+/* The response time cannot be bigger than 255, so all symbol rates over 266 will have 255 in response wait time */  
+#define MAC_RESPONSE_WAIT_TIME_CUSTOM ((symbol_rate_custom < 266) ? ((symbol_rate_custom * 960)/1000) : (255))
 
 /* rf band */
 #define MAC_RF_FREQ_SUBG            1        /* subG */
@@ -1442,6 +1450,7 @@ typedef enum
 
 extern const ti154stack_version_t ti154stack_version;
 extern const ti154stack_core_version_t ti154stack_core_version;
+extern uint16_t symbol_rate_custom;
 
 /* ------------------------------------------------------------------------------------------------
  *                                        Internal Functions

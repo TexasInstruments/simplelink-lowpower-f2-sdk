@@ -85,6 +85,8 @@ extern "C"
 /* symbol duration for LRM mode in micro seconds*/
 #define SYMBOL_DURATION_LRM 50
 
+#define SYMBOL_DURATION_CUSTOM (1000/SYMBOL_RATE_CUSTOM)
+
 #ifdef POWER_MEAS
 /* POLL only profile */
 #define POLL_ACK    1

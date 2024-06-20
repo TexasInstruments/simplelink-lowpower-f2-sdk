@@ -60,7 +60,7 @@
 #include DeviceFamily_constructPath(inc/hw_cpu_fpu.h)
 #endif
 
-#include "sha2_driverlib.h"
+#include "ti/common/cc26xx/sha2/sha2_driverlib.h"
 
 /*******************************************************************************
  * CONSTANTS

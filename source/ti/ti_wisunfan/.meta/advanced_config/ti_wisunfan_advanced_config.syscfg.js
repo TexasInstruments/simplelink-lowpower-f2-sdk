@@ -47,7 +47,7 @@ const Docs = system.getScript("/ti/ti_wisunfan/advanced_config/"
 // Configurables for the static 15.4 network settings group
 const config = {
     displayName: "Advanced",
-    description: "Configure advanced Wi-SUN settings",
+    description: "Configure advanced settings",
     config: [
         {
             name: "rapidJoin",
@@ -127,6 +127,52 @@ function validate(inst, validation)
     return;
 }
 
+/*!
+ * ======== setDefaultAdvancedSettings ========
+ * Sets the default advanced settings for solar projects
+ *
+ * @param inst - module instance
+ */
+function setDefaultAdvancedSettings(inst)
+{
+    if (inst != null && inst.project.includes("solar"))
+    {
+        inst.mplLowLatency = true;
+        inst.rapidDisconnectDetectBr = 300;
+        inst.rapidDisconnectDetectRn = 300;
+    }
+    else
+    {
+        inst.mplLowLatency = false;
+        inst.rapidDisconnectDetectBr = 1800;
+        inst.rapidDisconnectDetectRn = 7200;
+    }
+}
+
+/*!
+ * ======== setDefaultAdvancedSettings ========
+ * Sets the default advanced settings for solar projects
+ *
+ * @param inst - module instance
+ */
+function setAdvancedSettingsHiddenState(inst, ui)
+{
+    if (inst != null && inst.project.includes("solar"))
+    {
+        ui["rapidJoin"].hidden = true;
+        ui["mplLowLatency"].hidden = true;
+        ui["rapidDisconnectDetectBr"].hidden = true;
+        ui["rapidDisconnectDetectRn"].hidden = true;
+    }
+    else
+    {
+        ui["rapidJoin"].hidden = false;
+        ui["mplLowLatency"].hidden = false;
+        ui["rapidDisconnectDetectBr"].hidden = false;
+        ui["rapidDisconnectDetectRn"].hidden = false;
+    }
+    setDefaultAdvancedSettings(inst);
+}
 /*
  *******************************************************************************
  Module Dependencies and Exports
@@ -137,4 +183,6 @@ function validate(inst, validation)
 exports = {
     config: config,
     validate: validate,
+    setDefaultAdvancedSettings: setDefaultAdvancedSettings,
+    setAdvancedSettingsHiddenState: setAdvancedSettingsHiddenState,
 };

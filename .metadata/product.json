@@ -1,7 +1,7 @@
 {
     "name": "simplelink_cc13xx_cc26xx_sdk",
     "displayName": "SimpleLink Low Power F2 SDK",
-    "version": "7.40.00.77",
+    "version": "7.41.00.17",
     "documentationPath": "../docs",
     "includePaths": [
         "../source",
@@ -25,6 +25,7 @@
         "/ti/posix/tiposix.component.js",
         "/ti/ti_sidewalk/ti_sidewalk.component.js",
         "/ti/ti_wisunfan/ti_wisunfan.component.js",
+        "/ti/ti_wisunfan/wsms/wsms.component.js",
         "/ti/utils/tiutils.component.js",
         "/ti/utils/build/build.component.js",
         "/ti/utils/rov/rov.component.js",

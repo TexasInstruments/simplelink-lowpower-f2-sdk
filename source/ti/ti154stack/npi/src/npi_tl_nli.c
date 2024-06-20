@@ -58,7 +58,7 @@
 
 
 #include "npi_tl_nli.h"
-#include "platform/nli_mux.h"
+#include <nli_mux.h>
 
 /* OpenThread Internal/Example Header files */
 #include "otsupport/otrtosapi.h"

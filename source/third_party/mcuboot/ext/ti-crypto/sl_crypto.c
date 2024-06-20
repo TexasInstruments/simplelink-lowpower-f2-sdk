@@ -34,16 +34,16 @@
 #include "mcuboot_config/mcuboot_logging.h"
 #include "string.h"
 
-#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2)
-#include "sha2_driverlib.h"
-#include "ECDSACC26X4_driverlib.h"
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
+#include "ti/common/cc26xx/sha2/sha2_driverlib.h"
+#include "ti/common/cc26xx/ecc/ECDSACC26X4_driverlib.h"
 #else
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(driverlib/hapi.h)
-#include "ecdsa_lpf3.h"
+#include "ti/common/ecdsa_lpf3/ecdsa_lpf3.h"
 #endif
 
-#if defined(DeviceFamily_CC23X0R5) || defined(DeviceFamily_CC23X0R2)
+#if defined(DeviceFamily_CC23X0R5) || defined(DeviceFamily_CC23X0R53) || defined(DeviceFamily_CC23X0R2) || defined(DeviceFamily_CC23X0R22)
 static SHA256SW_Object sha256SWObject;
 static SHA256SW_Handle sha256SWHandle = &sha256SWObject;
 #endif
@@ -101,7 +101,7 @@ static void copyBytes(uint8_t *pDst, const uint8_t *pSrc, uint32_t len)
 
 void SlCrypto_sha256_init(void)
 {
-#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2)
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
     SHA2_open();
 #else
     HapiSha256SwStart(sha256SWHandle);
@@ -111,7 +111,7 @@ void SlCrypto_sha256_init(void)
 
 void SlCrypto_sha256_drop(void)
 {
-#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2)
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
     SHA2_close();
 #endif
 }
@@ -119,7 +119,7 @@ void SlCrypto_sha256_drop(void)
 int SlCrypto_sha256_update(const void *data,
                            uint32_t data_len)
 {
-#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2)
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
     return SHA2_addData(data, data_len);
 #else
     return HapiSha256SwAddData(sha256SWHandle, data, data_len);
@@ -130,7 +130,7 @@ int SlCrypto_sha256_final(uint8_t *output)
 {
     int rtn;
 
-#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2)
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
     rtn = SHA2_finalize(output);
     SHA2_close();
 #else
@@ -156,7 +156,7 @@ void SlCrypto_ecdsa_p256_init(void)
     eccRom_windowSize = SECURE_FW_ECC_WINDOW_SIZE;
 
 #else
-#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2)
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
         ECDSA_open();
 #endif
 #endif
@@ -167,7 +167,7 @@ void SlCrypto_ecdsa_p256_drop(void)
 #if defined(DeviceFamily_CC13X2) || defined(DeviceFamily_CC26X2)
     return;
 #else
-#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2)
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
     ECDSA_close();
 #endif
 #endif
@@ -286,7 +286,7 @@ int SlCrypto_ecdsa_p256_verify(const uint8_t *pk, const uint8_t *hash, const uin
                                sizeof(publicKeyingMaterial));
 
     /* Initialize the operation */
-#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2)
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
     operationVerify.curve           = &ECCParams_NISTP256;
 #endif
     operationVerify.theirPublicKey  = &publicKey;

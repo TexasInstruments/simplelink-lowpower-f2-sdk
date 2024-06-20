@@ -69,7 +69,11 @@ const commonRadioConfig = system.getScript("/ti/devices/radioconfig/"
 
 // Get radio config parameter handler
 const ParameterHandler = system.getScript("/ti/devices/radioconfig/"
-+ "parameter_handler.js");
+    + "parameter_handler.js");
+
+// Get custom phy settings
+const customObj = system.getScript("/ti/ti154stack/rf_config/"
+    + "phyCustom.js");
 
 /* Structure for Coex config */
 const coexConfig = {};
@@ -322,6 +326,52 @@ const config = {
                     ]
                 }
             ]
+        },
+        {
+            name: "customPhy",
+            displayName: "Custom Phy",
+            default: false,
+            hidden: false,
+            description: Docs.customPhy.description,
+            longDescription: Docs.customPhy.longDescription,
+            onChange: onCustomPhyChange,
+        },
+        {
+            name: "customFreqBand",
+            displayName: "Custom Sub-1 GHz Frequency Band",
+            options: rfCommon.getCustomFreqOptions,
+            default: rfCommon.getDefaultFreqSub1(null),
+            hidden: true,
+            description: Docs.customFreqBand.description,
+            longDescription: Docs.customFreqBand.longDescription,
+            onChange:onCustomSettingsChange,
+        },
+        {
+            name: "customCh0Freq",
+            displayName: "Custom Channel 0 Center Frequency (MHz)",
+            default: 903.000,
+            hidden: true,
+            description: Docs.customCh0Freq.description,
+            longDescription: Docs.customCh0Freq.longDescription,
+            onChange:onCustomSettingsChange,
+        },
+        {
+            name: "customChSpacing",
+            displayName: "Custom Channel Spacing (kHz)",
+            default: 1600,
+            hidden: true,
+            description: Docs.customChSpacing.description,
+            longDescription: Docs.customChSpacing.longDescription,
+            onChange:onCustomSettingsChange,
+        },
+        {
+            name: "customChNum",
+            displayName: "Custom Total Channel Number",
+            default: 16,
+            hidden: true,
+            description: Docs.customChNum.description,
+            longDescription: Docs.customChNum.longDescription,
+            onChange:onCustomSettingsChange,
         }
     ]
 };
@@ -331,6 +381,50 @@ const config = {
  Radio Group-Specific Functions
  *******************************************************************************
  */
+
+/*
+ * ======== onCustomPhyChange ========
+ * Checks if the custom Phy checkbox is checked and performs
+ * UI changes accordingly
+ */
+ function onCustomPhyChange(inst, ui)
+ {
+    if(inst.customPhy === true)
+    {
+        inst.mode = "nonBeacon";
+        inst.customFreqBand = rfCommon.getDefaultFreqSub1(inst);
+        ui["phyRegulation"].readOnly = Docs.customPhy.readOnly;
+        ui["freqSub1"].readOnly = Docs.customPhy.readOnly;
+        ui["phyType"].readOnly = Docs.customPhy.readOnly;
+        ui["mode"].readOnly = Docs.customPhy.readOnlyMode;
+
+        ui["customFreqBand"].hidden = false;
+        ui["customCh0Freq"].hidden = false;
+        ui["customChSpacing"].hidden = false;
+        ui["customChNum"].hidden = false;
+        networkScript.setDefaultChannelMasks(inst, null);
+    }
+    else 
+    {
+        ui["phyRegulation"].readOnly = false;
+        ui["freqSub1"].readOnly = false;
+        ui["phyType"].readOnly = false;
+        ui["mode"].readOnly = false;
+
+        ui["customFreqBand"].hidden = true;
+        ui["customCh0Freq"].hidden = true;
+        ui["customChSpacing"].hidden = true;
+        ui["customChNum"].hidden = true;
+    }
+    networkScript.setAdvancedMacConfigs(inst, ui, "customPhy");
+}
+
+// Common onChange function for all custom configurables
+function onCustomSettingsChange(inst)
+{
+    // Update values of frequency dependent configs
+    networkScript.setDefaultChannelMasks(inst);
+}
 
 function onCoexEnableChange(inst, ui)
 {
@@ -443,6 +537,12 @@ function getRfDesignOptions()
         newRfDesignOptions = [
             {name: "LP_EM_CC1354P10_1"},
             {name: "LP_EM_CC1354P10_6"}
+        ];
+    }
+    else if(deviceId === "CC1354P10RGZ")
+    {
+        newRfDesignOptions = [
+            {name: "LP_CC1354P10_1_RGZ"},
         ];
     }
     else if(deviceId === "CC1312R7RGZ")
@@ -647,6 +747,12 @@ function setRFConfigHiddenState(inst, ui, cfgName)
     {
         inst.freqSub1 = rfCommon.getDefaultFreqSub1(inst);
     }
+
+    // For coprocessor project the custom Phy option is removed
+    if(inst.project == "coprocessor")
+    {
+        ui["customPhy"].hidden = true;
+    }
 }
 
 /*
@@ -759,6 +865,20 @@ function validate(inst, validation)
 
     // Get the RF module to verify that RF Coexistence configs match
     const rf = system.modules["/ti/drivers/RF"].$static;
+
+    if(inst.customPhy === true && inst.project !== "coprocessor")
+    {
+        validation.logWarning(`Custom PHYs have not been individually \
+            verified to function with the 15.4 stack or examples. Certain \
+            combinations of configurations may not be fully functional.`,
+            inst, "customPhy");
+        const board = Common.getDeviceOrLaunchPadName(true, null, inst);
+        if (board.includes("CC1311P") || board.includes("CC26"))
+        {
+            validation.logError(`Custom PHYs are current unsupported on \
+                CC1311P and CC26XX platforms.`, inst, "customPhy");
+        }
+    }
 
     if(isCoexEnabled(inst) && inst.freqBand !== "freqBand24")
     {
@@ -886,14 +1006,14 @@ function addRFSettingDependency(inst, selectedPhy)
             + "common/boards/ti_154stack_overrides.h";
         radioConfigArgs.codeExportConfig.stackOverrideMacro = overridesMacro;
     }
-
+    
     return({
         name: radioConfigModName,
         displayName: phyName,
         moduleName: selectedPhy.moduleName,
         description: "Radio Configuration",
-        readOnly: true,
-        hidden: true,
+        readOnly: false,
+        hidden: (!inst.customPhy),
         collapsed: true,
         group: "radioSettings",
         args: radioConfigArgs
@@ -921,14 +1041,25 @@ function moduleInstances(inst)
     const ieeePhySettings = boardPhySettings.defaultIEEEPhyList;
     const phyList = propPhySettings.concat(ieeePhySettings);
 
-    if(inst.project !== "coprocessor")
+    // Get the rf settings from the custom phy configurables
+    const customPhyListSettings = boardPhySettings.customPhyList;
+
+    // If custom phy option is enabled use the custom phy list settings
+    const board = Common.getDeviceOrLaunchPadName(true, null, inst);
+    if(inst.customPhy === true && inst.project !== "coprocessor" &&
+        !board.includes("CC1311P") && !board.includes("CC26"))
+    {
+        const selectedPhy = _.find(customPhyListSettings,
+            (setting) => (setting.phyDropDownOption.name === "customPhy"));
+        dependencyModule.push(addRFSettingDependency(inst, selectedPhy));
+    }
+    else if(inst.project !== "coprocessor")
     {
         // Find PHY selected
         const phyType = rfCommon.getSafePhyType(inst);
 
         const selectedPhy = _.find(phyList,
             (setting) => (setting.phyDropDownOption.name === phyType));
-
         dependencyModule.push(addRFSettingDependency(inst, selectedPhy));
     }
     else
@@ -953,6 +1084,21 @@ function moduleInstances(inst)
     return(dependencyModule);
 }
 
+
+// Check if the device is a P-device, so that correct PA rf command is exported
+function IsPdevice() {
+    var PaRF_command = [];
+    
+    if (Common.isHighPADevice()) {
+        PaRF_command = customObj.devSpecificCustomPhySettingsPdevices.args.codeExportConfig.cmdPropRadioDivSetupPa;
+    }
+    else {
+        PaRF_command = customObj.devSpecificCustomPhySettings.args.codeExportConfig.cmdPropRadioDivSetup;
+    }
+
+    return(PaRF_command);
+}
+
 // Exports to the top level 15.4 module
 exports = {
     config: config,
@@ -966,5 +1112,6 @@ exports = {
     {
         return coexConfig;
     },
-    isCoexEnabled: isCoexEnabled
+    isCoexEnabled: isCoexEnabled,
+    IsPdevice, IsPdevice
 };

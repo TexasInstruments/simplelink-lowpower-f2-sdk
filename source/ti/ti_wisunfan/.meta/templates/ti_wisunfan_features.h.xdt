@@ -36,7 +36,16 @@
  *  ======== ti_wisunfan_features.h.xdt ========
  */
 
-const inst = system.modules["/ti/ti_wisunfan/ti_wisunfan"].$static;
+let mode = args[0];
+let inst;
+
+if (typeof mode !== 'undefined' && mode === "wsms") {
+    // Get the WSMS module
+    inst = system.modules["/ti/ti_wisunfan/wsms/wsms"].$static;
+} else {
+    // Get the Wi-SUN module
+    inst = system.modules["/ti/ti_wisunfan/ti_wisunfan"].$static;
+}
 
 function getModeFeatureMacro(mode) {
     switch(mode) {
@@ -105,6 +114,8 @@ extern "C"
 #define FIXED_GTK_KEY_2 `convertPresharedKeyToArray(inst.keyTableDefaultKey2)`
 #define FIXED_GTK_KEY_3 `convertPresharedKeyToArray(inst.keyTableDefaultKey3)`
 #define FIXED_GTK_KEY_4 `convertPresharedKeyToArray(inst.keyTableDefaultKey4)`
+
+#define FEATURE_FORCE_STAR_TOPOLOGY (`inst.starNetwork ? "true" : "false"`)
 
 /* Builds the image with `inst.mode` mode of operation */
 #define `getModeFeatureMacro(inst.mode)`

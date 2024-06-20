@@ -48,8 +48,8 @@
  *                                          Includes
  */
 
-#include "common/cc26xx/flash_interface/flash_interface.h"
-#include "common/cc26xx/oad/oad_image_header.h"
+#include "ti/common/cc26xx/flash_interface/flash_interface.h"
+#include "ti/common/cc26xx/oad/oad_image_header.h"
 
 /*******************************************************************************
  *                                          Constants
@@ -78,8 +78,8 @@ uint8_t crcBuf[CRC32_BUF_SZ] __attribute__ ((section (".noinit")));
  * @brief       Copies source buffer to destination buffer.
  *
  * @param       dest  - Destination buffer.
- * @param       src   - Destination buffer.
- * @param       len   - Destination buffer.
+ * @param       src   - Source buffer.
+ * @param       len   - Length of buffer.
  *
  * @return      pointer to destination buffer.
  */
@@ -94,8 +94,8 @@ void *CRC32_memCpy(void *dest, const void *src, uint16_t len)
         ((uint8_t *)dest)[len] = ((uint8_t *)src)[len];
     }
     return(dest);
-}
 
+}
 /*******************************************************************************
  * @fn          CRC32_value
  *
@@ -160,7 +160,7 @@ uint32_t CRC32_calc(uint8_t page, uint32_t pageSize, uint16_t offset, uint32_t l
     /* Read first page of the image into the buffer. */
     if(!useExtFl)
     {
-        CRC32_memCpy(crcBuf, (uint8_t *)(page * pageSize), CRC32_BUF_SZ);
+        CRC32_memCpy(crcBuf, (uint8_t *)(page * pageSize) + offset, CRC32_BUF_SZ);
     }
     else
     {
@@ -223,7 +223,7 @@ uint32_t CRC32_calc(uint8_t page, uint32_t pageSize, uint16_t offset, uint32_t l
              * of the first page and all bytes after the remainder bytes in the
              * last buffer
              */
-            for (oset = ((pageIdx == pageBeg && bufNum == 0) ? offset + IMG_DATA_OFFSET : 0);
+            for (oset = ((pageIdx == pageBeg && bufNum == 0) ? IMG_DATA_OFFSET : 0);
                      oset < osetEnd;
                      oset++)
             {
@@ -235,7 +235,7 @@ uint32_t CRC32_calc(uint8_t page, uint32_t pageSize, uint16_t offset, uint32_t l
             /* Read data into the next buffer */
             if(!useExtFl)
             {
-                CRC32_memCpy(crcBuf, (uint8_t *)((pageIdx*pageSize) + ((bufNum + 1)*CRC32_BUF_SZ)),
+                CRC32_memCpy(crcBuf, (uint8_t *)((pageIdx*pageSize) + offset + ((bufNum + 1)*CRC32_BUF_SZ)),
                         CRC32_BUF_SZ);
             }
             else

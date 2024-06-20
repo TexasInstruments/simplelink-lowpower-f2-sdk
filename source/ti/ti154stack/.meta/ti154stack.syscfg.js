@@ -166,6 +166,7 @@ const moduleStatic = {
         oadScript.config,
         testModeScript.config
     ],
+
     validate: validate,
     moduleInstances: moduleInstances,
     modules: modules

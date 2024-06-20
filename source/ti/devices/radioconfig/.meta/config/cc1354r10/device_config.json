@@ -120,7 +120,7 @@
             {
                 "_file": "frontend_settings.json",
                 "_phy": "ieee_15_4",
-                "$": ".\/..\/config\/cc1352r_ieee_15_4_pg21\/cmd_settings"
+                "$": ".\/..\/config\/cc1354r10_ieee_15_4_pg20\/cmd_settings"
             },
             {
                 "_file": "frontend_settings.json",

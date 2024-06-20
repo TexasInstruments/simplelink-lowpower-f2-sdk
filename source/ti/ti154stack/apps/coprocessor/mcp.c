@@ -57,7 +57,9 @@
 #include "mt_mac.h"
 
 #include "ti_drivers_config.h"
+#ifdef TI154STACK_BLINK_LEDS_DURING_MESSAGING
 #include "board_led.h"
+#endif
 #include "util_timer.h"
 
 /* use macNpiMTMsg_t */
@@ -230,9 +232,10 @@ void MCP_init(void)
     MT_init(npiAppEntityID, ICALL_SERVICE_CLASS_NPI);
 #endif
 
+#ifdef TI154STACK_BLINK_LEDS_DURING_MESSAGING
     /* Turn off all LEDs */
     Board_Led_initialize();
-
+#endif
 }
 
 /*!
@@ -260,8 +263,9 @@ static void processMsg(uint16_t entityID, uint16_t param2, void *pMsg)
 
         /* Count an incoming MT message */
         numRxMsgs += 1;
-
+#ifdef TI154STACK_BLINK_LEDS_DURING_MESSAGING
         Board_Led_control(board_led_type_LED1, board_led_state_BLINK);
+#endif
     }
 }
 
@@ -331,6 +335,7 @@ static void relayTxMsg(void *pMsg)
 
     /* Count an outgoing MT message */
     numTxMsgs += 1;
-
+#ifdef TI154STACK_BLINK_LEDS_DURING_MESSAGING
     Board_Led_control(board_led_type_LED2, board_led_state_BLINK);
+#endif
 }

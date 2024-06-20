@@ -47,7 +47,11 @@ const defaultPropPhyList = [
 // Array containing all the IEEE phy settings for the LP_CC2652RB
 const defaultIEEEPhyList = commonPhySettings.defaultIEEEPhyList;
 
+// Custom Phy settings
+const customPhyList = commonPhySettings.customPhyList;
+
 exports = {
     defaultPropPhyList: defaultPropPhyList,
-    defaultIEEEPhyList: defaultIEEEPhyList
+    defaultIEEEPhyList: defaultIEEEPhyList,
+    customPhyList, customPhyList
 };

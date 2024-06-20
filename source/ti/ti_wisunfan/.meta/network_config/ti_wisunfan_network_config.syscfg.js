@@ -99,7 +99,7 @@ const config = {
         {
             name: "fhNetname",
             displayName: "Network Name",
-            default: "Wi-SUN Network",
+            default: getDefaultNetname(null),
             hidden: false,
             description: Docs.fhNetname.description,
             longDescription: Docs.fhNetname.longDescription
@@ -111,6 +111,14 @@ const config = {
             description: Docs.maxDevices.description,
             longDescription: Docs.maxDevices.longDescription,
             hidden: true
+        },
+        {
+            name: "starNetwork",
+            displayName: "Force star network topology",
+            default: false,
+            hidden: false,
+            description: Docs.starNetwork.description,
+            longDescription: Docs.starNetwork.longDescription
         },
         {
             displayName: "MAC",
@@ -146,7 +154,48 @@ const config = {
                     hidden: false,
                     description: Docs.fhBroadcastDwellTime.description,
                     longDescription: Docs.fhBroadcastDwellTime.longDescription
-                }
+                },
+                {
+            		displayName: "Advanced",
+            		config: [
+		                {
+		                    name: "customMinTxOff",
+		                    displayName: "Custom Minimum TX Off-Time",
+		                    default: false,
+		                    hidden: true,
+		                    description: Docs.custMinTxOff.description,
+		                    longDescription: Docs.custMinTxOff.longDescription,
+		                    onChange: (inst, ui) => setAdvancedMacConfigs(inst,
+		                        ui, "customMinTxOff")
+		                },
+		                {
+		                    name: "minTxOff",
+		                    displayName: "Minimum TX Off-Time (ms)",
+		                    default: getDefaultMinTxOff(null),
+		                    hidden: true,
+		                    description: Docs.minTxOff.description,
+		                    longDescription: Docs.minTxOff.longDescription
+		                },
+		                {
+		                    name: "dutyCycleEnable",
+		                    displayName: "Enable Duty Cycle",
+		                    default: false,
+		                    hidden: true,
+		                    description: Docs.dcEnable.description,
+		                    longDescription: Docs.dcEnable.longDescription,
+		                    onChange: (inst, ui) => setAdvancedMacConfigs(inst,
+		                        ui, "dutyCycleEnable")
+		                },
+		                {
+		                    name: "dutyCycle",
+		                    displayName: "Duty Cycle Threshold (%)",
+		                    default: getDefaultDutyCycle(null),
+		                    hidden: true,
+		                    description: Docs.dutyCycle.description,
+		                    longDescription: Docs.dutyCycle.longDescription
+		                }
+            		]
+        		}
             ]
         }
     ]
@@ -157,6 +206,80 @@ const config = {
  Network Group Config Functions
  *******************************************************************************
  */
+
+
+ /*!
+ * ======== getDefaultMinTxOff ========
+ * Returns the default minTxOff config based on PHY requirement:
+ *   - ARIB: 2 ms
+ *   - ETSI: 100 ms
+ *
+ * @param inst - 15.4 module instance (null during initialization)
+ * @returns - default min TX off
+ */
+function getDefaultMinTxOff(inst)
+{
+    let minTxOff = 0;
+    if(inst !== null)
+    {
+        if(inst.region === "JP")
+        {
+            minTxOff = 2;
+        }
+        else if(inst.region === "EU")
+        {
+            minTxOff = 100;
+        }
+    }
+    else
+    {
+        minTxOff = 0;
+    }
+
+    return(minTxOff);
+}
+
+/*!
+ * ======== getDefaultDutyCycle ========
+ * Returns the default duty cycle threshold based on the mode
+ *  - FH (multiple channels): 20%
+ *  - Else: 10%
+ *
+ * @param inst - 15.4 module instance (null during initialization)
+ * @returns - default duty cycle
+ */
+function getDefaultDutyCycle(inst)
+{
+    let dutyCycle = 0;
+    if(inst !== null && inst.mode === "frequencyHopping"
+        && inst.fhAsyncChannels.length > 1)
+    {
+        dutyCycle = 20;
+    }
+    else
+    {
+        dutyCycle = 10;
+    }
+
+    return(dutyCycle);
+}
+
+/*!
+ * ======== getDefaultNetname ========
+ * Returns the default network name depending on the current project.
+ *
+ * @param inst - module instance (null during initialization)
+ * @returns - Network name
+ */
+function getDefaultNetname(inst)
+{
+    let netname = "Wi-SUN Network";
+    if (inst != null && inst.project.includes("solar"))
+    {
+        netname = "Solar Network"
+    }
+    return netname;
+}
 
 /*!
  * ======== getDefaultChannelMask ========
@@ -180,7 +303,7 @@ function getDefaultChannelMask(inst)
             return(defaultChannels.map(String));
         }
     }
-    
+
     const defaultChannels = channels;
 
     // Return list of channels as strings
@@ -199,10 +322,11 @@ function getDefaultChannelMaskCustom(inst)
     const totalNumChannels = inst.totalChannels;
     const channels = getSupportedChannels(inst);
     const defaultChannels = channels.slice(0, totalNumChannels);
-    
+
     // Return list of channels as strings
     return(defaultChannels.map(String));
 }
+
 /*!
  *  ======== selectAllOptions ========
  *  Returns array with all values from provided drop down options array
@@ -213,6 +337,32 @@ function getDefaultChannelMaskCustom(inst)
 function selectAllOptions(options)
 {
     return(_.map(options, "name"));
+}
+
+/*!
+ * ======== setDefaultNetname ========
+ * Sets the default network name
+ *
+ * @param inst - module instance
+ */
+function setDefaultNetname(inst)
+{
+    inst.fhNetname = getDefaultNetname(inst);
+}
+
+/*!
+ * ======== setDefaultDwellTime ========
+ * Sets the default network dwell times for solar projects
+ *
+ * @param inst - module instance
+ */
+function setDefaultDwellTime(inst)
+{
+    if (inst != null && inst.project.includes("solar"))
+    {
+        inst.fhBroadcastInterval = 300;
+        inst.fhBroadcastDwellTime = 250;
+    }
 }
 
 /*!
@@ -252,9 +402,7 @@ function getSupportedChannels(inst)
     let range = [];
     if(inst != null)
     {
-        
         range = rfCommon.getChannelMask(inst.region, inst.phyModeID, inst.ChanPlanID);
-        
     }
     else
     {
@@ -305,6 +453,49 @@ function getChannelOptions(inst, isLegacyConfig)
 
     return(options);
 }
+
+
+/*
+ * ======== setAdvancedMacConfigs ========
+ * Update minTxOff and dutyCycle configs value and visibility
+ *
+ * @param inst    - module instance containing the config that changed
+ * @param ui      - user interface object
+ * @param changedConfig - config that changed and called this function
+ */
+function setAdvancedMacConfigs(inst, ui, changedConfig)
+{
+    if(changedConfig === "dutyCycleEnable"
+        || changedConfig === "region")
+    {
+        inst.dutyCycle = getDefaultDutyCycle(inst);
+    }
+
+    if(changedConfig === "customMinTxOff"
+        || changedConfig === "region")
+    {
+        inst.minTxOff = getDefaultMinTxOff(inst);
+    }
+
+    // Get list of all configs in Advanced MAC group
+    const macConfigArray = _.filter(config.config,
+        (o) => o.displayName === "MAC");
+    const advMacConfigArray = _.filter(macConfigArray[0].config,
+        (o) => o.displayName === "Advanced");
+    const advMacConfigs = Common.findAllConfigs(advMacConfigArray);
+
+    for(const cfg of advMacConfigs)
+    {
+        /* Calling setXConfigHiddenState sets a config to its default value
+         * if it is hidden. An onChange handler can never change itself
+         */
+        if(cfg !== changedConfig)
+        {
+            setNetworkConfigHiddenState(inst, ui, cfg);
+        }
+    }
+}
+
 
 /*
  * ======== getNetworkConfigHiddenState ========
@@ -367,6 +558,29 @@ function getNetworkConfigHiddenState(inst, cfgName)
             isVisible = false;
             break;
         }
+        case "customMinTxOff":
+        {
+            isVisible = inst.region === "JP"
+                || inst.region === "EU";
+            break;
+        }
+        case "dutyCycleEnable":
+        {
+            isVisible = inst.region === "JP"
+                || inst.region === "EU";
+            break;
+        }
+        case "dutyCycle":
+        {
+            isVisible = inst.dutyCycleEnable;
+            break;
+        }
+        case "minTxOff":
+        {
+            isVisible = inst.customMinTxOff;
+            break;
+        }
+
         case "reportingInterval":
         case "panID":
         case "scanDuration":
@@ -405,6 +619,27 @@ function setNetworkConfigHiddenState(inst, ui, cfgName)
         // restore the default value for the hidden parameter.
         Common.restoreDefaultValue(inst, configToReset, cfgName);
     }
+}
+
+function getNetworkConfigReadonlyState(inst, cfgName)
+{
+    if (cfgName === "panID")
+    {
+        if (inst.project.includes("borderrouter"))
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+function setNetworkConfigReadonlyState(inst, ui, cfgName)
+{
+    ui[cfgName].readOnly = getNetworkConfigReadonlyState(inst, cfgName);
 }
 
 /*
@@ -575,6 +810,12 @@ function validate(inst, validation)
         Common.validateRangeInt(inst, validation, "fhBroadcastDwellTime", 0,
             Common.cTypeMax.u_int8);
     }
+
+    if (getNetworkConfigReadonlyState(inst, "panID"))
+    {
+        validation.logInfo("Router device PAN ID is updated based on " +
+            "joined network.", inst, "panID");
+    }
 }
 
 /*
@@ -587,9 +828,12 @@ function validate(inst, validation)
 exports = {
     config: config,
     validate: validate,
+    setNetworkConfigReadonlyState: setNetworkConfigReadonlyState,
     setNetworkConfigHiddenState: setNetworkConfigHiddenState,
     getNetworkConfigHiddenState: getNetworkConfigHiddenState,
     setDefaultChannelMasks: setDefaultChannelMasks,
+    setDefaultNetname: setDefaultNetname,
+    setDefaultDwellTime: setDefaultDwellTime,
     getChannelOptions: getChannelOptions,
-    setDefaultChannelMasks: setDefaultChannelMasks
+    setAdvancedMacConfigs: setAdvancedMacConfigs
 };

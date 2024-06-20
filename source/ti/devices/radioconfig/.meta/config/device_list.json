@@ -1,9 +1,9 @@
 {
     "devicelist": {
         "version": {
-            "_rtlib": "1.31.0",
+            "_rtlib": "1.33.0",
             "_radioconfig": "1.18.0",
-            "$": "2.30.0"
+            "$": "2.31.0"
         },
         "DeviceGroup": [
             {
@@ -260,14 +260,6 @@
                         "DeviceName": {
                             "_family": "Thor",
                             "$": "CC2674P10"
-                        },
-                        "Brief": "2.4 GHz",
-                        "DeviceType": "Wireless MCU"
-                    },
-                    {
-                        "DeviceName": {
-                            "_family": "Thor",
-                            "$": "CC2653P10"
                         },
                         "Brief": "2.4 GHz",
                         "DeviceType": "Wireless MCU"

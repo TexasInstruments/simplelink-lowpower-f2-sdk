@@ -245,6 +245,13 @@ function getRfDesignOptions()
             {name: "LP_EM_CC1354P10_6"}
         ];
     }
+    else if(deviceId === "CC1354P10RGZ")
+    {
+        newRfDesignOptions = [
+            {name: "LP_CC1354P10_1_RGZ"},
+            {name: "LP_CC1354P10_6_RGZ"}
+        ];
+    }
     else
     {
         throw new Error("Unknown deviceId " + deviceId + ".");
@@ -283,6 +290,7 @@ function onRegionChange(inst, ui)
     rfCommon.setRegDomain(inst);
     rfCommon.setPhyModeID(inst);
     onPhyModeIDChange(inst, ui);
+    networkScript.setAdvancedMacConfigs(inst, ui, "region");
 }
 
 function onCustomPhyChange(inst, ui)

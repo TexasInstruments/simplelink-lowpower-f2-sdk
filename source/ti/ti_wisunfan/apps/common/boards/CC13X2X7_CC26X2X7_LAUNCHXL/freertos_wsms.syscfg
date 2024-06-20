@@ -1,0 +1,8 @@
+/* ======== RTOS ======== */
+const FreeRTOS = scripting.addModule("/freertos/FreeRTOS");
+FreeRTOS.heapSize = 0x5500;
+FreeRTOS.posixThreadStackSize = 0x00000200;
+FreeRTOS.idleStackSize = 0x00000180;
+FreeRTOS.timerStackSize = 0x00000180;
+
+const POSIX = scripting.addModule("/ti/posix/freertos/Settings");

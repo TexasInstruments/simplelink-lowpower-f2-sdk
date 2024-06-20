@@ -53,7 +53,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "ECDSACC26X4_driverlib.h"
+#include "ti/common/cc26xx/ecc/ECDSACC26X4_driverlib.h"
 
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(inc/hw_memmap.h)

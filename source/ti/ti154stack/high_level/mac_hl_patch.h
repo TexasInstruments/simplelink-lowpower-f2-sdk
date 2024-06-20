@@ -97,6 +97,7 @@
 #define PHY_MODE_FSK_150K       (2)
 #define PHY_MODE_FSK_200K       (3)
 #define PHY_MODE_SLR_5K         (4)
+#define PHY_MODE_CUSTOM         (5)
 #define PHY_MODE_UNDEF          (0)
 /* ------------------------------------------------------------------------------------------------
  *                                          Macros

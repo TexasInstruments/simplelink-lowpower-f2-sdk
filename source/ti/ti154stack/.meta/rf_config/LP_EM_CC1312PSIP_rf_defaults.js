@@ -41,6 +41,9 @@
 const rfCommon = system.getScript("/ti/ti154stack/rf_config/"
     + "ti154stack_rf_config_common.js");
 
+const customObj = system.getScript("/ti/ti154stack/rf_config/"
+    + "phyCustom.js");
+
 /*
  *  ======== Device Specific Proprietary PHY Settings ========
  *
@@ -164,7 +167,14 @@ const defaultPropPhyList = [
 
 const defaultIEEEPhyList = [];
 
+// Contains the object over the configurable phy 
+const customPhyList = [
+    rfCommon.mergeRFSettings(customObj.devSpecificCustomPhySettingsPdevices,
+    customObj.commonCustomPhySettings)
+];
+
 exports = {
     defaultPropPhyList: defaultPropPhyList,
-    defaultIEEEPhyList: defaultIEEEPhyList
+    defaultIEEEPhyList: defaultIEEEPhyList,
+    customPhyList: customPhyList
 };

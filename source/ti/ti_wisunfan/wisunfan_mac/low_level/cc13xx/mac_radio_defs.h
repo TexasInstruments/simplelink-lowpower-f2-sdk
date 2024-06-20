@@ -137,6 +137,10 @@
 #define MAC_LBT_MAX_RND_STEP                     10  // 5 ms at maximum
 /* LBT threshold for 863Mhz band, 88kHz receiver band, 14dBm output */
 #define MAC_LBT_THRESHOLD                       -92 // -92 dBm
+/* LBT minimum TX off-time */
+#define MAC_LBT_MIN_TX_OFF_TIME                  100 // 100 ms
+/* ARIB requirement minimum TX off-time */
+#define MAC_ARIB_MIN_TX_OFF_TIME                  2 // 2 ms
 
 /* ------------------------------------------------------------------------------------------------
  *                                      Common Radio Macros

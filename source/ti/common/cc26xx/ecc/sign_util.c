@@ -48,12 +48,12 @@
  *                                          Includes
  */
 
-#include "sign_util.h"
-#include "flash_interface.h"
-#include "ext_flash.h"
+#include "ti/common/cc26xx/ecc/sign_util.h"
+#include "ti/common/cc26xx/flash_interface/flash_interface.h"
+#include "ti/common/flash/no_rtos/extFlash/ext_flash.h"
 
 #if defined(DeviceFamily_CC26X2) || defined(DeviceFamily_CC13X2) || defined(DeviceFamily_CC13X2X7) || defined(DeviceFamily_CC26X2X7)
-#include "sha2_driverlib.h"
+#include "ti/common/cc26xx/sha2/sha2_driverlib.h"
 #else
 #include DeviceFamily_constructPath(driverlib/rom_sha256.h)
 #include DeviceFamily_constructPath(driverlib/rom_ecc.h)
@@ -365,7 +365,7 @@ uint8_t *computeSha2Hash(uint32_t imgStartAddr, uint8_t *SHABuff, uint16_t SHABu
     pImgHdr->secInfoSeg.verifStat = 0xFF;
 #endif
 
-    uint32_t addrRead = imgStartAddr + SHABuffLen;
+    uint32_t addrRead = ((pImgHdr->fixedHdr.len > SHABuffLen) ? imgStartAddr + SHABuffLen : imgStartAddr);
     uint32_t secHdrLen = HDR_LEN_WITH_SECURITY_INFO;
 
 #if defined(DeviceFamily_CC26X2) || defined(DeviceFamily_CC13X2) || defined(DeviceFamily_CC13X2X7) || defined(DeviceFamily_CC26X2X7)
@@ -382,8 +382,8 @@ uint8_t *computeSha2Hash(uint32_t imgStartAddr, uint8_t *SHABuff, uint16_t SHABu
     SHA256_process(&sha256_workzone, &SHABuff[secHdrLen], SHABuffLen - secHdrLen);
 #endif /* DeviceFamily_CC26X2 || DeviceFamily_CC13X2 || DeviceFamily_CC13X2X7 || DeviceFamily_CC26X2X7 */
 
-    uint32_t imgLengthLeft = pImgHdr->fixedHdr.len - SHABuffLen;
-    uint32_t byteToRead = SHABuffLen;
+    uint32_t imgLengthLeft = ((pImgHdr->fixedHdr.len > SHABuffLen) ? pImgHdr->fixedHdr.len - SHABuffLen : pImgHdr->fixedHdr.len);
+    uint32_t byteToRead = ((imgLengthLeft < SHABuffLen) ? imgLengthLeft : SHABuffLen);
 
     /* Read over image pages. */
     while(imgLengthLeft > 0)

@@ -25,8 +25,8 @@
 --define_symbol FHDATA_startEDFETimer=0x10031065
 --define_symbol FHDATA_requeuePkt=0x10030efd
 --define_symbol FHDATA_updateCCA=0x10030fed
---define_symbol FHDATA_CheckMinTxOffTime=0x10030cb5
---define_symbol FHDATA_getASYNCDelay=0x10030f65
+//--define_symbol FHDATA_CheckMinTxOffTime=0x10030cb5
+//--define_symbol FHDATA_getASYNCDelay=0x10030f65
 --define_symbol FHDATA_asyncMinTxOffTimerCb=0x10031011
 --define_symbol FHDH1CF_hashword=0x10031069
 --define_symbol FHDH1CF_getCh=0x10031209

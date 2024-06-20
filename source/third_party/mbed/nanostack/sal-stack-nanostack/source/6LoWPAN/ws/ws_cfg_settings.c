@@ -479,7 +479,14 @@ static void ws_cfg_network_size_config_set_small(ws_cfg_nw_size_t *cfg)
     cfg->bbr.dio_interval_doublings = WS_RPL_DIO_DOUBLING_SMALL;     // 2; 128
     cfg->bbr.dio_redundancy_constant = WS_RPL_DIO_REDUNDANCY_SMALL;  // Disabled
     cfg->bbr.dag_max_rank_increase = WS_RPL_MAX_HOP_RANK_INCREASE;
-    cfg->bbr.min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE;
+    if (ti_wisun_config.force_star_topology)
+    {
+        cfg->bbr.min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE_STAR;
+    }
+    else
+    {
+        cfg->bbr.min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE;
+    }
     cfg->bbr.rpl_default_lifetime = WS_RPL_DEFAULT_LIFETIME;
     cfg->bbr.dhcp_address_lifetime = WS_DHCP_ADDRESS_LIFETIME_SMALL;
 
@@ -536,7 +543,14 @@ static void ws_cfg_network_size_config_set_medium(ws_cfg_nw_size_t *cfg)
     cfg->bbr.dio_interval_doublings = WS_RPL_DIO_DOUBLING_MEDIUM;    // 3; 1024s
     cfg->bbr.dio_redundancy_constant = WS_RPL_DIO_REDUNDANCY_MEDIUM; // 10
     cfg->bbr.dag_max_rank_increase = WS_RPL_MAX_HOP_RANK_INCREASE;
-    cfg->bbr.min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE;
+    if (ti_wisun_config.force_star_topology)
+    {
+        cfg->bbr.min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE_STAR;
+    }
+    else
+    {
+        cfg->bbr.min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE;
+    }
     cfg->bbr.rpl_default_lifetime = WS_RPL_DEFAULT_LIFETIME_MEDIUM;
     cfg->bbr.dhcp_address_lifetime = WS_DHCP_ADDRESS_LIFETIME_MEDIUM;
 
@@ -578,7 +592,14 @@ static void ws_cfg_network_size_config_set_large(ws_cfg_nw_size_t *cfg)
     cfg->bbr.dio_interval_doublings = WS_RPL_DIO_DOUBLING_LARGE;     // 3; 2048s, 34min
     cfg->bbr.dio_redundancy_constant = WS_RPL_DIO_REDUNDANCY_LARGE;  // 10
     cfg->bbr.dag_max_rank_increase = WS_RPL_MAX_HOP_RANK_INCREASE;
-    cfg->bbr.min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE;
+    if (ti_wisun_config.force_star_topology)
+    {
+        cfg->bbr.min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE_STAR;
+    }
+    else
+    {
+        cfg->bbr.min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE;
+    }
     cfg->bbr.rpl_default_lifetime = WS_RPL_DEFAULT_LIFETIME_LARGE;
     cfg->bbr.dhcp_address_lifetime = WS_DHCP_ADDRESS_LIFETIME_LARGE;
 
@@ -621,7 +642,15 @@ static void ws_cfg_network_size_config_set_xlarge(ws_cfg_nw_size_t *cfg)
     cfg->bbr.dio_interval_doublings = WS_RPL_DIO_DOUBLING_XLARGE;     // 4; 2048s, 34min
     cfg->bbr.dio_redundancy_constant = WS_RPL_DIO_REDUNDANCY_XLARGE;  // 10
     cfg->bbr.dag_max_rank_increase = WS_RPL_MAX_HOP_RANK_INCREASE;
-    cfg->bbr.min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE;
+    if (ti_wisun_config.force_star_topology)
+    {
+        cfg->bbr.min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE_STAR;
+    }
+    else
+    {
+        cfg->bbr.min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE;
+    }
+
     cfg->bbr.rpl_default_lifetime = WS_RPL_DEFAULT_LIFETIME_XLARGE;
     cfg->bbr.dhcp_address_lifetime = WS_DHCP_ADDRESS_LIFETIME_LARGE;
 
@@ -967,7 +996,14 @@ static int8_t ws_cfg_bbr_default_set(ws_bbr_cfg_t *cfg)
     cfg->dio_interval_doublings = WS_RPL_DIO_DOUBLING_MEDIUM; // 1024s
     cfg->dio_redundancy_constant = 10;
     cfg->dag_max_rank_increase = WS_RPL_MAX_HOP_RANK_INCREASE;
-    cfg->min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE;
+    if (ti_wisun_config.force_star_topology)
+    {
+        cfg->min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE_STAR;
+    }
+    else
+    {
+        cfg->min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE;
+    }
     cfg->rpl_default_lifetime = WS_RPL_DEFAULT_LIFETIME_MEDIUM;
     cfg->dhcp_address_lifetime = WS_DHCP_ADDRESS_LIFETIME_MEDIUM;
 
@@ -1542,7 +1578,14 @@ void ws_cfg_settings_init()
     cfg->dio_interval_doublings = WS_RPL_DIO_DOUBLING_MEDIUM; // 1024s
     cfg->dio_redundancy_constant = 10;
     cfg->dag_max_rank_increase = WS_RPL_MAX_HOP_RANK_INCREASE;
-    cfg->min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE;
+    if (ti_wisun_config.force_star_topology)
+    {
+        cfg->min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE_STAR;
+    }
+    else
+    {
+        cfg->min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE;
+    }
     cfg->dhcp_address_lifetime = WS_DHCP_ADDRESS_LIFETIME_MEDIUM;
 
    // MPL configuration

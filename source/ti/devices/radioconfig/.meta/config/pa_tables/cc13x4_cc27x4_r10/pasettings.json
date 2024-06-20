@@ -37,7 +37,7 @@
                             {
                                 "_text": "10",
                                 "Value": "0xFFFE",
-                                "TxSub1Pa": "0x002603"
+                                "TxSub1Pa": "0x008EA8"
                             },
                             {
                                 "_text": "9",
@@ -217,94 +217,169 @@
                                 }
                             },
                             {
-                                "_text": "12.5",
-                                "Value": "0xFFFE",
-                                "TxSub1Pa": "0x00CD1F"
-                            },
-                            {
                                 "_text": "12",
                                 "Value": "0xFFFE",
-                                "TxSub1Pa": "0x006F0F"
+                                "TxSub1Pa": "0x008E19"
                             },
                             {
                                 "_text": "11",
                                 "Value": "0xFFFE",
-                                "TxSub1Pa": "0x007555"
+                                "TxSub1Pa": "0x006A57"
                             },
                             {
                                 "_text": "10",
                                 "Value": "0xFFFE",
-                                "TxSub1Pa": "0x005850"
+                                "TxSub1Pa": "0x008EAF"
                             },
                             {
                                 "_text": "9",
                                 "Value": "0xFFFE",
-                                "TxSub1Pa": "0x0081A0"
+                                "TxSub1Pa": "0x01806F"
                             },
                             {
                                 "_text": "8",
                                 "Value": "0xFFFE",
-                                "TxSub1Pa": "0x00749D"
+                                "TxSub1Pa": "0x016A63"
                             },
                             {
                                 "_text": "7",
                                 "Value": "0xFFFE",
-                                "TxSub1Pa": "0x005896"
+                                "TxSub1Pa": "0x014E5B"
                             },
                             {
                                 "_text": "6",
                                 "Value": "0xFFFE",
-                                "TxSub1Pa": "0x00398E"
+                                "TxSub1Pa": "0x0070EB"
                             },
                             {
                                 "_text": "5",
                                 "Value": "0xFFFE",
-                                "TxSub1Pa": "0x002F8B"
+                                "TxSub1Pa": "0x005CE3"
                             },
                             {
                                 "_text": "4",
                                 "Value": "0xFFFE",
-                                "TxSub1Pa": "0x0059DE"
+                                "TxSub1Pa": "0x0162B1"
                             },
                             {
                                 "_text": "3",
                                 "Value": "0xFFFE",
-                                "TxSub1Pa": "0x0047D9"
+                                "TxSub1Pa": "0x014EA8"
                             },
                             {
                                 "_text": "2",
                                 "Value": "0xFFFE",
-                                "TxSub1Pa": "0x0046D8"
+                                "TxSub1Pa": "0x0140A1"
                             },
                             {
                                 "_text": "1",
                                 "Value": "0xFFFE",
-                                "TxSub1Pa": "0x001985"
+                                "TxSub1Pa": "0x023260"
                             },
                             {
                                 "_text": "0",
                                 "Value": "0xFFFE",
-                                "TxSub1Pa": "0x002FD0"
+                                "TxSub1Pa": "0x0126FD"
+                            },
+                            {
+                                "_text": "-1",
+                                "Value": "0xFFFE",
+                                "TxSub1Pa": "0x0138F2"
+                            },
+                            {
+                                "_text": "-2",
+                                "Value": "0xFFFE",
+                                "TxSub1Pa": "0x0132EA"
+                            },
+                            {
+                                "_text": "-3",
+                                "Value": "0xFFFE",
+                                "TxSub1Pa": "0x021CAF"
+                            },
+                            {
+                                "_text": "-4",
+                                "Value": "0xFFFE",
+                                "TxSub1Pa": "0x021CA8"
                             },
                             {
                                 "_text": "-5",
                                 "Value": "0xFFFE",
-                                "TxSub1Pa": "0x0018C8"
+                                "TxSub1Pa": "0x011CDA"
+                            },
+                            {
+                                "_text": "-6",
+                                "Value": "0xFFFE",
+                                "TxSub1Pa": "0x0204FF"
+                            },
+                            {
+                                "_text": "-7",
+                                "Value": "0xFFFE",
+                                "TxSub1Pa": "0x020EF7"
+                            },
+                            {
+                                "_text": "-8",
+                                "Value": "0xFFFE",
+                                "TxSub1Pa": "0x0300BA"
+                            },
+                            {
+                                "_text": "-9",
+                                "Value": "0xFFFE",
+                                "TxSub1Pa": "0x0308B2"
                             },
                             {
                                 "_text": "-10",
                                 "Value": "0xFFFE",
-                                "TxSub1Pa": "0x000EC4"
+                                "TxSub1Pa": "0x0208E3"
+                            },
+                            {
+                                "_text": "-11",
+                                "Value": "0xFFFE",
+                                "TxSub1Pa": "0x0300A6"
+                            },
+                            {
+                                "_text": "-12",
+                                "Value": "0xFFFE",
+                                "TxSub1Pa": "0x0300FF"
+                            },
+                            {
+                                "_text": "-13",
+                                "Value": "0xFFFE",
+                                "TxSub1Pa": "0x0300F8"
+                            },
+                            {
+                                "_text": "-14",
+                                "Value": "0xFFFE",
+                                "TxSub1Pa": "0x0308F0"
                             },
                             {
                                 "_text": "-15",
                                 "Value": "0xFFFE",
-                                "TxSub1Pa": "0x0008C2"
+                                "TxSub1Pa": "0x0308EA"
+                            },
+                            {
+                                "_text": "-16",
+                                "Value": "0xFFFE",
+                                "TxSub1Pa": "0x0300E5"
+                            },
+                            {
+                                "_text": "-17",
+                                "Value": "0xFFFE",
+                                "TxSub1Pa": "0x0300E0"
+                            },
+                            {
+                                "_text": "-18",
+                                "Value": "0xFFFE",
+                                "TxSub1Pa": "0x0300DC"
+                            },
+                            {
+                                "_text": "-19",
+                                "Value": "0xFFFE",
+                                "TxSub1Pa": "0x0300D9"
                             },
                             {
                                 "_text": "-20",
                                 "Value": "0xFFFE",
-                                "TxSub1Pa": "0x0008C1"
+                                "TxSub1Pa": "0x0300D6"
                             }
                         ]
                     }
@@ -335,94 +410,169 @@
                                     }
                                 },
                                 {
-                                    "_text": "12.5",
-                                    "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x00B224"
-                                },
-                                {
                                     "_text": "12",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x00A410"
+                                    "TxSub1Pa": "0x00B02B"
                                 },
                                 {
                                     "_text": "11",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x00669A"
+                                    "TxSub1Pa": "0x00785E"
                                 },
                                 {
                                     "_text": "10",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x003E92"
+                                    "TxSub1Pa": "0x00404E"
                                 },
                                 {
                                     "_text": "9",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x003EDC"
+                                    "TxSub1Pa": "0x0070A4"
                                 },
                                 {
                                     "_text": "8",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x002CD8"
+                                    "TxSub1Pa": "0x016A66"
                                 },
                                 {
                                     "_text": "7",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0026D4"
+                                    "TxSub1Pa": "0x014E5D"
                                 },
                                 {
                                     "_text": "6",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0020D1"
+                                    "TxSub1Pa": "0x014057"
                                 },
                                 {
                                     "_text": "5",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x001CCE"
+                                    "TxSub1Pa": "0x005CE5"
                                 },
                                 {
                                     "_text": "4",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0016CD"
+                                    "TxSub1Pa": "0x0158B3"
                                 },
                                 {
                                     "_text": "3",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0014CB"
+                                    "TxSub1Pa": "0x014EA9"
                                 },
                                 {
                                     "_text": "2",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0012CA"
+                                    "TxSub1Pa": "0x011C4A"
                                 },
                                 {
                                     "_text": "1",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0012C9"
+                                    "TxSub1Pa": "0x01329C"
                                 },
                                 {
                                     "_text": "0",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0010C8"
+                                    "TxSub1Pa": "0x012A98"
+                                },
+                                {
+                                    "_text": "-1",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0138F4"
+                                },
+                                {
+                                    "_text": "-2",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0132EB"
+                                },
+                                {
+                                    "_text": "-3",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x012AE4"
+                                },
+                                {
+                                    "_text": "-4",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x021CA8"
                                 },
                                 {
                                     "_text": "-5",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x000AC4"
+                                    "TxSub1Pa": "0x011CDA"
+                                },
+                                {
+                                    "_text": "-6",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0116D6"
+                                },
+                                {
+                                    "_text": "-7",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x020EF7"
+                                },
+                                {
+                                    "_text": "-8",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x020EEF"
+                                },
+                                {
+                                    "_text": "-9",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x020EE8"
                                 },
                                 {
                                     "_text": "-10",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x000AC2"
+                                    "TxSub1Pa": "0x0300AB"
+                                },
+                                {
+                                    "_text": "-11",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0208DE"
+                                },
+                                {
+                                    "_text": "-12",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0208DA"
+                                },
+                                {
+                                    "_text": "-13",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0208D7"
+                                },
+                                {
+                                    "_text": "-14",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0308F0"
                                 },
                                 {
                                     "_text": "-15",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0006C1"
+                                    "TxSub1Pa": "0x0300EA"
+                                },
+                                {
+                                    "_text": "-16",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0300E4"
+                                },
+                                {
+                                    "_text": "-17",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0308E0"
+                                },
+                                {
+                                    "_text": "-18",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0300DC"
+                                },
+                                {
+                                    "_text": "-19",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0300D9"
                                 },
                                 {
                                     "_text": "-20",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0004C0"
+                                    "TxSub1Pa": "0x0300D6"
                                 }
                             ]
                         }
@@ -1019,59 +1169,59 @@
                                 },
                                 {
                                     "_text": "4",
-                                    "Value": "0x7834"
+                                    "Value": "0x8029"
                                 },
                                 {
                                     "_text": "3",
-                                    "Value": "0x8024"
+                                    "Value": "0x5C1D"
                                 },
                                 {
                                     "_text": "2",
-                                    "Value": "0x601B"
+                                    "Value": "0x4616"
                                 },
                                 {
                                     "_text": "1",
-                                    "Value": "0x4E15"
+                                    "Value": "0x3263"
                                 },
                                 {
                                     "_text": "0",
-                                    "Value": "0x3861"
+                                    "Value": "0x2A5E"
                                 },
                                 {
                                     "_text": "-3",
-                                    "Value": "0x2656"
+                                    "Value": "0x1CE6"
                                 },
                                 {
                                     "_text": "-5",
-                                    "Value": "0x1896"
+                                    "Value": "0x1695"
                                 },
                                 {
                                     "_text": "-6",
-                                    "Value": "0x1894"
+                                    "Value": "0x1693"
                                 },
                                 {
                                     "_text": "-9",
-                                    "Value": "0x188F"
+                                    "Value": "0x0E8E"
                                 },
                                 {
                                     "_text": "-10",
-                                    "Value": "0x0ED3"
+                                    "Value": "0x00D2"
                                 },
                                 {
                                     "_text": "-12",
-                                    "Value": "0x0E8B"
+                                    "Value": "0x088A"
                                 },
                                 {
                                     "_text": "-15",
-                                    "Value": "0x08CD"
+                                    "Value": "0x08CC"
                                 },
                                 {
                                     "_text": "-18",
-                                    "Value": "0x08CA"
+                                    "Value": "0x00C9"
                                 },
                                 {
                                     "_text": "-20",
-                                    "Value": "0x08C8"
+                                    "Value": "0x00C7"
                                 }
                             ]
                         }
@@ -1098,94 +1248,169 @@
                                     }
                                 },
                                 {
-                                    "_text": "12.5",
-                                    "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x00B224"
-                                },
-                                {
                                     "_text": "12",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x00A410"
+                                    "TxSub1Pa": "0x00BE33"
                                 },
                                 {
                                     "_text": "11",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x00669A"
+                                    "TxSub1Pa": "0x00945F"
                                 },
                                 {
                                     "_text": "10",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x003E92"
+                                    "TxSub1Pa": "0x00404E"
                                 },
                                 {
                                     "_text": "9",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x003EDC"
+                                    "TxSub1Pa": "0x0078A3"
                                 },
                                 {
                                     "_text": "8",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x002CD8"
+                                    "TxSub1Pa": "0x017065"
                                 },
                                 {
                                     "_text": "7",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0026D4"
+                                    "TxSub1Pa": "0x01545C"
                                 },
                                 {
                                     "_text": "6",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0020D1"
+                                    "TxSub1Pa": "0x014656"
                                 },
                                 {
                                     "_text": "5",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x001CCE"
+                                    "TxSub1Pa": "0x013851"
                                 },
                                 {
                                     "_text": "4",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0016CD"
+                                    "TxSub1Pa": "0x0166B1"
                                 },
                                 {
                                     "_text": "3",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0014CB"
+                                    "TxSub1Pa": "0x024E6D"
                                 },
                                 {
                                     "_text": "2",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0012CA"
+                                    "TxSub1Pa": "0x024665"
                                 },
                                 {
                                     "_text": "1",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0012C9"
+                                    "TxSub1Pa": "0x01389B"
                                 },
                                 {
                                     "_text": "0",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0010C8"
+                                    "TxSub1Pa": "0x013297"
+                                },
+                                {
+                                    "_text": "-1",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0146F2"
+                                },
+                                {
+                                    "_text": "-2",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x022AB6"
+                                },
+                                {
+                                    "_text": "-3",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0132E3"
+                                },
+                                {
+                                    "_text": "-4",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x012ADD"
                                 },
                                 {
                                     "_text": "-5",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x000AC4"
+                                    "TxSub1Pa": "0x021CA1"
+                                },
+                                {
+                                    "_text": "-6",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x021C9C"
+                                },
+                                {
+                                    "_text": "-7",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x011CD3"
+                                },
+                                {
+                                    "_text": "-8",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x030EB8"
+                                },
+                                {
+                                    "_text": "-9",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0216E7"
                                 },
                                 {
                                     "_text": "-10",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x000AC2"
+                                    "TxSub1Pa": "0x0216E1"
+                                },
+                                {
+                                    "_text": "-11",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x020EDD"
+                                },
+                                {
+                                    "_text": "-12",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x020ED9"
+                                },
+                                {
+                                    "_text": "-13",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x020ED6"
+                                },
+                                {
+                                    "_text": "-14",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0308EF"
                                 },
                                 {
                                     "_text": "-15",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0006C1"
+                                    "TxSub1Pa": "0x0208D1"
+                                },
+                                {
+                                    "_text": "-16",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0208CF"
+                                },
+                                {
+                                    "_text": "-17",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0308DF"
+                                },
+                                {
+                                    "_text": "-18",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0308DB"
+                                },
+                                {
+                                    "_text": "-19",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0300D8"
                                 },
                                 {
                                     "_text": "-20",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0004C0"
+                                    "TxSub1Pa": "0x0300D5"
                                 }
                             ]
                         }
@@ -1281,7 +1506,7 @@
                                 {
                                     "_text": "10",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x003404"
+                                    "TxSub1Pa": "0x00404E"
                                 },
                                 {
                                     "_text": "9",
@@ -1291,27 +1516,27 @@
                                 {
                                     "_text": "8",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x005499"
+                                    "TxSub1Pa": "0x017065"
                                 },
                                 {
                                     "_text": "7",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x004693"
+                                    "TxSub1Pa": "0x01545C"
                                 },
                                 {
                                     "_text": "6",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0078EC"
+                                    "TxSub1Pa": "0x014656"
                                 },
                                 {
                                     "_text": "5",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0062E3"
+                                    "TxSub1Pa": "0x013851"
                                 },
                                 {
                                     "_text": "4",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x024E77"
+                                    "TxSub1Pa": "0x0166B1"
                                 },
                                 {
                                     "_text": "3",
@@ -1326,17 +1551,17 @@
                                 {
                                     "_text": "1",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x02385F"
+                                    "TxSub1Pa": "0x01389B"
                                 },
                                 {
                                     "_text": "0",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x02325A"
+                                    "TxSub1Pa": "0x013297"
                                 },
                                 {
                                     "_text": "-1",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x022A56"
+                                    "TxSub1Pa": "0x0146F2"
                                 },
                                 {
                                     "_text": "-2",
@@ -1346,12 +1571,12 @@
                                 {
                                     "_text": "-3",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x022AAD"
+                                    "TxSub1Pa": "0x0132E3"
                                 },
                                 {
                                     "_text": "-4",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0224A6"
+                                    "TxSub1Pa": "0x012ADD"
                                 },
                                 {
                                     "_text": "-5",
@@ -1366,7 +1591,7 @@
                                 {
                                     "_text": "-7",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x021CF6"
+                                    "TxSub1Pa": "0x011CD3"
                                 },
                                 {
                                     "_text": "-8",
@@ -1411,7 +1636,7 @@
                                 {
                                     "_text": "-16",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0208FC"
+                                    "TxSub1Pa": "0x0208CF"
                                 },
                                 {
                                     "_text": "-17",
@@ -1579,6 +1804,1038 @@
                         ]
                     }
                 }
+            },
+            {
+                "_name": "LP-EM-CC1354P10-6-NOSWITCH",
+                "FrequencyRange": [
+                    {
+                        "Min": "2360",
+                        "Max": "2510",
+                        "PaSettingTable": {
+                            "PaSetting": [
+                                {
+                                    "_text": "5",
+                                    "Value": "0x003F"
+                                },
+                                {
+                                    "_text": "4",
+                                    "Value": "0x8029"
+                                },
+                                {
+                                    "_text": "3",
+                                    "Value": "0x5C1D"
+                                },
+                                {
+                                    "_text": "2",
+                                    "Value": "0x4616"
+                                },
+                                {
+                                    "_text": "1",
+                                    "Value": "0x3263"
+                                },
+                                {
+                                    "_text": "0",
+                                    "Value": "0x2A5E"
+                                },
+                                {
+                                    "_text": "-3",
+                                    "Value": "0x1CE6"
+                                },
+                                {
+                                    "_text": "-5",
+                                    "Value": "0x1695"
+                                },
+                                {
+                                    "_text": "-6",
+                                    "Value": "0x1693"
+                                },
+                                {
+                                    "_text": "-9",
+                                    "Value": "0x0E8E"
+                                },
+                                {
+                                    "_text": "-10",
+                                    "Value": "0x00D2"
+                                },
+                                {
+                                    "_text": "-12",
+                                    "Value": "0x088A"
+                                },
+                                {
+                                    "_text": "-15",
+                                    "Value": "0x08CC"
+                                },
+                                {
+                                    "_text": "-18",
+                                    "Value": "0x00C9"
+                                },
+                                {
+                                    "_text": "-20",
+                                    "Value": "0x00C7"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "Min": "770",
+                        "Max": "930",
+                        "PaSettingTable": {
+                            "PaSetting": [
+                                {
+                                    "_text": "14",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x013F",
+                                    "Option": {
+                                        "_name": "vddr",
+                                        "$": "HIGH"
+                                    },
+                                    "Command": {
+                                        "_name": "CMD_PROP_RADIO_DIV_SETUP",
+                                        "OverrideField": {
+                                            "_name": "pRegOverride",
+                                            "Block": "override_patable_14dbm.json"
+                                        }
+                                    }
+                                },
+                                {
+                                    "_text": "12",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x00BE33"
+                                },
+                                {
+                                    "_text": "11",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x00945F"
+                                },
+                                {
+                                    "_text": "10",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x00404E"
+                                },
+                                {
+                                    "_text": "9",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0078A3"
+                                },
+                                {
+                                    "_text": "8",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x017065"
+                                },
+                                {
+                                    "_text": "7",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x01545C"
+                                },
+                                {
+                                    "_text": "6",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x014656"
+                                },
+                                {
+                                    "_text": "5",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x013851"
+                                },
+                                {
+                                    "_text": "4",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0166B1"
+                                },
+                                {
+                                    "_text": "3",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x024E6D"
+                                },
+                                {
+                                    "_text": "2",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x024665"
+                                },
+                                {
+                                    "_text": "1",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x01389B"
+                                },
+                                {
+                                    "_text": "0",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x013297"
+                                },
+                                {
+                                    "_text": "-1",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0146F2"
+                                },
+                                {
+                                    "_text": "-2",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x022AB6"
+                                },
+                                {
+                                    "_text": "-3",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0132E3"
+                                },
+                                {
+                                    "_text": "-4",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x012ADD"
+                                },
+                                {
+                                    "_text": "-5",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x021CA1"
+                                },
+                                {
+                                    "_text": "-6",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x021C9C"
+                                },
+                                {
+                                    "_text": "-7",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x011CD3"
+                                },
+                                {
+                                    "_text": "-8",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x030EB8"
+                                },
+                                {
+                                    "_text": "-9",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0216E7"
+                                },
+                                {
+                                    "_text": "-10",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0216E1"
+                                },
+                                {
+                                    "_text": "-11",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x020EDD"
+                                },
+                                {
+                                    "_text": "-12",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x020ED9"
+                                },
+                                {
+                                    "_text": "-13",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x020ED6"
+                                },
+                                {
+                                    "_text": "-14",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0308EF"
+                                },
+                                {
+                                    "_text": "-15",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0208D1"
+                                },
+                                {
+                                    "_text": "-16",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0208CF"
+                                },
+                                {
+                                    "_text": "-17",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0308DF"
+                                },
+                                {
+                                    "_text": "-18",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0308DB"
+                                },
+                                {
+                                    "_text": "-19",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0300D8"
+                                },
+                                {
+                                    "_text": "-20",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0300D5"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "_name": "LP-EM-CC1354P10-2-NOSWITCH",
+                "FrequencyRange": [
+                    {
+                        "Min": "2360",
+                        "Max": "2510",
+                        "PaSettingTable": {
+                            "PaSetting": [
+                                {
+                                    "_text": "5",
+                                    "Value": "0x003F"
+                                },
+                                {
+                                    "_text": "4",
+                                    "Value": "0x8029"
+                                },
+                                {
+                                    "_text": "3",
+                                    "Value": "0x5C1D"
+                                },
+                                {
+                                    "_text": "2",
+                                    "Value": "0x4616"
+                                },
+                                {
+                                    "_text": "1",
+                                    "Value": "0x3263"
+                                },
+                                {
+                                    "_text": "0",
+                                    "Value": "0x2A5E"
+                                },
+                                {
+                                    "_text": "-3",
+                                    "Value": "0x1CE6"
+                                },
+                                {
+                                    "_text": "-5",
+                                    "Value": "0x1695"
+                                },
+                                {
+                                    "_text": "-6",
+                                    "Value": "0x1693"
+                                },
+                                {
+                                    "_text": "-9",
+                                    "Value": "0x0E8E"
+                                },
+                                {
+                                    "_text": "-10",
+                                    "Value": "0x00D2"
+                                },
+                                {
+                                    "_text": "-12",
+                                    "Value": "0x088A"
+                                },
+                                {
+                                    "_text": "-15",
+                                    "Value": "0x08CC"
+                                },
+                                {
+                                    "_text": "-18",
+                                    "Value": "0x00C9"
+                                },
+                                {
+                                    "_text": "-20",
+                                    "Value": "0x00C7"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "Min": "770",
+                        "Max": "930",
+                        "PaSettingTable": {
+                            "PaSetting": [
+                                {
+                                    "_text": "14",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x013F",
+                                    "Option": {
+                                        "_name": "vddr",
+                                        "$": "HIGH"
+                                    },
+                                    "Command": {
+                                        "_name": "CMD_PROP_RADIO_DIV_SETUP",
+                                        "OverrideField": {
+                                            "_name": "pRegOverride",
+                                            "Block": "override_patable_14dbm.json"
+                                        }
+                                    }
+                                },
+                                {
+                                    "_text": "12",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x00BE33"
+                                },
+                                {
+                                    "_text": "11",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x00945F"
+                                },
+                                {
+                                    "_text": "10",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x00404E"
+                                },
+                                {
+                                    "_text": "9",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0078A3"
+                                },
+                                {
+                                    "_text": "8",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x017065"
+                                },
+                                {
+                                    "_text": "7",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x01545C"
+                                },
+                                {
+                                    "_text": "6",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x014656"
+                                },
+                                {
+                                    "_text": "5",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x013851"
+                                },
+                                {
+                                    "_text": "4",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0166B1"
+                                },
+                                {
+                                    "_text": "3",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x024E6D"
+                                },
+                                {
+                                    "_text": "2",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x024665"
+                                },
+                                {
+                                    "_text": "1",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x01389B"
+                                },
+                                {
+                                    "_text": "0",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x013297"
+                                },
+                                {
+                                    "_text": "-1",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0146F2"
+                                },
+                                {
+                                    "_text": "-2",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x022AB6"
+                                },
+                                {
+                                    "_text": "-3",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0132E3"
+                                },
+                                {
+                                    "_text": "-4",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x012ADD"
+                                },
+                                {
+                                    "_text": "-5",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x021CA1"
+                                },
+                                {
+                                    "_text": "-6",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x021C9C"
+                                },
+                                {
+                                    "_text": "-7",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x011CD3"
+                                },
+                                {
+                                    "_text": "-8",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x030EB8"
+                                },
+                                {
+                                    "_text": "-9",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0216E7"
+                                },
+                                {
+                                    "_text": "-10",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0216E1"
+                                },
+                                {
+                                    "_text": "-11",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x020EDD"
+                                },
+                                {
+                                    "_text": "-12",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x020ED9"
+                                },
+                                {
+                                    "_text": "-13",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x020ED6"
+                                },
+                                {
+                                    "_text": "-14",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0308EF"
+                                },
+                                {
+                                    "_text": "-15",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0208D1"
+                                },
+                                {
+                                    "_text": "-16",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0208CF"
+                                },
+                                {
+                                    "_text": "-17",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0308DF"
+                                },
+                                {
+                                    "_text": "-18",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0308DB"
+                                },
+                                {
+                                    "_text": "-19",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0300D8"
+                                },
+                                {
+                                    "_text": "-20",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0300D5"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "_name": "CC1354P10-7x7-XD7793-XD24-PA24-20dBm-NO",
+                "FrequencyRange": [
+                    {
+                        "Min": "2360",
+                        "Max": "2510",
+                        "PaSettingTable": {
+                            "PaSetting": [
+                                {
+                                    "_text": "5",
+                                    "Value": "0x003F"
+                                },
+                                {
+                                    "_text": "4",
+                                    "Value": "0x8A2C"
+                                },
+                                {
+                                    "_text": "3",
+                                    "Value": "0x7420"
+                                },
+                                {
+                                    "_text": "2",
+                                    "Value": "0x6018"
+                                },
+                                {
+                                    "_text": "1",
+                                    "Value": "0x4665"
+                                },
+                                {
+                                    "_text": "0",
+                                    "Value": "0x385F"
+                                },
+                                {
+                                    "_text": "-3",
+                                    "Value": "0x2E55"
+                                },
+                                {
+                                    "_text": "-5",
+                                    "Value": "0x2095"
+                                },
+                                {
+                                    "_text": "-6",
+                                    "Value": "0x2093"
+                                },
+                                {
+                                    "_text": "-9",
+                                    "Value": "0x188E"
+                                },
+                                {
+                                    "_text": "-10",
+                                    "Value": "0x0ED3"
+                                },
+                                {
+                                    "_text": "-12",
+                                    "Value": "0x0ED0"
+                                },
+                                {
+                                    "_text": "-15",
+                                    "Value": "0x08CC"
+                                },
+                                {
+                                    "_text": "-18",
+                                    "Value": "0x08C9"
+                                },
+                                {
+                                    "_text": "-20",
+                                    "Value": "0x08C8"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "Min": "770",
+                        "Max": "930",
+                        "PaSettingTable": {
+                            "PaSetting": [
+                                {
+                                    "_text": "14",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x013F",
+                                    "Option": {
+                                        "_name": "vddr",
+                                        "$": "HIGH"
+                                    },
+                                    "Command": {
+                                        "_name": "CMD_PROP_RADIO_DIV_SETUP",
+                                        "OverrideField": {
+                                            "_name": "pRegOverride",
+                                            "Block": "override_patable_14dbm.json"
+                                        }
+                                    }
+                                },
+                                {
+                                    "_text": "12",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x00AE3F"
+                                },
+                                {
+                                    "_text": "11",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x00B066"
+                                },
+                                {
+                                    "_text": "10",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x005452"
+                                },
+                                {
+                                    "_text": "9",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x008EA8"
+                                },
+                                {
+                                    "_text": "8",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x00629C"
+                                },
+                                {
+                                    "_text": "7",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x015C5F"
+                                },
+                                {
+                                    "_text": "6",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x014E59"
+                                },
+                                {
+                                    "_text": "5",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x006AE8"
+                                },
+                                {
+                                    "_text": "4",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0152B7"
+                                },
+                                {
+                                    "_text": "3",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x015CAC"
+                                },
+                                {
+                                    "_text": "2",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x02466A"
+                                },
+                                {
+                                    "_text": "1",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x01389E"
+                                },
+                                {
+                                    "_text": "0",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x01329A"
+                                },
+                                {
+                                    "_text": "-1",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x012A96"
+                                },
+                                {
+                                    "_text": "-2",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x012493"
+                                },
+                                {
+                                    "_text": "-3",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0132E7"
+                                },
+                                {
+                                    "_text": "-4",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x012AE1"
+                                },
+                                {
+                                    "_text": "-5",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x021CA5"
+                                },
+                                {
+                                    "_text": "-6",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0216A0"
+                                },
+                                {
+                                    "_text": "-7",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x02169C"
+                                },
+                                {
+                                    "_text": "-8",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x020EF3"
+                                },
+                                {
+                                    "_text": "-9",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0308B6"
+                                },
+                                {
+                                    "_text": "-10",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0308AE"
+                                },
+                                {
+                                    "_text": "-11",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0208E0"
+                                },
+                                {
+                                    "_text": "-12",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0208DC"
+                                },
+                                {
+                                    "_text": "-13",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0208D9"
+                                },
+                                {
+                                    "_text": "-14",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0300F4"
+                                },
+                                {
+                                    "_text": "-15",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0300ED"
+                                },
+                                {
+                                    "_text": "-16",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0300E7"
+                                },
+                                {
+                                    "_text": "-17",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0300E2"
+                                },
+                                {
+                                    "_text": "-18",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0300DE"
+                                },
+                                {
+                                    "_text": "-19",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0300DB"
+                                },
+                                {
+                                    "_text": "-20",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0300D8"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "_name": "CC1354P10-7x7-XD7793-XD24-PA9093-20dBm-NO",
+                "FrequencyRange": [
+                    {
+                        "Min": "2360",
+                        "Max": "2510",
+                        "PaSettingTable": {
+                            "PaSetting": [
+                                {
+                                    "_text": "5",
+                                    "Value": "0x003F"
+                                },
+                                {
+                                    "_text": "4",
+                                    "Value": "0x8A2C"
+                                },
+                                {
+                                    "_text": "3",
+                                    "Value": "0x7420"
+                                },
+                                {
+                                    "_text": "2",
+                                    "Value": "0x6018"
+                                },
+                                {
+                                    "_text": "1",
+                                    "Value": "0x4665"
+                                },
+                                {
+                                    "_text": "0",
+                                    "Value": "0x385F"
+                                },
+                                {
+                                    "_text": "-3",
+                                    "Value": "0x2E55"
+                                },
+                                {
+                                    "_text": "-5",
+                                    "Value": "0x2095"
+                                },
+                                {
+                                    "_text": "-6",
+                                    "Value": "0x2093"
+                                },
+                                {
+                                    "_text": "-9",
+                                    "Value": "0x188E"
+                                },
+                                {
+                                    "_text": "-10",
+                                    "Value": "0x0ED3"
+                                },
+                                {
+                                    "_text": "-12",
+                                    "Value": "0x0ED0"
+                                },
+                                {
+                                    "_text": "-15",
+                                    "Value": "0x08CC"
+                                },
+                                {
+                                    "_text": "-18",
+                                    "Value": "0x08C9"
+                                },
+                                {
+                                    "_text": "-20",
+                                    "Value": "0x08C8"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "Min": "770",
+                        "Max": "930",
+                        "PaSettingTable": {
+                            "PaSetting": [
+                                {
+                                    "_text": "12",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x00AE3F"
+                                },
+                                {
+                                    "_text": "11",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x00B066"
+                                },
+                                {
+                                    "_text": "10",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x005452"
+                                },
+                                {
+                                    "_text": "9",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x008EA8"
+                                },
+                                {
+                                    "_text": "8",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x00629C"
+                                },
+                                {
+                                    "_text": "7",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x015C5F"
+                                },
+                                {
+                                    "_text": "6",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x014E59"
+                                },
+                                {
+                                    "_text": "5",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x006AE8"
+                                },
+                                {
+                                    "_text": "4",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0152B7"
+                                },
+                                {
+                                    "_text": "3",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x015CAC"
+                                },
+                                {
+                                    "_text": "2",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x02466A"
+                                },
+                                {
+                                    "_text": "1",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x01389E"
+                                },
+                                {
+                                    "_text": "0",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x01329A"
+                                },
+                                {
+                                    "_text": "-1",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x012A96"
+                                },
+                                {
+                                    "_text": "-2",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x012493"
+                                },
+                                {
+                                    "_text": "-3",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0132E7"
+                                },
+                                {
+                                    "_text": "-4",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x012AE1"
+                                },
+                                {
+                                    "_text": "-5",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x021CA5"
+                                },
+                                {
+                                    "_text": "-6",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0216A0"
+                                },
+                                {
+                                    "_text": "-7",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x02169C"
+                                },
+                                {
+                                    "_text": "-8",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x020EF3"
+                                },
+                                {
+                                    "_text": "-9",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0308B6"
+                                },
+                                {
+                                    "_text": "-10",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0308AE"
+                                },
+                                {
+                                    "_text": "-11",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0208E0"
+                                },
+                                {
+                                    "_text": "-12",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0208DC"
+                                },
+                                {
+                                    "_text": "-13",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0208D9"
+                                },
+                                {
+                                    "_text": "-14",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0300F4"
+                                },
+                                {
+                                    "_text": "-15",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0300ED"
+                                },
+                                {
+                                    "_text": "-16",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0300E7"
+                                },
+                                {
+                                    "_text": "-17",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0300E2"
+                                },
+                                {
+                                    "_text": "-18",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0300DE"
+                                },
+                                {
+                                    "_text": "-19",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0300DB"
+                                },
+                                {
+                                    "_text": "-20",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0300D8"
+                                }
+                            ]
+                        }
+                    }
+                ]
             },
             {
                 "_name": "CC1354P10-7x7-XD7793-XD24-PA24_20dBm",
@@ -1757,95 +3014,50 @@
             },
             {
                 "_name": "LP-CC1354P-8x8-XD7793-XD24-PA9093_20dBm",
-                "FrequencyRange": [
-                    {
-                        "Min": "2300",
-                        "Max": "2583",
-                        "PaSettingTable": {
-                            "PaSetting": [
-                                {
-                                    "_text": "20",
-                                    "Value": "0xFFFF",
-                                    "TxHighPa": "0x3F75F5"
-                                },
-                                {
-                                    "_text": "19",
-                                    "Value": "0xFFFF",
-                                    "TxHighPa": "0x3F61E2"
-                                },
-                                {
-                                    "_text": "18",
-                                    "Value": "0xFFFF",
-                                    "TxHighPa": "0x3047E0"
-                                },
-                                {
-                                    "_text": "17",
-                                    "Value": "0xFFFF",
-                                    "TxHighPa": "0x1B4FE5"
-                                },
-                                {
-                                    "_text": "16",
-                                    "Value": "0xFFFF",
-                                    "TxHighPa": "0x1B39DE"
-                                },
-                                {
-                                    "_text": "15",
-                                    "Value": "0xFFFF",
-                                    "TxHighPa": "0x1B2FDA"
-                                },
-                                {
-                                    "_text": "14",
-                                    "Value": "0xFFFF",
-                                    "TxHighPa": "0x1B27D6"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "Min": "770",
-                        "Max": "930",
-                        "PaSettingTable": {
-                            "PaSetting": [
-                                {
-                                    "_text": "20",
-                                    "Value": "0xFFFF",
-                                    "TxHighPa": "0x1B8ED2"
-                                },
-                                {
-                                    "_text": "19",
-                                    "Value": "0xFFFF",
-                                    "TxHighPa": "0x0448CF"
-                                },
-                                {
-                                    "_text": "18",
-                                    "Value": "0xFFFF",
-                                    "TxHighPa": "0x048022"
-                                },
-                                {
-                                    "_text": "17",
-                                    "Value": "0xFFFF",
-                                    "TxHighPa": "0x02661C"
-                                },
-                                {
-                                    "_text": "16",
-                                    "Value": "0xFFFF",
-                                    "TxHighPa": "0x005618"
-                                },
-                                {
-                                    "_text": "15",
-                                    "Value": "0xFFFF",
-                                    "TxHighPa": "0x004812"
-                                },
-                                {
-                                    "_text": "14",
-                                    "Value": "0xFFFF",
-                                    "TxSub1Pa": "0x013F",
-                                    "TxHighPa": "0x0380D"
-                                }
-                            ]
-                        }
+                "FrequencyRange": {
+                    "Min": "770",
+                    "Max": "930",
+                    "PaSettingTable": {
+                        "PaSetting": [
+                            {
+                                "_text": "20",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x1B8ED2"
+                            },
+                            {
+                                "_text": "19",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x0448CF"
+                            },
+                            {
+                                "_text": "18",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x048022"
+                            },
+                            {
+                                "_text": "17",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x02661C"
+                            },
+                            {
+                                "_text": "16",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x005618"
+                            },
+                            {
+                                "_text": "15",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x004812"
+                            },
+                            {
+                                "_text": "14",
+                                "Value": "0xFFFF",
+                                "TxSub1Pa": "0x013F",
+                                "TxHighPa": "0x0380D"
+                            }
+                        ]
                     }
-                ]
+                }
             },
             {
                 "_name": "CC2653P-7x7-XD24-PA24_20dBm",
@@ -1888,6 +3100,181 @@
                                 "_text": "14",
                                 "Value": "0xFFFF",
                                 "TxHighPa": "0x1B27D6"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "_name": "LP-EM-CC1354P10-6-NOSWITCH_10dBm",
+                "FrequencyRange": {
+                    "Min": "2360",
+                    "Max": "2510",
+                    "PaSettingTable": {
+                        "PaSetting": [
+                            {
+                                "_text": "10",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x104F66"
+                            },
+                            {
+                                "_text": "9",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x103F5F"
+                            },
+                            {
+                                "_text": "8",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x10335A"
+                            },
+                            {
+                                "_text": "7",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x14285F"
+                            },
+                            {
+                                "_text": "6",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x144F2A"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "_name": "LP-EM-CC1354P10-2-NOSWITCH_20dBm",
+                "FrequencyRange": {
+                    "Min": "2360",
+                    "Max": "2510",
+                    "PaSettingTable": {
+                        "PaSetting": [
+                            {
+                                "_text": "20",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x3F75F5"
+                            },
+                            {
+                                "_text": "19",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x3F61E2"
+                            },
+                            {
+                                "_text": "18",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x3047E0"
+                            },
+                            {
+                                "_text": "17",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x1B4FE5"
+                            },
+                            {
+                                "_text": "16",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x1B39DE"
+                            },
+                            {
+                                "_text": "15",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x1B2FDA"
+                            },
+                            {
+                                "_text": "14",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x1B27D6"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "_name": "CC1354P10-7x7-XD7793-XD24-PA24-20dBm-NO_20dBm",
+                "FrequencyRange": {
+                    "Min": "2360",
+                    "Max": "2510",
+                    "PaSettingTable": {
+                        "PaSetting": [
+                            {
+                                "_text": "20",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x3F75F5"
+                            },
+                            {
+                                "_text": "19",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x3F61E2"
+                            },
+                            {
+                                "_text": "18",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x3047E0"
+                            },
+                            {
+                                "_text": "17",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x1B4FE5"
+                            },
+                            {
+                                "_text": "16",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x1B39DE"
+                            },
+                            {
+                                "_text": "15",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x1B2FDA"
+                            },
+                            {
+                                "_text": "14",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x1B27D6"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "_name": "CC1354P10-7x7-XD7793-XD24-PA9093-20dBm-NO_20dBm",
+                "FrequencyRange": {
+                    "Min": "770",
+                    "Max": "930",
+                    "PaSettingTable": {
+                        "PaSetting": [
+                            {
+                                "_text": "20",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x1B8ED2"
+                            },
+                            {
+                                "_text": "19",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x0448CF"
+                            },
+                            {
+                                "_text": "18",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x048022"
+                            },
+                            {
+                                "_text": "17",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x02661C"
+                            },
+                            {
+                                "_text": "16",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x005618"
+                            },
+                            {
+                                "_text": "15",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x004812"
+                            },
+                            {
+                                "_text": "14",
+                                "Value": "0xFFFF",
+                                "TxSub1Pa": "0x013F",
+                                "TxHighPa": "0x0380D"
                             }
                         ]
                     }

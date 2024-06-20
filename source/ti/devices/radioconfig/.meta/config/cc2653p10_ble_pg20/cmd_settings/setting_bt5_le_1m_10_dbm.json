@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "BLE, 1 Mbps, LE 1M, 10 dBm (Release Candidate)",
-        "Description": "Bluetooth 5, LE 1M PHY (1 Msym\/s GFSK, 1 Mbps data rate) for the 2.4 GHz ISM band (Release Candidate).",
+        "Name": "BLE, 1 Mbps, LE 1M, 10 dBm",
+        "Description": "Bluetooth 5, LE 1M PHY (1 Msym\/s GFSK, 1 Mbps data rate) for the 2.4 GHz ISM band.",
         "Frequency": "2440",
         "Patch": {
             "Define": "RF_MODE_AUTO",
@@ -118,11 +118,6 @@
                             "Element32b": [
                                 {
                                     "_type": "ELEMENT",
-                                    "_comment": "Rx: Set DCDC settings drive strength and deadtime trim",
-                                    "$": "0x00C188C3"
-                                },
-                                {
-                                    "_type": "ELEMENT",
                                     "_comment": "Synth: Increase mid code calibration time to 5 us",
                                     "$": "0x00058683"
                                 },
@@ -216,93 +211,49 @@
                     },
                     {
                         "_name": "pRegOverride1Mbps",
-                        "Block": [
-                            {
-                                "_name": "override_ble5_setup_override_1mbps.json",
-                                "Element32b": [
-                                    {
-                                        "_type": "HW_REG_OVERRIDE",
-                                        "_comment": "Bluetooth 5: Set pilot tone length to 35 us",
-                                        "$": "0x5334,0x0690"
-                                    },
-                                    {
-                                        "_type": "ELEMENT",
-                                        "_comment": "Bluetooth 5: Compensate for modified pilot tone length",
-                                        "$": "0x018F02A3"
-                                    }
-                                ]
-                            },
-                            {
-                                "_name": "override_ble5_symbol_error_tracking.json",
-                                "Element32b": [
-                                    {
-                                        "_type": "HW_REG_OVERRIDE",
-                                        "_comment": "Symbol tracking: timing correction",
-                                        "$": "0x50D4,0x00F9"
-                                    },
-                                    {
-                                        "_type": "HW_REG_OVERRIDE",
-                                        "_comment": "Symbol tracking: reduce sample delay",
-                                        "$": "0x50E0,0x0087"
-                                    },
-                                    {
-                                        "_type": "HW_REG_OVERRIDE",
-                                        "_comment": "Symbol tracking: demodulation order",
-                                        "$": "0x50F8,0x0014"
-                                    }
-                                ]
-                            }
-                        ]
+                        "Block": {
+                            "_name": "override_ble5_setup_override_1mbps.json",
+                            "Element32b": [
+                                {
+                                    "_type": "HW_REG_OVERRIDE",
+                                    "_comment": "Bluetooth 5: Set pilot tone length to 35 us",
+                                    "$": "0x5334,0x0690"
+                                },
+                                {
+                                    "_type": "ELEMENT",
+                                    "_comment": "Bluetooth 5: Compensate for modified pilot tone length",
+                                    "$": "0x018F02A3"
+                                }
+                            ]
+                        }
                     },
                     {
                         "_name": "pRegOverride2Mbps",
-                        "Block": [
-                            {
-                                "_name": "override_ble5_setup_override_2mbps.json",
-                                "Element32b": [
-                                    {
-                                        "_type": "HW_REG_OVERRIDE",
-                                        "_comment": "Bluetooth 5: increase low gain AGC delay for 2 Mbps",
-                                        "$": "0x60A4,0x7D00"
-                                    },
-                                    {
-                                        "_type": "HW_REG_OVERRIDE",
-                                        "_comment": "Rx: increase AGC hysteresis (HIGH_GAIN=15, LOW_GAIN=11)",
-                                        "$": "0x6098,0x75FB"
-                                    },
-                                    {
-                                        "_type": "HW_REG_OVERRIDE",
-                                        "_comment": "Bluetooth 5: Set pilot tone length to 35 us",
-                                        "$": "0x5334,0x0690"
-                                    },
-                                    {
-                                        "_type": "ELEMENT",
-                                        "_comment": "Bluetooth 5: Compensate for modified pilot tone length",
-                                        "$": "0x012D02A3"
-                                    }
-                                ]
-                            },
-                            {
-                                "_name": "override_ble5_symbol_error_tracking.json",
-                                "Element32b": [
-                                    {
-                                        "_type": "HW_REG_OVERRIDE",
-                                        "_comment": "Symbol tracking: timing correction",
-                                        "$": "0x50D4,0x00F9"
-                                    },
-                                    {
-                                        "_type": "HW_REG_OVERRIDE",
-                                        "_comment": "Symbol tracking: reduce sample delay",
-                                        "$": "0x50E0,0x0087"
-                                    },
-                                    {
-                                        "_type": "HW_REG_OVERRIDE",
-                                        "_comment": "Symbol tracking: demodulation order",
-                                        "$": "0x50F8,0x0014"
-                                    }
-                                ]
-                            }
-                        ]
+                        "Block": {
+                            "_name": "override_ble5_setup_override_2mbps.json",
+                            "Element32b": [
+                                {
+                                    "_type": "HW_REG_OVERRIDE",
+                                    "_comment": "Bluetooth 5: increase low gain AGC delay for 2 Mbps",
+                                    "$": "0x60A4,0x7D00"
+                                },
+                                {
+                                    "_type": "HW_REG_OVERRIDE",
+                                    "_comment": "Rx: increase AGC hysteresis (HIGH_GAIN=15, LOW_GAIN=11)",
+                                    "$": "0x6098,0x75FB"
+                                },
+                                {
+                                    "_type": "HW_REG_OVERRIDE",
+                                    "_comment": "Bluetooth 5: Set pilot tone length to 35 us",
+                                    "$": "0x5334,0x0690"
+                                },
+                                {
+                                    "_type": "ELEMENT",
+                                    "_comment": "Bluetooth 5: Compensate for modified pilot tone length",
+                                    "$": "0x012D02A3"
+                                }
+                            ]
+                        }
                     },
                     {
                         "_name": "pRegOverrideCoded",

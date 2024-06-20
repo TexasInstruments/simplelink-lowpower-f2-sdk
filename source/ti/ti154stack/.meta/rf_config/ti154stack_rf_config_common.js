@@ -460,6 +460,14 @@ function getRFConfigHiddenState(inst, cfgName)
             isVisible = (inst.coexMode === "coexMode3Wire");
             break;
         }
+        case "customFreqBand":
+        case "customCh0Freq":
+        case "customChSpacing":
+        case "customChNum":
+        {
+            isVisible = false;
+            break;
+        }
         case "rfDesign":
         case "coexMode":
         default:
@@ -548,7 +556,7 @@ function getBoardPhySettings(inst)
     if(!_.isNil(inst))
     {
         // Filter out unapplicable phy settings based on current configuration
-        const phyLists = ["defaultPropPhyList", "defaultIEEEPhyList"];
+        const phyLists = ["defaultPropPhyList", "defaultIEEEPhyList", "customPhyList"];
         const phyTypes = ["phyType868", "phyType433", "phyType"];
 
         for(const phyList of phyLists)
@@ -617,9 +625,21 @@ function getPhySysConfigInfo(inst)
     const freqBand = getSafeFreqBand(inst);
     const freqSub1 = getSafeFreqSub1(inst);
     const rfPhySettings = getBoardPhySettings(inst);
-    let phy154Setting = null;
+    let phy154Setting;
 
-    if(freqBand === "freqBandSub1")
+    // If custom Phy is enabled use the Phy settings from phyCustom.js
+    if(inst != null && inst.customPhy && freqBand === "freqBandSub1")
+    {
+        phy154Setting = {};
+        phy154Setting.ID = "APIMAC_CUSTOM_PHY_ID",
+        phy154Setting.channelPage = "APIMAC_CHANNEL_PAGE_10",
+        phy154Setting.freqBand = inst.customFreqBand;
+        phy154Setting.chanStart = 0;
+        phy154Setting.chan0Freq = inst.customCh0Freq * 1000;
+        phy154Setting.chanSpacing = inst.customChSpacing;
+        phy154Setting.numChannels = inst.customChNum;
+    }
+    else if(freqBand === "freqBandSub1")
     {
         // Get proprietary Sub-1 GHz RF defaults for the device being used
         const propPhySettings = rfPhySettings.defaultPropPhyList;
@@ -643,6 +663,20 @@ function getPhySysConfigInfo(inst)
         // Only one phy type for 2.4GHz
         phy154Setting = ieeePhySettings[0].phy154Settings.phyIEEE;
     }
+
+    return(phy154Setting);
+}
+
+function getPhySysConfigInfoForCustomPhy(inst)
+{
+
+    const rfPhySettings = getBoardPhySettings(inst);
+    let phy154Setting = null;
+   
+    // Get proprietary Sub-1 GHz RF defaults for the device being used
+    const customPhySettings = rfPhySettings.customPhyList;
+
+    phy154Setting = customPhySettings[0].phy154Settings["freq"];
 
     return(phy154Setting);
 }
@@ -1015,6 +1049,25 @@ function getSafePhyType(inst)
     return(phyType);
 }
 
+// Get frequency options for custom PHY
+function getCustomFreqOptions(inst)
+{
+    let freqSub1Options;
+
+    if(Common.is433MHzDevice(inst))
+    {
+        freqSub1Options = [{name: "freq433", displayName: "433 - 434 MHz"}];
+    }
+    else
+    {
+        freqSub1Options = [{name: "freq915", displayName: "902 - 927 MHz"}];
+    }
+    freqSub1Options.push({name: "freq863", displayName: "863 - 869 MHz"});
+    freqSub1Options.push({name: "freq920", displayName: "920 - 927 MHz"});
+
+    return(freqSub1Options);
+}
+
 exports = {
     commonSlLr5KbpsSettings: commonSlLr5KbpsSettings,
     common2Gfsk50KbpsSettings: common2Gfsk50KbpsSettings,
@@ -1034,5 +1087,7 @@ exports = {
     getDefaultFreqSub1: getDefaultFreqSub1,
     getSafeFreqSub1: getSafeFreqSub1,
     getPhySysConfigInfo: getPhySysConfigInfo,
-    getDefaultPhyRegulation: getDefaultPhyRegulation
+    getDefaultPhyRegulation: getDefaultPhyRegulation,
+    getPhySysConfigInfoForCustomPhy: getPhySysConfigInfoForCustomPhy,
+    getCustomFreqOptions: getCustomFreqOptions,
 };

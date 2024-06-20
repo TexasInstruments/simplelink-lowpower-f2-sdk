@@ -167,6 +167,9 @@
 /*! Maximum parameter size for MAC PIB (as specified in 15.4 CoP interface guide) */
 #define MAX_PARAM_SIZE_MAC  16
 
+/*! Maximum buffer size for MAC PIB to support advanced features */
+#define MAX_PARAM_BUF_SIZE_MAC  256
+
 /*! Maximum parameter size for MAC PIB (see mac_security_pib.h) */
 #define MAX_PARAM_SIZE_SEC  (APIMAC_KEY_SOURCE_MAX_LEN*sizeof(uint8_t))
 
@@ -294,11 +297,11 @@ static uint8_t buildSecParam(uint8_t attr, Mt_mpb_t *pMpb);
  *****************************************************************************/
 extern ApiMac_status_t
 ApiMac_mlmeGetReqArrayLen(ApiMac_attribute_array_t attr,
-                          uint8_t* pVlaue, uint16_t* pLen);
+                          uint8_t* pValue, uint16_t* pLen);
 
 extern ApiMac_status_t
 ApiMac_mlmeGetFhReqArrayLen(ApiMac_FHAttribute_array_t attr,
-                            uint8_t* pVlaue, uint16_t* pLen);
+                            uint8_t* pValue, uint16_t* pLen);
 
 extern ApiMac_status_t
 ApiMac_mlmeGetSecurityReqArrayLen(ApiMac_securityAttribute_array_t attr,
@@ -941,7 +944,7 @@ static void macEnableFhReq(Mt_mpb_t *pMpb)
  */
 static void macGetReq(Mt_mpb_t *pMpb)
 {
-    uint16_t len = MAX_PARAM_SIZE_MAC;
+    uint16_t len = 0;
     uint8_t* pRsp;
     uint8_t status = ApiMac_status_lengthError;
 
@@ -955,9 +958,14 @@ static void macGetReq(Mt_mpb_t *pMpb)
         /* special case for beacon payload */
         if(ApiMac_attribute_beaconPayload == attr)
         {
-            /* get the length value first */
+            /* Get the correct length value */
             ApiMac_mlmeGetReqUint8(ApiMac_attribute_beaconPayloadLength,
                                    (uint8_t*)&len);
+        }
+        else
+        {
+            /* set our length to the maximum buffer size */
+            len = MAX_PARAM_BUF_SIZE_MAC;
         }
 
         if(len > 0)
@@ -968,6 +976,9 @@ static void macGetReq(Mt_mpb_t *pMpb)
             /* send get request */
             if(NULL != pRsp)
             {
+                /* Clear allocated memory */
+                memset(pRsp, 0, 1 + len);
+
                 if(ApiMac_attribute_beaconPayload == attr)
                 {
                   uint32_t pValue;

@@ -96,15 +96,19 @@ extern uint8_t switchToEDFE;
  *                                          Constants
  * ------------------------------------------------------------------------------------------------
  */
-#define PHY_MODE_STD            (1)
-#define PHY_MODE_GEN            (2)
+
+#define NUM_PHY_FSK_RATES       (5)
+#define PHY_MODE_UNDEF          (0)
+#define PHY_MODE_STD            (1) //not used in wi-sun
+#define PHY_MODE_GEN            (2) //not used in wi-sun
 #define PHY_MODE_FSK_50K        (1)
 #define PHY_MODE_FSK_100K       (2)
 #define PHY_MODE_FSK_150K       (3)
 #define PHY_MODE_FSK_200K       (4)
 #define PHY_MODE_FSK_300K       (5)
-#define PHY_MODE_SLR_5K         (6)
-#define PHY_MODE_UNDEF          (0)
+#define PHY_MODE_SLR_5K         (6) //not used in wi-sun
+
+extern uint32_t phyModeFSKdataRate[NUM_PHY_FSK_RATES];
 
 #define MAC_RSSI_NOT_MEASURED   (0x80)
 #define MAC_RSL_THERMAL_NOISE   (174)

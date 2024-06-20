@@ -827,7 +827,7 @@ void fetch_neighbor_details()
 {
     protocol_interface_info_entry_t *cur;
     cur = protocol_stack_interface_info_get(IF_6LoWPAN);
-    if(!cur)
+    if(!cur || !cur->mac_parameters || !cur->mac_parameters->mac_neighbor_table)
     {
         tr_debug("fetch_neighbor_details: NULL pointer");
         return;
@@ -846,9 +846,9 @@ void fetch_neighbor_details()
             //copy mac address
             memcpy(nbr_nodes_metrics[nbr_idx].mac_eui, cur->mac_parameters->mac_neighbor_table->neighbor_entry_buffer[i].mac64, sizeof(sAddrExt_t));
 
-            //fetch and copy rssi_in rssi_out
-            nbr_nodes_metrics[nbr_idx].rssi_in = cur->ws_info->neighbor_storage.neigh_info_list[i].rsl_in;
-            nbr_nodes_metrics[nbr_idx].rssi_out = cur->ws_info->neighbor_storage.neigh_info_list[i].rsl_out;
+            //fetch and copy rssi_in rssi_out (Shift back the WS_RSL_SCALING amount)
+            nbr_nodes_metrics[nbr_idx].rssi_in = cur->ws_info->neighbor_storage.neigh_info_list[i].rsl_in >> WS_RSL_SCALING;
+            nbr_nodes_metrics[nbr_idx].rssi_out = cur->ws_info->neighbor_storage.neigh_info_list[i].rsl_out >> WS_RSL_SCALING;
 
             nbr_idx++;
 
@@ -1017,6 +1017,17 @@ int revoke_gtk_hwaddr(uint8_t *eui64)
 
     return 0;
 }
+
+uint16_t get_network_panid(void)
+{
+    protocol_interface_info_entry_t *cur;
+    cur = protocol_stack_interface_info_get(IF_6LoWPAN);
+    if (!cur || !cur->ws_info) {
+        return 0xFFFF;
+    }
+    return cur->ws_info->network_pan_id;
+}
+
 
 #endif //WISUN_NCP_ENABLE
 

@@ -80,6 +80,7 @@
 #include "hal_types.h"
 #include "rf_mac_api.h"
 #include "mac_high_level.h"
+#include "mac_user_config.h"
 
 /* ------------------------------------------------------------------------------------------------
  *                                            Defines

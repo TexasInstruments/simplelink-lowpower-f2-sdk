@@ -31,6 +31,7 @@ typedef struct ti_wisun_config {
     uint16_t rapid_disconnect_detect_rn;
     uint8_t auth_type;
     uint8_t use_fixed_gtk_keys; // Only impacts DEFAULT_MBEDTLS_AUTH auth_type
+    uint8_t force_star_topology;
     uint8_t fixed_gtk_keys[4][16]; // Used with PRESHARED_KEY_AUTH/CUSTOM_EUI_AUTH or when use_fixed_gtk_keys is true with DEFAULT_MBEDTLS_AUTH
 } ti_wisun_config_t;
 
@@ -84,14 +85,12 @@ extern ti_wisun_config_t ti_wisun_config;
 #define WS_RPL_DIO_REDUNDANCY_AUTOMATIC 0
 
 #ifdef FEATURE_WISUN_SUPPORT
-#ifdef FEATURE_STAR_NETWORK_RANK
-#define WS_RPL_MIN_HOP_RANK_INCREASE 0xFFFE
-#else
 #define WS_RPL_MIN_HOP_RANK_INCREASE 128
-#endif
+#define WS_RPL_MIN_HOP_RANK_INCREASE_STAR 0xFFFE
 #define WS_RPL_MAX_HOP_RANK_INCREASE 0
 #else
 #define WS_RPL_MIN_HOP_RANK_INCREASE 196
+#define WS_RPL_MIN_HOP_RANK_INCREASE_STAR WS_RPL_MIN_HOP_RANK_INCREASE
 #define WS_RPL_MAX_HOP_RANK_INCREASE 2048
 #endif
 

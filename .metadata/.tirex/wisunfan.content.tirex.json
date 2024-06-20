@@ -9502,5 +9502,1885 @@
             "TI-RTOS7",
             "IAR Compiler"
         ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6base/README.html",
+        "resourceType": "categoryInfo",
+        "name": "wsms_ipv6base",
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_EM_CC1354P10_1_freertos_ticlang.projectspec",
+        "name": "wsms_ipv6base",
+        "description": "wsms_ipv6base",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6base",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec",
+        "name": "wsms_ipv6base",
+        "description": "wsms_ipv6base",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6base",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6base/README.html",
+        "resourceType": "categoryInfo",
+        "name": "wsms_ipv6base",
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1314R10"
+        ],
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_EM_CC1314R10_freertos_ticlang.projectspec",
+        "name": "wsms_ipv6base",
+        "description": "wsms_ipv6base",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6base",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1314R10"
+        ],
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_EM_CC1314R10_tirtos7_ticlang.projectspec",
+        "name": "wsms_ipv6base",
+        "description": "wsms_ipv6base",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6base",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_CC1312R7/wsms/wsms_ipv6base/README.html",
+        "resourceType": "categoryInfo",
+        "name": "wsms_ipv6base",
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312R7"
+        ],
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "location": "../../examples/rtos/LP_CC1312R7/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_CC1312R7_freertos_ticlang.projectspec",
+        "name": "wsms_ipv6base",
+        "description": "wsms_ipv6base",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6base",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312R7"
+        ],
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "location": "../../examples/rtos/LP_CC1312R7/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_CC1312R7_tirtos7_ticlang.projectspec",
+        "name": "wsms_ipv6base",
+        "description": "wsms_ipv6base",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6base",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6base/README.html",
+        "resourceType": "categoryInfo",
+        "name": "wsms_ipv6base",
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352P7"
+        ],
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "location": "../../examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_CC1352P7_1_freertos_ticlang.projectspec",
+        "name": "wsms_ipv6base",
+        "description": "wsms_ipv6base",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6base",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352P7"
+        ],
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "location": "../../examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_CC1352P7_1_tirtos7_ticlang.projectspec",
+        "name": "wsms_ipv6base",
+        "description": "wsms_ipv6base",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6base",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6base/README.html",
+        "resourceType": "categoryInfo",
+        "name": "wsms_ipv6base",
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_EM_CC1354P10_6_freertos_ticlang.projectspec",
+        "name": "wsms_ipv6base",
+        "description": "wsms_ipv6base",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6base",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec",
+        "name": "wsms_ipv6base",
+        "description": "wsms_ipv6base",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6base",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6base/freertos/iar/wsms_ipv6base_LP_EM_CC1354P10_1_freertos_iar.ipcf",
+        "name": "wsms_ipv6base",
+        "description": "wsms_ipv6base",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6base",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6base/tirtos7/iar/wsms_ipv6base_LP_EM_CC1354P10_1_tirtos7_iar.ipcf",
+        "name": "wsms_ipv6base",
+        "description": "wsms_ipv6base",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6base",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1314R10"
+        ],
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6base/freertos/iar/wsms_ipv6base_LP_EM_CC1314R10_freertos_iar.ipcf",
+        "name": "wsms_ipv6base",
+        "description": "wsms_ipv6base",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6base",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1314R10"
+        ],
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6base/tirtos7/iar/wsms_ipv6base_LP_EM_CC1314R10_tirtos7_iar.ipcf",
+        "name": "wsms_ipv6base",
+        "description": "wsms_ipv6base",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6base",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312R7"
+        ],
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "location": "../../examples/rtos/LP_CC1312R7/wsms/wsms_ipv6base/freertos/iar/wsms_ipv6base_LP_CC1312R7_freertos_iar.ipcf",
+        "name": "wsms_ipv6base",
+        "description": "wsms_ipv6base",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6base",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312R7"
+        ],
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "location": "../../examples/rtos/LP_CC1312R7/wsms/wsms_ipv6base/tirtos7/iar/wsms_ipv6base_LP_CC1312R7_tirtos7_iar.ipcf",
+        "name": "wsms_ipv6base",
+        "description": "wsms_ipv6base",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6base",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352P7"
+        ],
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "location": "../../examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6base/freertos/iar/wsms_ipv6base_LP_CC1352P7_1_freertos_iar.ipcf",
+        "name": "wsms_ipv6base",
+        "description": "wsms_ipv6base",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6base",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352P7"
+        ],
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "location": "../../examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6base/tirtos7/iar/wsms_ipv6base_LP_CC1352P7_1_tirtos7_iar.ipcf",
+        "name": "wsms_ipv6base",
+        "description": "wsms_ipv6base",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6base",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6base/freertos/iar/wsms_ipv6base_LP_EM_CC1354P10_6_freertos_iar.ipcf",
+        "name": "wsms_ipv6base",
+        "description": "wsms_ipv6base",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6base",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6base/tirtos7/iar/wsms_ipv6base_LP_EM_CC1354P10_6_tirtos7_iar.ipcf",
+        "name": "wsms_ipv6base",
+        "description": "wsms_ipv6base",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6base",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6node/README.html",
+        "resourceType": "categoryInfo",
+        "name": "wsms_ipv6node",
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_EM_CC1354P10_1_freertos_ticlang.projectspec",
+        "name": "wsms_ipv6node",
+        "description": "wsms_ipv6node",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6node",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec",
+        "name": "wsms_ipv6node",
+        "description": "wsms_ipv6node",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6node",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6node/README.html",
+        "resourceType": "categoryInfo",
+        "name": "wsms_ipv6node",
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1314R10"
+        ],
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_EM_CC1314R10_freertos_ticlang.projectspec",
+        "name": "wsms_ipv6node",
+        "description": "wsms_ipv6node",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6node",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1314R10"
+        ],
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_EM_CC1314R10_tirtos7_ticlang.projectspec",
+        "name": "wsms_ipv6node",
+        "description": "wsms_ipv6node",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6node",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_CC1312R7/wsms/wsms_ipv6node/README.html",
+        "resourceType": "categoryInfo",
+        "name": "wsms_ipv6node",
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312R7"
+        ],
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "location": "../../examples/rtos/LP_CC1312R7/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_CC1312R7_freertos_ticlang.projectspec",
+        "name": "wsms_ipv6node",
+        "description": "wsms_ipv6node",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6node",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312R7"
+        ],
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "location": "../../examples/rtos/LP_CC1312R7/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_CC1312R7_tirtos7_ticlang.projectspec",
+        "name": "wsms_ipv6node",
+        "description": "wsms_ipv6node",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6node",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6node/README.html",
+        "resourceType": "categoryInfo",
+        "name": "wsms_ipv6node",
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352P7"
+        ],
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "location": "../../examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_CC1352P7_1_freertos_ticlang.projectspec",
+        "name": "wsms_ipv6node",
+        "description": "wsms_ipv6node",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6node",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352P7"
+        ],
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "location": "../../examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_CC1352P7_1_tirtos7_ticlang.projectspec",
+        "name": "wsms_ipv6node",
+        "description": "wsms_ipv6node",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6node",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6node/README.html",
+        "resourceType": "categoryInfo",
+        "name": "wsms_ipv6node",
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_EM_CC1354P10_6_freertos_ticlang.projectspec",
+        "name": "wsms_ipv6node",
+        "description": "wsms_ipv6node",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6node",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec",
+        "name": "wsms_ipv6node",
+        "description": "wsms_ipv6node",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6node",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6node/freertos/iar/wsms_ipv6node_LP_EM_CC1354P10_1_freertos_iar.ipcf",
+        "name": "wsms_ipv6node",
+        "description": "wsms_ipv6node",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6node",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6node/tirtos7/iar/wsms_ipv6node_LP_EM_CC1354P10_1_tirtos7_iar.ipcf",
+        "name": "wsms_ipv6node",
+        "description": "wsms_ipv6node",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6node",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1314R10"
+        ],
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6node/freertos/iar/wsms_ipv6node_LP_EM_CC1314R10_freertos_iar.ipcf",
+        "name": "wsms_ipv6node",
+        "description": "wsms_ipv6node",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6node",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1314R10"
+        ],
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6node/tirtos7/iar/wsms_ipv6node_LP_EM_CC1314R10_tirtos7_iar.ipcf",
+        "name": "wsms_ipv6node",
+        "description": "wsms_ipv6node",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6node",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312R7"
+        ],
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "location": "../../examples/rtos/LP_CC1312R7/wsms/wsms_ipv6node/freertos/iar/wsms_ipv6node_LP_CC1312R7_freertos_iar.ipcf",
+        "name": "wsms_ipv6node",
+        "description": "wsms_ipv6node",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6node",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312R7"
+        ],
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "location": "../../examples/rtos/LP_CC1312R7/wsms/wsms_ipv6node/tirtos7/iar/wsms_ipv6node_LP_CC1312R7_tirtos7_iar.ipcf",
+        "name": "wsms_ipv6node",
+        "description": "wsms_ipv6node",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6node",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352P7"
+        ],
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "location": "../../examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6node/freertos/iar/wsms_ipv6node_LP_CC1352P7_1_freertos_iar.ipcf",
+        "name": "wsms_ipv6node",
+        "description": "wsms_ipv6node",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6node",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352P7"
+        ],
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "location": "../../examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6node/tirtos7/iar/wsms_ipv6node_LP_CC1352P7_1_tirtos7_iar.ipcf",
+        "name": "wsms_ipv6node",
+        "description": "wsms_ipv6node",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6node",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6node/freertos/iar/wsms_ipv6node_LP_EM_CC1354P10_6_freertos_iar.ipcf",
+        "name": "wsms_ipv6node",
+        "description": "wsms_ipv6node",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6node",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6node/tirtos7/iar/wsms_ipv6node_LP_EM_CC1354P10_6_tirtos7_iar.ipcf",
+        "name": "wsms_ipv6node",
+        "description": "wsms_ipv6node",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "wsms",
+            "wsms_ipv6node",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
     }
 ]

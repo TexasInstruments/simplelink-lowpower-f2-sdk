@@ -1,0 +1,15 @@
+[
+    {
+        "files": [
+            "+../../../../../../../source/ti/boards/LP_EM_CC1314R10/Board.html -> Board.html",
+            "+cc13x4_cc26x4_freertos_ns.icf -> cc13x4_cc26x4_freertos_ns.icf",
+            "+../main_freertos.c -> main_freertos.c",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../README.md -> README.md",
+            "+../../rfPacketRx.c -> rfPacketRx.c",
+            "+../rfPacketRx.syscfg -> rfPacketRx.syscfg",
+            "+../../RFQueue.c -> RFQueue.c",
+            "+../../RFQueue.h -> RFQueue.h"
+        ]
+    }
+]

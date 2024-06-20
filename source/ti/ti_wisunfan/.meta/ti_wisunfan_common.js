@@ -253,13 +253,15 @@ function isPositiveInteger(value)
  *  @param min        - minimum value allowed
  *  @param max        - maximum value allowed
  *  @param transform  - function to transform value to hex/decimal
+ *  @param integer    - config expected to be an integer
  *  @returns Boolean  - true if value does not fall within range
  */
-function validateRange(inst, validation, cfgName, min, max, transForm)
+function validateRange(inst, validation, cfgName, min, max, transForm,
+    integer = true)
 {
     const value = inst[cfgName];
 
-    if(!isPositiveInteger(value))
+    if((integer === true) && (!isPositiveInteger(value)))
     {
         validation.logError("Must be a whole number", inst, cfgName);
     }
@@ -270,7 +272,7 @@ function validateRange(inst, validation, cfgName, min, max, transForm)
             + `${transForm(max)}`, inst, cfgName);
     }
 
-    return((value < min) || (value > max));
+    return(!((value < min) || (value > max)));
 }
 
 /*!
@@ -283,10 +285,11 @@ function validateRange(inst, validation, cfgName, min, max, transForm)
  *  @param cfgName    - name of config to be validated
  *  @param min        - minimum value allowed
  *  @param max        - maximum value allowed
+ *  @returns Boolean  - false if value does not fall within range
  */
 function validateRangeHex(inst, validation, cfgName, min, max)
 {
-    validateRange(inst, validation, cfgName, min, max, toHexString);
+    return(validateRange(inst, validation, cfgName, min, max, toHexString));
 }
 
 /*!
@@ -299,10 +302,28 @@ function validateRangeHex(inst, validation, cfgName, min, max)
  *  @param cfgName    - name of config to be validated
  *  @param min        - minimum value allowed
  *  @param max        - maximum value allowed
+ *  @returns Boolean  - false if value does not fall within range
  */
 function validateRangeInt(inst, validation, cfgName, min, max)
 {
-    validateRange(inst, validation, cfgName, min, max, Number);
+    return(validateRange(inst, validation, cfgName, min, max, Number));
+}
+
+/*!
+ *  ======== validateRangeDecimal ========
+ *  Validates the value of config is within range passed and prints error
+ *  message, if any, with decimal values
+ *
+ *  @param inst       - module instance containing the config to be validated
+ *  @param validation - object to hold detected validation issues
+ *  @param cfgName    - name of config to be validated
+ *  @param min        - minimum value allowed
+ *  @param max        - maximum value allowed
+ *  @returns Boolean  - false if value does not fall within range
+ */
+function validateRangeDecimal(inst, validation, cfgName, min, max)
+{
+    return(validateRange(inst, validation, cfgName, min, max, Number, false));
 }
 
 /*!
@@ -322,7 +343,8 @@ function validateDynamicEnum(inst, validation, cfgName, validOpts)
 
     if(inst !== null && validation !== null && !found)
     {
-        validation.logError("Selected option is invalid", inst, cfgName);
+        validation.logError("Previous option is not supported by the current "
+            + "configuration. Please re-select option", inst, cfgName);
     }
 
     return(found);
@@ -377,13 +399,18 @@ function validateDynamicMultiEnum(inst, validation, cfgName, selectedOpt,
 function getSafeDynamicConfig(inst, cfgName, defaultValue, validOptions)
 {
     // Access instance value
-    let safeConfig = inst[cfgName];
-
-    // Verify config value without raising GUI error (handled in validate())
-    const valid = validateDynamicEnum(inst, null, cfgName, validOptions);
-    if(!valid)
+    let safeConfig = defaultValue;
+    if(!_.isNil(inst))
     {
-        safeConfig = defaultValue;
+        // Access instance value
+        safeConfig = inst[cfgName];
+
+        // Verify config value without raising GUI error (handled in validate())
+        const valid = validateDynamicEnum(inst, null, cfgName, validOptions);
+        if(!valid)
+        {
+            safeConfig = defaultValue;
+        }
     }
 
     return(safeConfig);
@@ -494,6 +521,36 @@ function restoreDefaultValue(inst, _cfg, cfgName)
     }
 }
 
+/*
+ * ======== findAllConfigs ========
+ * Finds and returns a list of all configurables within array
+ *
+ * @param configArray - A module's configurable arrays
+ * @returns - list of names of all configurable objects within array
+ */
+function findAllConfigs(configArray)
+{
+    let element = null;
+    let allConfigs = [];
+
+    for(element of configArray)
+    {
+        // If the element contains a group, need to search it's configurables
+        if("config" in element)
+        {
+            // Recursively search the sub-groups config array
+            allConfigs = allConfigs.concat(findAllConfigs(element.config));
+        }
+        else if(element.name !== undefined)
+        {
+            // Add to list if the current element is a configurable
+            allConfigs.push(element.name);
+        }
+    }
+
+    return(allConfigs);
+}
+
 exports = {
     isSub1GHzDevice: isSub1GHzDevice,
     is433MHzDevice: is433MHzDevice,
@@ -504,10 +561,12 @@ exports = {
     toHexString: toHexString,
     validateRangeHex: validateRangeHex,
     validateRangeInt: validateRangeInt,
+    validateRangeDecimal: validateRangeDecimal,
     validateDynamicEnum: validateDynamicEnum,
     validateDynamicMultiEnum: validateDynamicMultiEnum,
     channelMaskCHexStrArr: channelMaskCHexStrArr,
     findConfig: findConfig,
+    findAllConfigs: findAllConfigs,
     restoreDefaultValue: restoreDefaultValue,
     getSafeDynamicConfig: getSafeDynamicConfig
 };
