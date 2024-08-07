@@ -8,7 +8,7 @@
  Target Device: cc13xx_cc26xx
 
  ******************************************************************************
- 
+
  Copyright (c) 2015-2024, Texas Instruments Incorporated
  All rights reserved.
 
@@ -40,8 +40,8 @@
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  ******************************************************************************
- 
- 
+
+
  *****************************************************************************/
 
 /* -----------------------------------------------------------------------------
@@ -116,6 +116,11 @@ static const ExtFlashInfo_t flashInfo[] =
         .deviceSize = 0x100000  // 1 MByte (8 Mbit)
     },
     {
+        .manfId = 0x1F,         // Renesas AT25SF321B
+        .devId = 0x15,
+        .deviceSize = 0x400000  // 4 MByte (32 Mbit)
+    },
+    {
         .manfId = 0xEF,         // WinBond W25X40CL
         .devId = 0x12,
         .deviceSize = 0x080000  // 512 KByte (4 Mbit)
@@ -124,6 +129,11 @@ static const ExtFlashInfo_t flashInfo[] =
         .manfId = 0xEF,         // WinBond W25X20CL
         .devId = 0x11,
         .deviceSize = 0x040000  // 256 KByte (2 Mbit)
+    },
+    {
+        .manfId = 0x0B,         // XTX XT25F32
+        .devId = 0x15,
+        .deviceSize = 0x400000  // 4 MByte (32 Mbit)
     },
     {
         .manfId = 0x0,
@@ -160,7 +170,7 @@ static int extFlashWaitPowerDown(void);
 */
 static void extFlashSelect(void)
 {
-#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)    
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
     GPIO_clearDio(BSP_IOID_FLASH_CS);
 #else
     bspGpioWrite(BSP_IOID_FLASH_CS, 0);
@@ -178,7 +188,7 @@ static void extFlashSelect(void)
 */
 static void extFlashDeselect(void)
 {
-#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)    
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
     GPIO_setDio(BSP_IOID_FLASH_CS);
 #else
     bspGpioWrite(BSP_IOID_FLASH_CS, 1);
@@ -397,7 +407,7 @@ bool extFlashOpen(void)
     bspSpiOpen(SPI_BIT_RATE, BSP_SPI_CLK_FLASH);
 
     /* GPIO pin configuration */
-#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)    
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
     IOCPinTypeGpioOutput(BSP_IOID_FLASH_CS);
 #else
     bspGpioSetConfig(BSP_IOID_FLASH_CS, SPI_CS_STD_OUT);
