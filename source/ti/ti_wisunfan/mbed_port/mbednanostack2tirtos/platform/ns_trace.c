@@ -8,7 +8,7 @@
  Target Device: cc13xx_cc26xx
 
  ******************************************************************************
- 
+
  Copyright (c) 2011-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
@@ -66,8 +66,8 @@
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  ******************************************************************************
- 
- 
+
+
  *****************************************************************************/
 
 #include <ti/drivers/dpl/SystemP.h>
@@ -256,7 +256,7 @@ void ns_trace_vprintf(uint8_t dlevel, const char *grp, const char *fmt, va_list 
             len_written = SystemP_snprintf(ns_buf, sizeof(ns_buf), "%s[ERR ][%-4s]: ", VT100_COLOR_ERROR, grp);
             break;
         case (TRACE_LEVEL_WARN):
-            len_written = SystemP_snprintf(ns_buf, sizeof(ns_buf), "%s[ERR ][%-4s]: ", VT100_COLOR_WARN, grp);
+            len_written = SystemP_snprintf(ns_buf, sizeof(ns_buf), "%s[WRN ][%-4s]: ", VT100_COLOR_WARN, grp);
             break;
         case (TRACE_LEVEL_INFO):
             len_written = SystemP_snprintf(ns_buf, sizeof(ns_buf), "%s[INFO][%-4s]: ", VT100_COLOR_INFO, grp);
