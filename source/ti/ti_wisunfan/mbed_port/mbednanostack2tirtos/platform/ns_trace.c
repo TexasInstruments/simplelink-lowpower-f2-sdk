@@ -265,7 +265,7 @@ void ns_trace_vprintf(uint8_t dlevel, const char *grp, const char *fmt, va_list 
             len_written = SystemP_snprintf(ns_buf, sizeof(ns_buf), "%s[DBG ][%-4s]: ", VT100_COLOR_DEBUG, grp);
             break;
         default:
-            len_written = SystemP_snprintf(ns_buf, sizeof(ns_buf), "                ", grp);
+            len_written = SystemP_snprintf(ns_buf, sizeof(ns_buf), "                ");
             break;
     }
     total_len += len_written;
