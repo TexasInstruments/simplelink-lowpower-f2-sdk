@@ -96,7 +96,7 @@ static volatile uint32 mrdyPktStamp = 0;
 static uint32 txPktCount = 0;
 
 //! \brief NPI Transport Layer receive buffer
-static Char npiRxBuf[NPI_TL_BUF_SIZE];
+static uint8_t npiRxBuf[NPI_TL_BUF_SIZE];
 
 //! \brief Index to last byte written into NPI Transport Layer receive buffer
 static uint16_t npiRxBufTail = 0;
@@ -105,7 +105,7 @@ static uint16_t npiRxBufTail = 0;
 static uint16_t npiRxBufHead = 0;
 
 //! \brief NPI Transport Layer transmit buffer
-static Char npiTxBuf[NPI_TL_BUF_SIZE];
+static uint8_t npiTxBuf[NPI_TL_BUF_SIZE];
 
 //! \brief Number of bytes in NPI Transport Layer transmit buffer
 static uint16_t npiTxBufLen = 0;
