@@ -153,7 +153,7 @@ typedef struct
     /*! Index of uart in UART_config[] */
     unsigned int uartIdx;
     /*! Baud rate for uart */
-    unsigned int baudRate;
+    uint32_t baudRate;
     /*! Timeout for acquiring semaphore */
     unsigned int mutexTimeout;
     /*! Buffer for formatting messages */
