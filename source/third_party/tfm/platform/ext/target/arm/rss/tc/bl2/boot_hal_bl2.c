@@ -111,6 +111,8 @@ int boot_platform_pre_load(uint32_t image_id)
         flash_map_slot_from_flash_area_id(FLASH_AREA_IMAGE_SECONDARY(image_id));
     int rc;
 
+    kmu_random_delay(&KMU_DEV_S, KMU_DELAY_LIMIT_32_CYCLES);
+
     if (flash_area_primary == NULL || flash_area_secondary == NULL) {
         return 1;
     }
@@ -163,7 +165,7 @@ int boot_platform_post_load(uint32_t image_id)
 #endif /* RSS_XIP */
 
     if (image_id == RSS_BL2_IMAGE_SCP) {
-        memset(HOST_BOOT_IMAGE1_LOAD_BASE_S, 0, HOST_IMAGE_HEADER_SIZE);
+        memset((void *)HOST_BOOT_IMAGE1_LOAD_BASE_S, 0, HOST_IMAGE_HEADER_SIZE);
         uint32_t channel_stat = 0;
         struct rss_sysctrl_t *sysctrl =
                                      (struct rss_sysctrl_t *)RSS_SYSCTRL_BASE_S;
@@ -179,7 +181,7 @@ int boot_platform_post_load(uint32_t image_id)
         BOOT_LOG_INF("Got SCP BL1 started event");
 
     } else if (image_id == RSS_BL2_IMAGE_AP) {
-        memset(HOST_BOOT_IMAGE0_LOAD_BASE_S, 0, HOST_IMAGE_HEADER_SIZE);
+        memset((void *)HOST_BOOT_IMAGE0_LOAD_BASE_S, 0, HOST_IMAGE_HEADER_SIZE);
         BOOT_LOG_INF("Telling SCP to start AP cores");
         mhu_v2_x_initiate_transfer(&MHU_RSS_TO_SCP_DEV);
         /* Slot 0 is used in the SCP protocol */
@@ -244,6 +246,8 @@ void boot_platform_quit(struct boot_arm_vector_table *vt)
         while(1){}
     }
 #endif /* FLASH_DEV_NAME_SCRATCH */
+
+    kmu_random_delay(&KMU_DEV_S, KMU_DELAY_LIMIT_32_CYCLES);
 
 #if defined(__ARM_ARCH_8M_MAIN__) || defined(__ARM_ARCH_8M_BASE__) \
  || defined(__ARM_ARCH_8_1M_MAIN__)

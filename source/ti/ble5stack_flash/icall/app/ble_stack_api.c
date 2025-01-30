@@ -9,7 +9,7 @@ Target Device: cc13xx_cc26xx
 
 ******************************************************************************
 
- Copyright (c) 2013-2024, Texas Instruments Incorporated
+ Copyright (c) 2013-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -224,6 +224,7 @@ bStatus_t bleStack_initGapBond(gapBondParams_t *pGapBondParams, void *bleApp_bon
   return SUCCESS;
 }
 
+#if defined( HOST_CONFIG ) && ( HOST_CONFIG & ( PERIPHERAL_CFG | CENTRAL_CFG ) )
 /*********************************************************************
  * @fn      bleStack_initGatt
  *
@@ -299,6 +300,7 @@ bStatus_t bleStack_initGatt(uint8_t role, ICall_EntityID appSelfEntity, uint8_t 
 
   return status;
 }
+#endif // ( CENTRAL_CFG | PERIPHERAL_CFG )
 
 /*********************************************************************
  * @fn      bleStk_initAdvSet

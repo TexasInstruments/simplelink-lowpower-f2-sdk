@@ -53,5 +53,5 @@ target_link_libraries(platform_s
 
 # Export header file shared with non-secure side
 install(FILES       tfm_openamp_lib.h
-        DESTINATION ${TFM_INSTALL_PATH}/interface/include
+        DESTINATION ${INSTALL_INTERFACE_INC_DIR}
 )

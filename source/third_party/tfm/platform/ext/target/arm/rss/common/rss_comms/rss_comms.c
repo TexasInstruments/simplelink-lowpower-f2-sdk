@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2023 Cypress Semiconductor Corporation (an Infineon company)
+ * or an affiliate of Cypress Semiconductor Corporation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -25,55 +27,57 @@ static psa_status_t message_dispatch(struct client_request_t *req)
     enum tfm_plat_err_t plat_err;
 
     /* Create the call parameters */
-    struct client_call_params_t spm_params = {
-        .handle = req->handle,
-        .type = req->type,
-        .in_vec = req->in_vec,
-        .in_len = req->in_len,
-        .out_vec = req->out_vec,
-        .out_len = req->out_len,
+    struct client_params_t params = {
+        .ns_client_id_stateless = -((int32_t)req->client_id),
+        .p_invecs = req->in_vec,
+        .p_outvecs = req->out_vec,
     };
 
     SPMLOG_DBGMSG("[RSS-COMMS] Dispatching message\r\n");
-    SPMLOG_DBGMSGVAL("handle=", spm_params.handle);
-    SPMLOG_DBGMSGVAL("type=", spm_params.type);
-    SPMLOG_DBGMSGVAL("in_len=", spm_params.in_len);
-    SPMLOG_DBGMSGVAL("out_len=", spm_params.out_len);
-    if (spm_params.in_len > 0) {
-        SPMLOG_DBGMSGVAL("in_vec[0].len=", spm_params.in_vec[0].len);
+    SPMLOG_DBGMSGVAL("handle=", req->handle);
+    SPMLOG_DBGMSGVAL("type=", req->type);
+    SPMLOG_DBGMSGVAL("in_len=", req->in_len);
+    SPMLOG_DBGMSGVAL("out_len=", req->out_len);
+    if (req->in_len > 0) {
+        SPMLOG_DBGMSGVAL("in_vec[0].len=", req->in_vec[0].len);
     }
-    if (spm_params.in_len > 1) {
-        SPMLOG_DBGMSGVAL("in_vec[1].len=", spm_params.in_vec[1].len);
+    if (req->in_len > 1) {
+        SPMLOG_DBGMSGVAL("in_vec[1].len=", req->in_vec[1].len);
     }
-    if (spm_params.in_len > 2) {
-        SPMLOG_DBGMSGVAL("in_vec[2].len=", spm_params.in_vec[2].len);
+    if (req->in_len > 2) {
+        SPMLOG_DBGMSGVAL("in_vec[2].len=", req->in_vec[2].len);
     }
-    if (spm_params.in_len > 3) {
-        SPMLOG_DBGMSGVAL("in_vec[3].len=", spm_params.in_vec[3].len);
+    if (req->in_len > 3) {
+        SPMLOG_DBGMSGVAL("in_vec[3].len=", req->in_vec[3].len);
     }
-    if (spm_params.out_len > 0) {
-        SPMLOG_DBGMSGVAL("out_vec[0].len=", spm_params.out_vec[0].len);
+    if (req->out_len > 0) {
+        SPMLOG_DBGMSGVAL("out_vec[0].len=", req->out_vec[0].len);
     }
-    if (spm_params.out_len > 1) {
-        SPMLOG_DBGMSGVAL("out_vec[1].len=", spm_params.out_vec[1].len);
+    if (req->out_len > 1) {
+        SPMLOG_DBGMSGVAL("out_vec[1].len=", req->out_vec[1].len);
     }
-    if (spm_params.out_len > 2) {
-        SPMLOG_DBGMSGVAL("out_vec[2].len=", spm_params.out_vec[2].len);
+    if (req->out_len > 2) {
+        SPMLOG_DBGMSGVAL("out_vec[2].len=", req->out_vec[2].len);
     }
-    if (spm_params.out_len > 3) {
-        SPMLOG_DBGMSGVAL("out_vec[3].len=", spm_params.out_vec[3].len);
+    if (req->out_len > 3) {
+        SPMLOG_DBGMSGVAL("out_vec[3].len=", req->out_vec[3].len);
     }
 
-    plat_err = comms_permissions_service_check(spm_params.handle,
-                                               spm_params.in_vec,
-                                               spm_params.in_len,
-                                               spm_params.type);
+    plat_err = comms_permissions_service_check(req->handle,
+                                               req->in_vec,
+                                               req->in_len,
+                                               req->type);
     if (plat_err != TFM_PLAT_ERR_SUCCESS) {
         SPMLOG_ERRMSG("[RSS-COMMS] Call not permitted\r\n");
         return PSA_ERROR_NOT_PERMITTED;
     }
 
-    return tfm_rpc_psa_call(&spm_params);
+    return tfm_rpc_psa_call(req->handle,
+                            PARAM_PACK(req->type,
+                                       req->in_len,
+                                       req->out_len),
+                            &params,
+                            NULL);
 }
 
 static void rss_comms_reply(const void *owner, int32_t ret)
@@ -109,10 +113,22 @@ static void rss_comms_handle_req(void)
         /* Deliver PSA Client call request to handler in SPM. */
         req_to_process = queue_entry;
         status = message_dispatch(req_to_process);
+#if CONFIG_TFM_SPM_BACKEND_IPC == 1
+        /*
+         * If status == PSA_SUCCESS, peer will be replied when mailbox agent
+         * partition receives a 'ASYNC_MSG_REPLY' signal from the requested
+         * service partition.
+         * If status != PSA_SUCCESS, the service call has been finished.
+         * Reply to the peer directly.
+         */
         if (status != PSA_SUCCESS) {
             SPMLOG_DBGMSGVAL("[RSS-COMMS] Message dispatch failed: ", status);
             rss_comms_reply(req_to_process, status);
         }
+#else
+        /* In SFN model, the service call has been finished. Reply to the peer directly. */
+        rss_comms_reply(req_to_process, status);
+#endif
     }
 }
 

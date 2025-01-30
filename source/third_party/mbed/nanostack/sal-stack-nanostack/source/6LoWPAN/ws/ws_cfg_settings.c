@@ -49,12 +49,9 @@
 #define TRICKLE_IMIN_60_SECS 60
 #define TRICKLE_IMIN_30_SECS 30
 #define TRICKLE_IMIN_15_SECS 15
-
+#define TRICKLE_IMIN_12_SECS 12
 #define TRICKLE_IMIN_6_SECS 6
 #define TRICKLE_IMIN_3_SECS 3
-
-#define TRICKLE_IMIN_6_SECS 6
-#define TRICKLE_IMIN_12_SECS 12
 
 // Wisun configuration storage
 ws_cfg_t ws_cfg;
@@ -364,7 +361,9 @@ static uint8_t ws_cfg_config_get_by_size(protocol_interface_info_entry_t *cur, u
     }
     uint32_t data_rate = ws_common_datarate_get_from_phy_mode(phy_cfg.phy_mode_id, phy_cfg.operating_mode);
 
-    uint8_t index;
+    uint8_t index = 0;
+    /*
+     * Disable data rate based configuration due to order in which data rate is populated
     if (data_rate < 150000) {
         index = 0;
     } else if (data_rate < 300000) {
@@ -374,6 +373,7 @@ static uint8_t ws_cfg_config_get_by_size(protocol_interface_info_entry_t *cur, u
     } else {
         index = 3;
     }
+    */
 
     if (network_size == NETWORK_SIZE_CERTIFICATE) {
         return CONFIG_CERTIFICATE;
@@ -450,177 +450,163 @@ cfg_network_size_type_e ws_cfg_network_config_get(protocol_interface_info_entry_
 
 static void ws_cfg_network_size_config_set_small(ws_cfg_nw_size_t *cfg)
 {
-    // Configure the Wi-SUN parent configuration
-    cfg->gen.rpl_parent_candidate_max = WS_RPL_PARENT_CANDIDATE_MAX;
-    cfg->gen.rpl_selected_parent_max = WS_RPL_SELECTED_PARENT_MAX;
+    if (ti_wisun_config.network_size_config == CONFIG_NETWORK_SIZE_LARGE)
+    {
+        // Configure the Wi-SUN parent configuration
+        cfg->gen.rpl_parent_candidate_max = WS_RPL_PARENT_CANDIDATE_MAX;
+        cfg->gen.rpl_selected_parent_max = WS_RPL_SELECTED_PARENT_MAX;
 
-    if(cfg_props.wisun_device_type == MESH_DEVICE_TYPE_WISUN_ROUTER)
-    {
-    // Configure the Wi-SUN timing trickle parameter
-    cfg->timing.disc_trickle_imin = TRICKLE_IMIN_12_SECS; //TRICKLE_IMIN_15_SECS;       // 15 seconds
-    //cfg->timing.disc_trickle_imax = TRICKLE_IMIN_60_SECS; //TRICKLE_IMIN_60_SECS;  // 60 secondsTRICKLE_IMIN_60_SECS << 4;
-    }
-    else
-    {
-        // Configure the Wi-SUN timing trickle parameter
-        cfg->timing.disc_trickle_imin = TRICKLE_IMIN_6_SECS; //TRICKLE_IMIN_15_SECS;       // 15 seconds
-        //cfg->timing.disc_trickle_imax = TRICKLE_IMIN_12_SECS; //TRICKLE_IMIN_60_SECS;  // 60 secondsTRICKLE_IMIN_60_SECS << 4;
-  //      cfg->timing.disc_trickle_imax = TRICKLE_IMIN_60_SECS;  // 960 seconds; 8 minutes
-    }
-    cfg->timing.disc_trickle_imax = TRICKLE_IMIN_12_SECS;
+        // Configure the Wi-SUN timing trickle parameters
+        cfg->timing.disc_trickle_imin = TRICKLE_IMIN_60_SECS << 1;       // 120 seconds
+        cfg->timing.disc_trickle_imax = 1536;      // 1536 seconds; 25 minutes
+        cfg->timing.disc_trickle_k = 1;
+        cfg->timing.pan_timeout = PAN_VERSION_NETWORK_TIMEOUT;
+        cfg->timing.temp_link_min_timeout = WS_NEIGHBOR_TEMPORARY_LINK_MIN_TIMEOUT_LARGE;
+        cfg->timing.temp_eapol_min_timeout = WS_EAPOL_TEMPORARY_ENTRY_LARGE_TIMEOUT;
 
-    cfg->timing.disc_trickle_k = 1;
-    cfg->timing.pan_timeout = PAN_VERSION_SMALL_NETWORK_TIMEOUT;
-    cfg->timing.temp_link_min_timeout = WS_NEIGHBOR_TEMPORARY_LINK_MIN_TIMEOUT_SMALL;
-    cfg->timing.temp_eapol_min_timeout = WS_EAPOL_TEMPORARY_ENTRY_SMALL_TIMEOUT;
-
-    // RPL configuration
-    cfg->bbr.dio_interval_min = WS_RPL_DIO_IMIN_SMALL;               // 15; 32s seconds
-    cfg->bbr.dio_interval_doublings = WS_RPL_DIO_DOUBLING_SMALL;     // 2; 128
-    cfg->bbr.dio_redundancy_constant = WS_RPL_DIO_REDUNDANCY_SMALL;  // Disabled
-    cfg->bbr.dag_max_rank_increase = WS_RPL_MAX_HOP_RANK_INCREASE;
-    if (ti_wisun_config.force_star_topology)
-    {
-        cfg->bbr.min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE_STAR;
-    }
-    else
-    {
+        // RPL configuration
+        cfg->bbr.dio_interval_min = WS_RPL_DIO_IMIN_LARGE;               // 18; 256s, 4.5min
+        cfg->bbr.dio_interval_doublings = WS_RPL_DIO_DOUBLING_LARGE;     // 3; 2048s, 34min
+        cfg->bbr.dio_redundancy_constant = WS_RPL_DIO_REDUNDANCY_LARGE;  // 10
+        cfg->bbr.dag_max_rank_increase = WS_RPL_MAX_HOP_RANK_INCREASE;
         cfg->bbr.min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE;
+        cfg->bbr.rpl_default_lifetime = WS_RPL_DEFAULT_LIFETIME;
+        cfg->bbr.dhcp_address_lifetime = WS_DHCP_ADDRESS_LIFETIME_LARGE;
+
+        // EAPOL configuration
+        cfg->sec_prot.sec_prot_trickle_imin = SEC_PROT_LARGE_IMIN;
+        cfg->sec_prot.sec_prot_trickle_imax = SEC_PROT_LARGE_IMAX;
+        cfg->sec_prot.sec_prot_trickle_timer_exp = SEC_PROT_TIMER_EXPIRATIONS;
+        cfg->sec_prot.sec_prot_retry_timeout = SEC_PROT_RETRY_TIMEOUT_LARGE;
+
+        cfg->sec_prot.initial_key_retry_delay = NONE_INITIAL_KEY_RETRY_TIMER;
+        cfg->sec_prot.initial_key_imin = LARGE_NW_INITIAL_KEY_TRICKLE_IMIN_SECS;
+        cfg->sec_prot.initial_key_imax = LARGE_NW_INITIAL_KEY_TRICKLE_IMAX_SECS;
+        cfg->sec_prot.initial_key_retry_cnt = LARGE_NW_INITIAL_KEY_RETRY_COUNT;
+
+        // Multicast timing configuration
+        cfg->mpl.mpl_trickle_imin = MPL_LARGE_IMIN;
+        cfg->mpl.mpl_trickle_imax = MPL_LARGE_IMAX;
+        cfg->mpl.mpl_trickle_k = MPL_LARGE_K;
+        cfg->mpl.mpl_trickle_timer_exp = MPL_LARGE_EXPIRATIONS;
+        cfg->mpl.seed_set_entry_lifetime = MPL_LARGE_SEED_LIFETIME;
     }
-    cfg->bbr.rpl_default_lifetime = WS_RPL_DEFAULT_LIFETIME;
-    cfg->bbr.dhcp_address_lifetime = WS_DHCP_ADDRESS_LIFETIME_SMALL;
+    else if (ti_wisun_config.network_size_config == CONFIG_NETWORK_SIZE_MEDIUM)
+    {
+        // Configure the Wi-SUN parent configuration
+        cfg->gen.rpl_parent_candidate_max = WS_RPL_PARENT_CANDIDATE_MAX;
+        cfg->gen.rpl_selected_parent_max = WS_RPL_SELECTED_PARENT_MAX;
 
-    // EAPOL configuration
-    cfg->sec_prot.sec_prot_trickle_imin = SEC_PROT_SMALL_IMIN;
-    cfg->sec_prot.sec_prot_trickle_imax = SEC_PROT_SMALL_IMAX;
-    cfg->sec_prot.sec_prot_trickle_timer_exp = SEC_PROT_TIMER_EXPIRATIONS;
-    cfg->sec_prot.sec_prot_retry_timeout = SEC_PROT_RETRY_TIMEOUT_SMALL;
+        // Configure the Wi-SUN timing trickle parameters
+        cfg->timing.disc_trickle_imin = TRICKLE_IMIN_60_SECS;       // 60 seconds
+        cfg->timing.disc_trickle_imax = TRICKLE_IMIN_60_SECS << 4;      // 960 seconds; 16 minutes
+        cfg->timing.disc_trickle_k = 1;
+        cfg->timing.pan_timeout = PAN_VERSION_NETWORK_TIMEOUT;
+        cfg->timing.temp_link_min_timeout = WS_NEIGHBOR_TEMPORARY_LINK_MIN_TIMEOUT_SMALL;
+        cfg->timing.temp_eapol_min_timeout = WS_EAPOL_TEMPORARY_ENTRY_MEDIUM_TIMEOUT;
 
+        // RPL configuration
+        cfg->bbr.dio_interval_min = WS_RPL_DIO_IMIN_MEDIUM;              // 17; 128s
+        cfg->bbr.dio_interval_doublings = WS_RPL_DIO_DOUBLING_MEDIUM;    // 3; 1024s
+        cfg->bbr.dio_redundancy_constant = WS_RPL_DIO_REDUNDANCY_MEDIUM; // 10
+        cfg->bbr.dag_max_rank_increase = WS_RPL_MAX_HOP_RANK_INCREASE;
+        cfg->bbr.min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE;
+        cfg->bbr.rpl_default_lifetime = WS_RPL_DEFAULT_LIFETIME;
+        cfg->bbr.dhcp_address_lifetime = WS_DHCP_ADDRESS_LIFETIME_MEDIUM;
+
+        // EAPOL configuration
+        cfg->sec_prot.sec_prot_trickle_imin = SEC_PROT_SMALL_IMIN;
+        cfg->sec_prot.sec_prot_trickle_imax = SEC_PROT_SMALL_IMAX;
+        cfg->sec_prot.sec_prot_trickle_timer_exp = SEC_PROT_TIMER_EXPIRATIONS;
+        cfg->sec_prot.sec_prot_retry_timeout = SEC_PROT_RETRY_TIMEOUT_SMALL;
+
+        cfg->sec_prot.initial_key_retry_delay = DEFAULT_INITIAL_KEY_RETRY_TIMER;
+        cfg->sec_prot.initial_key_imin = MEDIUM_NW_INITIAL_KEY_TRICKLE_IMIN_SECS;
+        cfg->sec_prot.initial_key_imax = MEDIUM_NW_INITIAL_KEY_TRICKLE_IMAX_SECS;
+        cfg->sec_prot.initial_key_retry_cnt = DEFAULT_INITIAL_KEY_RETRY_COUNT;
+
+        // Multicast timing configuration
+        cfg->mpl.mpl_trickle_imin = MPL_MEDIUM_IMIN;
+        cfg->mpl.mpl_trickle_imax = MPL_MEDIUM_IMAX;
+        cfg->mpl.mpl_trickle_k = MPL_MEDIUM_K;
+        cfg->mpl.mpl_trickle_timer_exp = MPL_MEDIUM_EXPIRATIONS;
+        cfg->mpl.seed_set_entry_lifetime = MPL_MEDIUM_SEED_LIFETIME;
+    }
+    else // CONFIG_NETWORK_SIZE_SMALL or unsupported configuration -> default to small
+    {
+        // Configure the Wi-SUN parent configuration
+        cfg->gen.rpl_parent_candidate_max = WS_RPL_PARENT_CANDIDATE_MAX;
+        cfg->gen.rpl_selected_parent_max = WS_RPL_SELECTED_PARENT_MAX;
+
+        // Configure the Wi-SUN timing trickle parameter
+        cfg->timing.disc_trickle_imin = TRICKLE_IMIN_12_SECS; // 12 seconds
+        cfg->timing.disc_trickle_imax = TRICKLE_IMIN_12_SECS; // 12 seconds
+        cfg->timing.disc_trickle_imax = TRICKLE_IMIN_12_SECS;
+
+        cfg->timing.disc_trickle_k = 1;
+        cfg->timing.pan_timeout = PAN_VERSION_NETWORK_TIMEOUT;
+        cfg->timing.temp_link_min_timeout = WS_NEIGHBOR_TEMPORARY_LINK_MIN_TIMEOUT_SMALL;
+        cfg->timing.temp_eapol_min_timeout = WS_EAPOL_TEMPORARY_ENTRY_SMALL_TIMEOUT;
+
+        // RPL configuration
+        cfg->bbr.dio_interval_min = WS_RPL_DIO_IMIN_SMALL;               // 15; 32s seconds
+        cfg->bbr.dio_interval_doublings = WS_RPL_DIO_DOUBLING_SMALL;     // 2; 128
+        cfg->bbr.dio_redundancy_constant = WS_RPL_DIO_REDUNDANCY_SMALL;  // Disabled
+        cfg->bbr.dag_max_rank_increase = WS_RPL_MAX_HOP_RANK_INCREASE;
+        cfg->bbr.min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE;
+        cfg->bbr.rpl_default_lifetime = WS_RPL_DEFAULT_LIFETIME;
+        cfg->bbr.dhcp_address_lifetime = WS_DHCP_ADDRESS_LIFETIME_SMALL;
+
+        // EAPOL configuration
+        cfg->sec_prot.sec_prot_trickle_imin = SEC_PROT_SMALL_IMIN;
+        cfg->sec_prot.sec_prot_trickle_imax = SEC_PROT_SMALL_IMAX;
+        cfg->sec_prot.sec_prot_trickle_timer_exp = SEC_PROT_TIMER_EXPIRATIONS;
+        cfg->sec_prot.sec_prot_retry_timeout = SEC_PROT_RETRY_TIMEOUT_SMALL;
+
+        cfg->sec_prot.initial_key_retry_delay = DEFAULT_INITIAL_KEY_RETRY_TIMER;
+        cfg->sec_prot.initial_key_imin = SMALL_NW_INITIAL_KEY_TRICKLE_IMIN_SECS;
+        cfg->sec_prot.initial_key_imax = SMALL_NW_INITIAL_KEY_TRICKLE_IMAX_SECS;
+        cfg->sec_prot.initial_key_retry_cnt = DEFAULT_INITIAL_KEY_RETRY_COUNT;
+
+        // Multicast timing configuration
+        cfg->mpl.mpl_trickle_imin = MPL_SMALL_IMIN;
+        cfg->mpl.mpl_trickle_imax = MPL_SMALL_IMAX;
+        cfg->mpl.mpl_trickle_k = MPL_SMALL_K;
+        cfg->mpl.seed_set_entry_lifetime = MPL_SMALL_SEED_LIFETIME;
+        cfg->mpl.mpl_trickle_timer_exp = MPL_SMALL_EXPIRATIONS;
+    }
+
+    // Custom auth timers
     if (ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
         cfg->sec_prot.initial_key_retry_delay = DEFAULT_INITIAL_KEY_RETRY_TIMER_CUSTOM_AUTH;
         cfg->sec_prot.initial_key_imin = SMALL_NW_INITIAL_KEY_TRICKLE_IMIN_SECS_CUSTOM_AUTH;
         cfg->sec_prot.initial_key_imax = SMALL_NW_INITIAL_KEY_TRICKLE_IMAX_SECS_CUSTOM_AUTH;
     }
-    else {
-        cfg->sec_prot.initial_key_retry_delay = DEFAULT_INITIAL_KEY_RETRY_TIMER;
-        cfg->sec_prot.initial_key_imin = SMALL_NW_INITIAL_KEY_TRICKLE_IMIN_SECS;
-        cfg->sec_prot.initial_key_imax = SMALL_NW_INITIAL_KEY_TRICKLE_IMAX_SECS;
-    }
-    cfg->sec_prot.initial_key_retry_cnt = DEFAULT_INITIAL_KEY_RETRY_COUNT;
 
-    // Multicast timing configuration
+    // Force star topology
+    if (ti_wisun_config.force_star_topology)
+    {
+        cfg->bbr.min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE_STAR;
+    }
+
+    // Low Latency Multicast
     if (ti_wisun_config.mpl_low_latency) {
         cfg->mpl.mpl_trickle_imin = MPL_SMALL_IMIN_LOW_LATENCY;
         cfg->mpl.mpl_trickle_imax = MPL_SMALL_IMAX_LOW_LATENCY;
         cfg->mpl.mpl_trickle_k = MPL_SMALL_K_LOW_LATENCY;
         cfg->mpl.seed_set_entry_lifetime = MPL_SMALL_SEED_LIFETIME_LOW_LATENCY;
-    } else {
-        cfg->mpl.mpl_trickle_imin = MPL_SMALL_IMIN;
-        cfg->mpl.mpl_trickle_imax = MPL_SMALL_IMAX;
-        cfg->mpl.mpl_trickle_k = MPL_SMALL_K;
-        cfg->mpl.seed_set_entry_lifetime = MPL_SMALL_SEED_LIFETIME;
+        cfg->mpl.mpl_trickle_timer_exp = MPL_SMALL_EXPIRATIONS;
     }
-    cfg->mpl.mpl_trickle_timer_exp = MPL_SMALL_EXPIRATIONS;
-
 }
 
 static void ws_cfg_network_size_config_set_medium(ws_cfg_nw_size_t *cfg)
 {
-    // Configure the Wi-SUN parent configuration
-    cfg->gen.rpl_parent_candidate_max = WS_RPL_PARENT_CANDIDATE_MAX;
-    cfg->gen.rpl_selected_parent_max = WS_RPL_SELECTED_PARENT_MAX;
-
-    // Configure the Wi-SUN timing trickle parameters
-    cfg->timing.disc_trickle_imin = TRICKLE_IMIN_60_SECS;       // 60 seconds
-    cfg->timing.disc_trickle_imax = TRICKLE_IMIN_60_SECS << 4;      // 960 seconds; 16 minutes
-    cfg->timing.disc_trickle_k = 1;
-    cfg->timing.pan_timeout = PAN_VERSION_MEDIUM_NETWORK_TIMEOUT;
-    cfg->timing.temp_link_min_timeout = WS_NEIGHBOR_TEMPORARY_LINK_MIN_TIMEOUT_SMALL;
-    cfg->timing.temp_eapol_min_timeout = WS_EAPOL_TEMPORARY_ENTRY_MEDIUM_TIMEOUT;
-
-    // RPL configuration
-    cfg->bbr.dio_interval_min = WS_RPL_DIO_IMIN_MEDIUM;              // 17; 128s
-    cfg->bbr.dio_interval_doublings = WS_RPL_DIO_DOUBLING_MEDIUM;    // 3; 1024s
-    cfg->bbr.dio_redundancy_constant = WS_RPL_DIO_REDUNDANCY_MEDIUM; // 10
-    cfg->bbr.dag_max_rank_increase = WS_RPL_MAX_HOP_RANK_INCREASE;
-    if (ti_wisun_config.force_star_topology)
-    {
-        cfg->bbr.min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE_STAR;
-    }
-    else
-    {
-        cfg->bbr.min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE;
-    }
-    cfg->bbr.rpl_default_lifetime = WS_RPL_DEFAULT_LIFETIME_MEDIUM;
-    cfg->bbr.dhcp_address_lifetime = WS_DHCP_ADDRESS_LIFETIME_MEDIUM;
-
-    // EAPOL configuration
-    cfg->sec_prot.sec_prot_trickle_imin = SEC_PROT_SMALL_IMIN;
-    cfg->sec_prot.sec_prot_trickle_imax = SEC_PROT_SMALL_IMAX;
-    cfg->sec_prot.sec_prot_trickle_timer_exp = SEC_PROT_TIMER_EXPIRATIONS;
-    cfg->sec_prot.sec_prot_retry_timeout = SEC_PROT_RETRY_TIMEOUT_SMALL;
-
-    cfg->sec_prot.initial_key_retry_delay = DEFAULT_INITIAL_KEY_RETRY_TIMER;
-    cfg->sec_prot.initial_key_imin = MEDIUM_NW_INITIAL_KEY_TRICKLE_IMIN_SECS;
-    cfg->sec_prot.initial_key_imax = MEDIUM_NW_INITIAL_KEY_TRICKLE_IMAX_SECS;
-    cfg->sec_prot.initial_key_retry_cnt = DEFAULT_INITIAL_KEY_RETRY_COUNT;
-
-    // Multicast timing configuration
-    cfg->mpl.mpl_trickle_imin = MPL_MEDIUM_IMIN;
-    cfg->mpl.mpl_trickle_imax = MPL_MEDIUM_IMAX;
-    cfg->mpl.mpl_trickle_k = MPL_MEDIUM_K;
-    cfg->mpl.mpl_trickle_timer_exp = MPL_MEDIUM_EXPIRATIONS;
-    cfg->mpl.seed_set_entry_lifetime = MPL_MEDIUM_SEED_LIFETIME;
+    // Unused, see cfg_network_size_config_set_small
 }
 
 static void ws_cfg_network_size_config_set_large(ws_cfg_nw_size_t *cfg)
 {
-    // Configure the Wi-SUN parent configuration
-    cfg->gen.rpl_parent_candidate_max = WS_RPL_PARENT_CANDIDATE_MAX;
-    cfg->gen.rpl_selected_parent_max = WS_RPL_SELECTED_PARENT_MAX;
-
-    // Configure the Wi-SUN timing trickle parameters
-    cfg->timing.disc_trickle_imin = TRICKLE_IMIN_60_SECS << 1;       // 120 seconds
-    cfg->timing.disc_trickle_imax = 1536;      // 1536 seconds; 25 minutes
-    cfg->timing.disc_trickle_k = 1;
-    cfg->timing.pan_timeout = PAN_VERSION_LARGE_NETWORK_TIMEOUT;
-    cfg->timing.temp_link_min_timeout = WS_NEIGHBOR_TEMPORARY_LINK_MIN_TIMEOUT_LARGE;
-    cfg->timing.temp_eapol_min_timeout = WS_EAPOL_TEMPORARY_ENTRY_LARGE_TIMEOUT;
-
-    // RPL configuration
-    cfg->bbr.dio_interval_min = WS_RPL_DIO_IMIN_LARGE;               // 18; 256s, 4.5min
-    cfg->bbr.dio_interval_doublings = WS_RPL_DIO_DOUBLING_LARGE;     // 3; 2048s, 34min
-    cfg->bbr.dio_redundancy_constant = WS_RPL_DIO_REDUNDANCY_LARGE;  // 10
-    cfg->bbr.dag_max_rank_increase = WS_RPL_MAX_HOP_RANK_INCREASE;
-    if (ti_wisun_config.force_star_topology)
-    {
-        cfg->bbr.min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE_STAR;
-    }
-    else
-    {
-        cfg->bbr.min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE;
-    }
-    cfg->bbr.rpl_default_lifetime = WS_RPL_DEFAULT_LIFETIME_LARGE;
-    cfg->bbr.dhcp_address_lifetime = WS_DHCP_ADDRESS_LIFETIME_LARGE;
-
-    // EAPOL configuration
-    cfg->sec_prot.sec_prot_trickle_imin = SEC_PROT_LARGE_IMIN;
-    cfg->sec_prot.sec_prot_trickle_imax = SEC_PROT_LARGE_IMAX;
-    cfg->sec_prot.sec_prot_trickle_timer_exp = SEC_PROT_TIMER_EXPIRATIONS;
-    cfg->sec_prot.sec_prot_retry_timeout = SEC_PROT_RETRY_TIMEOUT_LARGE;
-
-    cfg->sec_prot.initial_key_retry_delay = NONE_INITIAL_KEY_RETRY_TIMER;
-    cfg->sec_prot.initial_key_imin = LARGE_NW_INITIAL_KEY_TRICKLE_IMIN_SECS;
-    cfg->sec_prot.initial_key_imax = LARGE_NW_INITIAL_KEY_TRICKLE_IMAX_SECS;
-    cfg->sec_prot.initial_key_retry_cnt = LARGE_NW_INITIAL_KEY_RETRY_COUNT;
-
-    // Multicast timing configuration
-    cfg->mpl.mpl_trickle_imin = MPL_LARGE_IMIN;
-    cfg->mpl.mpl_trickle_imax = MPL_LARGE_IMAX;
-    cfg->mpl.mpl_trickle_k = MPL_LARGE_K;
-    cfg->mpl.mpl_trickle_timer_exp = MPL_LARGE_EXPIRATIONS;
-    cfg->mpl.seed_set_entry_lifetime = MPL_LARGE_SEED_LIFETIME;
-
+    // Unused, see cfg_network_size_config_set_small
 }
 
 static void ws_cfg_network_size_config_set_xlarge(ws_cfg_nw_size_t *cfg)
@@ -633,7 +619,7 @@ static void ws_cfg_network_size_config_set_xlarge(ws_cfg_nw_size_t *cfg)
     cfg->timing.disc_trickle_imin = TRICKLE_IMIN_60_SECS << 2;       // 240 seconds
     cfg->timing.disc_trickle_imax = 1920;      // 1920 seconds; 32 minutes
     cfg->timing.disc_trickle_k = 1;
-    cfg->timing.pan_timeout = PAN_VERSION_XLARGE_NETWORK_TIMEOUT;
+    cfg->timing.pan_timeout = PAN_VERSION_NETWORK_TIMEOUT;
     cfg->timing.temp_link_min_timeout = WS_NEIGHBOR_TEMPORARY_LINK_MIN_TIMEOUT_LARGE;
     cfg->timing.temp_eapol_min_timeout = WS_EAPOL_TEMPORARY_ENTRY_LARGE_TIMEOUT;
 
@@ -651,7 +637,7 @@ static void ws_cfg_network_size_config_set_xlarge(ws_cfg_nw_size_t *cfg)
         cfg->bbr.min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE;
     }
 
-    cfg->bbr.rpl_default_lifetime = WS_RPL_DEFAULT_LIFETIME_XLARGE;
+    cfg->bbr.rpl_default_lifetime = WS_RPL_DEFAULT_LIFETIME;
     cfg->bbr.dhcp_address_lifetime = WS_DHCP_ADDRESS_LIFETIME_LARGE;
 
     // EAPOL configuration
@@ -683,7 +669,7 @@ static void ws_cfg_network_size_config_set_certificate(ws_cfg_nw_size_t *cfg)
     cfg->timing.disc_trickle_imin = TRICKLE_IMIN_15_SECS;       // 15 seconds
     cfg->timing.disc_trickle_imax = TRICKLE_IMIN_15_SECS << 2;  // 60 seconds
     cfg->timing.disc_trickle_k = 1;
-    cfg->timing.pan_timeout = PAN_VERSION_SMALL_NETWORK_TIMEOUT;
+    cfg->timing.pan_timeout = PAN_VERSION_NETWORK_TIMEOUT;
     cfg->timing.temp_link_min_timeout = WS_NEIGHBOR_TEMPORARY_LINK_MIN_TIMEOUT_SMALL;
     cfg->timing.temp_eapol_min_timeout = WS_EAPOL_TEMPORARY_ENTRY_SMALL_TIMEOUT;
 
@@ -702,16 +688,9 @@ static void ws_cfg_network_size_config_set_certificate(ws_cfg_nw_size_t *cfg)
     cfg->sec_prot.sec_prot_trickle_timer_exp = SEC_PROT_TIMER_EXPIRATIONS;
     cfg->sec_prot.sec_prot_retry_timeout = SEC_PROT_RETRY_TIMEOUT_SMALL;
 
-    if (ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
-        cfg->sec_prot.initial_key_retry_delay = DEFAULT_INITIAL_KEY_RETRY_TIMER_CUSTOM_AUTH;
-        cfg->sec_prot.initial_key_imin = SMALL_NW_INITIAL_KEY_TRICKLE_IMIN_SECS_CUSTOM_AUTH;
-        cfg->sec_prot.initial_key_imax = SMALL_NW_INITIAL_KEY_TRICKLE_IMAX_SECS_CUSTOM_AUTH;
-    }
-    else {
-        cfg->sec_prot.initial_key_retry_delay = DEFAULT_INITIAL_KEY_RETRY_TIMER;
-        cfg->sec_prot.initial_key_imin = SMALL_NW_INITIAL_KEY_TRICKLE_IMIN_SECS;
-        cfg->sec_prot.initial_key_imax = SMALL_NW_INITIAL_KEY_TRICKLE_IMAX_SECS;
-    }
+    cfg->sec_prot.initial_key_retry_delay = DEFAULT_INITIAL_KEY_RETRY_TIMER;
+    cfg->sec_prot.initial_key_imin = SMALL_NW_INITIAL_KEY_TRICKLE_IMIN_SECS;
+    cfg->sec_prot.initial_key_imax = SMALL_NW_INITIAL_KEY_TRICKLE_IMAX_SECS;
     cfg->sec_prot.initial_key_retry_cnt = DEFAULT_INITIAL_KEY_RETRY_COUNT;
 
     // Multicast timing configuration for certification uses the LARGE values as it is the one mentioned ins specification
@@ -902,7 +881,7 @@ int8_t ws_cfg_timing_default_set(ws_timing_cfg_t *cfg)
     cfg->disc_trickle_imin = TRICKLE_IMIN_60_SECS;       // 60 seconds
     cfg->disc_trickle_imax = TRICKLE_IMIN_60_SECS << 4;  // 960 seconds; 16 minutes
     cfg->disc_trickle_k = 1;
-    cfg->pan_timeout = PAN_VERSION_MEDIUM_NETWORK_TIMEOUT;
+    cfg->pan_timeout = PAN_VERSION_NETWORK_TIMEOUT;
     cfg->temp_link_min_timeout = WS_NEIGHBOR_TEMPORARY_LINK_MIN_TIMEOUT_SMALL;
     cfg->temp_eapol_min_timeout = WS_EAPOL_TEMPORARY_ENTRY_MEDIUM_TIMEOUT;
 
@@ -932,9 +911,12 @@ int8_t ws_cfg_timing_validate(ws_timing_cfg_t *cfg, ws_timing_cfg_t *new_cfg)
         if (new_cfg->disc_trickle_imin < 1 || new_cfg->disc_trickle_imin > 255) {
             return CFG_SETTINGS_ERROR_TIMING_CONF;
         }
-        // Discovery Imax, 1 to 8 doublings of imin
-        if (new_cfg->disc_trickle_imax < new_cfg->disc_trickle_imin * 2 ||
-                new_cfg->disc_trickle_imax > new_cfg->disc_trickle_imin * 256) {
+
+        // Discovery Imax, 0 to 8 doublings of imin
+        // Adjust error condition to allow Imin = Imax
+        // if (new_cfg->disc_trickle_imax < new_cfg->disc_trickle_imin * 2 ||
+        //        new_cfg->disc_trickle_imax > new_cfg->disc_trickle_imin * 256) {
+        if (new_cfg->disc_trickle_imax > new_cfg->disc_trickle_imin * 256) {
             return CFG_SETTINGS_ERROR_TIMING_CONF;
         }
         // Discovery k parameter defined to be 1
@@ -958,16 +940,17 @@ int8_t ws_cfg_timing_set(protocol_interface_info_entry_t *cur, ws_timing_cfg_t *
 
     if (cur && !(cfg_flags & CFG_FLAGS_DISABLE_VAL_SET)) {
         if(cfg_props.wisun_device_type == MESH_DEVICE_TYPE_WISUN_ROUTER)
-           {
-            cur->ws_info->trickle_params_pan_discovery.Imin = 12 * 10;
-            //cur->ws_info->trickle_params_pan_discovery.Imin = new_cfg->disc_trickle_imin * 10;
-           }
+        {
+            // cur->ws_info->trickle_params_pan_discovery.Imin = 12 * 10;
+            cur->ws_info->trickle_params_pan_discovery.Imin = (new_cfg->disc_trickle_imin) * 10;
+        }
         else
         {
-            cur->ws_info->trickle_params_pan_discovery.Imin = 6 * 10;
+            // cur->ws_info->trickle_params_pan_discovery.Imin = 6 * 10;
+            cur->ws_info->trickle_params_pan_discovery.Imin = (new_cfg->disc_trickle_imin/2) * 10;
         }
-        //cur->ws_info->trickle_params_pan_discovery.Imax = new_cfg->disc_trickle_imax * 10;
-        cur->ws_info->trickle_params_pan_discovery.Imax = 12 * 10;
+        // cur->ws_info->trickle_params_pan_discovery.Imax = 12 * 10;
+        cur->ws_info->trickle_params_pan_discovery.Imax = new_cfg->disc_trickle_imax * 10;
         cur->ws_info->trickle_params_pan_discovery.k = new_cfg->disc_trickle_k;
         cur->ws_info->trickle_params_pan_discovery.TimerExpirations = TRICKLE_EXPIRATIONS_INFINITE;
         ws_pae_controller_configure(cur, NULL, NULL, new_cfg);
@@ -1004,7 +987,7 @@ static int8_t ws_cfg_bbr_default_set(ws_bbr_cfg_t *cfg)
     {
         cfg->min_hop_rank_increase = WS_RPL_MIN_HOP_RANK_INCREASE;
     }
-    cfg->rpl_default_lifetime = WS_RPL_DEFAULT_LIFETIME_MEDIUM;
+    cfg->rpl_default_lifetime = WS_RPL_DEFAULT_LIFETIME;
     cfg->dhcp_address_lifetime = WS_DHCP_ADDRESS_LIFETIME_MEDIUM;
 
     return CFG_SETTINGS_OK;

@@ -28,13 +28,16 @@
 #include "NuMicro.h"
 
 /* ARM UART CMSDK */
+#define DEFAULT_UART_CONTROL 0
 #define DEFAULT_UART_BAUDRATE 115200
-#define UART0_CMSDK_S
-#define UART0_CMSDK_NS
+#define ARM_UART0_NS
+
+
 
 /* CMSDK Timers */
 #define CMSDK_TIMER0_S
-#define CMSDK_TIMER2_NS
+#define CMSDK_TIMER1_NS
+
 
 
 #endif  /* __DEVICE_CFG_H__ */

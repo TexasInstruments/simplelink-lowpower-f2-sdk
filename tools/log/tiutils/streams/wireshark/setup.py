@@ -6,8 +6,8 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     include_package_data=True,
     entry_points={
-        "tilogger.transport": [
-            "wireshark = tilogger_wireshark.main:transport_factory_cli",
+        "tilogger.output": [
+            "wireshark = tilogger_wireshark.main:output_factory_cli",
         ],
     },
     install_requires=["pywin32==228", "typer==0.3.2", "colorama==0.4.4"],

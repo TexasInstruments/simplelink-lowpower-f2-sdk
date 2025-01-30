@@ -1008,6 +1008,21 @@ function validate(inst, validation)
         Common.validateRangeInt(inst, validation, "pollingInterval", 0,
             Common.cTypeMax.u_int32);
 
+        if(inst.customPhy === true)
+        {
+            // Calculate symbol duration, truncate decimal with bitwise OR.
+            const symbolDuration = (1000/inst.radioConfig.symbolRate) | 0;
+            // Calculate persistence time, truncate decimal with bitwise OR.
+            const indirect_persistence_time = ((2500 * inst.pollingInterval)/
+                (960 * symbolDuration)) | 0;
+            if (indirect_persistence_time > 65535)
+            {
+                validation.logWarning("It is recommended to use a lower poll "
+                    + "interval. INDIRECT_PERSISTENT_TIME calculation may be "
+                    + "inaccurate with this selection.", inst,
+                    "pollingInterval");
+            }
+        }
         // Add info msgs if polling interval value below recommended value
         if(inst.phyType.includes("5kbps"))
         {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -30,11 +30,13 @@
 #define PLATFORM_NS_NV_COUNTERS 0
 #endif
 
+#ifdef PLATFORM_DEFAULT_NV_COUNTERS
 enum tfm_nv_counter_t {
     PLAT_NV_COUNTER_PS_0 = 0,  /* Used by PS service */
     PLAT_NV_COUNTER_PS_1,      /* Used by PS service */
     PLAT_NV_COUNTER_PS_2,      /* Used by PS service */
 
+    /* BL2 NV counters must be contiguous */
     PLAT_NV_COUNTER_BL2_0,     /* Used by bootloader */
     PLAT_NV_COUNTER_BL2_1,     /* Used by bootloader */
     PLAT_NV_COUNTER_BL2_2,     /* Used by bootloader */
@@ -51,6 +53,9 @@ enum tfm_nv_counter_t {
     PLAT_NV_COUNTER_BOUNDARY = UINT32_MAX  /* Fix  tfm_nv_counter_t size
                                               to 4 bytes */
 };
+#else
+#include "platform_nv_counters_ids.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {

@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2011-2024, Texas Instruments Incorporated
+ Copyright (c) 2011-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -1992,51 +1992,65 @@ static void gapBondMgr_SlaveReqSecurity(uint16_t connHandle, uint8_t authReq)
       uint8_t prevAuthReq = gapBondMgrGetStateFlags(idx);
       bool repair = FALSE;
 
-      // Is LTK >= Requested Security Level where the relevant security levels
-      // are defined as such:
-      // 2. Unauthenticated pairing
-      // 3. Authenticated pairing
-      // 4. Authenticated LE Secure Connections pairing
-      switch (authReq & (SM_AUTH_STATE_AUTHENTICATED |
-                         SM_AUTH_STATE_SECURECONNECTION))
+      // Acting according to previous bonding state if exists
+      // No record in NV
+      if (prevAuthReq == GAP_BONDED_STATE_NO_RECORD)
       {
-        // Slave is asking for authenticated legacy pairing
-        case SM_AUTH_STATE_AUTHENTICATED:
+        repair = TRUE;
+      }
+      // Record in NV, Unauthenticated pairing with encryption
+      else if (!(authReq & SM_AUTH_STATE_AUTHENTICATED) && (prevAuthReq == GAP_BONDED_STATE_UNAUTHENTICATED))
+      {
+        repair = FALSE;
+      }
+      else
+      {
+        // Is LTK >= Requested Security Level where the relevant security levels
+        // are defined as such:
+        // 2. Unauthenticated pairing
+        // 3. Authenticated pairing
+        // 4. Authenticated LE Secure Connections pairing
+        switch (authReq & (SM_AUTH_STATE_AUTHENTICATED |
+                           SM_AUTH_STATE_SECURECONNECTION))
         {
-          // Repair if not currently authenticated
-          if (!(prevAuthReq & GAP_BONDED_STATE_AUTHENTICATED))
+          // Slave is asking for authenticated legacy pairing
+          case SM_AUTH_STATE_AUTHENTICATED:
           {
-            repair = TRUE;
+            // Repair if not currently authenticated
+            if (!(prevAuthReq & GAP_BONDED_STATE_AUTHENTICATED))
+            {
+              repair = TRUE;
+            }
           }
-        }
-        break;
+          break;
 
-        // Slave is asking for unauthenticated secure connections
-        case SM_AUTH_STATE_SECURECONNECTION:
-        {
-          // Repair if not currently authenticated or secure connections
-          if (!(prevAuthReq & (GAP_BONDED_STATE_AUTHENTICATED |
-                               GAP_BONDED_STATE_SECURECONNECTION)))
+          // Slave is asking for unauthenticated secure connections
+          case SM_AUTH_STATE_SECURECONNECTION:
           {
-            repair = TRUE;
+            // Repair if not currently authenticated or secure connections
+            if (!(prevAuthReq & (GAP_BONDED_STATE_AUTHENTICATED |
+                                 GAP_BONDED_STATE_SECURECONNECTION)))
+            {
+              repair = TRUE;
+            }
           }
-        }
-        break;
+          break;
 
-        // Slave is asking for authenticated secure connections
-        case (SM_AUTH_STATE_AUTHENTICATED | SM_AUTH_STATE_SECURECONNECTION):
-        {
-          // Repair unless currently authenticated with secure connections
-          if (!((prevAuthReq & GAP_BONDED_STATE_AUTHENTICATED ) &&
-                (prevAuthReq & GAP_BONDED_STATE_SECURECONNECTION )))
+          // Slave is asking for authenticated secure connections
+          case (SM_AUTH_STATE_AUTHENTICATED | SM_AUTH_STATE_SECURECONNECTION):
           {
-            repair = TRUE;
+            // Repair unless currently authenticated with secure connections
+            if (!((prevAuthReq & GAP_BONDED_STATE_AUTHENTICATED ) &&
+                  (prevAuthReq & GAP_BONDED_STATE_SECURECONNECTION )))
+            {
+              repair = TRUE;
+            }
           }
-        }
-        break;
+          break;
 
-        default:
-        break;
+          default:
+          break;
+        } // End switch
       }
 
       // Repair if it was found to be needed above
@@ -2726,15 +2740,20 @@ uint8_t gapBondMgrReadBondRec(GAP_Peer_Addr_Types_t addrType,
  */
 static uint8_t gapBondMgrGetStateFlags(uint8_t idx)
 {
+  uint8_t retVal;
   gapBondRec_t bondRec;
 
-  if(osal_snv_read(MAIN_RECORD_NV_ID(idx), sizeof(gapBondRec_t),
+  if (osal_snv_read(MAIN_RECORD_NV_ID(idx), sizeof(gapBondRec_t),
                    &bondRec) == SUCCESS)
   {
-    return (bondRec.stateFlags);
+    retVal = bondRec.stateFlags;
+  }
+  else
+  {
+    retVal = GAP_BONDED_STATE_NO_RECORD;
   }
 
-  return (0);
+  return retVal;
 }
 
 /*********************************************************************
@@ -4731,7 +4750,7 @@ uint8_t GapBondMgr_GetPrevAuth( uint16_t connHandle, uint8_t *pMitmReq, uint8_t 
                                 &idx, NULL, NULL);
     if ( status == SUCCESS )
     {
-      VOID osal_snv_read(DEV_LTK_NV_ID(idx), sizeof(gapBondLTK_t), &ltkInfo);
+      VOID osal_snv_read(LOCAL_LTK_NV_ID(idx), sizeof(gapBondLTK_t), &ltkInfo);
 
 	  // Check what it the authentication level saved in the bond information
       prevAuthReq = gapBondMgrGetStateFlags(idx);

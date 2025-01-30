@@ -1,11 +1,13 @@
 #-------------------------------------------------------------------------------
-# Copyright (c) 2021-2022, Arm Limited. All rights reserved.
+# Copyright (c) 2021-2023, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
 #-------------------------------------------------------------------------------
 
 find_package(Python3)
+
+set(CMAKE_BUILD_TYPE ${BL1_2_BUILD_TYPE})
 
 add_subdirectory(lib)
 
@@ -29,13 +31,15 @@ target_link_options(bl1_2
 target_sources(bl1_2
     PRIVATE
         main.c
+        $<$<BOOL:${CONFIG_GNU_SYSCALL_STUB_ENABLED}>:${CMAKE_SOURCE_DIR}/platform/ext/common/syscalls_stub.c>
 )
 
 target_link_libraries(bl1_2
     PRIVATE
         bl1_1_shared_lib_interface
         bl1_2_lib
-        platform_bl1_interface
+        platform_bl1_1_interface
+        platform_bl1_2
         $<$<BOOL:${TEST_BL1_2}>:bl1_2_tests>
 )
 
@@ -44,6 +48,7 @@ target_compile_definitions(bl1_2
         $<$<BOOL:${TFM_BL1_MEMORY_MAPPED_FLASH}>:TFM_BL1_MEMORY_MAPPED_FLASH>
         $<$<BOOL:${TEST_BL1_2}>:TEST_BL1_2>
         $<$<BOOL:${TFM_BL1_PQ_CRYPTO}>:TFM_BL1_PQ_CRYPTO>
+        $<$<AND:$<BOOL:${CONFIG_TFM_BOOT_STORE_MEASUREMENTS}>,$<NOT:$<BOOL:${CONFIG_TFM_BOOT_STORE_ENCODED_MEASUREMENTS}>>>:TFM_MEASURED_BOOT_API>
 )
 
 target_link_shared_code(bl1_2

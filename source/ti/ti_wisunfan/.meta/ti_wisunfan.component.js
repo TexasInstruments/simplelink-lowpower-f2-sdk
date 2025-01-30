@@ -44,6 +44,7 @@ const supportedDevices = [
     "CC1312R7RGZ",
     "CC1352P7RGZ",
     "CC1314R10RSK",
+    "CC1314R10RGZ",
     "CC1354R10RGZ",
     "CC1354P10RSK",
     "CC1354P10RGZ",

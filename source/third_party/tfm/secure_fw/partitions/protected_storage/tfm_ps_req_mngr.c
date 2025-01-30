@@ -13,7 +13,6 @@
 
 #include "psa/protected_storage.h"
 
-#include "tfm_api.h"
 #include "tfm_protected_storage.h"
 #include "psa/service.h"
 #include "psa_manifest/tfm_protected_storage.h"

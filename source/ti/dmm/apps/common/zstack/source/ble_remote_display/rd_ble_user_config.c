@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -290,7 +290,7 @@ const stackSpecific_t bleStackConfig =
   .maxNumPSM                            = L2CAP_NUM_PSM,
   .maxNumCoChannels                     = L2CAP_NUM_CO_CHANNELS,
   //! Naming discrepancy between ble5stack and ble5stack_flash
-#ifdef DeviceFamily_CC13X4
+#if defined (DeviceFamily_CC13X4) || defined (DeviceFamily_CC26X4)
   .maxAcceptListElems                    = MAX_NUM_AL_ENTRIES,
 #else
   .maxWhiteListElems                    = MAX_NUM_WL_ENTRIES,

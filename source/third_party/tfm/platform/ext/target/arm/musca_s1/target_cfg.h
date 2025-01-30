@@ -27,7 +27,6 @@ extern "C" {
 
 #define TFM_DRIVER_STDIO    Driver_USART1
 #define NS_DRIVER_STDIO     Driver_USART1
-#define ERPC_UART           Driver_USART1
 
 /**
  * \brief Defines the word offsets of Slave Peripheral Protection Controller

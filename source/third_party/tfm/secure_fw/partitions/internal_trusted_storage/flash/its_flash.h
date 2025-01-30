@@ -24,7 +24,7 @@
 #include "its_flash_ram.h"
 extern uint8_t its_block_data[];
 #define ITS_FLASH_DEV its_block_data
-#define ITS_FLASH_ALIGNMENT TFM_HAL_ITS_PROGRAM_UNIT
+#define ITS_FLASH_ALIGNMENT 1
 #define ITS_FLASH_OPS its_flash_fs_ops_ram
 
 #elif (TFM_HAL_ITS_PROGRAM_UNIT > 16)
@@ -54,7 +54,7 @@ extern struct its_flash_nand_dev_t its_flash_nand_dev;
 #include "its_flash_ram.h"
 extern uint8_t ps_block_data[];
 #define PS_FLASH_DEV ps_block_data
-#define PS_FLASH_ALIGNMENT TFM_HAL_PS_PROGRAM_UNIT
+#define PS_FLASH_ALIGNMENT 1
 #define PS_FLASH_OPS its_flash_fs_ops_ram
 
 #elif (TFM_HAL_PS_PROGRAM_UNIT > 16)

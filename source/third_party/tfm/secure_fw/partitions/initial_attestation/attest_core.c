@@ -21,6 +21,7 @@
 #include "tfm_attest_iat_defs.h"
 #include "t_cose_common.h"
 #include "tfm_crypto_defs.h"
+#include "tfm_sp_log.h"
 
 #define ARRAY_LENGTH(array) (sizeof(array) / sizeof(*(array)))
 
@@ -89,47 +90,6 @@ error_mapping_to_psa_attest_err_t(enum attest_token_err_t token_err)
     default:
         return PSA_ATTEST_ERR_GENERAL;
     }
-}
-
-/*!
- * \brief Static function to convert a pointer and size info to unsigned
- *        integer number. Max 32bits unsigned integers are supported.
- *
- * This implementation assumes that the endianness of the sender and receiver
- * of the data is the same because they are actually running on the same CPU
- * instance. If this assumption is not true than this function must be
- * refactored accordingly.
- *
- * \param[in]  int_ptr  Pointer to the unsigned integer
- * \param[in]  len      Size of the unsigned integers in bytes
- * \param[in]  value    Pointer where to store the converted value
- *
- * \return Returns 0 on success and -1 on error.
- */
-static inline int32_t get_uint(const void *int_ptr,
-                               size_t len,
-                               uint32_t *value)
-{
-    uint16_t uint16;
-
-    switch (len) {
-    case 1:
-        *value = (uint32_t)(*(uint8_t  *)(int_ptr));
-        break;
-    case 2:
-        /* Avoid unaligned access */
-        (void)memcpy(&uint16, int_ptr, sizeof(uint16));
-        *value = (uint32_t)uint16;
-        break;
-    case 4:
-        /* Avoid unaligned access */
-        (void)memcpy(value, int_ptr, sizeof(uint32_t));
-        break;
-    default:
-        return -1;
-    }
-
-    return 0;
 }
 
 /*!
@@ -244,31 +204,9 @@ static enum psa_attest_err_t
 attest_add_security_lifecycle_claim(struct attest_token_encode_ctx *token_ctx)
 {
     enum tfm_security_lifecycle_t security_lifecycle;
-    uint32_t slc_value;
-    int32_t res;
-    struct q_useful_buf_c claim_value = {0};
-    uint16_t tlv_len;
-    uint8_t *tlv_ptr = NULL;
-    int32_t found = 0;
 
-    /* First look up lifecycle state in boot status, it might comes
-     * from bootloader
-     */
-    found = attest_get_tlv_by_id(SECURITY_LIFECYCLE, &tlv_len, &tlv_ptr);
-    if (found == 1) {
-        claim_value.ptr = tlv_ptr + SHARED_DATA_ENTRY_HEADER_SIZE;
-        claim_value.len = tlv_len;
-        res = get_uint(claim_value.ptr, claim_value.len, &slc_value);
-        if (res) {
-            return PSA_ATTEST_ERR_GENERAL;
-        }
-        security_lifecycle = (enum tfm_security_lifecycle_t)slc_value;
-    } else {
-        /* If not found in boot status then use callback function to get it
-         * from runtime SW
-         */
-        security_lifecycle = tfm_attest_hal_get_security_lifecycle();
-    }
+    /* Use callback function to get it from runtime SW */
+    security_lifecycle = tfm_attest_hal_get_security_lifecycle();
 
     /* Sanity check */
     if (security_lifecycle > TFM_SLC_MAX_VALUE) {
@@ -360,26 +298,14 @@ attest_add_boot_seed_claim(struct attest_token_encode_ctx *token_ctx)
     uint8_t boot_seed[BOOT_SEED_SIZE];
     enum tfm_plat_err_t res;
     struct q_useful_buf_c claim_value = {0};
-    uint16_t tlv_len;
-    uint8_t *tlv_ptr = NULL;
-    int32_t found = 0;
 
-    /* First look up BOOT_SEED in boot status, it might comes from bootloader */
-    found = attest_get_tlv_by_id(BOOT_SEED, &tlv_len, &tlv_ptr);
-    if (found == 1) {
-        claim_value.ptr = tlv_ptr + SHARED_DATA_ENTRY_HEADER_SIZE;
-        claim_value.len = tlv_len;
-    } else {
-        /* If not found in boot status then use callback function to get it
-         * from runtime SW
-         */
-        res = tfm_plat_get_boot_seed(sizeof(boot_seed), boot_seed);
-        if (res != TFM_PLAT_ERR_SUCCESS) {
-            return PSA_ATTEST_ERR_CLAIM_UNAVAILABLE;
-        }
-        claim_value.ptr = boot_seed;
-        claim_value.len = BOOT_SEED_SIZE;
+    /* Use callback function to get it from runtime SW */
+    res = tfm_plat_get_boot_seed(sizeof(boot_seed), boot_seed);
+    if (res != TFM_PLAT_ERR_SUCCESS) {
+        return PSA_ATTEST_ERR_CLAIM_UNAVAILABLE;
     }
+    claim_value.ptr = boot_seed;
+    claim_value.len = BOOT_SEED_SIZE;
 
     attest_token_encode_add_bstr(token_ctx,
                                  IAT_BOOT_SEED,
@@ -429,28 +355,14 @@ attest_add_cert_ref_claim(struct attest_token_encode_ctx *token_ctx)
     enum tfm_plat_err_t res_plat;
     uint32_t size = sizeof(buf);
     struct q_useful_buf_c claim_value = {0};
-    uint16_t tlv_len;
-    uint8_t *tlv_ptr = NULL;
-    int32_t found = 0;
 
-    /* First look up the certification reference in the boot status, it might
-     * comes from the bootloader.
-     */
-    found = attest_get_tlv_by_id(CERT_REF, &tlv_len, &tlv_ptr);
-    if (found == 1) {
-        claim_value.ptr = tlv_ptr + SHARED_DATA_ENTRY_HEADER_SIZE;
-        claim_value.len = tlv_len;
-    } else {
-        /* If not found in boot status then use callback function to get it
-         * from runtime SW
-         */
-        res_plat = tfm_plat_get_cert_ref(&size, buf);
-        if (res_plat != TFM_PLAT_ERR_SUCCESS) {
-            return PSA_ATTEST_ERR_CLAIM_UNAVAILABLE;
-        }
-        claim_value.ptr = buf;
-        claim_value.len = size;
+    /* Use callback function to get it from runtime SW */
+    res_plat = tfm_plat_get_cert_ref(&size, buf);
+    if (res_plat != TFM_PLAT_ERR_SUCCESS) {
+        return PSA_ATTEST_ERR_CLAIM_UNAVAILABLE;
     }
+    claim_value.ptr = buf;
+    claim_value.len = size;
 
     attest_token_encode_add_tstr(token_ctx,
                                  IAT_CERTIFICATION_REFERENCE,
@@ -673,6 +585,7 @@ static enum psa_attest_err_t attest_get_t_cose_algorithm(
             return PSA_ATTEST_ERR_GENERAL;
         }
     } else {
+        LOG_DBGFMT("Attestation: Unexpected key_type for TFM_BUILTIN_KEY_ID_IAK. Key storage may be corrupted!\r\n");
         return PSA_ATTEST_ERR_GENERAL;
     }
 

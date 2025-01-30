@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,8 +41,6 @@ exports = {
 
     boardName: boardName,  /* get /ti/boards name */
 
-    /* CC32XX specific function to convert package pin to device pin */
-    cc32xxPackage2DevicePin : cc32xxPackage2DevicePin,
 
     device2Family: device2Family,  /* get /ti/drivers device family name */
     device2DeviceFamily: device2DeviceFamily, /* get driverlib DeviceFamily_xxx name */
@@ -288,27 +286,6 @@ function boardName()
     return (boardName);
 }
 
-/*!
- *  ======== cc32xxPackage2DevicePin ========
- *  Converts a CC32XX package pin number to the device pin number
- *
- *  @param packagePinName  The packagePinName returned to a $solution
- *
- *  @returns String  The device pin number as an integer.
- */
-function cc32xxPackage2DevicePin(packagePinName)
-{
-    let pin = "";
-    let key = String(packagePinName);
-    let devicePins = system.deviceData.devicePins;
-
-    if (devicePins[key]) {
-        pin = devicePins[key].controlRegisterOffset;
-        pin = pin.padStart(2, "0");
-    }
-
-    return (pin);
-}
 
 /*!
  *  ======== device2Family ========
@@ -337,7 +314,6 @@ function device2Family(device, mod)
         {prefix: "CC26",     family: "CC26XX"},
         {prefix: "CC23.0",   family: "CC23X0"},
         {prefix: "CC27",     family: "CC27XX"},
-        {prefix: "CC32",     family: "CC32XX"},
         {prefix: "CC35",     family: "CC35XX"}
     ];
 
@@ -397,13 +373,21 @@ function device2Family(device, mod)
         "CAN" :            "CC27XX",
         "CCFG" :           "CC27XX",
         "Power" :          "CC27XX",
-        "ECDH" :           "LPF3SW",
-        "SHA2" :           "LPF3SW",
-        "RNG"  :           "LPF3HSM"
+        "ECDH" :           "LPF3HSM",
+        "ECDSA" :          "LPF3HSM",
+        "SHA2" :           "LPF3HSM",
+        "TRNG":            "LPF3HSM",
+        "RNG"  :           "LPF3HSM",
+        "AESGCM":          "LPF3HSM",
+        "CryptoKeyKeyStore_PSA" : "CC27XX"
     };
 
-    /* CC35XX specific module delegates */
+    /* CC35XX specific module delegates
+     * Note, the default family name returned below is WFF3, so this list must
+     * contain all CC35XX specific modules
+     */
     let cc35xxMods = {
+        "SHA2" :           "WFF3HSM"
     };
 
     /* deviceId is the directory name within the pinmux/deviceData */
@@ -894,6 +878,26 @@ function newConfig()
 }
 
 /*
+ * ======== numPriorityBits ========
+ * Returns the number of NVIC priority bits available.
+ */
+function numPriorityBits()
+{
+    if (system.deviceData.deviceId.match(/CC23.0/)) {
+        /* CC23X0 devices have two NVIC priority bits available */
+        return 2;
+    }
+    else if (system.deviceData.deviceId.match(/CC27/)) {
+        /* CC27XX devices have four NVIC priority bits available */
+        return 4;
+    }
+    else {
+        /* Other devices have three NVIC priority bits available */
+        return 3;
+    }
+}
+
+/*
  *  ======== newIntPri ========
  *  Create a new intPriority config parameter
  *
@@ -903,72 +907,55 @@ function newConfig()
  */
 function newIntPri()
 {
-    if (system.deviceData.deviceId.match(/CC23.0/)) {
-        /* CC23X0 devices only have two NVIC priority bits available instead of 3 */
-        return [{
-                    name: "interruptPriority",
-                    displayName: "Hardware Interrupt Priority",
-                    description: "Hardware interrupt priority",
-                    longDescription:`This configuration allows you to configure the
-hardware interrupt priority.`,
-                    default: "3",
-                    options: [
-                        { name: "3", displayName: "3 - Lowest Priority" },
-                        { name: "2" },
-                        { name: "1", displayName: "1 - Highest Priority" }
-                    ]
-                }];
+    /* Calculate the lowest priority for the device.
+     * On Arm devices: highest numerical value => lowest priority(urgency).
+     */
+    const lowestPri = String(2**numPriorityBits() - 1);
+    let optionsList = [];
+
+    /* Append the lowest priority */
+    optionsList.push({ name: lowestPri, displayName: lowestPri + " - Lowest Priority" });
+
+    /* Append increasing priorities */
+    for (let i = Number(lowestPri)-1; i > 1; i--) {
+        optionsList.push({ name: String(i), displayName: String(i) });
     }
-    else {
-        /* Other devices have three NVIC priority bits available */
-        return [{
-                    name: "interruptPriority",
-                    displayName: "Hardware Interrupt Priority",
-                    description: "Hardware interrupt priority",
-                    longDescription:`This configuration allows you to configure the
+
+    /* Append the highest allowed priority */
+    optionsList.push({ name: "1", displayName: "1 - Highest Priority" });
+
+    return [{
+        name: "interruptPriority",
+        displayName: "Hardware Interrupt Priority",
+        description: "Hardware interrupt priority",
+        longDescription:`This configuration allows you to configure the
 hardware interrupt priority.`,
-                    default: "7",
-                    options: [
-                        { name: "7", displayName: "7 - Lowest Priority" },
-                        { name: "6" },
-                        { name: "5" },
-                        { name: "4" },
-                        { name: "3" },
-                        { name: "2" },
-                        { name: "1", displayName: "1 - Highest Priority" }
-                    ]
-                }];
-    }
+        default: lowestPri,
+        options: optionsList
+    }];
 }
 
 /*
  * ======== intPriority2Hex ========
- * translate user readable priority into NVIC priority value
+ * Translate user readable priority into NVIC priority value
  */
 function intPriority2Hex(intPri)
 {
-    if (system.deviceData.deviceId.match(/CC23.0/)) {
-        /*
-        *(~0) is always interpreted as the lowest priority.
-        * NoRTOS and FreeRTOS DPL do not support "3" as a HwiP priority.
-        */
-        if (intPri == "3") {
-            return ("(~0)");
-        }
+    const numPriBits = numPriorityBits();
 
-        return ("0x" + (intPri << 6).toString(16));
+    /* NoRTOS and FreeRTOS DPL do not support the lowest priority (e.g. 3 with 2
+     * priority bits, 7 with 3 priority bits) as a HwiP priority.
+     * (~0) is always interpreted as the lowest priority.
+     */
+    const lowestPri = 2**numPriBits - 1;
+    if (intPri == lowestPri) {
+        return ("(~0)");
     }
-    else {
-        /*
-        *(~0) is always interpreted as the lowest priority.
-        * NoRTOS and FreeRTOS DPL do not support "7" as a HwiP priority.
-        */
-        if (intPri == "7") {
-            return ("(~0)");
-        }
 
-        return ("0x" + (intPri << 5).toString(16));
-    }
+    /* Return hex representation of the interrupt priority, shifted correctly
+     * according to the number of interrupt priority bits on the device.
+     */
+    return ("0x" + (intPri << (8-numPriBits)).toString(16));
 }
 
 /*

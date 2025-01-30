@@ -8,15 +8,8 @@
 #-------------------------------------------------------------------------------
 
 install(DIRECTORY ${CMAKE_BINARY_DIR}/bin/
-        DESTINATION ${TFM_INSTALL_PATH}/outputs
+        DESTINATION bin
 )
-
-set(INTERFACE_INC_DIR ${CMAKE_SOURCE_DIR}/interface/include)
-set(INTERFACE_SRC_DIR ${CMAKE_SOURCE_DIR}/interface/src)
-
-set(INSTALL_INTERFACE_INC_DIR    ${TFM_INSTALL_PATH}/interface/include)
-set(INSTALL_INTERFACE_SRC_DIR    ${TFM_INSTALL_PATH}/interface/src)
-set(INSTALL_INTERFACE_LIB_DIR    ${TFM_INSTALL_PATH}/interface/lib)
 
 # export veneer lib
 if (CONFIG_TFM_USE_TRUSTZONE)
@@ -33,7 +26,10 @@ install(FILES       ${INTERFACE_INC_DIR}/psa/client.h
 install(FILES       ${CMAKE_BINARY_DIR}/generated/interface/include/psa_manifest/sid.h
         DESTINATION ${INSTALL_INTERFACE_INC_DIR}/psa_manifest)
 
-install(FILES       ${INTERFACE_INC_DIR}/tfm_api.h
+install(FILES       ${CMAKE_BINARY_DIR}/generated/interface/include/config_impl.h
+        DESTINATION ${INSTALL_INTERFACE_INC_DIR})
+
+install(FILES       ${INTERFACE_INC_DIR}/tfm_veneers.h
                     ${INTERFACE_INC_DIR}/tfm_ns_interface.h
         DESTINATION ${INSTALL_INTERFACE_INC_DIR})
 
@@ -56,11 +52,12 @@ if (TFM_PARTITION_NS_AGENT_MAILBOX)
                         ${INTERFACE_INC_DIR}/multi_core/tfm_mailbox.h
                         ${INTERFACE_INC_DIR}/multi_core/tfm_ns_mailbox_test.h
                         ${CMAKE_BINARY_DIR}/generated/interface/include/tfm_mailbox_config.h
-            DESTINATION ${INSTALL_INTERFACE_INC_DIR})
+            DESTINATION ${INSTALL_INTERFACE_INC_DIR}/multi_core)
 endif()
 
 if (TFM_PARTITION_PROTECTED_STORAGE)
     install(FILES       ${INTERFACE_INC_DIR}/psa/protected_storage.h
+                        ${INTERFACE_INC_DIR}/psa/storage_common.h
             DESTINATION ${INSTALL_INTERFACE_INC_DIR}/psa)
     install(FILES       ${INTERFACE_INC_DIR}/tfm_ps_defs.h
             DESTINATION ${INSTALL_INTERFACE_INC_DIR})
@@ -90,7 +87,7 @@ if (TFM_PARTITION_CRYPTO)
 endif()
 
 if (TFM_PARTITION_INITIAL_ATTESTATION)
-    install(FILES       ${INTERFACE_INC_DIR}/psa/initial_attestation.h
+    install(FILES       ${CMAKE_BINARY_DIR}/generated/interface/include/psa/initial_attestation.h
             DESTINATION ${INSTALL_INTERFACE_INC_DIR}/psa)
     install(FILES       ${INTERFACE_INC_DIR}/tfm_attest_defs.h
                         ${INTERFACE_INC_DIR}/tfm_attest_iat_defs.h
@@ -126,7 +123,7 @@ if (TFM_PARTITION_NS_AGENT_MAILBOX)
 endif()
 
 if (TFM_PARTITION_NS_AGENT_TZ)
-    install(FILES       ${INTERFACE_SRC_DIR}/tfm_psa_ns_api.c
+    install(FILES       ${INTERFACE_SRC_DIR}/tfm_tz_psa_ns_api.c
             DESTINATION ${INSTALL_INTERFACE_SRC_DIR})
 endif()
 
@@ -163,33 +160,48 @@ if(TFM_PARTITION_PLATFORM)
             DESTINATION ${INSTALL_INTERFACE_SRC_DIR})
 endif()
 
-
 ##################### Export image signing information #########################
 
-set(INSTALL_IMAGE_SIGNING_DIR ${TFM_INSTALL_PATH}/image_signing)
-
-if(BL2)
+if(BL2 AND PLATFORM_DEFAULT_IMAGE_SIGNING)
     install(DIRECTORY bl2/ext/mcuboot/scripts
-            DESTINATION ${INSTALL_IMAGE_SIGNING_DIR})
+            DESTINATION ${INSTALL_IMAGE_SIGNING_DIR}
+            PATTERN "scripts/*.py"
+            PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+            GROUP_EXECUTE GROUP_READ
+            PATTERN "scripts/wrapper/*.py"
+            PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+                        GROUP_EXECUTE GROUP_READ)
+
+    install(DIRECTORY ${MCUBOOT_PATH}/scripts/imgtool
+            DESTINATION ${INSTALL_IMAGE_SIGNING_DIR}/scripts)
 
     if (MCUBOOT_ENC_IMAGES)
         install(FILES ${MCUBOOT_KEY_ENC}
+                RENAME image_enc_key.pem
                 DESTINATION ${INSTALL_IMAGE_SIGNING_DIR}/keys)
     endif()
 
-    if (PLATFORM_DEFAULT_IMAGE_SIGNING)
-        install(FILES $<TARGET_OBJECTS:signing_layout_s>
+    install(FILES $<TARGET_OBJECTS:signing_layout_s>
             DESTINATION ${INSTALL_IMAGE_SIGNING_DIR}/layout_files)
+    install(FILES ${MCUBOOT_KEY_S}
+            RENAME image_s_signing_private_key.pem
+            DESTINATION ${INSTALL_IMAGE_SIGNING_DIR}/keys)
+    # Specify the MCUBOOT_KEY_S path for NS build
+    set(MCUBOOT_INSTALL_KEY_S
+        ${INSTALL_IMAGE_SIGNING_DIR}/keys/image_s_signing_private_key.pem)
+    install(FILES $<TARGET_FILE_DIR:bl2>/image_s_signing_public_key.pem
+            DESTINATION ${INSTALL_IMAGE_SIGNING_DIR}/keys)
 
-        if(MCUBOOT_IMAGE_NUMBER GREATER 1)
-            install(FILES $<TARGET_OBJECTS:signing_layout_ns>
-                    DESTINATION ${INSTALL_IMAGE_SIGNING_DIR}/layout_files)
-    endif()
-
+    if(MCUBOOT_IMAGE_NUMBER GREATER 1)
+        install(FILES $<TARGET_OBJECTS:signing_layout_ns>
+                DESTINATION ${INSTALL_IMAGE_SIGNING_DIR}/layout_files)
         install(FILES ${MCUBOOT_KEY_NS}
+                RENAME image_ns_signing_private_key.pem
                 DESTINATION ${INSTALL_IMAGE_SIGNING_DIR}/keys)
-    else()
-        install(FILES ${MCUBOOT_KEY_S}
+        # Specify the MCUBOOT_KEY_NS path for NS build
+        set(MCUBOOT_INSTALL_KEY_NS
+            ${INSTALL_IMAGE_SIGNING_DIR}/keys/image_ns_signing_private_key.pem)
+        install(FILES $<TARGET_FILE_DIR:bl2>/image_ns_signing_public_key.pem
                 DESTINATION ${INSTALL_IMAGE_SIGNING_DIR}/keys)
     endif()
 endif()
@@ -199,9 +211,69 @@ if(TFM_PARTITION_FIRMWARE_UPDATE)
             DESTINATION ${INSTALL_INTERFACE_SRC_DIR})
 endif()
 
-###################### Install for NS regression tests #########################
+######################### Export common configurations #########################
 
-include(${CMAKE_SOURCE_DIR}/lib/ext/tf-m-tests/install.cmake)
+install(FILES       ${CMAKE_SOURCE_DIR}/config/cp_check.cmake
+        DESTINATION ${INSTALL_CONFIG_DIR})
 
-##################### Platform-specific installation ###########################
-include(${TARGET_PLATFORM_PATH}/install.cmake OPTIONAL)
+###################### Install NS platform sources #############################
+
+install(CODE "MESSAGE(\"----- Installing platform NS -----\")")
+
+install(DIRECTORY   ${PLATFORM_DIR}/ext/cmsis
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/ext)
+
+if(PLATFORM_DEFAULT_UART_STDOUT)
+    install(FILES       ${PLATFORM_DIR}/ext/common/uart_stdout.c
+                        ${PLATFORM_DIR}/ext/common/uart_stdout.h
+            DESTINATION ${INSTALL_PLATFORM_NS_DIR}/ext/common)
+endif()
+
+install(DIRECTORY   ${PLATFORM_DIR}/include
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+install(FILES ${CMAKE_SOURCE_DIR}/cmake/spe-CMakeLists.cmake
+        DESTINATION ${CMAKE_INSTALL_PREFIX}
+        RENAME CMakeLists.txt)
+
+install(FILES       ${PLATFORM_DIR}/ns/toolchain_ns_GNUARM.cmake
+                    ${PLATFORM_DIR}/ns/toolchain_ns_ARMCLANG.cmake
+                    ${PLATFORM_DIR}/ns/toolchain_ns_IARARM.cmake
+        DESTINATION ${INSTALL_CMAKE_DIR})
+
+install(FILES
+        ${CMAKE_SOURCE_DIR}/lib/fih/inc/fih.h
+        ${PLATFORM_DIR}/include/tfm_plat_ns.h
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/include)
+
+if (TARGET psa_crypto_config)
+# FIXIT: This is a temporal patch to reduce the change scope and simplify review.
+# In the future we shall decouple this target from tfm_config becuase
+# "psa_crypto_config" target exists not in all configurations.
+# Functionally "psa_crypto_config" provides only include path for Crypto accelerator.
+install(TARGETS tfm_config psa_crypto_config psa_interface
+        DESTINATION ${CMAKE_INSTALL_PREFIX}
+        EXPORT tfm-config
+        )
+else()
+        install(TARGETS tfm_config psa_interface
+        DESTINATION ${CMAKE_INSTALL_PREFIX}
+        EXPORT tfm-config
+        )
+endif()
+
+target_include_directories(psa_interface
+        INTERFACE
+        $<INSTALL_INTERFACE:interface/include>
+        )
+
+install(EXPORT tfm-config
+        FILE spe_export.cmake
+        DESTINATION ${INSTALL_CMAKE_DIR})
+
+configure_file(${CMAKE_SOURCE_DIR}/config/spe_config.cmake.in
+               ${INSTALL_CMAKE_DIR}/spe_config.cmake @ONLY)
+
+# Toolchain utils
+install(FILES       cmake/set_extensions.cmake
+        DESTINATION ${INSTALL_CMAKE_DIR})

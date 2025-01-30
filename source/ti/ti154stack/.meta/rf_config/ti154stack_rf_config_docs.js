@@ -72,6 +72,10 @@ of operation.
 For more information, refer to the [Data-Rate and PHY](/ti154stack/html/\
 ti154stack/ti154stack-overview.html#data-rate-and-phy) section of the
 TI15.4-Stack User's Guide.
+
+Note that some PHYs are only supported on specific platforms. In particular,
+the China band (433MHz) PHY is only supported on CC1352P-4 and CC1352P7_4
+platforms.
 \n\
 __Default__: 902-927 MHz
 \n\

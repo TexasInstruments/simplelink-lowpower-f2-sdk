@@ -76,4 +76,19 @@ config ITS_STACK_SIZE
       This value mainly depends on the platform specific flash drivers, the
       build type (Debug, Release and MinSizeRel) and compiler.
 
+config TFM_ITS_AUTH_TAG_LENGTH
+    int "Size of the authentication tag"
+    default 16
+    depends on ITS_ENCRYPTION
+    help
+      The size of the authentication tag used when authentication/encryption of
+      ITS files is enabled
+
+config TFM_ITS_ENC_NONCE_LENGTH
+    int "Size of the nonce"
+    depends on ITS_ENCRYPTION
+    default 12
+    help
+      The size of the nonce used when ITS file encryption is enabled
+
 endmenu

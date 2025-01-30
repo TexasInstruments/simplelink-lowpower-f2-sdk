@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "driver/Driver_USART.h"
+#include "Driver_USART.h"
 
 #include "cmsis_driver_config.h"
 #include "RTE_Device.h"

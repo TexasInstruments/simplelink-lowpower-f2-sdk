@@ -178,6 +178,23 @@ uint8_t *kde_gtkl_write(uint8_t *ptr, uint8_t gtkl)
     return ptr;
 }
 
+uint8_t *kde_nr_write(uint8_t *ptr, uint8_t val)
+{
+    ptr = kde_header_write(ptr, WISUN_OUI, 3, KDE_GTKL_LEN);
+    *ptr++ = val;
+
+    return ptr;
+}
+
+uint8_t *kde_lgtkl_write(uint8_t *ptr, uint8_t val)
+{
+    ptr = kde_header_write(ptr, WISUN_OUI, 4, KDE_GTKL_LEN);
+    *ptr++ = val;
+
+    return ptr;
+}
+
+
 int8_t kde_gtk_read(const uint8_t *ptr, uint16_t len, uint8_t *key_id, uint8_t *gtk)
 {
     ptr = kde_search(ptr, len, IEEE_802_11_OUI, KDE_GTK, KDE_GTK_LEN);

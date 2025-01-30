@@ -1,0 +1,72 @@
+#-------------------------------------------------------------------------------
+# Copyright (c) 2022-2024, Texas Instruments Incorporated. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+#-------------------------------------------------------------------------------
+
+{
+    "psa_framework_version": 1.1,
+    "description": "Crypto Secure Partition",
+    "name": "CRYPTO_SP",
+    "type": "PSA-ROT",
+    "priority": "HIGH",
+    "model": "IPC",
+    "entry_point": "Crypto_sp_main",
+    "stack_size": "0x1000",
+    "services" : [
+        {
+            "description": "TI HW-based Crypto PRoT Service",
+            "name": "TI_CRYPTO_SERVICE",
+            "sid": "0xAE000080",  # VendorID = 0xAE000, FunctionID = 0x80 (crypto)
+            "non_secure_clients": true,
+            "connection_based": true,
+            "version": 1,
+            "version_policy": "STRICT"
+        },
+
+        # The following ITS services are only available if ENABLE_ITS_IPC_INTEGRATION is set to ON.
+        {
+            "name": "TFM_ITS_SET",
+            "sid": "0x00000070",
+            "non_secure_clients": true,
+            "connection_based": true,
+            "version": 1,
+            "version_policy": "STRICT"
+        },
+        {
+            "name": "TFM_ITS_GET",
+            "sid": "0x00000071",
+            "non_secure_clients": true,
+            "connection_based": true,
+            "version": 1,
+            "version_policy": "STRICT"
+        },
+        {
+            "name": "TFM_ITS_GET_INFO",
+            "sid": "0x00000072",
+            "non_secure_clients": true,
+            "connection_based": true,
+            "version": 1,
+            "version_policy": "STRICT"
+        },
+        {
+            "name": "TFM_ITS_REMOVE",
+            "sid": "0x00000073",
+            "non_secure_clients": true,
+            "connection_based": true,
+            "version": 1,
+            "version_policy": "STRICT"
+        }
+    ],
+    "irqs": [
+        # All IRQs use FLIH without asserting a signal since IRQs may occur while
+        # inside NSPE and the SP would not be scheduled to process the signal.
+        # {
+        #     "description": "AES interrupt",
+        #     "source": "CRYPTO_RESULT_AVAIL_IRQ_IRQn",
+        #     "name": "CryptoResultAvail_IRQn",
+        #     "handling": "FLIH"
+        # },
+    ],
+}

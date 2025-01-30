@@ -38,12 +38,17 @@ initialization is complete.
 
 ## HW Antirollback Protection
 
-MCUBoot has a hardware-based downgrade prevention feature by using a security counter that is stored in each image's protected TLV area. If MCUBoot is built with `MCUBOOT_HW_ROLLBACK_PROT` configuration enabled
-in mcuboot_config.h, in the project post-build steps for the target application, add option `-s <val>`, where `<val>` specifies the value of the security counter for the image. In this scenario, besides comparing 
+MCUBoot has a hardware-based downgrade prevention feature by using a security counter that is stored in each image's protected TLV area. If MCUBoot is built with `Anti Rollback Protection` option selected in SysConfig, in the project post-build steps for the target application, add option `-s <val>`, where `<val>` specifies the value of the security counter for the image. In this scenario, besides comparing 
 the version stored in the header of each image, MCUBoot will compare the value of the image security counter against the current security counter stored in the last sector of the MCUBoot region, and accept the new 
 image if its security counter has the same or higher value.</br>
 
 **Note**: This feature is not supported in CC13x2x7/CC26x2x7 devices.
+
+## Encrypted Images
+
+MCUBoot allows upgradable images to be encrypted and can decrypt images on-the-fly while upgrading . If MCUBoot is built with `Upgrade using Encrypted Images` option selected in SysConfig, in the project post-build steps for the target application, add option `--encrypted <key>`, where `<key>` is the public key to encrypt the image. </br>
+
+**Note**: This feature is not supported in CC23xx devices.
 
 ## TZ Enabled build configuration
 

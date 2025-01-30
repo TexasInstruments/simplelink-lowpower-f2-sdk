@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 # Copyright (c) 2020-2022, Arm Limited. All rights reserved.
-# Copyright (c) 2023, Texas Instruments Incorporated. All rights reserved.
+# Copyright (c) 2023-2024, Texas Instruments Incorporated. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -20,10 +20,6 @@ set (ENABLE_PSA_CRYPTO_INTEGRATION OFF)
 # Key storage is required - setting this variable to "OFF" is for debug purposes only.
 set (ENABLE_KEY_STORAGE ON)
 
-# Set to "ON" to enable platform-specific built-in key support.
-# See docs/design_docs/tfm_builtin_keys.rst for prerequisites.
-set (CRYPTO_TFM_BUILTIN_KEYS_DRIVER OFF)
-
 # Set to "ON" to enable building mbedTLS alternative crypto implementation with
 # HW acceleration. MBEDTLS_<crypto-module>_ALT defines must be uncommented in
 # the mbedTLS config file to enable this feature.
@@ -34,69 +30,79 @@ if (ENABLE_KEY_STORAGE)
     # Trusted Direct Call (TDC) crypto functions which utilize secure key
     # storage since the SPM is bypassed and partition boundaries cannot be
     # crossed.
-    set (ENABLE_ITS_LOCAL_INTEGRATION ON)
+    set (TI_CRYPTO_ITS_INTEGRATION    ON    CACHE BOOL  "Enable ITS integration into TI Crypto partition")
 endif()
 
-if (ENABLE_ITS_LOCAL_INTEGRATION)
+if (TI_CRYPTO_ITS_INTEGRATION)
     # Set to "ON" to enable ITS functions to be accessed by NS code or other secure
-    # partitions via PSA calls (IPC model). Requires ENABLE_ITS_LOCAL_INTEGRATION.
+    # partitions via PSA calls (IPC model). Requires TI_CRYPTO_ITS_INTEGRATION.
     set (ENABLE_ITS_IPC_INTEGRATION ON)
 endif()
 
-set(SYSCFG_DIR ${CMAKE_CURRENT_LIST_DIR}/syscfg/)
-
 add_library(ti_tfm_psa_rot_partition_crypto STATIC)
+
+add_dependencies(ti_tfm_psa_rot_partition_crypto manifest_tool)
 
 # TODO: Update this when attestation is implemented.
 # if (ENABLE_PSA_CRYPTO_INTEGRATION)
 #     target_sources(ti_tfm_psa_rot_partition_crypto
 #         PRIVATE
-#             ${SOURCE_REPO}/ti/drivers/cryptoutils/ecc/ECCParamsCC26X2.c
+#             ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/cryptoutils/ecc/ECCParamsCC26X2.c
 #             psa/PSA_s.c
 #             psa/ti_psa_crypto.c
 #             psa/ti_psa_crypto_secure_api.c
 #     )
 # endif()
 
-if (ENABLE_ITS_LOCAL_INTEGRATION)
-    target_include_directories(ti_tfm_psa_rot_partition_crypto
-        PRIVATE
-            $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/secure_fw/partitions/internal_trusted_storage>
-        PUBLIC
-            # Required for ps_object_defs.h
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../protected_storage>
+if (TI_CRYPTO_ITS_INTEGRATION)
+    add_library(ti_tfm_crypto_its STATIC)
+
+    # Add defines to tfm_config allow integration of ITS into TI Crypto partition
+    target_compile_definitions(tfm_config
+        INTERFACE
+            TI_CRYPTO_ITS_INTEGRATION
+            TFM_PARTITION_INTERNAL_TRUSTED_STORAGE
     )
 
-    target_sources(ti_tfm_psa_rot_partition_crypto
+    # Add ITS source files to TI Crypto partition target
+    set(ITS_PARTITION_SOURCE_DIR ${CMAKE_SOURCE_DIR}/secure_fw/partitions/internal_trusted_storage)
+    target_sources(ti_tfm_crypto_its
         PRIVATE
             tfm_its_local_api.c
-            ${CMAKE_SOURCE_DIR}/platform/ext/common/tfm_hal_its.c
-            ${CMAKE_SOURCE_DIR}/secure_fw/partitions/internal_trusted_storage/tfm_internal_trusted_storage.c
-            ${CMAKE_SOURCE_DIR}/secure_fw/partitions/internal_trusted_storage/its_utils.c
-            ${CMAKE_SOURCE_DIR}/secure_fw/partitions/internal_trusted_storage/flash/its_flash.c
-            ${CMAKE_SOURCE_DIR}/secure_fw/partitions/internal_trusted_storage/flash/its_flash_nand.c
-            ${CMAKE_SOURCE_DIR}/secure_fw/partitions/internal_trusted_storage/flash/its_flash_nor.c
-            ${CMAKE_SOURCE_DIR}/secure_fw/partitions/internal_trusted_storage/flash/its_flash_ram.c
-            ${CMAKE_SOURCE_DIR}/secure_fw/partitions/internal_trusted_storage/flash_fs/its_flash_fs.c
-            ${CMAKE_SOURCE_DIR}/secure_fw/partitions/internal_trusted_storage/flash_fs/its_flash_fs_dblock.c
-            ${CMAKE_SOURCE_DIR}/secure_fw/partitions/internal_trusted_storage/flash_fs/its_flash_fs_mblock.c
+            ${ITS_PARTITION_SOURCE_DIR}/tfm_internal_trusted_storage.c
+            ${ITS_PARTITION_SOURCE_DIR}/its_utils.c
+            $<$<BOOL:${ITS_ENCRYPTION}>:${ITS_PARTITION_SOURCE_DIR}/its_crypto_interface.c>
+            ${ITS_PARTITION_SOURCE_DIR}/flash/its_flash.c
+            ${ITS_PARTITION_SOURCE_DIR}/flash/its_flash_nand.c
+            ${ITS_PARTITION_SOURCE_DIR}/flash/its_flash_nor.c
+            ${ITS_PARTITION_SOURCE_DIR}/flash/its_flash_ram.c
+            ${ITS_PARTITION_SOURCE_DIR}/flash_fs/its_flash_fs.c
+            ${ITS_PARTITION_SOURCE_DIR}/flash_fs/its_flash_fs_dblock.c
+            ${ITS_PARTITION_SOURCE_DIR}/flash_fs/its_flash_fs_mblock.c
     )
 
+    target_link_libraries(ti_tfm_crypto_its
+        PRIVATE
+            platform_s
+            tfm_config
+            tfm_sprt
+    )
+
+    # Reference source/third_party/tfm/cmake/install.cmake
     set(INTERFACE_INC_DIR ${CMAKE_SOURCE_DIR}/interface/include)
-    set(INSTALL_INTERFACE_INC_DIR ${TFM_INSTALL_PATH}/interface/include)
+    set(INSTALL_INTERFACE_INC_DIR interface/include)
     install(FILES       ${INTERFACE_INC_DIR}/psa/internal_trusted_storage.h
                         ${INTERFACE_INC_DIR}/psa/storage_common.h
             DESTINATION ${INSTALL_INTERFACE_INC_DIR}/psa)
-    install(FILES       ${INTERFACE_INC_DIR}/tfm_its_defs.h
-            DESTINATION ${INSTALL_INTERFACE_INC_DIR})
+    # tfm_its_defs.h is not installed because SFN model not being used
 endif()
 
 if (ENABLE_KEY_STORAGE)
     target_sources(ti_tfm_psa_rot_partition_crypto
         PRIVATE
-            ${SOURCE_REPO}/ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA.c
-            ${SOURCE_REPO}/ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_s.c
-            ${SOURCE_REPO}/ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_helpers.c
+            ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA.c
+            ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_s.c
+            ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_helpers.c
             $<$<BOOL:${CRYPTO_TFM_BUILTIN_KEYS_DRIVER}>:
                 ${CMAKE_SOURCE_DIR}/secure_fw/partitions/crypto/psa_driver_api/tfm_builtin_key_loader.c
                 ${CMAKE_SOURCE_DIR}/secure_fw/partitions/crypto/crypto_library.c>
@@ -189,6 +195,7 @@ if (ENABLE_KEY_STORAGE)
                 ${MBEDCRYPTO_PATH}/ti/port/ecdh_alt.c
                 ${MBEDCRYPTO_PATH}/ti/port/ecdsa_alt.c
                 ${MBEDCRYPTO_PATH}/ti/port/ecjpake_alt.c
+                ${MBEDCRYPTO_PATH}/ti/port/eddsa_alt.c
                 ${MBEDCRYPTO_PATH}/ti/port/entropy_alt.c
                 ${MBEDCRYPTO_PATH}/ti/port/gcm_alt.c
                 ${MBEDCRYPTO_PATH}/ti/port/sha256_alt.c
@@ -208,6 +215,15 @@ if (ENABLE_KEY_STORAGE)
             MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER
     )
 
+    # Add mbedtls config file to PSA driver - ti_sl target
+    # In mbedtls 3.5.0 MBEDTLS_CONFIG_FILE must be passed through as ti_sl is
+    # not directly linked against any mbedtls targets so ti_sl does not inherit
+    # the compile definitions
+    target_compile_definitions(${MBEDTLS_TARGET_PREFIX}ti_sl
+        PRIVATE
+            MBEDTLS_CONFIG_FILE="${TFM_MBEDCRYPTO_CONFIG_PATH}"
+    )
+
     target_link_libraries(${MBEDTLS_TARGET_PREFIX}mbedcrypto
         PRIVATE
             psa_interface
@@ -225,84 +241,89 @@ target_sources(ti_tfm_psa_rot_partition_crypto
         ${CMAKE_BINARY_DIR}/generated/syscfg/ti_drivers_config.c
 
         # Driver Porting Layer
-        ${KERNEL_REPO}/tfm/dpl/HwiP_tfm.c
-        ${KERNEL_REPO}/tfm/dpl/SemaphoreP_tfm.c
-        ${KERNEL_REPO}/tfm/dpl/SwiP_tfm.c
+        ${TIDRIVERS_INSTALL_DIR}/kernel/tfm/dpl/HwiP_tfm.c
+        ${TIDRIVERS_INSTALL_DIR}/kernel/tfm/dpl/SemaphoreP_tfm.c
+        ${TIDRIVERS_INSTALL_DIR}/kernel/tfm/dpl/SwiP_tfm.c
 
         # Secure Callback
-        ${SOURCE_REPO}/ti/drivers/tfm/SecureCallback.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/tfm/SecureCallback.c
 
         # Power driver stubs
-        ${SOURCE_REPO}/ti/drivers/power/PowerCC26X4_stubs.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/power/PowerCC26X4_stubs.c
 
-        # AES drivers
-        ${SOURCE_REPO}/ti/drivers/cryptoutils/sharedresources/CryptoResourceCC26XX.c
+        # AES drivers (Crypto HW accelerator)
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/cryptoutils/sharedresources/CryptoResourceCC26XX.c
 
-        ${SOURCE_REPO}/ti/drivers/AESCCM.c
-        ${SOURCE_REPO}/ti/drivers/aesccm/AESCCMCC26X4.c
-        ${SOURCE_REPO}/ti/drivers/aesccm/AESCCMCC26X4_s.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/AESCCM.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/aesccm/AESCCMCC26X4.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/aesccm/AESCCMCC26X4_s.c
 
-        ${SOURCE_REPO}/ti/drivers/AESCBC.c
-        ${SOURCE_REPO}/ti/drivers/aescbc/AESCBCCC26XX.c
-        ${SOURCE_REPO}/ti/drivers/aescbc/AESCBCCC26X4_s.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/AESCBC.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/aescbc/AESCBCCC26XX.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/aescbc/AESCBCCC26X4_s.c
 
-        ${SOURCE_REPO}/ti/drivers/AESCMAC.c
-        ${SOURCE_REPO}/ti/drivers/aescmac/AESCMACCC26XX.c
-        ${SOURCE_REPO}/ti/drivers/aescmac/AESCMACCC26X4_s.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/AESCMAC.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/aescmac/AESCMACCC26XX.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/aescmac/AESCMACCC26X4_s.c
 
-        ${SOURCE_REPO}/ti/drivers/AESCTR.c
-        ${SOURCE_REPO}/ti/drivers/aesctr/AESCTRCC26XX.c
-        ${SOURCE_REPO}/ti/drivers/aesctr/AESCTRCC26X4_s.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/AESCTR.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/aesctr/AESCTRCC26XX.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/aesctr/AESCTRCC26X4_s.c
 
-        ${SOURCE_REPO}/ti/drivers/AESECB.c
-        ${SOURCE_REPO}/ti/drivers/aesecb/AESECBCC26XX.c
-        ${SOURCE_REPO}/ti/drivers/aesecb/AESECBCC26X4_s.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/AESECB.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/aesecb/AESECBCC26XX.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/aesecb/AESECBCC26X4_s.c
 
-        ${SOURCE_REPO}/ti/drivers/AESGCM.c
-        ${SOURCE_REPO}/ti/drivers/aesgcm/AESGCMCC26X4.c
-        ${SOURCE_REPO}/ti/drivers/aesgcm/AESGCMCC26X4_s.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/AESGCM.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/aesgcm/AESGCMCC26X4.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/aesgcm/AESGCMCC26X4_s.c
 
-        # ECC drivers
-        ${SOURCE_REPO}/ti/drivers/cryptoutils/ecc/ECCParamsCC26X4_s.c
-        ${SOURCE_REPO}/ti/drivers/cryptoutils/sharedresources/PKAResourceCC26XX.c
+        # ECC drivers (Crypto HW accelerator)
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/cryptoutils/ecc/ECCParamsCC26X2.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/cryptoutils/ecc/ECCParamsCC26X4_s.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/cryptoutils/sharedresources/PKAResourceCC26XX.c
 
-        ${SOURCE_REPO}/ti/drivers/ECDH.c
-        ${SOURCE_REPO}/ti/drivers/ecdh/ECDHCC26X2.c
-        ${SOURCE_REPO}/ti/drivers/ecdh/ECDHCC26X4_s.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/ECDH.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/ecdh/ECDHCC26X2.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/ecdh/ECDHCC26X4_s.c
 
-        ${SOURCE_REPO}/ti/drivers/ECDSA.c
-        ${SOURCE_REPO}/ti/drivers/ecdsa/ECDSACC26X2.c
-        ${SOURCE_REPO}/ti/drivers/ecdsa/ECDSACC26X4_s.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/ECDSA.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/ecdsa/ECDSACC26X2.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/ecdsa/ECDSACC26X4_s.c
 
-        ${SOURCE_REPO}/ti/drivers/ECJPAKE.c
-        ${SOURCE_REPO}/ti/drivers/ecjpake/ECJPAKECC26X2.c
-        ${SOURCE_REPO}/ti/drivers/ecjpake/ECJPAKECC26X4_s.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/ECJPAKE.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/ecjpake/ECJPAKECC26X2.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/ecjpake/ECJPAKECC26X4_s.c
 
-        # SHA2 driver
-        ${SOURCE_REPO}/ti/drivers/SHA2.c
-        ${SOURCE_REPO}/ti/drivers/sha2/SHA2CC26X2.c
-        ${SOURCE_REPO}/ti/drivers/sha2/SHA2CC26X4_s.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/EDDSA.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/eddsa/EDDSACC26X2.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/eddsa/EDDSACC26X4_s.c
 
-        # Random number generation drivers
-        ${SOURCE_REPO}/ti/drivers/AESCTRDRBG.c
-        ${SOURCE_REPO}/ti/drivers/aesctrdrbg/AESCTRDRBGXX.c
-        ${SOURCE_REPO}/ti/drivers/aesctrdrbg/AESCTRDRBGX4_s.c
+        # SHA2 driver (Crypto HW accelerator)
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/SHA2.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/sha2/SHA2CC26X2.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/sha2/SHA2CC26X4_s.c
 
-        ${SOURCE_REPO}/ti/drivers/TRNG.c
-        ${SOURCE_REPO}/ti/drivers/trng/TRNGCC26XX.c
-        ${SOURCE_REPO}/ti/drivers/trng/TRNGCC26X4_s.c
+        # Random number generation drivers (Crypto HW accelerator)
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/AESCTRDRBG.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/aesctrdrbg/AESCTRDRBGXX.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/aesctrdrbg/AESCTRDRBGX4_s.c
+
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/TRNG.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/trng/TRNGCC26XX.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/trng/TRNGCC26X4_s.c
 
         # Common crypto utils
-        ${SOURCE_REPO}/ti/drivers/cryptoutils/cryptokey/CryptoKey.c
-        ${SOURCE_REPO}/ti/drivers/cryptoutils/cryptokey/CryptoKeyPlaintext.c
-        ${SOURCE_REPO}/ti/drivers/cryptoutils/utils/CryptoUtils.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/cryptoutils/cryptokey/CryptoKey.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/cryptoutils/cryptokey/CryptoKeyPlaintext.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/cryptoutils/utils/CryptoUtils.c
 
         # Utils for TRNG
-        ${SOURCE_REPO}/ti/drivers/utils/List.c
-        ${SOURCE_REPO}/ti/drivers/utils/StructRingBuf.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/utils/List.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/utils/StructRingBuf.c
 
         # Crypto secure partition main thread
-        ${SOURCE_REPO}/ti/drivers/crypto/CryptoCC26X4_s.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/crypto/CryptoCC26X4_s.c
 )
 
 # The generated sources
@@ -330,7 +351,6 @@ target_include_directories(tfm_partitions
 
 target_compile_definitions(ti_tfm_psa_rot_partition_crypto
     PUBLIC
-        $<$<BOOL:${ENABLE_ITS_LOCAL_INTEGRATION}>:ENABLE_ITS_LOCAL_INTEGRATION>
         $<$<BOOL:${ENABLE_ITS_IPC_INTEGRATION}>:ENABLE_ITS_IPC_INTEGRATION>
         $<$<BOOL:${ENABLE_KEY_STORAGE}>:ENABLE_KEY_STORAGE MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER>
         $<$<BOOL:${CRYPTO_TFM_BUILTIN_KEYS_DRIVER}>:PSA_CRYPTO_DRIVER_TFM_BUILTIN_KEY MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS TFM_SP_CRYPTO=CRYPTO_SP>
@@ -346,11 +366,12 @@ target_link_libraries(ti_tfm_psa_rot_partition_crypto
     PRIVATE
         platform_s
         $<$<BOOL:${ENABLE_KEY_STORAGE}>:crypto_service_mbedcrypto>
+        $<$<BOOL:${TI_CRYPTO_ITS_INTEGRATION}>:ti_tfm_crypto_its>
         tfm_config
         tfm_sprt
-        $<$<C_COMPILER_ID:ARMClang>:${SOURCE_REPO}/ti/devices/cc13x4_cc26x4/driverlib/bin/ticlang/driverlib.lib>
-        $<$<C_COMPILER_ID:GNU>:${SOURCE_REPO}/ti/devices/cc13x4_cc26x4/driverlib/bin/gcc/driverlib.lib>
-        $<$<C_COMPILER_ID:IAR>:${SOURCE_REPO}/ti/devices/cc13x4_cc26x4/driverlib/bin/iar/driverlib.lib>
+        $<$<C_COMPILER_ID:ARMClang>:${DRIVERLIB_SOURCE_DIR}/ti/devices/cc13x4_cc26x4/driverlib/bin/ticlang/driverlib.lib>
+        $<$<C_COMPILER_ID:GNU>:${DRIVERLIB_SOURCE_DIR}/ti/devices/cc13x4_cc26x4/driverlib/bin/gcc/driverlib.lib>
+        $<$<C_COMPILER_ID:IAR>:${DRIVERLIB_SOURCE_DIR}/ti/devices/cc13x4_cc26x4/driverlib/bin/iar/driverlib.lib>
     INTERFACE
         platform_region_defs
 )
@@ -372,7 +393,9 @@ target_link_libraries(tfm_partitions
 ############################### TI SysConfig ###################################
 
 # Custom target and command to generate ti_drivers_config.c/.h
-set(SYSCONFIG_ARGS -d CC2674R10RGZ -s ${SYSCFG_DIR}/product.json -o syscfg -c ticlang ${SYSCFG_DIR}/crypto_sp.syscfg)
+set(SYSCFG_DIR ${CMAKE_CURRENT_LIST_DIR}/syscfg)
+set(METADATA_PRODUCTS --product ${TIDRIVERS_INSTALL_DIR}/.metadata/product.json --product ${TIUTILS_INSTALL_DIR}/.metadata/product.json)
+set(SYSCONFIG_ARGS -d CC2674R10RGZ -o syscfg -c ticlang ${METADATA_PRODUCTS} ${SYSCFG_DIR}/crypto_sp.syscfg)
 add_custom_target(ti_sysconfig)
 add_custom_command(TARGET ti_sysconfig
                    PRE_BUILD
@@ -383,4 +406,3 @@ add_custom_command(TARGET ti_sysconfig
                               ${CMAKE_BINARY_DIR}/generated/syscfg/ti_drivers_config.h
                    COMMENT "Running SysConfig to generate ti_drivers_config.c/.h"
                    VERBATIM)
-

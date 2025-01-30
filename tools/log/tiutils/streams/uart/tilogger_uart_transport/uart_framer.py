@@ -5,6 +5,7 @@ from enum import Enum
 from typing import Optional
 
 from tilogger.tracedb import ElfString, Opcode, TraceDB
+from tilogger.helpers import build_value
 
 logger = logging.getLogger("UART Framer")
 # To enable debug output, uncomment the following line
@@ -24,16 +25,6 @@ class UARTOpcode(Enum):
 
 ################################################################################
 ################################################################################
-
-
-def build_value(buf):
-    """
-    Helper function: Turn an iterable into a little-endian integer
-    """
-    value = 0
-    for idx, val in enumerate(buf):
-        value += val << (idx * 8)
-    return value
 
 
 @dataclass
@@ -75,6 +66,7 @@ class UARTDataFrame(UARTFrame):
         return self.string
 
 
+@dataclass
 class UARTErrorFrame(UARTFrame):
     """Log error frame"""
 
@@ -94,6 +86,7 @@ class UARTErrorFrame(UARTFrame):
         return self.string
 
 
+@dataclass
 class UARTTimestampFormatFrame(UARTFrame):
     """Log timestamp format frame"""
 
@@ -130,18 +123,12 @@ class UARTFramer:
         # Create the PDU stream thread.
         self._output_queue = output_queue
         self.last_ts_counter = 0
-        self._first_read = True
         self._trace_db = trace_db
 
     def parse(self, buf: bytearray):
         """
         Parse as many bytes as possible from the input buffer. If the buffer contains less than 4 bytes,
         nothing is extracted
-
-        There is special funcionality to handle the reset frame (indentified by UART_RESET_TOKEN). Initially,
-        parsing of other frames will not start until the reset frame is found. After this, the buffer received for
-        parsing will be searched for the reset frame. If the reset frame is found, all preceding data will be discarded
-        and parsing will continue at the  software source frame containing the rest
 
         Args:
           buf: input buffer to parse
@@ -153,43 +140,16 @@ class UARTFramer:
         if not buf:
             return buf
 
+        if len(self._trace_db.timestamp_fmt_32) == 0:
+            raise Exception(f"Timestamp Format not found: {self._trace_db.timestamp_fmt_32}")
+
         frame: Optional[UARTFrame] = None
-
-        # If the reset token is found
-        if UART_RESET_TOKEN in buf and self._first_read is True:
-
-            if len(buf) < 8:
-                logger.debug("Reset token found, but no timestamp format available")
-                return buf
-            else:
-                logger.debug("Reset token and timestamp format found.")
-                # Discard anything before the reset token
-                buf = buf[buf.index(UART_RESET_TOKEN) + 4 :]
-
-                frame = UARTTimestampFormatFrame(0, opcode=UARTOpcode.TIMESTAMP_FORMAT)
-                buf = frame.parse(buf)
-
-                logger.debug("Timestamp format frame: %s", frame)
-
-                # queue packet for output
-                self._output_queue.put(frame)
-
-        # Return full buffer in case any part of the reset token was at the end, in
-        # which case only part of the token may have been received. Then reparse
-        # the next time data is added to the buffer
-        elif self._first_read and buf[-1] == 0xBB:
-            logger.debug("Only parts of reset token found. ")
-            return buf
-
-        # If first run and no reset found yet, don't parse anything
-        elif self._first_read is True:
-            logger.debug("Waiting for a reset frame to begin parsing.")
-            return bytearray()
+        frame = UARTTimestampFormatFrame(0, opcode=UARTOpcode.TIMESTAMP_FORMAT)
+        frame.parse(self._trace_db.timestamp_fmt_32)
+        self._output_queue.put(frame)
 
         # While there is a full packet to parse...
         while True:
-            self._first_read = False
-
             # Nothing meaningful to parse if there are less than 4 bytes
             if len(buf) < 4:
                 logger.debug("Not enough data to parse.")
@@ -211,9 +171,6 @@ class UARTFramer:
                 if elf_string.opcode == Opcode.FORMATTED_TEXT:
                     packet_length = 8 + elf_string.nargs * 4
 
-                if elf_string.opcode == Opcode.EVENT:
-                    packet_length = 8 + elf_string.nargs * 4
-
                 # If it is a Log_buf statement then read the size from the third argument.
                 # First make sure there is enough data to do so.
                 elif elf_string.opcode == Opcode.BUFFER:
@@ -224,16 +181,12 @@ class UARTFramer:
 
                 # There is not enough data to construct a packet.
                 if len(buf) < packet_length:
-                    logger.warning("FRAMING: Warning, this packet needs %d bytes", packet_length)
                     return buf
 
             elif (header & 0xFFF80000 == 0x80000000) and (0x90000000 | (header & 0x3FFFF)) in self._trace_db.traceDB:
-                # This address does not exist in the trace database
-                logger.warning("Overflow detected at 0x%x", header)
                 frame = UARTErrorFrame(0)
 
             else:
-                logger.warning("FRAMING: Error, unexpected header. No trace database information at 0x%x", header)
                 # Try to process buffer until a valid frame is found
                 buf.pop(0)
                 return buf

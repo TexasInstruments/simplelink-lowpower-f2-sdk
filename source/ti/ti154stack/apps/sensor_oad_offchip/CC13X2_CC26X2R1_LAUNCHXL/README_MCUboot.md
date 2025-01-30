@@ -34,11 +34,11 @@ In case of On-Chip OAD for MCUboot, there is only one application image on the i
 > The [Example Usage](#ExampleUsage) section of this document explains how to use the user interface, although both the button presses and the UART perform the
 > same actions.
 
-* `CONFIG_GPIO_RLED` - Turns on after the sensor connects to the collector.
-* `CONFIG_GPIO_BTN1` - Press to initialize the sensor application.
-* `CONFIG_GPIO_BTN2` - Press to disassociate from the network.
+* `CONFIG_LED_RED` - Turns on after the sensor connects to the collector.
+* `CONFIG_BTN_LEFT` - Press to initialize the sensor application.
+* `CONFIG_BTN_RIGHT` - Press to disassociate from the network.
 
-> If `CONFIG_GPIO_BTN2` is held while power is applied to the Launchpad, NV Flash will be erased.
+> To erase NV flash, Hold `CONFIG_BTN_RIGHT` down, then press and release the reset button. Wait a second then release BTN-2. You should see a CUI message indicating NV erase. If BTN-2 is not held down constantly during the boot process the NVS flash will not be erased.
 
 ## <a name="Resources&JumperSettings"></a>Resources & Jumper Settings
 
@@ -272,7 +272,18 @@ cmd: v
 
 ## <a name="GeneratingtheRequiredBinaryImages"></a>Generating the Required Binary Images
 
-For OAD projects on Thor boards, MCUboot is used as the bootloader. To build MCUboot to work with the Thor OAD examples out of the box, first import the project from `examples/nortos/[Desired Board]/mcuboot_app/mcuboot`. After importing the project, we need to make a few changes; by default, MCUboot uses up all the on-chip flash for both images. We need to leave 0x4000 bytes of on-chip flash open at 0xFC000 for persistent memory between OAD images to store network and OAD information. The basic sensor OAD application also takes up a lot less space than half of the device's flash, so to cut down on OAD time we allocate 0x26000 bytes to each slot. To do so, open `flash_map_backend/flash_map_backend.c` and change `BOOT_PRIMARY_1_SIZE` and `BOOT_SECONDARY_1_SIZE` to 0x26000. Next, change `BOOT_SECONDARY_1_BASE_ADDRESS` to `BOOT_PRIMARY_1_SIZE` + `BOOT_PRIMARY_1_BASE_ADDRESS`. After that, open up `mcuboot_config/mcuboot_config.h` and make sure `#define MCUBOOT_OVERWRITE_ONLY` is *not* commented out. Lastly, make sure `#define MCUBOOT_DIRECT_XIP` *is* commented out. This enables overwrite mode, which is what our OAD process uses. Finally, uncomment `#define TI_BOOT_USE_EXTERNAL_FLASH` if using an off-chip OAD project. 
+For OAD projects on Thor boards, MCUboot is used as the bootloader. To build MCUboot to work with the Thor OAD examples out of the box, first import the project from `examples/nortos/[Desired Board]/mcuboot_app/mcuboot`. After importing the project, we need to make a few changes; by default, MCUboot uses up all the on-chip flash for both images. We need to leave 0x4000 bytes of on-chip flash open at 0xFC000 for persistent memory between OAD images to store network and OAD information. The basic sensor OAD application also takes up a lot less space than half of the device's flash, so to cut down on OAD time we allocate 0x26000 bytes to each slot. 
+
+To configure MCUboot with these settings, open the MCUboot sysconfig file in the MCUboot project and set the following configurables:
+* For the `Upgrade Mode` configurable, choose `Overwrite`. This enables overwrite mode, which is what our OAD process uses.
+* For the `Enable External Flash` configurable:
+    * If using an off-chip OAD project, choose true (checked)
+    * Otherwise if using an on-chip OAD project, choose false (unchecked).
+* In the `Image 1` module, if using a CC13X4 platform, modify the following configurables:
+    * Primary image - Base address:     0x00006000
+    * Primary image - Image size:       0x00026000
+    * Secondary image - Base address:   0x0002C000 for on-chip OAD, 0x0 for off-chip OAD
+    * Secondary image - Image size:     0x00026000
 
 After configuring the bootloader, we can now take a look at the Sensor OAD project. By default, binary images will be built with the following post-build step, using a prebuilt binary of the MCUboot image tool:
 

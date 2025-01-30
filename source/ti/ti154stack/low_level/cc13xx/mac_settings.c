@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2024, Texas Instruments Incorporated
+ Copyright (c) 2015-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -206,6 +206,7 @@ void rfSetConfigSubG(macRfCfg_prop_t *pRfCfg)
     RF_cmdPropTxAdv.pktLen = 0;
     RF_cmdPropTxAdv.preTrigger.triggerType = TRIG_REL_START;
     RF_cmdPropTxAdv.preTrigger.pastTrig = 1;
+    RF_cmdPropTxAdv.condition.rule = COND_NEVER;
 
     memcpy(&RF_cmdPropRxAdv, pRfCfg->pRfRx, sizeof(rfc_CMD_PROP_RX_ADV_t));
     RF_cmdPropRxAdv.startTrigger.pastTrig = 1;
@@ -222,6 +223,7 @@ void rfSetConfigSubG(macRfCfg_prop_t *pRfCfg)
     RF_cmdPropRxAdv.hdrConf.numHdrBits = 0x10;
     RF_cmdPropRxAdv.hdrConf.numLenBits = 0xB;
     RF_cmdPropRxAdv.lenOffset = 0xFC;
+    RF_cmdPropRxAdv.condition.rule = COND_NEVER;
 #ifdef RFCORE49
     RF_cmdPropRxAdv.endTrigger.triggerType = 0x4;
     RF_cmdPropRxAdv.endTime = 1680000000;   //7 minutes

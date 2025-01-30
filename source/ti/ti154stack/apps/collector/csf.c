@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -636,10 +636,12 @@ void Csf_init(void *sem)
     gRightButtonHandle = Button_open(CONFIG_BTN_RIGHT, &bparams);
 
     // Read button state
+    bool nvErased = false;
     if (!GPIO_read(((Button_HWAttrs*)gRightButtonHandle->hwAttrs)->gpioIndex))
     {
         /* Right key is pressed on power up, clear all NV */
         Csf_clearAllNVItems();
+        nvErased = true;
     }
     // Set button callback
     Button_setCallback(gRightButtonHandle, processKeyChangeCallback);
@@ -682,7 +684,11 @@ void Csf_init(void *sem)
 #if !defined(AUTO_START)
     CUI_statusLinePrintf(csfCuiHndl, collectorStatusLine, "Waiting...");
 #endif /* AUTO_START */
+    if (nvErased) {
+        CUI_statusLinePrintf(csfCuiHndl, deviceStatusLine, "NV cleared");
+    }
 #endif /* CUI_DISABLE */
+
 
 #if defined(MT_CSF)
     {

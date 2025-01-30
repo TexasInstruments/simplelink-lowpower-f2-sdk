@@ -23,6 +23,10 @@
 
 #include <hal/nrf_spu.h>
 
+#define SPU_LOCK_CONF_LOCKED true
+#define SPU_LOCK_CONF_UNLOCKED false
+#define SPU_SECURE_ATTR_SECURE true
+#define SPU_SECURE_ATTR_NONSECURE false
 
 /**
  * \brief SPU interrupt enabling
@@ -42,32 +46,25 @@ void spu_clear_events(void);
 /**
  * \brief Reset TF-M memory regions to being Secure.
  *
- * Reset all (Flash or SRAM, but excluding the regions owned by the bootloader(s)) memory region permissions
- to be Secure and have default (i.e. Read-Write-Execute allow) access policy.
+ * Reset all (Flash or SRAM, but excluding the regions owned by the
+ * bootloader(s)) memory region permissions to be Secure and have the
+ * default (Read-Write-Execute allow) access policy.
  *
  * \note region lock is not applied to allow modifying the configuration.
  */
 void spu_regions_reset_unlocked_secure(void);
 
 /**
- * \brief Configure Flash memory regions as Non-Secure
- *
- * Configure a range of Flash memory regions as Non-Secure
- *
- * \note region lock is applied to prevent further modification during
- * the current reset cycle.
+ * \brief Configure the SPU Flash memory region
  */
-void spu_regions_flash_config_non_secure(uint32_t start_addr, uint32_t limit_addr);
+void spu_regions_flash_config(uint32_t start_addr, uint32_t limit_addr, bool secure_attr,
+			      uint32_t permissions, bool lock_conf);
 
 /**
- * \brief Configure SRAM memory regions as Non-Secure
- *
- * Configure a range of SRAM memory regions as Non-Secure
- *
- * \note region lock is applied to prevent further modification during
- * the current reset cycle.
+ * \brief Configure SPU SRAM memory regions
  */
-void spu_regions_sram_config_non_secure(uint32_t start_addr, uint32_t limit_addr);
+void spu_regions_sram_config(uint32_t start_addr, uint32_t limit_addr, bool secure_attr,
+			     uint32_t permissions, bool lock_conf);
 
 /**
  * \brief Configure Non-Secure Callable area
@@ -119,13 +116,13 @@ void spu_peripheral_config_non_secure(uint32_t periph_base_addr, bool periph_loc
  * Configure DPPI channels to be accessible from Non-Secure domain.
  *
  * \param channels_mask Bitmask with channels configuration.
- * \param dppi_lock Variable indicating whether to lock DPPI channel security
+ * \param lock_conf Variable indicating whether to lock DPPI channel security
  *
  * \note all channels are configured as Non-Secure
  */
-static inline void spu_dppi_config_non_secure(uint32_t channels_mask, bool dppi_lock)
+static inline void spu_dppi_config_non_secure(uint32_t channels_mask, bool lock_conf)
 {
-    nrf_spu_dppi_config_set(NRF_SPU, 0, channels_mask, dppi_lock);
+    nrf_spu_dppi_config_set(NRF_SPU, 0, channels_mask, lock_conf);
 }
 
 /**
@@ -133,14 +130,14 @@ static inline void spu_dppi_config_non_secure(uint32_t channels_mask, bool dppi_
  *
  * \param port_number GPIO Port number
  * \param gpio_mask Bitmask with gpio configuration.
- * \param gpio_lock Variable indicating whether to lock GPIO port security
+ * \param lock_conf Variable indicating whether to lock GPIO port security
  *
  * \note all pins are configured as Non-Secure
  */
 static inline void spu_gpio_config_non_secure(uint8_t port_number, uint32_t gpio_mask,
-    bool gpio_lock)
+    bool lock_conf)
 {
-    nrf_spu_gpio_config_set(NRF_SPU, port_number, gpio_mask, gpio_lock);
+    nrf_spu_gpio_config_set(NRF_SPU, port_number, gpio_mask, lock_conf);
 }
 
 /**

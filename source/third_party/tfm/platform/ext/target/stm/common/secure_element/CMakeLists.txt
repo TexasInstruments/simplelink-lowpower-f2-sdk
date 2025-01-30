@@ -35,4 +35,5 @@ target_compile_options(tfm_psa_rot_partition_crypto
 )
 
 install(FILES  ${SE_PSA_DIR}/se_psa_id.h
-    DESTINATION ${TFM_INSTALL_PATH}/interface/include)
+    DESTINATION ${INSTALL_INTERFACE_INC_DIR}
+)

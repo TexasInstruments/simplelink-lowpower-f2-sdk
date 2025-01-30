@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2006-2024, Texas Instruments Incorporated
+ Copyright (c) 2006-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -114,6 +114,22 @@ typedef uint32          halDataAlign_t;
 
 #ifndef FALSE
 #define FALSE 0
+#endif
+
+#ifndef UTRUE
+#define UTRUE TRUE
+#endif
+
+#ifndef UFALSE
+#define UFALSE FALSE
+#endif
+
+#ifndef USUCCESS
+#define USUCCESS 0U
+#endif
+
+#ifndef UFAILURE
+#define UFAILURE 1U
 #endif
 
 #ifndef NULL

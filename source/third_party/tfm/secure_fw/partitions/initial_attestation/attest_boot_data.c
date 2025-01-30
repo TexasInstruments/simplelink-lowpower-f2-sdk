@@ -18,6 +18,7 @@
 #include "psa/crypto.h"
 #endif /* TFM_PARTITION_MEASURED_BOOT */
 
+#ifndef TFM_PARTITION_MEASURED_BOOT
 #define MAX_BOOT_STATUS 512
 
 /*!
@@ -45,99 +46,7 @@ struct attest_boot_data {
  */
 __attribute__ ((aligned(4)))
 static struct attest_boot_data boot_data;
-
-/*!
- * \brief Static function to look up all entries in the shared data area
- *       (boot status) which belong to a specific module.
- *
- * \param[in]     module  The identifier of SW module to look up based on this
- * \param[out]    claim   The type of SW module's attribute
- * \param[out]    tlv_len Length of the shared data entry
- * \param[in/out] tlv_ptr Pointer to the shared data entry. If its value NULL as
- *                        input then it will starts the look up from the
- *                        beginning of the shared data section. If not NULL then
- *                        it continue look up from the next entry. It returns
- *                        the address of next found entry which belongs to
- *                        module.
- *
- * \retval    -1          Error, boot status is malformed
- * \retval     0          Entry not found
- * \retval     1          Entry found
- */
-static int32_t attest_get_tlv_by_module(uint8_t    module,
-                                        uint8_t   *claim,
-                                        uint16_t  *tlv_len,
-                                        uint8_t  **tlv_ptr)
-{
-    struct shared_data_tlv_entry tlv_entry;
-    uint8_t *tlv_end;
-    uint8_t *tlv_curr;
-
-    if (boot_data.header.tlv_magic != SHARED_DATA_TLV_INFO_MAGIC) {
-        return -1;
-    }
-
-    /* Get the boundaries of TLV section where to lookup*/
-    tlv_end = (uint8_t *)&boot_data + boot_data.header.tlv_tot_len;
-    if (*tlv_ptr == NULL) {
-        /* At first call set to the beginning of the TLV section */
-        tlv_curr = boot_data.data;
-    } else {
-        /* Any subsequent call set to the next TLV entry */
-        (void)memcpy(&tlv_entry, *tlv_ptr, SHARED_DATA_ENTRY_HEADER_SIZE);
-
-        tlv_curr  = (*tlv_ptr) + SHARED_DATA_ENTRY_HEADER_SIZE
-                    + tlv_entry.tlv_len;
-    }
-
-    /* Iterates over the TLV section and returns the address and size of TLVs
-     * with requested module identifier
-     */
-    while (tlv_curr < tlv_end) {
-        /* Create local copy to avoid unaligned access */
-        (void)memcpy(&tlv_entry, tlv_curr, SHARED_DATA_ENTRY_HEADER_SIZE);
-        if (GET_IAS_MODULE(tlv_entry.tlv_type) == module) {
-            *claim   = GET_IAS_CLAIM(tlv_entry.tlv_type);
-            *tlv_ptr = tlv_curr;
-            *tlv_len = tlv_entry.tlv_len;
-            return 1;
-        }
-
-        tlv_curr += (SHARED_DATA_ENTRY_HEADER_SIZE + tlv_entry.tlv_len);
-    }
-
-    return 0;
-}
-
-int32_t attest_get_tlv_by_id(uint8_t    claim,
-                             uint16_t  *tlv_len,
-                             uint8_t  **tlv_ptr)
-{
-    uint8_t tlv_id;
-    uint8_t module = SW_GENERAL;
-    int32_t found;
-
-    /* Ensure that look up starting from the beginning of the boot status */
-    *tlv_ptr = NULL;
-
-    /* Look up specific TLV entry which belongs to SW_GENERAL module */
-    do {
-        /* Look up next entry */
-        found = attest_get_tlv_by_module(module, &tlv_id,
-                                         tlv_len, tlv_ptr);
-        if (found != 1) {
-            break;
-        }
-        /* At least one entry was found which belongs to SW_GENERAL,
-         * check whether this one is looked for
-         */
-        if (claim == tlv_id) {
-            break;
-        }
-    } while (found == 1);
-
-    return found;
-}
+#endif
 
 #ifdef TFM_PARTITION_MEASURED_BOOT
 /*!
@@ -231,6 +140,69 @@ attest_encode_sw_component(QCBOREncodeContext *encode_ctx,
     QCBOREncode_CloseMap(encode_ctx);
 
     return PSA_ATTEST_ERR_SUCCESS;
+}
+#else
+/*!
+ * \brief Static function to look up all entries in the shared data area
+ *       (boot status) which belong to a specific module.
+ *
+ * \param[in]     module  The identifier of SW module to look up based on this
+ * \param[out]    claim   The type of SW module's attribute
+ * \param[out]    tlv_len Length of the shared data entry
+ * \param[in/out] tlv_ptr Pointer to the shared data entry. If its value NULL as
+ *                        input then it will starts the look up from the
+ *                        beginning of the shared data section. If not NULL then
+ *                        it continue look up from the next entry. It returns
+ *                        the address of next found entry which belongs to
+ *                        module.
+ *
+ * \retval    -1          Error, boot status is malformed
+ * \retval     0          Entry not found
+ * \retval     1          Entry found
+ */
+static int32_t attest_get_tlv_by_module(uint8_t    module,
+                                        uint8_t   *claim,
+                                        uint16_t  *tlv_len,
+                                        uint8_t  **tlv_ptr)
+{
+    struct shared_data_tlv_entry tlv_entry;
+    uint8_t *tlv_end;
+    uint8_t *tlv_curr;
+
+    if (boot_data.header.tlv_magic != SHARED_DATA_TLV_INFO_MAGIC) {
+        return -1;
+    }
+
+    /* Get the boundaries of TLV section where to lookup*/
+    tlv_end = (uint8_t *)&boot_data + boot_data.header.tlv_tot_len;
+    if (*tlv_ptr == NULL) {
+        /* At first call set to the beginning of the TLV section */
+        tlv_curr = boot_data.data;
+    } else {
+        /* Any subsequent call set to the next TLV entry */
+        (void)memcpy(&tlv_entry, *tlv_ptr, SHARED_DATA_ENTRY_HEADER_SIZE);
+
+        tlv_curr  = (*tlv_ptr) + SHARED_DATA_ENTRY_HEADER_SIZE
+                    + tlv_entry.tlv_len;
+    }
+
+    /* Iterates over the TLV section and returns the address and size of TLVs
+     * with requested module identifier
+     */
+    while (tlv_curr < tlv_end) {
+        /* Create local copy to avoid unaligned access */
+        (void)memcpy(&tlv_entry, tlv_curr, SHARED_DATA_ENTRY_HEADER_SIZE);
+        if (GET_IAS_MODULE(tlv_entry.tlv_type) == module) {
+            *claim   = GET_IAS_CLAIM(tlv_entry.tlv_type);
+            *tlv_ptr = tlv_curr;
+            *tlv_len = tlv_entry.tlv_len;
+            return 1;
+        }
+
+        tlv_curr += (SHARED_DATA_ENTRY_HEADER_SIZE + tlv_entry.tlv_len);
+    }
+
+    return 0;
 }
 #endif /* TFM_PARTITION_MEASURED_BOOT */
 
@@ -370,7 +342,16 @@ attest_encode_sw_components_array(QCBOREncodeContext *encode_ctx,
 
 enum psa_attest_err_t attest_boot_data_init(void)
 {
+#ifdef TFM_PARTITION_MEASURED_BOOT
+    /* When the TFM_PARTITION_MEASURED_BOOT is enabled boot data is retrieved by
+     * that partition from the SPM. In this case, the initial attestation partition
+     * requests through the measured boot partition's API for boot data to create
+     * the token.
+     */
+    return PSA_ATTEST_ERR_SUCCESS;
+#else
     return attest_get_boot_data(TLV_MAJOR_IAS,
                                 (struct tfm_boot_data *)&boot_data,
                                 MAX_BOOT_STATUS);
+#endif
 }

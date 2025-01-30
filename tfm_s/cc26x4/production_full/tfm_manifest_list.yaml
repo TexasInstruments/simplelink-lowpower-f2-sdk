@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Copyright (c) 2019-2023 Texas Instruments Incorporated
+# Copyright (c) 2019-2024, Texas Instruments Incorporated
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -34,7 +34,8 @@
             "linker_pattern": {
                 "library_list": [
                     "*ti_*partition_crypto.*",
-#                    "*tfm_*partition_its.*"
+                    "*mbedcrypto.*",
+                    "ti_tfm_crypto_its.*"
                 ]
             }
         },

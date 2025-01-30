@@ -32,7 +32,7 @@ if (NOT DEFINED P64_UTILS_LIB_TARGET)
     set(P64_UTILS_LIB_TARGET p64_utils_lib)
 endif()
 
-add_definitions(-DCY_P64_FREE_WIPED)
+add_compile_definitions(CY_P64_FREE_WIPED)
 
 add_library(${P64_UTILS_LIB_TARGET} STATIC)
 

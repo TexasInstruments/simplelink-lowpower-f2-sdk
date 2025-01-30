@@ -65,7 +65,10 @@ const LaunchPadMap = {
 // Targets with 10 dBm High PA
 const TargetPA10 = ["LAUNCHXL-CC1352P-4", "LP_CC2652PSIP", "LP_CC1352P7-4",
     "LP_CC2651P3, 10DBM", "LP_CC2653P10, 10DBM", "LP_EM_CC1354P10_6",
-    "LP_EM_CC2674P10_RSK", "LP_CC2674P10_RGZ, 10DBM"];
+    "CC2674P10_RSK, 10DBM", "LP_EM_CC2674P10, 10DBM"];
+
+// Target boards (RF Designs) with no High PA settings
+const TargetNoHigPa = ["CC2674P10_RGZ_ID24", "CC1354P10_RGZ_ID24"];
 
 // Load board info
 let TiBoard = Common.getBoardName();
@@ -187,7 +190,7 @@ const config = [
             }
             updateFreqBands(inst);
 
-            // Special handling of CC1352P/CC2652P
+            // Special handling of CC1352P/CC2652P/CC1354P/CC2674P
             if ("pa20" in inst) {
                 if (rfDesign169) {
                     inst.pa20 = "none";
@@ -328,9 +331,11 @@ function onPaChange(inst) {
             is10dbm = true;
         }
 
-        name += "-HIGH-PA";
-        if (is10dbm) {
-            name += "_10DBM";
+        if (!TargetNoHigPa.includes(name)) {
+            name += "-HIGH-PA";
+            if (is10dbm) {
+                name += "_10DBM";
+            }
         }
     }
     if (!(name in DesignData)) {
@@ -803,6 +808,16 @@ function loadTargetInfo() {
                     targets[i].Target = target;
                 }
                 targetList = targets;
+
+                // If there is a mix of virtual and non-virtual targets...
+                if ("Target" in rawIndex.targets) {
+                    // Assume that 'Target' exists
+                    const tmp = Common.forceArray(rawIndex.targets.Target);
+                    // The target name for non-virtual targets is contain in the target file itself
+                    // and will be added when the file is loaded
+                    const target = {_name: null, Target: tmp};
+                    targetList.push(target);
+                }
             }
             else {
                 // Assume that 'Target' exists
@@ -903,6 +918,10 @@ function getFrontEnd(freqBand) {
  *  ======== getFrequencyBands ========
  *
  *  Get the frequency bands that are supported by the currently selected device.
+ *  The ti.TARGET_DATA is populated with information from the target definitions given
+ *  on the root folder of the device and eventually on the protocol folder. If target definitions given on the protocol folder,
+ *  that means TARGET_DATA.length > 1, this information will overwrite the information from the root folder
+ *  if the same target names are used.
  *
  */
 function getFrequencyBands() {
@@ -928,13 +947,13 @@ function getFrequencyBands() {
                 tmp.min = data.min;
                 tmp.max = data.max;
                 tmp.highPA = data.hiPa;
-                insertTaTable(tmp, data);
+                insertPaTable(tmp, data);
 
                 // Frequency band indexed by shorthand name ("433" ,"868", "2400") + board name
                 const frName = "fb" + fr.replace("P", "") + "-" + board;
 
                 if (frName in freqBands) {
-                    insertTaTable(freqBands[frName], data);
+                    insertPaTable(freqBands[frName], data);
                 }
                 else {
                     freqBands[frName] = _.cloneDeep(tmp);
@@ -943,7 +962,7 @@ function getFrequencyBands() {
         }
     });
 
-    function insertTaTable(dest, data) {
+    function insertPaTable(dest, data) {
         if (data.hiPa) {
             const paDefault = data.paTable[0]._text;
             if (paDefault === "10") {
@@ -1060,7 +1079,7 @@ function getDesignName(inst) {
 }
 
 /*!
- *  ======== getActiveFreqbands ========
+ *  ======== updateFreqBands ========
  *
  *  Return the frequency bands of the currently selected target
  *
@@ -1069,6 +1088,7 @@ function updateFreqBands(inst = null) {
     ActiveFreqBands = {};
     let fbsub1g = "fb868";
     let fb24g = "fb2400";
+    let currentDesign = getTargetInfo();
     const boardName = getBoardName(TargetName);
     if (inst != null) {
         fbsub1g = inst.fbSub1g;
@@ -1084,11 +1104,14 @@ function updateFreqBands(inst = null) {
         else if (fr.includes(fb24g)) {
             tmp = fb24g;
         }
+
         if (tmp !== "none") {
             if (tmp in ActiveFreqBands) {
-                // Check board name
-                if (fr.includes(boardName)) {
-                    ActiveFreqBands[tmp] = fb;
+                // Remove "fb...-" prefix and compare board name of selected target.
+                // The board name could be with or without the "-HIGH-PA" suffix
+                let frBoardName = fr.slice(fr.indexOf('-') + 1);
+                if ((boardName === frBoardName) || (boardName === (frBoardName + "-HIGH-PA"))) { 
+                        ActiveFreqBands[tmp] = fb;
                 }
             }
             else {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2021, Texas Instruments Incorporated
+ * Copyright (c) 2015-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,11 +52,8 @@
 /* Driver configuration */
 #include "ti_drivers_config.h"
 
-#include "bootutil/bootutil.h"
 #include "bootutil/image.h"
 
-
-#include "slate_test.h"
 #include "trace.h"
 
 #define BLINK_INTERVAL     500000  /* Set blink interval to 500000us or 500ms */
@@ -155,8 +152,6 @@ void *mainThread(void *arg0)
                       mcubootHdr->ih_ver.iv_minor,
                       mcubootHdr->ih_ver.iv_revision,
                       mcubootHdr->ih_ver.iv_build_num);
-    
-    slate_test_print();
 
     /* Init LED's state */
     GPIO_write(CONFIG_GPIO_LED_0, CONFIG_GPIO_LED_ON);

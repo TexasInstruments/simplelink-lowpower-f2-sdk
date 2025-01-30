@@ -213,7 +213,11 @@ static void key_sec_prot_create_response(sec_prot_t *prot, sec_prot_result_e res
 static int8_t key_sec_prot_initial_key_send(sec_prot_t *prot, sec_prot_keys_t *sec_keys)
 {
     uint8_t result = 0;
+#ifdef FAN1_1_INTEROP
+    uint16_t kde_len = KDE_GTKL_LEN + 14;
+#else
     uint16_t kde_len = KDE_GTKL_LEN;
+#endif
 
     uint8_t *pmk = sec_prot_keys_pmk_get(sec_keys);
     uint8_t pmkid[PMKID_LEN];
@@ -252,6 +256,10 @@ static int8_t key_sec_prot_initial_key_send(sec_prot_t *prot, sec_prot_keys_t *s
 
     uint8_t gtkl = sec_prot_keys_fresh_gtkl_get(sec_keys->gtks);
     kde_end = kde_gtkl_write(kde_end, gtkl);
+#ifdef FAN1_1_INTEROP
+    kde_end = kde_nr_write(kde_end, 1);
+    kde_end = kde_lgtkl_write(kde_end, 0);
+#endif
 
     kde_len = kde_end - kde_start;
 

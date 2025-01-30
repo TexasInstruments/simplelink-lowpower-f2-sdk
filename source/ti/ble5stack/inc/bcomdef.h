@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2024, Texas Instruments Incorporated
+ Copyright (c) 2009-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -314,8 +314,8 @@ typedef Status_t bStatus_t;
  */
 
 /// @brief TI Base 128-bit UUID: F000XXXX-0451-4000-B000-000000000000
-#define TI_BASE_UUID_128( uuid )  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xB0, \
-                                  0x00, 0x40, 0x51, 0x04, LO_UINT16( uuid ), HI_UINT16( uuid ), 0x00, 0xF0
+#define TI_BASE_UUID_128( uuid )  {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xB0, \
+                                  0x00, 0x40, 0x51, 0x04, LO_UINT16( uuid ), HI_UINT16( uuid ), 0x00, 0xF0}
 
 /*********************************************************************
  * GLOBAL VARIABLES

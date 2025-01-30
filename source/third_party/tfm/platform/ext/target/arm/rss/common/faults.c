@@ -1,13 +1,14 @@
 /*
- * Copyright (c) 2018-2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
  */
 
 #include "cmsis.h"
-#include "target_cfg.h"
+#include "common_target_cfg.h"
 #include "utilities.h"
+/* "exception_info.h" must be the last include because of the IAR pragma */
 #include "exception_info.h"
 
 void C_MPC_Handler(void)

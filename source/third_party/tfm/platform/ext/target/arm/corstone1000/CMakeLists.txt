@@ -62,6 +62,8 @@ target_add_scatter_file(bl1_2
 
 add_subdirectory(openamp)
 
+add_subdirectory(${PLATFORM_DIR}/ext/accelerator/cc312/cc312-rom cc312-rom)
+
 target_include_directories(platform_s
     PUBLIC
         .
@@ -73,10 +75,12 @@ target_include_directories(platform_s
         partition
         services/include
         ${PLATFORM_DIR}/ext/target/arm/drivers/flash/common
+        ${PLATFORM_DIR}/ext/target/arm/drivers/flash/cfi
         ${PLATFORM_DIR}/ext/target/arm/drivers/flash/strata
         ${PLATFORM_DIR}/ext/target/arm/drivers/qspi/xilinx_pg153_axi
         ${PLATFORM_DIR}/ext/target/arm/drivers/flash/n25q256a
         ${PLATFORM_DIR}/ext/target/arm/drivers/flash/sst26vf064b
+        ${PLATFORM_DIR}/ext/target/arm/drivers/usart/pl011
     INTERFACE
         cc312
         fw_update_agent
@@ -91,7 +95,7 @@ target_sources(platform_s
         CMSIS_Driver/Driver_USART.c
         Device/Source/device_definition.c
         Device/Source/system_core_init.c
-        Native_Driver/uart_pl011_drv.c
+        ${PLATFORM_DIR}/ext/target/arm/drivers/usart/pl011/uart_pl011_drv.c
         Native_Driver/mhu_v2_x.c
         Native_Driver/watchdog.c
         Native_Driver/arm_watchdog_drv.c
@@ -112,7 +116,7 @@ if (PLATFORM_IS_FVP)
 target_sources(platform_s
     PRIVATE
         ${PLATFORM_DIR}/ext/target/arm/drivers/flash/strata/spi_strataflashj3_flash_lib.c
-        Native_Driver/cfi_drv.c
+        ${PLATFORM_DIR}/ext/target/arm/drivers/flash/cfi/cfi_drv.c
 )
 else()
 target_sources(platform_s
@@ -141,38 +145,82 @@ endif()
 
 #========================= Platform BL1 =======================================#
 
-target_sources(platform_bl1
+target_sources(platform_bl1_1
     PRIVATE
-        ./Device/Source/system_core_init.c
-        ./Device/Source/device_definition.c
-        ./bl1/boot_hal_bl1.c
-        ./Native_Driver/firewall.c
         ./CMSIS_Driver/Driver_Flash.c
         ./CMSIS_Driver/Driver_USART.c
-        ./Native_Driver/uart_pl011_drv.c
-        $<$<BOOL:${PLATFORM_IS_FVP}>:${CMAKE_CURRENT_SOURCE_DIR}/Native_Driver/cfi_drv.c>
+        ./Device/Source/device_definition.c
+        ./Device/Source/system_core_init.c
+        ./Native_Driver/arm_watchdog_drv.c
+        ./Native_Driver/firewall.c
+        ${PLATFORM_DIR}/ext/target/arm/drivers/usart/pl011/uart_pl011_drv.c
+        $<$<BOOL:${PLATFORM_IS_FVP}>:${PLATFORM_DIR}/ext/target/arm/drivers/flash/cfi/cfi_drv.c>
         $<$<BOOL:${PLATFORM_IS_FVP}>:${PLATFORM_DIR}/ext/target/arm/drivers/flash/strata/spi_strataflashj3_flash_lib.c>
         $<$<NOT:$<BOOL:${PLATFORM_IS_FVP}>>:${PLATFORM_DIR}/ext/target/arm/drivers/qspi/xilinx_pg153_axi/xilinx_pg153_axi_qspi_controller_drv.c>
         $<$<NOT:$<BOOL:${PLATFORM_IS_FVP}>>:${PLATFORM_DIR}/ext/target/arm/drivers/flash/n25q256a/spi_n25q256a_flash_lib.c>
         $<$<NOT:$<BOOL:${PLATFORM_IS_FVP}>>:${PLATFORM_DIR}/ext/target/arm/drivers/flash/sst26vf064b/spi_sst26vf064b_flash_lib.c>
-        ./fw_update_agent/uefi_capsule_parser.c
+        ./Native_Driver/watchdog.c
+        ./bl1/boot_hal_bl1_1.c
+        ./bl1/provisioning.c
         ./fw_update_agent/fwu_agent.c
+        ./fw_update_agent/uefi_capsule_parser.c
         ./fw_update_agent/uefi_fmp.c
         ./soft_crc/soft_crc.c
-        ./Native_Driver/arm_watchdog_drv.c
-        ./Native_Driver/watchdog.c
-        ./bl1/provisioning.c
         $<$<NOT:$<BOOL:${PLATFORM_DEFAULT_OTP}>>:${PLATFORM_DIR}/ext/accelerator/cc312/otp_cc312.c>
+        $<$<NOT:$<BOOL:${TFM_BL1_SOFTWARE_CRYPTO}>>:${CMAKE_CURRENT_SOURCE_DIR}/bl1/cc312_rom_crypto.c>
+        $<$<NOT:$<BOOL:${TFM_BL1_SOFTWARE_CRYPTO}>>:${CMAKE_CURRENT_SOURCE_DIR}/bl1/cc312_rom_trng.c>
 )
 
-target_compile_definitions(platform_bl1
+target_compile_definitions(platform_bl1_1
     PUBLIC
         $<$<BOOL:${PLATFORM_IS_FVP}>:PLATFORM_IS_FVP>
-        $<$<AND:$<BOOL:${CONFIG_TFM_BOOT_STORE_MEASUREMENTS}>,$<BOOL:${TFM_PARTITION_MEASURED_BOOT}>>:MEASURED_BOOT_API>
         $<$<BOOL:${PLATFORM_DEFAULT_OTP_WRITEABLE}>:OTP_WRITEABLE>
+        $<$<BOOL:${CRYPTO_HW_ACCELERATOR}>:CRYPTO_HW_ACCELERATOR>
+        $<$<BOOL:${CRYPTO_HW_ACCELERATOR_OTP_PROVISIONING}>:CRYPTO_HW_ACCELERATOR_OTP_PROVISIONING>
+
 )
 
-target_include_directories(platform_bl1_interface
+target_include_directories(platform_bl1_1_interface
+    INTERFACE
+        .
+        ./Device/Include
+        ./Device/Config
+        ./Native_Driver
+        ./CMSIS_Driver/Config
+        ./fw_update_agent
+        ./soft_crc
+        ${PLATFORM_DIR}/ext/target/arm/drivers/flash/cfi
+        ${PLATFORM_DIR}/ext/target/arm/drivers/flash/common
+        ${PLATFORM_DIR}/ext/target/arm/drivers/flash/strata
+        ${PLATFORM_DIR}/ext/target/arm/drivers/qspi/xilinx_pg153_axi/
+        ${PLATFORM_DIR}/ext/target/arm/drivers/flash/n25q256a/
+        ${PLATFORM_DIR}/ext/target/arm/drivers/flash/sst26vf064b/
+        ${CMAKE_SOURCE_DIR}/bl1/bl1_1/shared_lib/interface/
+        ${PLATFORM_DIR}/ext/target/arm/drivers/usart/pl011
+        $<$<BOOL:${CRYPTO_HW_ACCELERATOR}>:${CMAKE_SOURCE_DIR}/platform/ext/accelerator/interface>
+)
+
+target_link_libraries(platform_bl1_1
+    PRIVATE
+        $<$<NOT:$<BOOL:${TFM_BL1_SOFTWARE_CRYPTO}>>:cc312_rom>
+)
+
+target_sources(platform_bl1_2
+    PRIVATE
+        ./bl1/boot_hal_bl1_2.c
+)
+
+target_compile_definitions(platform_bl1_2
+    PUBLIC
+        $<$<BOOL:${PLATFORM_IS_FVP}>:PLATFORM_IS_FVP>
+        $<$<BOOL:${PLATFORM_DEFAULT_OTP_WRITEABLE}>:OTP_WRITEABLE>
+        $<$<BOOL:${CRYPTO_HW_ACCELERATOR}>:CRYPTO_HW_ACCELERATOR>
+        $<$<BOOL:${CRYPTO_HW_ACCELERATOR_OTP_PROVISIONING}>:CRYPTO_HW_ACCELERATOR_OTP_PROVISIONING>
+)
+
+target_include_directories(platform_bl1_2
+    PRIVATE
+        $<$<BOOL:${CRYPTO_HW_ACCELERATOR}>:${PLATFORM_DIR}/ext/accelerator/cc312/cc312-rom>
     INTERFACE
         .
         ./Device/Include
@@ -182,6 +230,7 @@ target_include_directories(platform_bl1_interface
         ./fw_update_agent
         ./soft_crc
         ${PLATFORM_DIR}/ext/target/arm/drivers/flash/common
+        ${PLATFORM_DIR}/ext/target/arm/drivers/flash/cfi
         ${PLATFORM_DIR}/ext/target/arm/drivers/flash/strata
         ${PLATFORM_DIR}/ext/target/arm/drivers/qspi/xilinx_pg153_axi/
         ${PLATFORM_DIR}/ext/target/arm/drivers/flash/n25q256a/
@@ -198,7 +247,7 @@ target_sources(platform_bl2
         CMSIS_Driver/Driver_USART.c
         Device/Source/device_definition.c
         Device/Source/system_core_init.c
-        Native_Driver/uart_pl011_drv.c
+        ${PLATFORM_DIR}/ext/target/arm/drivers/usart/pl011/uart_pl011_drv.c
         Native_Driver/watchdog.c
         Native_Driver/arm_watchdog_drv.c
         fip_parser/fip_parser.c
@@ -218,7 +267,7 @@ if (PLATFORM_IS_FVP)
 target_sources(platform_bl2
     PRIVATE
         ${PLATFORM_DIR}/ext/target/arm/drivers/flash/strata/spi_strataflashj3_flash_lib.c
-        Native_Driver/cfi_drv.c
+        ${PLATFORM_DIR}/ext/target/arm/drivers/flash/cfi/cfi_drv.c
 )
 else()
 target_sources(platform_bl2
@@ -272,10 +321,12 @@ target_include_directories(platform_bl2
         soft_crc
         io
         ${PLATFORM_DIR}/ext/target/arm/drivers/flash/common
+        ${PLATFORM_DIR}/ext/target/arm/drivers/flash/cfi
         ${PLATFORM_DIR}/ext/target/arm/drivers/flash/strata
         ${PLATFORM_DIR}/ext/target/arm/drivers/qspi/xilinx_pg153_axi
         ${PLATFORM_DIR}/ext/target/arm/drivers/flash/n25q256a
         ${PLATFORM_DIR}/ext/target/arm/drivers/flash/sst26vf064b
+        ${PLATFORM_DIR}/ext/target/arm/drivers/usart/pl011
         .
     INTERFACE
         cc312
@@ -316,3 +367,29 @@ if (${PLATFORM_PSA_ADAC_SECURE_DEBUG})
             platform_bl2
     )
 endif()
+
+find_package(Python3)
+
+add_custom_target(bl1_provisioning_bundle
+    ALL
+    SOURCES bl1_provisioning_bundle.bin
+)
+
+add_custom_command(OUTPUT bl1_provisioning_bundle.bin
+    DEPENDS ${TFM_BL2_ENCRYPTION_KEY_PATH}
+    DEPENDS ${TFM_GUK_PATH}
+    DEPENDS $<TARGET_FILE_DIR:bl1_2>/bl1_2_padded_hash.bin
+    DEPENDS $<TARGET_FILE_DIR:bl2>/bl2_signed_hash.bin
+    DEPENDS $<TARGET_FILE_DIR:bl1_2>/bl1_2_padded.bin
+    bl1_2_padded_bin bl2_signed_bin
+    DEPENDS ${CMAKE_SOURCE_DIR}/bl1/bl1_1/scripts/create_provisioning_bundle.py
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/bl1/bl1_1/scripts/create_provisioning_bundle.py
+                    --bl2_encryption_key_input_file ${TFM_BL2_ENCRYPTION_KEY_PATH}
+                    --bl2_signing_key_input_file ${TFM_BL2_SIGNING_KEY_PATH}
+                    --guk_input_file ${TFM_GUK_PATH}
+                    --bl1_2_padded_hash_input_file $<TARGET_FILE_DIR:bl1_2>/bl1_2_padded_hash.bin
+                    --bl2_signed_hash_input_file $<TARGET_FILE_DIR:bl2>/bl2_signed_hash.bin
+                    --bl1_2_input_file $<TARGET_FILE_DIR:bl1_2>/bl1_2_padded.bin
+                    --bundle_output_file bl1_provisioning_bundle.bin
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/bl1_provisioning_bundle.bin $<TARGET_FILE_DIR:bl1_1>
+)

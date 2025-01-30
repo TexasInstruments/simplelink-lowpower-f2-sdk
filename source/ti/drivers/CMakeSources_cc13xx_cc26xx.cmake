@@ -126,7 +126,7 @@ set(SOURCES_CC13X4_CC26X3_CC26X4
 )
 
 set(SOURCES_TFM_NS_API
-    ${TFM_INSTALL_DIR}/source/third_party/tfm/interface/src/tfm_psa_ns_api.c
+    ${TFM_INSTALL_DIR}/source/third_party/tfm/interface/src/tfm_tz_psa_ns_api.c
     ${TFM_INSTALL_DIR}/source/third_party/tfm/interface/src/os_wrapper/tfm_ns_interface_bare_metal.c
     # ${TFM_INSTALL_DIR}/source/third_party/tfm/interface/src/tfm_attest_api.c  // Disabled pending resolution of SPE-137
 )
@@ -167,6 +167,9 @@ set(SOURCES_NONSEC_CC13X4_CC26X3_CC26X4
     cryptoutils/cryptokey/CryptoKeyKeyStore_PSA.c
     cryptoutils/ecc/ECCParamsCC26X4_ns.c
     ecdh/ECDHCC26X4_ns.c
+    ecdsa/ECDSACC26X4_ns.c
+    ecjpake/ECJPAKECC26X4_ns.c
+    eddsa/EDDSACC26X4_ns.c
     nvs/flash/FlashCC26X4_ns.c
     sha2/SHA2CC26X4_ns.c
     tfm/SecureCallback.c

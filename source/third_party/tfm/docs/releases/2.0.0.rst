@@ -1,0 +1,173 @@
+*************
+Version 2.0.0
+*************
+
+New major features
+==================
+
+  - TF-M secure build process and non-secure build process are split to simplify
+    and enhance non-secure integration with TF-M.
+
+    - Refer to :doc:`TF-M Build Instruction </building/tfm_build_instruction>` to build SPE image.
+    - Refer to :doc:`Building Tests </building/tests_build_instruction>` to build non-secure tests.
+
+  - :doc:`Update new Mailbox agent API </design_docs/dual-cpu/mailbox_ns_agent_update>`.
+
+    - Decouple the specific application Mailbox from SPM, make it an application in Secure Partition.
+    - Unify the interfaces between partitions and SPM, and reduces the interaction interface between them.
+
+  - Multi-core support in the Secure Function (SFN) model.
+  - Optimize SPM critical section implementation to reduce time cost in isolation level 2&3.
+  - Use local variables for connection handles instead of dynamic allocation when there is only synchronous service
+    access routine in the SFN model.
+  - P256-M [1]_ component is enabled on the TF-M side in profile medium which has a much smaller code size and RAM
+    footprint.
+  - MCUboot upgrade to v2.0.0.
+  - Mbed TLS upgrade to v3.5.0.
+  - TF-M PSA client API performance profiling is tracked in SQUAD [2]_ and the profiling tool [3]_ is updated.
+  - TF-M integrates Read the Docs [4]_ to support finding documentation versions by the released tags and downloading
+    PDFs. External links are supported for documentation in TF-M Tests, Tools and Extras repositories.
+
+New security advisories
+=======================
+
+A Security vulnerability fixed in v1.8.1
+Refer to :doc:`TFMV-6 </security/security_advisories/cc3xx_partial_tag_compare_on_chacha20_poly1305>` for more details.
+The mitigation is included in this release.
+
+New platforms supported
+=======================
+
+ - :doc:`stm32h573i_dk. </platform/stm/stm32h573i_dk/readme>`
+
+Tested platforms
+================
+
+The following platforms are successfully tested in this release.
+
+- **Arm**
+
+  - AN519
+  - AN521
+  - AN555
+  - Corstone-1000
+  - Corstone-300
+  - Corstone-310
+  - Musca-B1
+  - Musca-S1
+
+- **Infineon/Cypress**
+
+  - PSoC 64
+
+- **STM**
+
+  - B-U585I-IOT02A
+  - NUCLEO-L552ZE-Q
+  - STM32H573idk
+
+- **Nordic**
+
+  - nRF5340
+  - nRF9160
+
+- **NuMaker-PFM**
+
+  - M2351
+  - M2354
+
+- **NXP**
+
+  - LPCXpresso55S69
+
+Reference memory footprint
+==========================
+
+All measurements below are made for *AN521* platform, built `TF-Mv2.0.0-RC2
+<https://git.trustedfirmware.org/TF-M/trusted-firmware-m.git/tag/?h=TF-Mv2.0.0-RC2>`_
+on Windows 10 using Armclang v6.18 and build type MinSizeRel.
+
+All modules are measured in bytes. Some minor modules are not shown in the table below.
+
+.. note::
+
+  Profile `Medium-ARoT-less` built with disabled Firmware Update service to align with other
+  TF-M Profiles.
+
++----------------------+---------------+---------------+---------------+---------------+---------------+
+| Module               |      Base     |     Small     |   ARoT-less   |    Medium     |    Large      |
++                      +-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+|                      | Flash |  RAM  | Flash |  RAM  | Flash |  RAM  | Flash |  RAM  | Flash |  RAM  |
++======================+=======+=======+=======+=======+=======+=======+=======+=======+=======+=======+
+|Generated (stack, stc)|  112  |  3184 |  160  |  3184 |  160  |  3184 |  208  |  3184 |  272  | 3184  |
++----------------------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+|Objects               |  940  |  1064 |  1224 |  5464 |  1313 |  6152 |  1443 |  1496 |  1518 | 1496  |
++----------------------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+|c_w.l                 |  190  |   0   |  690  |   0   |  690  |   0   |  690  |   0   |  930  |   0   |
++----------------------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+|platform (Secure)     |  5098 |  284  |  5430 |  284  |  5782 |  284  |  6154 |  284  |  6284 |  284  |
++----------------------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+|SPM                   |  3574 |  165  |  4456 |  165  |  3946 |  165  |  6330 |  1353 |  6484 | 1358  |
++----------------------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+|sprt                  |  274  |   0   |  1470 |   0   |  1308 |   0   |  2470 |   4   |  2454 |   4   |
++----------------------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+|MbedCrypto            |  N/A  |  N/A  | 25220 |  2108 | 29964 |  2104 | 29968 |  2104 | 78938 | 1996  |
++----------------------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+|PROT_attestation      |  N/A  |  N/A  |  2341 |  557  |  2571 |  1218 |  2571 |  3010 | 2687  | 3010  |
++----------------------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+|PROT_crypto           |  N/A  |  N/A  |  3866 |  2070 |  4420 | 16026 |  4420 | 22938 | 4552  | 25818 |
++----------------------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+|PROT_ITS              |  N/A  |  N/A  |  4830 |   80  |  4894 |  112  |  5064 |  1988 | 5068  | 2498  |
++----------------------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+|PROT_platform         |  N/A  |  N/A  |  N/A  |  N/A  |  478  |   0   |  520  |  1280 |  520  | 1280  |
++----------------------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+|AROT_PS               |  N/A  |  N/A  |  N/A  |  N/A  |  N/A  |  N/A  |  3276 |  4364 |  3276 | 4364  |
++----------------------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+|platform_crypto_keys  |  N/A  |  N/A  |  248  |   0   |  256  |   0   |  256  |   0   |  256  |   0   |
++----------------------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+|qcbor                 |  N/A  |  N/A  |  854  |   0   |  854  |   0   |  854  |   0   |  854  |   0   |
++----------------------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+|crypto_service_p256m  |  N/A  |  N/A  |  N/A  |  N/A  |  3534 |   0   |  3534 |   0   |  N/A  |  N/A  |
++----------------------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+|Padding               |   32  |   39  |  111  |   16  |  118  |   19  |  126  |  47   |  187  |  38   |
++----------------------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+|Total incl. padding   | 10220 |  4736 | 50900 | 13928 | 60288 | 29264 | 67884 | 42052 | 114280| 45300 |
++----------------------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+
+Known issues
+============
+
+Some open issues are not fixed in this release.
+
+.. list-table::
+  :header-rows: 1
+
+  * - Descriptions
+    - Issue links
+  * - TF-M Kconfig is broken due to build split. It will be recovered in a future release.
+    - Not tracked
+
+Issues fixed since v1.8.0
+=========================
+
+The following issues have been fixed since the v1.8.0 release.
+
+.. list-table::
+  :header-rows: 1
+
+  * - Descriptions
+    - Issue links
+  * - Arm GNU toolchain version greater than *11.2* has a linker issue in `syscall`.
+    - https://developer.trustedfirmware.org/T1029
+
+Reference
+=========
+
+.. [1] `P256-M <https://github.com/mpg/p256-m>`_
+.. [2] `TF-M QA Reports SQUAD <https://qa-reports.linaro.org/tf/tf-m/metrics>`_
+.. [3] `TF-M performance profiling tool <https://git.trustedfirmware.org/TF-M/tf-m-tools.git/tree/profiling>`_
+.. [4] `Read the Docs <https://docs.readthedocs.io/en/stable/#>`_
+
+--------------
+
+*Copyright (c) 2023, Arm Limited. All rights reserved.*

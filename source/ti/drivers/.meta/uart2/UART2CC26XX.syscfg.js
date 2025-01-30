@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,27 +52,6 @@ intPriority.description = "UART peripheral interrupt priority";
  */
 let devSpecific = {
     config: [
-        {
-            name        : "dataDirection",
-            displayName : "Data Direction",
-            default     : 'Send and Receive',
-            options     : [
-                { name : 'Send and Receive' },
-                { name : 'Send Only' },
-                { name : 'Receive Only' }
-            ]
-        },
-        {
-            name        : "flowControl",
-            displayName : "Flow Control",
-            default     : false,
-            description : "Enable hardware flow control",
-            longDescription : "Hardware flow control between two devices "
-                + "is accomplished by connecting the UART Request-To-Send "
-                + "(RTS) pin to the Clear-To-Send (CTS) input on the "
-                + "receiving device, and connecting the RTS output of the "
-                + "receiving device to the UART CTS pin"
-        },
         intPriority,
 
         /* RX and TX ring buffer sizes */
@@ -129,9 +108,6 @@ let devSpecific = {
 
     /* override generic pin requirements */
     pinmuxRequirements    : pinmuxRequirements,
-
-    /* PIN instances */
-    moduleInstances: moduleInstances,
 
     onHardwareChanged: onHardwareChanged,
 
@@ -294,97 +270,6 @@ function filterHardware(component)
 }
 
 /*
- *  ======== moduleInstances ========
- *  returns PIN instances
- */
-function moduleInstances(inst)
-{
-    let pinInstances = new Array();
-    let shortName = inst.$name.replace("CONFIG_", "");
-
-    if (inst.dataDirection != "Receive Only") {
-        pinInstances.push(
-            {
-                name: "txPinInstance",
-                displayName: "TX configuration when not in use",
-                moduleName: "/ti/drivers/GPIO",
-                collapsed: true,
-                requiredArgs: {
-                    parentInterfaceName: "uart",
-                    parentSignalName: "txPin",
-                    parentSignalDisplayName: "TX"
-                },
-                args: {
-                    $name: "CONFIG_GPIO_" + shortName + "_TX",
-                    initialOutputState: "High",
-                    mode: "Output",
-                    pull: "None"
-                }
-            }
-        );
-        if (inst.flowControl) {
-            pinInstances.push({
-                name: "ctsPinInstance",
-                displayName: "CTS configuration when not in use",
-                moduleName: "/ti/drivers/GPIO",
-                collapsed: true,
-                requiredArgs: {
-                    parentInterfaceName: "uart",
-                    parentSignalName: "ctsPin",
-                    parentSignalDisplayName: "CTS"
-                },
-                args: {
-                    $name: "CONFIG_GPIO_" + shortName + "_CTS",
-                    mode: "Input",
-                    pull: "Pull Down"
-                }
-            });
-        }
-    }
-
-    if (inst.dataDirection != "Send Only") {
-        pinInstances.push({
-                name: "rxPinInstance",
-                displayName: "RX configuration when not in use",
-                moduleName: "/ti/drivers/GPIO",
-                collapsed: true,
-                requiredArgs: {
-                    parentInterfaceName: "uart",
-                    parentSignalName: "rxPin",
-                    parentSignalDisplayName: "RX"
-                },
-                args: {
-                    $name: "CONFIG_GPIO_" + shortName + "_RX",
-                    mode: "Input",
-                    pull: "Pull Down"
-                }
-            }
-        );
-        if (inst.flowControl) {
-            pinInstances.push({
-                name: "rtsPinInstance",
-                displayName: "RTS configuration when not in use",
-                moduleName: "/ti/drivers/GPIO",
-                collapsed: true,
-                requiredArgs: {
-                    parentInterfaceName: "uart",
-                    parentSignalName: "rtsPin",
-                    parentSignalDisplayName: "RTS"
-                },
-                args: {
-                    $name: "CONFIG_GPIO_" + shortName + "_RTS",
-                    initialOutputState: "Low",
-                    mode: "Output",
-                    pull: "None"
-                }
-            });
-        }
-    }
-
-    return (pinInstances);
-}
-
-/*
  *  ======== validate ========
  *  Validate this instance's configuration
  *
@@ -412,7 +297,7 @@ function validate(inst, validation, $super)
     if (txRingBufferSize < minRingBufferSize) {
         message = 'TX ring buffer size must be at least ' +
             minRingBufferSize + ' bytes';
-        logError(validation, inst, "rxRingBufferSize", message);
+        logError(validation, inst, "txRingBufferSize", message);
     }
 }
 

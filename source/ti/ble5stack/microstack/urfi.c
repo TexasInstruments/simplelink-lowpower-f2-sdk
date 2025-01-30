@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2024, Texas Instruments Incorporated
+ Copyright (c) 2009-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -116,7 +116,7 @@ extern ubleAntSwitchCB_t ubleAntSwitchSel;
  * EXTERNAL FUNCTIONS
  */
 extern bStatus_t uble_buildAndPostEvt(ubleEvtDst_t evtDst, ubleEvt_t evt,
-                                      ubleMsg_t *pMsg, uint16 len);
+                                      uint8 *pMsg, uint16 len);
 extern dataEntryQ_t *ull_setupScanDataEntryQueue( void );
 extern dataEntryQ_t *ull_setupMonitorDataEntryQueue( void );
 
@@ -124,7 +124,7 @@ extern dataEntryQ_t *ull_setupMonitorDataEntryQueue( void );
  * GLOBAL VARIABLES
  */
 
-RF_Handle    urfiHandle = NULL;
+RF_Handle    urfiHandle;
 
 /* Radio Setup Parameters.
  * config, txPower, and pRegOverride will be initialized at runtime.
@@ -449,7 +449,7 @@ void urfi_initGenericRxCmd(void)
  */
 void urfi_clientEventCb(RF_Handle h, RF_ClientEvent events, void* arg)
 {
-  port_key_t key;
+  volatile port_key_t key;
 
   key = port_enterCS_SW();
 

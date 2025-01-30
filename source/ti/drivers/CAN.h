@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Texas Instruments Incorporated
+ * Copyright (c) 2023-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,16 @@
  *  for filtering and handling the received messages as necessary.
  *  The application is responsible for interpreting the received data.
  *
+ *  # Power Management
+ *  For devices with an integrated CAN controller, the CAN driver sets a power
+ *  constraint when the driver is opened to prevent the device from entering
+ *  standby when all tasks are blocked. This is required to allow the CAN
+ *  controller and its clock source to remain powered to receive CAN messages
+ *  from the external CAN transceiver. When the driver is closed, the power
+ *  constraint is released. The application should close the CAN driver whenever
+ *  the CAN transceiver enters sleep mode and re-open the CAN driver when the CAN
+ *  transceiver wakes from sleep mode.
+ *
  *  <hr>
  *  @anchor ti_drivers_CAN_Usage
  *  # Usage
@@ -69,7 +79,7 @@
  *
  *  @code
  *  // Payload data size indexed by Data Length Code (DLC) field.
- *  static const uint32_t DLCtoDataSize[16] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 20, 24, 32, 48, 64};
+ *  static const uint32_t dlcToDataSize[16] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 20, 24, 32, 48, 64};
  *
  *  // Rx semaphore.
  *  static SemaphoreP_Handle rxSemHandle;
@@ -134,7 +144,7 @@
  *     txElem.mm  = 5U;
  *
  *     // Fill data payload with incrementing values.
- *     for (i = 0; i < DLCtoDataSize[txElem.dlc]; i++)
+ *     for (i = 0; i < dlcToDataSize[txElem.dlc]; i++)
  *     {
  *         txElem.data[i] = i;
  *     }
@@ -162,7 +172,7 @@
  *  @anchor ti_drivers_CAN_Examples
  *  ## Examples #
  *  * @ref ti_drivers_CAN_Synopsis "Usage Synopsis"
- *  * @ref ti_drivers_CAN_Example_initMsgRAM "Initialize with custom message RAM configuration"
+ *  * @ref ti_drivers_CAN_Example_initMsgRam "Initialize with custom message RAM configuration"
  *  * @ref ti_drivers_CAN_Example_initRawBitRate "Initialize with raw bit rate timing"
  *
  *  ## Initializing the CAN Driver
@@ -184,7 +194,7 @@
  *  used. If the open call is successful, it returns a non-NULL value.
  *  The CAN driver APIs are non-blocking; there is no configurable return behavior.
  *
- *  @anchor ti_drivers_CAN_Example_initMsgRAM
+ *  @anchor ti_drivers_CAN_Example_initMsgRam
  *  Example initializing the CAN driver with a custom message RAM configuration
  *  to receive only filtered message IDs:
  *
@@ -201,18 +211,18 @@
  *  static MCAN_ExtMsgIDFilterElement extMsgIDFilter[EXT_MSG_FILTER_NUM] =
  *      {{.efid1 = 0x1234578, .efid2 = 0x1234600, .efec = CAN_FEC_STORE_RXFIFO1, .eft = CAN_FILTER_RANGE}};
  *
- *  const CAN_MsgRAMConfig msgRAMConfig = {
+ *  const CAN_MsgRamConfig msgRamConfig = {
  *      .stdFilterNum       = STD_MSG_FILTER_NUM,
  *      .extFilterNum       = EXT_MSG_FILTER_NUM,
  *      .stdMsgIDFilterList = &stdMsgIDFilter[0],
  *      .extMsgIDFilterList = &extMsgIDFilter[0],
  *
- *      .rxFIFONum[0] = 10U,
- *      .rxFIFONum[1] = 2U,
+ *      .rxFifoNum[0] = 10U,
+ *      .rxFifoNum[1] = 2U,
  *      .rxBufNum     = 1U,
  *      .txBufNum     = 1U,
- *      .txFIFOQNum   = 5U,
- *      .txFIFOQMode  = 1U,
+ *      .txFifoQNum   = 5U,
+ *      .txFifoQMode  = 1U,
  *  };
  *
  *  int_fast16_t status;
@@ -222,7 +232,7 @@
  *
  *  // Open CAN driver with custom message filters.
  *  CAN_Params_init(&canParams);
- *  canParams.msgRAMConfig = &msgRAMConfig;
+ *  canParams.msgRamConfig = &msgRamConfig;
  *  canParams.eventCbk  = eventCallback;
  *  // Setup event mask for events the application is interested in receiving
  *  // the callback for. Typically, only the CAN_EVENT_RX_DATA_AVAIL is required.
@@ -251,17 +261,17 @@
  *      .dtSeg1          = 14U,
  *      .dtSeg2          = 3U,
  *      .dsjw            = 3U,
- *      .tdcOffset       = 1U,
- *      .tdcFilterWinLen = 2U
+ *      .tdcOffset       = 14U,
+ *      .tdcFilterWinLen = 0U
  *  };
  *
  *  const CAN_BitRateTimingRaw rawBitTiming = {
- *      // 500kbps nominal with 40MHz clk and 87.5% sample point ((40E6 / 1) / (70 + 9 + 1) = 500E3)
+ *      // 500kbps nominal with 40MHz clk and 87.5% sample point ((40E6 / 1) / (69 + 10 + 1) = 500E3)
  *      // Add 1 to each programmed bit time to get functional value and +1 for for prop segment
  *      .nbrp       = 0U,
- *      .ntSeg1     = 69U,
- *      .ntSeg2     = 8U,
- *      .nsjw       = 8U,
+ *      .ntSeg1     = 68U,
+ *      .ntSeg2     = 9U,
+ *      .nsjw       = 9U,
  *      .dataTiming = &rawDataBitRateTiming
  *  };
  *
@@ -334,7 +344,7 @@
 extern "C" {
 #endif
 
-/*! @addtogroup CAN_STATUS
+/*! @addtogroup CAN_STATUS CAN status codes
  *  @{
  */
 
@@ -377,9 +387,17 @@ extern "C" {
  */
 #define CAN_STATUS_NO_RX_MSG_AVAIL ((int_fast16_t)-4)
 
+/*!
+ *  @brief  No Tx event available status code.
+ *
+ *  Functions return CAN_STATUS_NO_TX_EVENT_AVAIL if there are no Tx events
+ *  available in the Tx Event FIFO.
+ */
+#define CAN_STATUS_NO_TX_EVENT_AVAIL ((int_fast16_t)-5)
+
 /*! @}*/
 
-/*! @addtogroup CAN_EVENT
+/*! @addtogroup CAN_EVENT CAN events
  *  @{
  */
 
@@ -392,7 +410,7 @@ extern "C" {
  *  message transmit and receive may be unreliable. This error is an indication
  *  that further debug of the system HW & SW is required.
  */
-#define CAN_EVENT_SPI_XFER_ERROR (0x200U)
+#define CAN_EVENT_SPI_XFER_ERROR (0x800U)
 
 /*!
  *  @brief   An uncorrected bit error occurred.
@@ -400,7 +418,7 @@ extern "C" {
  *  If an uncorrected bit error occurs, the driver should be closed and
  *  re-opened to attempt recovery.
  */
-#define CAN_EVENT_BIT_ERR_UNCORRECTED (0x100U)
+#define CAN_EVENT_BIT_ERR_UNCORRECTED (0x400U)
 
 /*!
  *  @brief   The driver's Rx ring buffer was full.
@@ -410,34 +428,51 @@ extern "C" {
  *  to CAN_EVENT_RX_DATA_AVAIL or the size of the Rx ring buffer should be
  *  increased.
  */
-#define CAN_EVENT_RX_RING_BUFFER_FULL (0x80U)
+#define CAN_EVENT_RX_RING_BUFFER_FULL (0x200U)
 
 /*!
  *  @brief   A message was lost for hardware Rx FIFO.
  *
  *  See event data for FIFO number.
  */
-#define CAN_EVENT_RX_FIFO_MSG_LOST (0x40U)
+#define CAN_EVENT_RX_FIFO_MSG_LOST (0x100U)
 
 /*!
  *  @brief   State change to error passive.
  */
-#define CAN_EVENT_ERR_PASSIVE (0x20U)
+#define CAN_EVENT_ERR_PASSIVE (0x80U)
 
 /*!
  *  @brief   State change to error active.
  */
-#define CAN_EVENT_ERR_ACTIVE (0x10U)
+#define CAN_EVENT_ERR_ACTIVE (0x40U)
 
 /*!
  *  @brief   State change to bus off.
  */
-#define CAN_EVENT_BUS_OFF (0x08U)
+#define CAN_EVENT_BUS_OFF (0x20U)
 
 /*!
  *  @brief   State change to bus on.
  */
-#define CAN_EVENT_BUS_ON (0x04U)
+#define CAN_EVENT_BUS_ON (0x10U)
+
+/*!
+ *  @brief   A CAN message transmission event was lost.
+ *
+ *  This event is used as an indication that the Tx Event was lost due to the
+ *  Tx Event FIFO being full.
+ */
+#define CAN_EVENT_TX_EVENT_LOST (0x08U)
+
+/*!
+ *  @brief   A CAN message transmission event is available.
+ *
+ *  This event is used as an indication that a new entry to the Tx Event FIFO
+ *  occurred due to the transmission of a message with Event FIFO Control (EFC)
+ *  bit set.
+ */
+#define CAN_EVENT_TX_EVENT_AVAIL (0x04U)
 
 /*!
  *  @brief   A CAN message transmission was completed.
@@ -447,12 +482,76 @@ extern "C" {
 /*!
  *  @brief   Received CAN message data is available.
  *
- * This event is used as an indication that #CAN_read() can be called to read
- * the received message(s).
+ *  This event is used as an indication that #CAN_read() can be called to read
+ *  the received message(s).
  */
 #define CAN_EVENT_RX_DATA_AVAIL (0x01U)
 
 /*! @}*/
+
+/**
+ *  @defgroup CAN_DLC CAN Data Length Codes
+ *  Data Length Code for use with CAN_RxBufElement & CAN_TxBufElement
+ *  @{
+ */
+#define CAN_DLC_0B  ((uint32_t)0U)
+#define CAN_DLC_1B  ((uint32_t)1U)
+#define CAN_DLC_2B  ((uint32_t)2U)
+#define CAN_DLC_3B  ((uint32_t)3U)
+#define CAN_DLC_4B  ((uint32_t)4U)
+#define CAN_DLC_5B  ((uint32_t)5U)
+#define CAN_DLC_6B  ((uint32_t)6U)
+#define CAN_DLC_7B  ((uint32_t)7U)
+#define CAN_DLC_8B  ((uint32_t)8U)
+#define CAN_DLC_12B ((uint32_t)9U)  /*!< Equivalent to CAN_DLC_8B for classic CAN */
+#define CAN_DLC_16B ((uint32_t)10U) /*!< Equivalent to CAN_DLC_8B for classic CAN */
+#define CAN_DLC_20B ((uint32_t)11U) /*!< Equivalent to CAN_DLC_8B for classic CAN */
+#define CAN_DLC_24B ((uint32_t)12U) /*!< Equivalent to CAN_DLC_8B for classic CAN */
+#define CAN_DLC_32B ((uint32_t)13U) /*!< Equivalent to CAN_DLC_8B for classic CAN */
+#define CAN_DLC_48B ((uint32_t)14U) /*!< Equivalent to CAN_DLC_8B for classic CAN */
+#define CAN_DLC_64B ((uint32_t)15U) /*!< Equivalent to CAN_DLC_8B for classic CAN */
+/** @}*/
+
+/**
+ *  @defgroup CAN_FEC CAN Filter Element Configurations
+ *  Filter Element Configuration for use with CAN_MsgRamConfig
+ *  <br> 0 = Disable filter element
+ *  <br> 1 = Store in Rx FIFO 0 if filter matches
+ *  <br> 2 = Store in Rx FIFO 1 if filter matches
+ *  <br> 3 = Reject ID if filter matches
+ *  <br> 4 = Set priority if filter matches
+ *  <br> 5 = Set priority and store in FIFO 0 if filter matches
+ *  <br> 6 = Set priority and store in FIFO 1 if filter matches
+ *  <br> 7 = Store into Rx Buffer or as debug message,
+ *           configuration of filter type is ignored.
+ *  <br> If FEC = 4-6, a match sets high priority message status and generates
+ *       an interrupt.
+ *  @{
+ */
+#define CAN_FEC_DISABLE_FILTER         ((uint32_t)0U)
+#define CAN_FEC_STORE_RXFIFO0          ((uint32_t)1U)
+#define CAN_FEC_STORE_RXFIFO1          ((uint32_t)2U)
+#define CAN_FEC_REJECT_ID              ((uint32_t)3U)
+#define CAN_FEC_SET_PRIO               ((uint32_t)4U)
+#define CAN_FEC_SET_PRIO_STORE_RXFIFO0 ((uint32_t)5U)
+#define CAN_FEC_SET_PRIO_STORE_RXFIFO1 ((uint32_t)6U)
+#define CAN_FEC_STORE_RXBUF            ((uint32_t)7U)
+/** @}*/
+
+/**
+ *  @defgroup CAN_FILTER_TYPE CAN Filter Types
+ *  Filter Type for use with CAN_MsgRamConfig
+ *  <br> 0 = Range filter from SFID1 to SFID2 (SFID2 >= SFID1)
+ *  <br> 1 = Dual ID filter for SFID1 or SFID2
+ *  <br> 2 = Classic filter: SFID1 = filter, SFID2 = mask
+ *  <br> 3 = Filter element disabled
+ *  @{
+ */
+#define CAN_FILTER_RANGE     ((uint32_t)0U)
+#define CAN_FILTER_DUAL_ID   ((uint32_t)1U)
+#define CAN_FILTER_WITH_MASK ((uint32_t)2U)
+#define CAN_FILTER_DISABLE   ((uint32_t)3U)
+/** @}*/
 
 /*!
  *  @brief  A CAN Rx buffer element struct for #CAN_read().
@@ -465,6 +564,16 @@ typedef MCAN_RxBufElement CAN_RxBufElement;
 typedef MCAN_TxBufElement CAN_TxBufElement;
 
 /*!
+ *  @brief  A CAN Tx Event element struct for #CAN_readTxEvent().
+ */
+typedef MCAN_TxEventFifoElement CAN_TxEventElement;
+
+/*!
+ *  @brief  A CAN bit timing struct for #CAN_getBitTiming().
+ */
+typedef MCAN_BitTimingParams CAN_BitTimingParams;
+
+/*!
  *  @brief  A handle that is returned from a #CAN_open() call.
  */
 typedef struct CAN_Config_ *CAN_Handle;
@@ -474,7 +583,7 @@ typedef struct CAN_Config_ *CAN_Handle;
  *
  *  @note       The callback can occur in task or interrupt context.
  *
- *  @param[in]  handle        A #CAN_Handle returned from #CAN_open
+ *  @param[in]  handle        A #CAN_Handle returned from #CAN_open().
  *  @param[in]  event         @ref CAN_EVENT that has occurred.
  *  @param[in]  data          Data is event dependent:
  *                            - #CAN_EVENT_RX_DATA_AVAIL: number of Rx buffers
@@ -484,7 +593,11 @@ typedef struct CAN_Config_ *CAN_Handle;
  *                              the Rx ring buffer became full resulting in message
  *                              loss.
  *                            - CAN_EVENT_TX_FINISHED: mask of buffers for which
- *                              transmission has occurred.
+ *                              transmission has occurred. Bits remain set until
+ *                              a new transmission is requested for the corresponding
+ *                              Tx buffer.
+ *                            - CAN_EVENT_TX_EVENT_AVAIL: the number of Tx Event
+ *                              elements currently available in the Tx Event FIFO.
  *                            - CAN_EVENT_SPI_XFER_ERROR: SPI transfer status code.
  *                            - other: unused
  *  @param[in]  userArg       A user supplied argument specified
@@ -495,7 +608,7 @@ typedef void (*CAN_EventCbk)(CAN_Handle handle, uint32_t event, uint32_t data, v
 /*!
  *  @brief CAN Message RAM configuration
  *
- *  The #CAN_MsgRAMConfig structure contains information used to configure
+ *  The #CAN_MsgRamConfig structure contains information used to configure
  *  the message RAM.
  *
  *  This structure needs to be defined before calling CAN_init() and it must
@@ -519,18 +632,21 @@ typedef struct
      *       is enabled. Otherwise, they include an 8-byte payload.
      */
 
-    uint32_t rxFIFONum[2];
+    uint32_t rxFifoNum[2];
     /*!< Number of Rx FIFO elements [0-64] for FIFO0 and FIFO1 respectively */
     uint32_t rxBufNum;
-    /*!< Number of dedicated Rx Buffer elements */
+    /*!< Number of dedicated Rx Buffer elements [0-64] */
 
     uint32_t txBufNum;
-    /*!< Number of dedicated Tx Buffer elements */
-    uint32_t txFIFOQNum;
-    /*!< Number of Tx buffer elements for Tx FIFO or Queue */
-    uint32_t txFIFOQMode;
+    /*!< Number of dedicated Tx Buffer elements [0-64] */
+    uint32_t txFifoQNum;
+    /*!< Number of Tx buffer elements [0-64] for Tx FIFO or Queue */
+    uint32_t txFifoQMode;
     /*!< Tx FIFO/Queue Mode: 0 = Tx FIFO mode, 1 = Tx Queue mode */
-} CAN_MsgRAMConfig;
+
+    uint32_t txEventFifoNum;
+    /*!< Number of Tx Event FIFO elements [0-32] */
+} CAN_MsgRamConfig;
 
 /*!
  *  @brief Structure defining the raw MCAN CAN FD data phase bit rate configuration
@@ -542,23 +658,36 @@ typedef struct
 {
     uint32_t dbrp;
     /*!< DBRP: Data Bit Rate Prescaler value for the MCAN system clock.
-     * Interpreted by MCAN as the value is this field + 1. If Transceiver Delay
+     * Interpreted by MCAN as the value is this field + 1. If Transmitter Delay
      * Compensation is used, valid range: 0 to 1. Otherwise, valid range: 0 to
-     * 31. */
+     * 31.
+     */
     uint32_t dtSeg1;
     /*!< DTSEG1: Data time segment 1 + prop segment. Interpreted by MCAN as the
-     * value in this field + 1. Valid range: 0 to 31. */
+     * value in this field + 1. Valid range: 0 to 31.
+     */
     uint32_t dtSeg2;
     /*!< DTSEG2: Data time segment 2. Interpreted by MCAN as the value is this
-     * field + 1. Valid range: 0 to 15. */
+     * field + 1. Valid range: 0 to 15.
+     */
     uint32_t dsjw;
     /*!< DSJW: Data Resynchronization Jump Width. Interpreted by MCAN as the
-     * value is this field + 1. Valid range: 0 to 15. Typically set equal to tSeg2. */
+     * value is this field + 1. Valid range: 0 to 15. Typically set equal to tSeg2.
+     */
     uint32_t tdcOffset;
-    /*!< Transceiver Delay Compensation offset. Valid range: 0 to 127 mtq. */
+    /*!< Transmitter Delay Compensation Offset. Defines the offset from the
+     * measured Tx to Rx delay to the secondary sample point. Set to zero to
+     * disable Transmitter Delay Compensation.
+     * Valid range: 0 to 127 mtq.
+     */
     uint32_t tdcFilterWinLen;
-    /*!< Transceiver Delay Compensation filter window length. Valid range: 0 to
-     * 127 mtq. */
+    /*!< Transmitter Delay Compensation Filter Window Length. Defines the
+     * minimum value for the Secondary Sample Point (SSP) position; dominant
+     * edges on Rx that would result in an earlier SSP position are ignored
+     * for transmitter delay measurement. The feature is enabled when \c
+     * tdcFilterWinLen is set to a value greater than \c tdcOffset.
+     * Valid range: 0 to 127 mtq.
+     */
 } CAN_DataBitRateTimingRaw;
 
 /*!
@@ -572,21 +701,26 @@ typedef struct
     uint32_t nbrp;
     /*!< NBRP: Nominal Bit Rate Prescaler value for the MCAN system clock.
      * Interpreted by MCAN as the value is this field + 1. Valid range: 0 to
-     * 511. */
+     * 511.
+     */
     uint32_t ntSeg1;
     /*!< NTSEG1: Nominal time segment 1 + prop segment. Interpreted by MCAN as the
-     * value in this field + 1. Valid range: 1 to 255. */
+     * value in this field + 1. Valid range: 1 to 255.
+     */
     uint32_t ntSeg2;
     /*!< NTSEG2: Nominal time segment 2. Interpreted by MCAN as the value is this
-     * field + 1. Valid range: 1 to 127. */
+     * field + 1. Valid range: 1 to 127.
+     */
     uint32_t nsjw;
     /*!< NSJW: Nominal Resynchronization Jump Width. Interpreted by MCAN as the
      * value is this field + 1. Valid range: 0 to 127. Typically set equal to
-     * tSeg2. */
+     * tSeg2.
+     */
 
     const CAN_DataBitRateTimingRaw *dataTiming;
     /*!< CAN FD data phase bit rate configuration. May be set to NULL if CAN FD
-     * bit rate switching is not enabled. */
+     * bit rate switching is not enabled.
+     */
 } CAN_BitRateTimingRaw;
 
 /*!
@@ -595,12 +729,13 @@ typedef struct
  *  CAN parameters are used with the CAN_open() call. Default values for
  *  these parameters are set using CAN_Params_init().
  *
- *  @sa       CAN_Params_init()
+ *  @sa       #CAN_Params_init()
  */
 typedef struct
 {
-    const CAN_MsgRAMConfig *msgRAMConfig;  /*!< Pointer to message RAM configuration */
+    const CAN_MsgRamConfig *msgRamConfig;  /*!< Pointer to message RAM configuration */
     const CAN_BitRateTimingRaw *bitTiming; /*!< Pointer to raw bit timing values */
+    uint32_t tsPrescaler;                  /*!< Timestamp prescaler */
     CAN_EventCbk eventCbk;                 /*!< Pointer to event callback function */
     uint32_t eventMask;                    /*!< Mask of events to call event callback function for */
     void *userArg;                         /*!< User supplied arg for callback */
@@ -618,10 +753,11 @@ typedef struct
     void *userArg;         /*!< User supplied arg for callback */
     uint32_t intMask;      /*!< MCAN interrupt mask */
 
-    uint32_t txBufNum;     /*!< Copy of the number of dedicated Tx Buffer elements */
-    uint32_t txFIFOQNum;   /*!< Copy of the number of Tx buffer elements to use for Tx FIFO or Queue */
-    uint32_t rxBufNum;     /*!< Copy of the number of dedicated Rx Buffer elements */
-    uint32_t rxFIFONum[2]; /*!< Copy of the number of Rx FIFO elements [0-64] for FIFO 0 and FIFO 1 respectively */
+    uint32_t txBufNum;       /*!< Copy of the number of dedicated Tx Buffer elements */
+    uint32_t txFifoQNum;     /*!< Copy of the number of Tx buffer elements to use for Tx FIFO or Queue */
+    uint32_t txEventFifoNum; /*!< Copy of the number of Tx Event buffer elements */
+    uint32_t rxBufNum;       /*!< Copy of the number of dedicated Rx Buffer elements */
+    uint32_t rxFifoNum[2];   /*!< Copy of the number of Rx FIFO elements [0-64] for FIFO 0 and FIFO 1 respectively */
 
     StructRingBuf_Object rxStructRingBuf; /*!< Receive ring buffer */
     StructRingBuf_Object txStructRingBuf; /*!< Transmit ring buffer */
@@ -676,59 +812,6 @@ typedef struct CAN_Config_
 extern const CAN_Config CAN_config[];
 extern const uint_least8_t CAN_count;
 
-/* Data Length Code for use with CAN_RxBufElement & CAN_TxBufElement */
-#define CAN_DLC_0B  ((uint32_t)0U)
-#define CAN_DLC_1B  ((uint32_t)1U)
-#define CAN_DLC_2B  ((uint32_t)2U)
-#define CAN_DLC_3B  ((uint32_t)3U)
-#define CAN_DLC_4B  ((uint32_t)4U)
-#define CAN_DLC_5B  ((uint32_t)5U)
-#define CAN_DLC_6B  ((uint32_t)6U)
-#define CAN_DLC_7B  ((uint32_t)7U)
-#define CAN_DLC_8B  ((uint32_t)8U)
-#define CAN_DLC_12B ((uint32_t)9U)  /*!< Equivalent to CAN_DLC_8B for classic CAN */
-#define CAN_DLC_16B ((uint32_t)10U) /*!< Equivalent to CAN_DLC_8B for classic CAN */
-#define CAN_DLC_20B ((uint32_t)11U) /*!< Equivalent to CAN_DLC_8B for classic CAN */
-#define CAN_DLC_24B ((uint32_t)12U) /*!< Equivalent to CAN_DLC_8B for classic CAN */
-#define CAN_DLC_32B ((uint32_t)13U) /*!< Equivalent to CAN_DLC_8B for classic CAN */
-#define CAN_DLC_48B ((uint32_t)14U) /*!< Equivalent to CAN_DLC_8B for classic CAN */
-#define CAN_DLC_64B ((uint32_t)15U) /*!< Equivalent to CAN_DLC_8B for classic CAN */
-
-/*
- * Filter Element Configuration
- *   0 = Disable filter element
- *   1 = Store in Rx FIFO 0 if filter matches
- *   2 = Store in Rx FIFO 1 if filter matches
- *   3 = Reject ID if filter matches
- *   4 = Set priority if filter matches
- *   5 = Set priority and store in FIFO 0 if filter matches
- *   6 = Set priority and store in FIFO 1 if filter matches
- *   7 = Store into Rx Buffer or as debug message,
- *       configuration of SFT[1:0] ignored.
- *   If SFEC = 4-6, a match sets high priority
- *   message status and generates an interrupt.
- */
-#define CAN_FEC_DISABLE_FILTER         0U
-#define CAN_FEC_STORE_RXFIFO0          1U
-#define CAN_FEC_STORE_RXFIFO1          2U
-#define CAN_FEC_REJECT_ID              3U
-#define CAN_FEC_SET_PRIO               4U
-#define CAN_FEC_SET_PRIO_STORE_RXFIFO0 5U
-#define CAN_FEC_SET_PRIO_STORE_RXFIFO1 6U
-#define CAN_FEC_STORE_RXBUF            7U
-
-/*
- * Filter Type
- *   0 = Range filter from SFID1 to SFID2 (SFID2 >= SFID1)
- *   1 = Dual ID filter for SFID1 or SFID2
- *   2 = Classic filter: SFID1 = filter, SFID2 = mask
- *   3 = Filter element disabled
- */
-#define CAN_FILTER_RANGE     0U
-#define CAN_FILTER_DUAL_ID   1U
-#define CAN_FILTER_WITH_MASK 2U
-#define CAN_FILTER_DISABLE   3U
-
 /*!
  *  @brief  This function initializes the CAN module.
  *
@@ -737,7 +820,7 @@ extern const uint_least8_t CAN_count;
  *          any other CAN driver APIs. This function call does not modify any
  *          peripheral registers.
  *
- *  @sa     #CAN_open
+ *  @sa     #CAN_open()
  */
 void CAN_init(void);
 
@@ -748,13 +831,14 @@ void CAN_init(void);
  *                      initialization
  *
  *  Defaults values are:
- *     .msgRAMConfig = NULL
- *     .bitTiming    = NULL
- *     .eventCbk     = NULL
- *     .eventMask    = 0U
- *     .userArg      = NULL
+ *     msgRamConfig = NULL
+ *     bitTiming    = NULL
+ *     tsPrescaler  = 24U
+ *     eventCbk     = NULL
+ *     eventMask    = 0U
+ *     userArg      = NULL
  *
- *  @sa     #CAN_open
+ *  @sa     #CAN_open()
  */
 void CAN_Params_init(CAN_Params *params);
 
@@ -768,19 +852,25 @@ void CAN_Params_init(CAN_Params *params);
  *  transmitter delay compensation. Invalid message RAM configuration or
  *  bit timing parameters will cause this function to fail.
  *
- *  @pre    CAN controller has been initialized using #CAN_init
+ *  @note   For devices with an integrated CAN controller, a power contraint
+ *          to prohibit standby will be set to allow the controller and its
+ *          clock source to remain powered to receive CAN messages from the
+ *          external transceiver. The power constrain will be released when
+ *          #CAN_close() is called.
+ *
+ *  @pre    CAN controller has been initialized using #CAN_init()
  *
  *  @param  index         Logical peripheral number for the CAN indexed into
  *                        the #CAN_config table
- *
  *  @param  params        Pointer to a parameter block, if NULL it will use
  *                        default values.
  *
  *  @return A #CAN_Handle on success, otherwise, NULL upon error or if it has been
  *          opened already.
  *
- *  @pre    #CAN_init
- *  @sa     #CAN_close
+ *  @pre    #CAN_init()
+ *
+ *  @sa     #CAN_close()
  */
 CAN_Handle CAN_open(uint_least8_t index, CAN_Params *params);
 
@@ -789,36 +879,36 @@ CAN_Handle CAN_open(uint_least8_t index, CAN_Params *params);
  *
  *  @pre    #CAN_open() has to be called first.
  *
- *  @param  handle  A #CAN_Handle returned from #CAN_open
+ *  @param  handle  A #CAN_Handle returned from #CAN_open().
  *
- *  @pre     #CAN_open
+ *  @return None.
  */
 void CAN_close(CAN_Handle handle);
 
 /*!
  *  @brief  Reads a received CAN message
  *
- *  @param  handle  A #CAN_Handle returned from #CAN_open
+ *  @pre    #CAN_open() has to be called first.
+ *
+ *  @param  handle  A #CAN_Handle returned from #CAN_open().
  *  @param  elem    A pointer to a #CAN_RxBufElement.
  *
  *  @retval CAN_STATUS_SUCCESS if successful.
  *  @retval CAN_STATUS_NO_RX_MSG_AVAIL if no messages are available.
- *
- *  @pre    #CAN_open
  */
 int_fast16_t CAN_read(CAN_Handle handle, CAN_RxBufElement *elem);
 
 /*!
  *  @brief  Sends CAN message using the Tx FIFO/Queue
  *
- *  @param  handle  A #CAN_Handle returned from #CAN_open
+ *  @pre    #CAN_open() has to be called first.
+ *
+ *  @param  handle  A #CAN_Handle returned from #CAN_open().
  *  @param  elem    A pointer to a #CAN_TxBufElement.
  *
  *  @retval CAN_STATUS_SUCCESS if successful.
  *  @retval CAN_STATUS_ERROR if no Tx FIFO/Queue is configured.
  *  @retval CAN_STATUS_TX_BUF_FULL if the Tx buffer is full.
- *
- *  @pre    #CAN_open
  */
 int_fast16_t CAN_write(CAN_Handle handle, const CAN_TxBufElement *elem);
 
@@ -838,53 +928,83 @@ int_fast16_t CAN_write(CAN_Handle handle, const CAN_TxBufElement *elem);
  *          function can allow a new higher priority message to be transmitted
  *          before the Tx FIFO is empty.
  *
- *  @param  handle  A #CAN_Handle returned from #CAN_open
+ *  @pre    #CAN_open() has to be called first.
+ *
+ *  @param  handle  A #CAN_Handle returned from #CAN_open().
  *  @param  bufIdx  Index of the dedicated Tx buffer.
  *  @param  elem    A pointer to a #CAN_TxBufElement.
  *
  *  @retval CAN_STATUS_SUCCESS if successful.
  *  @retval CAN_STATUS_ERROR if the Tx buffer index is invalid or
  *          the buffer already has a Tx request pending.
- *
- *  @pre    #CAN_open
  */
 int_fast16_t CAN_writeBuffer(CAN_Handle handle, uint32_t bufIdx, const CAN_TxBufElement *elem);
 
 /*!
+ *  @brief  Reads the next available CAN Tx Event FIFO element
+ *
+ *  @pre    #CAN_open() has to be called first.
+ *
+ *  @param  handle  A #CAN_Handle returned from #CAN_open().
+ *  @param  elem    A pointer to a #CAN_TxEventElement.
+ *
+ *  @retval CAN_STATUS_SUCCESS if successful.
+ *  @retval CAN_STATUS_ERROR if no Tx Event FIFO is configured.
+ *  @retval CAN_STATUS_NO_TX_EVENT_AVAIL if no Tx Event is available.
+ */
+int_fast16_t CAN_readTxEvent(CAN_Handle handle, CAN_TxEventElement *elem);
+
+/*!
+ *  @brief  Get the CAN bit timings and functional clock frequency.
+ *
+ *  @pre    #CAN_open() has to be called first.
+ *
+ *  @note   Add 1 to the bit timing values to obtain the functional values.
+ *
+ *  @param  handle  A #CAN_Handle returned from #CAN_open().
+ *  @param  bitTiming  A pointer to a #CAN_BitTimingParams struct.
+ *  @param  clkFreq A pointer to the CAN functional clock frequency in kHz.
+ */
+void CAN_getBitTiming(CAN_Handle handle, CAN_BitTimingParams *bitTiming, uint32_t *clkFreq);
+
+/*!
  *  @brief  Enables external loopback test mode
  *
- *  @param  handle  A #CAN_Handle returned from #CAN_open
  *
- *  @pre    #CAN_open
- *  @sa     #CAN_enableLoopbackInt
- *  @sa     #CAN_disableLoopback
+ *  @pre    #CAN_open() has to be called first.
+ *
+ *  @param  handle  A #CAN_Handle returned from #CAN_open().
  *
  *  @retval CAN_STATUS_SUCCESS if successful.
  *  @retval CAN_STATUS_NOT_SUPPORTED if this feature is not supported.
+ *
+ *  @sa     #CAN_enableLoopbackInt()
+ *  @sa     #CAN_disableLoopback()
  */
 int_fast16_t CAN_enableLoopbackExt(CAN_Handle handle);
 
 /*!
  *  @brief  Enables internal loopback test mode
  *
- *  @param  handle  A #CAN_Handle returned from #CAN_open
+ *  @param  handle  A #CAN_Handle returned from #CAN_open().
  *
- *  @pre    #CAN_open
- *  @sa     #CAN_enableLoopbackExt
- *  @sa     #CAN_disableLoopback
+ *  @pre    #CAN_open()
  *
  *  @retval CAN_STATUS_SUCCESS if successful.
  *  @retval CAN_STATUS_NOT_SUPPORTED if this feature is not supported.
+ *
+ *  @sa     #CAN_enableLoopbackExt()
+ *  @sa     #CAN_disableLoopback()
  */
 int_fast16_t CAN_enableLoopbackInt(CAN_Handle handle);
 
 /*!
  *  @brief  Disables loopback test mode
  *
- *  @param  handle  A #CAN_Handle returned from #CAN_open
+ *  @pre    #CAN_open() has to be called first.
+ *  @pre    #CAN_enableLoopbackExt() or #CAN_enableLoopbackInt()
  *
- *  @pre    #CAN_open
- *  @pre    #CAN_enableLoopbackExt or #CAN_enableLoopbackInt
+ *  @param  handle  A #CAN_Handle returned from #CAN_open().
  *
  *  @retval CAN_STATUS_SUCCESS if successful.
  *  @retval CAN_STATUS_NOT_SUPPORTED if this feature is not supported.

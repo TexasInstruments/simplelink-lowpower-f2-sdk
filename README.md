@@ -1,89 +1,147 @@
-# SIMPLELINK CC13XX/CC26XX SDK
-This repository contains TI's SimpleLink Low Power F2 (previously CC13XX/CC26XX) Software Development Kit (SDK).
- 
-## Summary
- 
-The SimpleLink™ Low Power F2 Software Development Kit (previously SimpleLink™ CC13xx and CC26xx SDK) provides a comprehensive software package for the development of Sub-1 GHz and 2.4 GHz applications, including support for Bluetooth® Low Energy, Mesh, Zigbee®, Matter, Thread, 802.15.4-based, proprietary, and multiprotocol solutions on the SimpleLink CC13x1, CC13x2, CC13x4, CC26x1, CC26x2, and CC26x4 wireless MCUs.
- 
-An overview of the full SDK is hosted on TI Resource Explorer.
- 
-## Background
-This repository contains a subset of TI's [SimpleLink CC13XX/CC26XX SDK](https://www.ti.com/tool/SIMPLELINK-CC13XX-CC26XX-SDK).  It is provided via a Git repo to meet several use cases, including:
- 
-* Reduces download size
-* Enables CI/CD tooling to use Git rather than installers
-* Increases visibility of changes, better enabling benefit/risk assessments
-* Simplifies the workflow for rebasing user changes to different releases
- 
-It intentionally omits documentation (the **docs/** directory) and examples (**examples/**) to reduce size.  Regarding those omissions:
- 
-* [Documentation is available online](https://dev.ti.com/tirex/explore/node?node=A__ABWp1w.mXU7n8HjfEIyLGQ__com.ti.SIMPLELINK_CC13XX_CC26XX_SDK__BSEc4rl__LATEST&placeholder=true).  Please match your git version to the documentation version in the TI Developer Zone.
-* Examples are available in separate repositories, as noted in [Examples](#example-repos).
- 
-## Features
- 
-- Supports proprietary  Sub-1 GHz and 2.4 GHz applications using basic RX and TX examples
-- TI 15.4-Stack, an IEEE 802.15.4-based star topology networking solution for the Sub-1 GHz and 2.4 GHz bands
-- Certified Wi-SUN® FAN 1.0 compliant Sub-1 GHz mesh stack (learn more at [TI.com/wisun](https://www.ti.com/wisun))
-- Bluetooth Low Energy (BLE) software protocol stack supporting Bluetooth 5.2 and Bluetooth mesh (learn more at [TI.com/ble](https://www.ti.com/ble))
-- Matter 1.0 and Thread 1.3 networking protocol based on open-source Matter project and OpenThread (learn more at [TI.com/matter](https://www.ti.com/matter) or in the [TI Matter Repo](https://github.com/TexasInstruments/matter))
-- Zigbee software protocol stack (Z-stack - learn more at [TI.com/Zigbee](https://www.ti.com/Zigbee))
-- Supports the concurrent operation of BLE + Sub-1 GHz (TI 15.4-Stack or proprietary Sub-1 GHz) and BLE + Zigbee using the Dynamic Multi-Protocol
-- Supports Amazon Sidewalk Sub-1 GHz FSK and Bluetooth Low Energy
- 
+# SimpleLink™ Low Power F2 SDK
+
+This repository redistributes TI's [SimpleLink Low Power F2 (previously
+CC13XX/CC26XX) Software Development
+Kit](https://www.ti.com/tool/download/SIMPLELINK-LOWPOWER-F2-SDK) (LPF2 SDK), a
+comprehensive software package for developing Sub-1 GHz and 2.4 GHz
+applications. The LPF2 SDK is one of many within the [SimpleLink Low Power
+ecosystem](https://www.ti.com/tool/SIMPLELINK-LOWPOWER-SDK).
+
+The LPF2 SDK, formerly known as the CC13xx and CC26xx SDK, delivers components
+that enable engineers to develop applications on the Texas Instruments
+SimpleLink CC13xx and CC26xx family of wireless microcontrollers (MCUs). This
+software toolkit provides a cohesive and consistent software experience for all
+SimpleLink CC13xx and CC26xx wireless MCU users by packaging essential software
+components, such as a Bluetooth® Low Energy (BLE) protocol stack supporting
+Bluetooth 5.2, Zigbee 3.0 compliant protocol suite, RF-Proprietary examples,
+TI's 15.4 Stack, TI Wi-SUN FAN Stack, Amazon Sidewalk examples, as well as the
+TI-RTOS7 and FreeRTOS™ kernels and TI Drivers in one easy-to-use software
+package along with example applications and documentation. In addition, the
+Dynamic Multi-Protocol Manager (DMM) software component enables multiprotocol
+development on a single SimpleLink wireless MCU.
+
+Although not included in the SDK, SimpleLink CC13xx and CC26xx wireless MCUs are
+also capable of supporting the following wireless solutions: Please refer to
+their respective repositories for resources and more information.
+
+* [The Matter standard](https://github.com/TexasInstruments/matter)
+* [Thread 1.1.1 networking stack based on
+  OpenThread](https://github.com/TexasInstruments/ot-ti)
+
+## What's New
+
+* Example projects and RF settings for the upcoming CC2674P10 LaunchPad™
+  development kit for SimpleLink multi-standard wireless MCU.
+* CCS Theia, now supports all SimpleLink F2 devices. Please use version 1.5.0 or
+  newer. For more information, see Upcoming Features.
+* The new TI Log driver simplifies adding log statements to your application
+  without compromising on memory or processing power. The following SW modules
+  are instrumented: Power driver, UART2 driver, TI 15.4-Stack.
+* The Wi-SUN gateway example for Linux, wfantund, now supports using external
+  authentication server and/or external DHCP server. It also supports Router
+  Node configuration for the first time.
+* The TI Wi-SUN Stack has three new Network Profiles which simplify network
+  configuration.
+* MCUboot is updated to version 2.0 and now supports using an encrypted image.
+  You can now configure MCUboot in SysConfig.
+* DMM now supports closing a handle, opening the possibility of using more than
+  two handles in one application.
+
+More details, including supported devices, IDEs, and toolchains are provided in
+the [LPF2 8.30.01.01 SDK release notes][sdk release notes].
+
+## About this Repository
+
+Although TI also offers this SDK via [a classic
+installer](https://www.ti.com/tool/download/SIMPLELINK-LOWPOWER-F2-SDK), we made
+it available as a Git repository to cater to various use cases:
+
+* **Smaller download size**: By omitting documentation (in the **docs/**
+  directory) and examples (in the **examples/** directory), the size of the SDK
+  can be reduced.
+  * The documentation is [available online][sdk docs] in the TI Developers Zone;
+    just be sure to browse the appropriate version.
+  * Examples are provided in separate repositories, as noted below.
+* **CI/CD tooling integration**: Using Git instead of installers can ease
+  integration with CI/CD tooling pipelines.
+* **Increased visibility and change tracking**: Git improves the ability to
+  identify changes that may affect (or not!) your application.
+* **Simplified workflow for rebasing**: Git makes it simpler for you to rebase
+  your changes to new releases.
+
 ## Example Repos
- 
-- [Bluetooth Low Energy (BLE)](https://github.com/TexasInstruments/simplelink-ble5stack-examples)
-- [Proprietary RF](https://github.com/TexasInstruments/simplelink-prop_rf-examples)
-- [Amazon Sidewalk](https://github.com/TexasInstruments/simplelink-sidewalk-examples)
-- [DMM](https://github.com/TexasInstruments/simplelink-dmm-examples)
-- [TI 15.4](https://github.com/TexasInstruments/simplelink-ti154stack-examples)
-- [ZStack](https://github.com/TexasInstruments/simplelink-zstack-examples)
-- [TI WISunFan](https://github.com/TexasInstruments/simplelink-ti_wisunfan-examples)
 
+* [Bluetooth Low Energy
+  (BLE)](https://github.com/TexasInstruments/simplelink-ble5stack-examples)
+* [Proprietary
+  RF](https://github.com/TexasInstruments/simplelink-prop_rf-examples)
+* [Core SDK, including
+  drivers](https://github.com/TexasInstruments/simplelink-coresdk-examples)
+* [Amazon
+  Sidewalk](https://github.com/TexasInstruments/simplelink-sidewalk-examples)
+* [DMM](https://github.com/TexasInstruments/simplelink-dmm-examples)
+* [TI 15.4](https://github.com/TexasInstruments/simplelink-ti154stack-examples)
+* [ZStack](https://github.com/TexasInstruments/simplelink-zstack-examples)
+* [TI
+  WISunFan](https://github.com/TexasInstruments/simplelink-ti_wisunfan-examples)
 
- 
 ## Setup Instructions
- 
+
 ### Edit **imports.mak**
-The imports.mak file, located at the root of the SDK, is a generic sample and will not work out of the box.   Please update imports.mak with the tools (compilers, cmake, etc.) paths installed on your system.
- 
-For a Linux build, settings must be updated to match your build system's setup.  The only outlier may be Python, as most python3.6+ interpreters will work.  Please note cmake must be 3.21+, or the builds will fail.  If using CCS ccs1220, the SysConfig installed is incompatible with the SDKs.  Either upgrade CCS to ccs1230 or install SysConfig 1.16.1 from [https://www.ti.com/tool/SYSCONFIG](https://www.ti.com/tool/SYSCONFIG]). Please note XDC_INSTALL_DIR was required in older SDKs but is no longer needed.
- 
-By default TICLANG and GCC toolchains are enabled.  If a toolchain is not needed, unset the compiler, for example, `GCC_ARMCOMPILER ?=`.
- 
-### Default imports.mak
- 
-`XDC_INSTALL_DIR`        ?= /home/username/ti/xdctools_3_62_01_15_core (Not required for 7.10+ SDK's)
- 
-`SYSCONFIG_TOOL`         ?= /home/username/ti/ccs1230/ccs/utils/sysconfig_1.16.1/sysconfig_cli.sh
- 
-`FREERTOS_INSTALL_DIR`   ?= /home/username/FreeRTOSv202104.00
- 
-`CMAKE`                 ?= /home/username/cmake-3.21.3/bin/cmake
- 
-`PYTHON`                 ?= python3
- 
-`TICLANG_ARMCOMPILER`    ?= /home/username/ti/ccs1230/ccs/tools/compiler/ti-cgt-armllvm_2.1.3.LTS-0
- 
-`GCC_ARMCOMPILER`        ?= /home/username/ti/ccs1230/ccs/tools/compiler/9.2019.q4.major-0
- 
-Edit **imports.mak** and update all of the above tool location variables to reflect the paths on your build system.
- 
-## Build SDK Libraries
-SDK libraries must exist before building any examples.  After editing imports.mak, build SDK libraries from the root  of the SDK (the same directory where imports.mak resides) by:
- 
-$ `make`
- 
-The make will go through the SDK and build all libraries.  Depending on the build machine, the make will run for a few minutes.  
- 
- 
-## Supported Devices
- 
-All devices supported by the SimpleLink Low Power F2 SDK.
- 
-## More Information
-For licensing information, please refer to licensing.
- 
+
+At the base of the SDK, you will find **imports.mak**; this file is used by the
+build system to find your installed dependencies. Please update **imports.mak**
+with full paths to where you have these dependencies installed on your system.
+
+Notably for Windows users, the _Windows_ variant of some tools may be required.
+For example, the `SYSCONFIG_TOOL` will need to have a **.bat** extension.
+
+Refer to the comments in **imports.mak** for details on setting variables, and
+the [release notes][sdk release notes] for recommended versions. Also see the
+[Resources](#resources) section below for download locations.
+
+### Build SDK Libraries
+
+With a few exceptions (libraries without sources), the SDK is provided without
+prebuilt libraries. To build the SDK libraries (after editing **imports.mak** as
+described above!), navigate to the root of the SDK (the same directory where
+**imports.mak** resides) and run GNU `make`.
+
+Assuming it is on your path, you can simply:
+
+```bash
+make
+```
+
+To clean/rebuild:
+
+```bash
+make clean
+make
+```
+
+At this point, the libraries will be built and installed into the appropriate
+locations throughout the SDK.
+
+## Resources
+
+Dependency download locations:
+
+* [SysConfig (SYSCONFIG_TOOL)][sysconfig download]
+  * This is also included with CCS
+* [TI CLANG Compiler (TICLANG_ARMCOMPILER)][ticlang download]
+* [ARM Gnu Toolchain (GCC_ARMCOMPILER)][gcc download]
+* [CMake](https://cmake.org/)
+* [GNU make](https://www.gnu.org/software/make/)
+  * This is also included with CCS in the **ccs/utils/bin/** directory (and
+    called `gmake`).
+
 ## Technical Support
-Please consider creating a post on [TI's E2E forum](https://e2e.ti.com). Additionally, we welcome any feedback.
+
+Please consider creating a post on [TI's E2E forum](https://e2e.ti.com).
+
+[sdk release notes]: https://dev.ti.com/tirex/explore/node?node=A__ADMjnimJ4C5BfFnmM3X-jg__com.ti.SIMPLELINK_CC13XX_CC26XX_SDK__BSEc4rl__8.30.01.01
+[sdk docs]: https://dev.ti.com/tirex/explore/node?node=A__AHaph7YfvcrVy2cDlmb4sQ__com.ti.SIMPLELINK_CC13XX_CC26XX_SDK__BSEc4rl__8.30.01.01
+[sysconfig download]: https://www.ti.com/tool/SYSCONFIG
+[ticlang download]: https://www.ti.com/tool/download/ARM-CGT-CLANG
+[gcc download]: https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads

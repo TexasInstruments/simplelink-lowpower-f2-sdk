@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@
 extern "C" {
 #endif
 
-#define Log_TI_LOG_SINK_BUF_VERSION 0.1.0
+#define Log_TI_LOG_SINK_BUF_VERSION 0.2.0
 
 #define LogSinkBuf_Type_LINEAR      (1)
 #define LogSinkBuf_Type_CIRCULAR    (2)
@@ -91,37 +91,143 @@ typedef struct LogSinkBuf_Instance
  */
 typedef LogSinkBuf_Instance *LogSinkBuf_Handle;
 
-/*
- *  ======== LogSinkBuf_printf ========
+/*!
+ *  @cond NODOC
+ *  @brief  Marshal and store a #Log_printf statement into a ring buffer.
+ *
+ *  Function to marshal a #Log_printf statement into a packet
+ *  and store it into a ring buffer. If the packet would overflow
+ *  the ring buffer, it will overwrite a previous entry.
+ *
+ *  This is a singleton implementation. It assumes that there is only one
+ *  #LogSinkBuf_Instance object in the application and that this instance is called
+ *  LogSinkBuf_CONFIG_ti_log_LogSinkBuf_0_config.
+ *
+ *  This allows the toolchain in an LTO-enabled application to avoid generating
+ *  instructions that load the @c handle since it is not needed.
+ *
+ *  This implementation should not be used when multiple #LogSinkBuf_Instance
+ *  instances are present within the system.
+ *
+ *  @note Applications must not call this function directly. This is a helper
+ *  function to implement #Log_printf
+ *
+ *  @param[in]  handle     Unused handle
+ *
+ *  @param[in]  header     Metadata pointer
+ *
+ *  @param[in]  headerPtr  Unused pointer to metadata pointer
+ *
+ *  @param[in]  numArgs    Number of arguments
+ *
+ *  @param[in]  ...        Variable number of arguments
  */
-extern void ti_log_LogSinkBuf_printf(const Log_Module *handle, uint32_t header, uint32_t index, uint32_t numArgs, ...);
+extern void LogSinkBuf_printfSingleton(const Log_Module *handle,
+                                       uint32_t header,
+                                       uint32_t index,
+                                       uint32_t numArgs,
+                                       ...);
+
+extern void LogSinkBuf_printfSingleton0(const Log_Module *handle, uint32_t header, uint32_t index, ...);
+
+extern void LogSinkBuf_printfSingleton1(const Log_Module *handle, uint32_t header, uint32_t index, ...);
+
+extern void LogSinkBuf_printfSingleton2(const Log_Module *handle, uint32_t header, uint32_t index, ...);
+
+extern void LogSinkBuf_printfSingleton3(const Log_Module *handle, uint32_t header, uint32_t index, ...);
+/*! @endcond NODOC */
+
+/*!
+ *  @cond NODOC
+ *  @brief  Marshal and store a #Log_printf statement into a ring buffer.
+ *
+ *  Function to marshal a #Log_printf statement into a packet
+ *  and store it into a ring buffer. If the packet would overflow
+ *  the ring buffer, it will overwrite a previous entry.
+ *
+ *  This is a dependency injection implementation. It is able to support an
+ *  arbitrary number of LogSinkBuf instances by passing in the sink state
+ *  through @c handle. This requires additional flash to load @c handle in each
+ *  #Log_printf though.
+ *
+ *  @note Applications must not call this function directly. This is a helper
+ *  function to implement #Log_printf
+ *
+ *  @param[in]  handle     Handle to the module and sink instance
+ *
+ *  @param[in]  header     Metadata pointer
+ *
+ *  @param[in]  headerPtr  Unused pointer to metadata pointer
+ *
+ *  @param[in]  numArgs    Number of arguments
+ *
+ *  @param[in]  ...        Variable number of arguments
+ */
+extern void LogSinkBuf_printfDepInjection(const Log_Module *handle,
+                                          uint32_t header,
+                                          uint32_t index,
+                                          uint32_t numArgs,
+                                          ...);
+
+extern void LogSinkBuf_printfDepInjection0(const Log_Module *handle, uint32_t header, uint32_t index, ...);
+
+extern void LogSinkBuf_printfDepInjection1(const Log_Module *handle, uint32_t header, uint32_t index, ...);
+
+extern void LogSinkBuf_printfDepInjection2(const Log_Module *handle, uint32_t header, uint32_t index, ...);
+
+extern void LogSinkBuf_printfDepInjection3(const Log_Module *handle, uint32_t header, uint32_t index, ...);
+/*! @endcond NODOC */
+
+/*!
+ *  @cond NODOC
+ *  @brief  Marshal and store a #Log_buf statement into a ring buffer.
+ *
+ *  Function to marshal a #Log_buf statement into a packet
+ *  and store it into a ring buffer. If the packet would overflow
+ *  the ring buffer, it will overwrite a previous entry.
+ *
+ *  This is a dependency injection implementation. It is able to support an
+ *  arbitrary number of LogSinkBuf instances by passing in the sink state
+ *  through @c handle.
+ *
+ *  @note Applications must not call this function directly. This is a helper
+ *  function to implement #Log_buf
+ *
+ *  @param[in]  handle     LogSinkBuf sink handle
+ *
+ *  @param[in]  header     Metadata pointer
+ *
+ *  @param[in]  headerPtr  Unused pointer to metadata pointer
+ *
+ *  @param[in]  data       Data buffer to log
+ *
+ *  @param[in]  size       Size in bytes of array to store
+ */
+extern void LogSinkBuf_bufDepInjection(const Log_Module *handle,
+                                       uint32_t header,
+                                       uint32_t index,
+                                       uint8_t *data,
+                                       size_t size);
+/*! @endcond NODOC */
 
 /*
- *  ======== LogSinkBuf_buf ========
- */
-extern void ti_log_LogSinkBuf_buf(const Log_Module *handle,
-                                  uint32_t header,
-                                  uint32_t index,
-                                  uint8_t *data,
-                                  size_t size);
-
-/*
- * Helpers to define/use instance. ITM is a singleton so no arguments are taken.
+ * Helpers to define/use instance.
  */
 #define Log_SINK_BUF_DEFINE(name, type, num_entries)                                            \
     static LogSinkBuf_Rec logSinkBuf_##name##_buffer[num_entries];                              \
-    LogSinkBuf_Instance LogSinkBuf_##name##_Config = {.serial     = 0,                          \
+    LogSinkBuf_Instance LogSinkBuf_##name##_config = {.serial     = 0,                          \
                                                       .bufType    = type,                       \
                                                       .advance    = type,                       \
                                                       .numEntries = num_entries,                \
                                                       .buffer     = logSinkBuf_##name##_buffer, \
                                                       .curEntry   = logSinkBuf_##name##_buffer, \
                                                       .endEntry   = logSinkBuf_##name##_buffer + (num_entries - 1)}
-#define Log_SINK_BUF_USE(name) extern LogSinkBuf_Instance LogSinkBuf_##name##_Config
-#define Log_MODULE_INIT_SINK_BUF(name, _levels)                                                                      \
-    {                                                                                                                \
-        .sinkConfig = &LogSinkBuf_##name##_Config, .printf = ti_log_LogSinkBuf_printf, .buf = ti_log_LogSinkBuf_buf, \
-        .levels = _levels,                                                                                           \
+#define Log_SINK_BUF_USE(name) extern LogSinkBuf_Instance LogSinkBuf_##name##_config
+#define Log_MODULE_INIT_SINK_BUF(name, _levels, printfDelegate, bufDelegate, _dynamicLevelsPtr)                       \
+    {                                                                                                                 \
+        .sinkConfig = &LogSinkBuf_##name##_config, .printf = printfDelegate, .printf0 = printfDelegate##0,            \
+        .printf1 = printfDelegate##1, .printf2 = printfDelegate##2, .printf3 = printfDelegate##3, .buf = bufDelegate, \
+        .levels = _levels, .dynamicLevelsPtr = _dynamicLevelsPtr,                                                     \
     }
 
 _Log_DEFINE_LOG_VERSION(LogSinkBuf, Log_TI_LOG_SINK_BUF_VERSION);

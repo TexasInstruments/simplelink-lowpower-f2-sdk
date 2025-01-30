@@ -1,0 +1,116 @@
+#-------------------------------------------------------------------------------
+# Copyright (c) 2023, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+#-------------------------------------------------------------------------------
+locations:
+    rom:
+        base_address: 0x1101F000
+        size: 0x1000
+    vm0:
+        base_address: 0x31000000
+        size: 0x10000
+        reserved: 0x4
+    otp:
+        # This has to be manually calculated, and must be updated if the OTP
+        # layout changes
+        base_address: 0x500A4C00
+        size: 0x400
+        reserved: 0x4
+    integrity_checker:
+        base_address: 0x5015C000
+    otp_sam_config:
+        # This has to be manually calculated, and must be updated if the OTP
+        # layout changes
+        base_address: 0x500A1114
+    sam:
+        base_address: 0x5009F000
+    dma350:
+        base_address: 0x50002000
+    dtcm:
+        base_address: 0x34000000
+    lcm:
+        base_address: 0x500A0000
+    rss_system_control_registers:
+        base_address: 0x58021000
+    trng:
+        base_address: 0x500A5270
+    tram:
+        base_address: 0x5015D000
+    kmu:
+        base_address: 0x5009E000
+
+program:
+  - storage_location: "rom"
+    execution_location: "rom"
+    channel: 0
+    name: "program0"
+    description: "Set up DMA Channel 1"
+    commands:
+      - !include include/program0_cmd0.yaml         # Program 0 - Command 0
+      - !include include/program0_cmd1.yaml         # Program 0 - Command 1
+
+  - storage_location: "rom"
+    execution_location: "rom"
+    channel: 1
+    name: "program1"
+    description: "Run only in Virgin TCI mode"
+    commands:
+      - !include include/program1_cmd0.yaml         # Program 1 - Command 0
+      - !include include/program1_cmd1.yaml         # Program 1 - Command 1
+
+  - storage_location: "rom"
+    execution_location: "rom"
+    channel: 0
+    name: "program2"
+    description: "P3 P4 Init"
+    commands:
+      - !include include/program2_cmd0.yaml         # Program 2 - Command 0
+      - !include include/program2_cmd1.yaml         # Program 2 - Command 1
+      - !include include/program2_cmd2.yaml         # Program 2 - Command 2
+
+  - storage_location: "rom"
+    execution_location: "rom"
+    channel: 1
+    name: "program3"
+    description: "Run only in CM and DM modes"
+    commands:
+      - !include include/program3_cmd0.yaml         # Program 3 - Command 0
+      - !include include/program3_cmd1.yaml         # Program 3 - Command 1
+
+  - storage_location: "rom"
+    execution_location: "rom"
+    channel: 0
+    name: "program4"
+    description: "OTP ICS loader"
+    commands:
+      - !include include/program4_cmd0.yaml         # Program 4 - Command 0
+      - !include include/program4_cmd1.yaml         # Program 4 - Command 1
+      - !include include/program4_cmd2.yaml         # Program 4 - Command 2
+      - !include include/program4_cmd3.yaml         # Program 4 - Command 3
+      - !include include/program4_cmd4.yaml         # Program 4 - Command 4
+
+  - storage_location: "otp"
+    execution_location: "vm0"
+    channel: 0
+    name: "program5"
+    description: "Copy SAM configuration"
+    commands:
+      - !include include/program5_cmd0.yaml         # Program 5 - Command 0
+      - !include include/program5_cmd1.yaml         # Program 5 - Command 1
+      - !include include/program5_cmd2.yaml         # Program 5 - Command 2
+
+  - storage_location: "rom"
+    execution_location: "rom"
+    name: "program6"
+    description: "Release DCU lock, enable and zeroize TRAM, and release CPUWAIT"
+    commands:
+      - !include include/program6_cmd0.yaml         # Program 6 - Command 0
+      - !include include/program6_cmd1.yaml         # Program 6 - Command 1
+      - !include include/program6_cmd2.yaml         # Program 6 - Command 2
+      - !include include/program6_cmd3.yaml         # Program 6 - Command 3
+      - !include include/program6_cmd4.yaml         # Program 6 - Command 4
+      - !include include/program6_cmd5.yaml         # Program 6 - Command 5
+      - !include include/program6_cmd6.yaml         # Program 6 - Command 6
+      - !include include/program6_cmd7.yaml         # Program 6 - Command 7

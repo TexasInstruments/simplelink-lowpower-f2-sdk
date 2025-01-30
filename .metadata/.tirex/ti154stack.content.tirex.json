@@ -990,6 +990,116 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/collector/README.html",
+        "resourceType": "categoryInfo",
+        "name": "collector",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/collector/freertos/ticlang/collector_LP_EM_CC2674P10_freertos_ticlang.projectspec",
+        "name": "collector",
+        "description": "collector",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "collector",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/collector/tirtos7/ticlang/collector_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
+        "name": "collector",
+        "description": "collector",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "collector",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
         "location": "../../examples/rtos/LP_CC2652RSIP/ti154stack/collector/README.html",
         "resourceType": "categoryInfo",
         "name": "collector",
@@ -2880,6 +2990,84 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/ti154stack/collector/tirtos7/iar/collector_CC1352P_2_LAUNCHXL_tirtos7_iar.ipcf",
+        "name": "collector",
+        "description": "collector",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "collector",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/collector/freertos/iar/collector_LP_EM_CC2674P10_freertos_iar.ipcf",
+        "name": "collector",
+        "description": "collector",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "collector",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/collector/tirtos7/iar/collector_LP_EM_CC2674P10_tirtos7_iar.ipcf",
         "name": "collector",
         "description": "collector",
         "kernel": [
@@ -6254,6 +6442,116 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/collector_sm/README.html",
+        "resourceType": "categoryInfo",
+        "name": "collector_sm",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/collector_sm/freertos/ticlang/collector_sm_LP_EM_CC2674P10_freertos_ticlang.projectspec",
+        "name": "collector_sm",
+        "description": "collector_sm",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "collector_sm",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/collector_sm/tirtos7/ticlang/collector_sm_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
+        "name": "collector_sm",
+        "description": "collector_sm",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "collector_sm",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
         "location": "../../examples/rtos/LP_CC2652RSIP/ti154stack/collector_sm/README.html",
         "resourceType": "categoryInfo",
         "name": "collector_sm",
@@ -8144,6 +8442,84 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/ti154stack/collector_sm/tirtos7/iar/collector_sm_CC1352P_2_LAUNCHXL_tirtos7_iar.ipcf",
+        "name": "collector_sm",
+        "description": "collector_sm",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "collector_sm",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/collector_sm/freertos/iar/collector_sm_LP_EM_CC2674P10_freertos_iar.ipcf",
+        "name": "collector_sm",
+        "description": "collector_sm",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "collector_sm",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/collector_sm/tirtos7/iar/collector_sm_LP_EM_CC2674P10_tirtos7_iar.ipcf",
         "name": "collector_sm",
         "description": "collector_sm",
         "kernel": [
@@ -11518,6 +11894,116 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/coprocessor/README.html",
+        "resourceType": "categoryInfo",
+        "name": "coprocessor",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/coprocessor/freertos/ticlang/coprocessor_LP_EM_CC2674P10_freertos_ticlang.projectspec",
+        "name": "coprocessor",
+        "description": "coprocessor",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "coprocessor",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/coprocessor/tirtos7/ticlang/coprocessor_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
+        "name": "coprocessor",
+        "description": "coprocessor",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "coprocessor",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
         "location": "../../examples/rtos/LP_CC2652RSIP/ti154stack/coprocessor/README.html",
         "resourceType": "categoryInfo",
         "name": "coprocessor",
@@ -13438,6 +13924,84 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/coprocessor/freertos/iar/coprocessor_LP_EM_CC2674P10_freertos_iar.ipcf",
+        "name": "coprocessor",
+        "description": "coprocessor",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "coprocessor",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/coprocessor/tirtos7/iar/coprocessor_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "coprocessor",
+        "description": "coprocessor",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "coprocessor",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -15256,6 +15820,116 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/ti154stack/sensor/tirtos7/ticlang/sensor_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "sensor",
+        "description": "sensor",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "sensor",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/sensor/README.html",
+        "resourceType": "categoryInfo",
+        "name": "sensor",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/sensor/freertos/ticlang/sensor_LP_EM_CC2674P10_freertos_ticlang.projectspec",
+        "name": "sensor",
+        "description": "sensor",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "sensor",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/sensor/tirtos7/ticlang/sensor_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "sensor",
         "description": "sensor",
         "kernel": [
@@ -17168,6 +17842,84 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/ti154stack/sensor/tirtos7/iar/sensor_CC1352P_2_LAUNCHXL_tirtos7_iar.ipcf",
+        "name": "sensor",
+        "description": "sensor",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "sensor",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/sensor/freertos/iar/sensor_LP_EM_CC2674P10_freertos_iar.ipcf",
+        "name": "sensor",
+        "description": "sensor",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "sensor",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/sensor/tirtos7/iar/sensor_LP_EM_CC2674P10_tirtos7_iar.ipcf",
         "name": "sensor",
         "description": "sensor",
         "kernel": [
@@ -21764,6 +22516,90 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/ti154stack/sensor_oad_offchip_secure/tirtos7/ticlang/sensor_oad_offchip_secure_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "sensor_oad_offchip_secure",
+        "description": "sensor_oad_offchip_secure",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "sensor_oad_offchip_secure",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/sensor_oad_offchip_secure/freertos/ticlang/sensor_oad_offchip_secure_LP_EM_CC2674P10_freertos_ticlang.projectspec",
+        "name": "sensor_oad_offchip_secure",
+        "description": "sensor_oad_offchip_secure",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "sensor_oad_offchip_secure",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/sensor_oad_offchip_secure/tirtos7/ticlang/sensor_oad_offchip_secure_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "sensor_oad_offchip_secure",
         "description": "sensor_oad_offchip_secure",
         "kernel": [
@@ -30666,6 +31502,90 @@
         ]
     },
     {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/sensor_oad_onchip_secure/freertos/ticlang/sensor_oad_onchip_secure_LP_EM_CC2674P10_freertos_ticlang.projectspec",
+        "name": "sensor_oad_onchip_secure",
+        "description": "sensor_oad_onchip_secure",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "sensor_oad_onchip_secure",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/sensor_oad_onchip_secure/tirtos7/ticlang/sensor_oad_onchip_secure_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
+        "name": "sensor_oad_onchip_secure",
+        "description": "sensor_oad_onchip_secure",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "sensor_oad_onchip_secure",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
         "location": "../../examples/rtos/LP_CC2652RSIP/ti154stack/sensor_oad_onchip_secure/README.html",
         "resourceType": "categoryInfo",
         "name": "sensor_oad_onchip_secure",
@@ -34166,6 +35086,116 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/sensor_sm/README.html",
+        "resourceType": "categoryInfo",
+        "name": "sensor_sm",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/sensor_sm/freertos/ticlang/sensor_sm_LP_EM_CC2674P10_freertos_ticlang.projectspec",
+        "name": "sensor_sm",
+        "description": "sensor_sm",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "sensor_sm",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/sensor_sm/tirtos7/ticlang/sensor_sm_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
+        "name": "sensor_sm",
+        "description": "sensor_sm",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "sensor_sm",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
         "location": "../../examples/rtos/LP_CC2652RSIP/ti154stack/sensor_sm/README.html",
         "resourceType": "categoryInfo",
         "name": "sensor_sm",
@@ -36056,6 +37086,84 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/ti154stack/sensor_sm/tirtos7/iar/sensor_sm_CC1352P_2_LAUNCHXL_tirtos7_iar.ipcf",
+        "name": "sensor_sm",
+        "description": "sensor_sm",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "sensor_sm",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/sensor_sm/freertos/iar/sensor_sm_LP_EM_CC2674P10_freertos_iar.ipcf",
+        "name": "sensor_sm",
+        "description": "sensor_sm",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "sensor_sm",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/sensor_sm/tirtos7/iar/sensor_sm_LP_EM_CC2674P10_tirtos7_iar.ipcf",
         "name": "sensor_sm",
         "description": "sensor_sm",
         "kernel": [
@@ -38535,6 +39643,48 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/tfm_collector/tirtos7/ticlang/tfm_collector_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
+        "name": "tfm_collector",
+        "description": "tfm_collector",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "tfm_collector",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC1354P10"
         ],
         "coreTypes": [
@@ -38712,6 +39862,48 @@
             "LP-EM-CC1314R10"
         ],
         "location": "../../examples/rtos/LP_EM_CC1314R10/ti154stack/tfm_sensor/tirtos7/ticlang/tfm_sensor_LP_EM_CC1314R10_tirtos7_ticlang.projectspec",
+        "name": "tfm_sensor",
+        "description": "tfm_sensor",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack",
+            "tfm_sensor",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/ti154stack/tfm_sensor/tirtos7/ticlang/tfm_sensor_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "tfm_sensor",
         "description": "tfm_sensor",
         "kernel": [

@@ -321,7 +321,7 @@ psa_status_t cc3xx_generate_key(const psa_key_attributes_t *attributes,
     *key_buffer_length = 0;
 
     if (PSA_KEY_TYPE_IS_KEY_PAIR(key_type)) {
-#if defined(PSA_WANT_KEY_TYPE_ECC_KEY_PAIR)
+#if defined(PSA_WANT_KEY_TYPE_ECC_KEY_PAIR_BASIC)
         if (PSA_KEY_TYPE_IS_ECC(key_type)) {
             if (PSA_KEY_TYPE_ECC_GET_FAMILY(key_type) ==
                     PSA_ECC_FAMILY_SECP_K1 ||
@@ -329,17 +329,17 @@ psa_status_t cc3xx_generate_key(const psa_key_attributes_t *attributes,
                     PSA_ECC_FAMILY_SECP_R1 ||
                 PSA_KEY_TYPE_ECC_GET_FAMILY(key_type) ==
                     PSA_ECC_FAMILY_SECP_R2) {
-                err = cc3xx_internal_gen_ecc_wstr_keypair(
+                return cc3xx_internal_gen_ecc_wstr_keypair(
                     attributes, key_buffer, key_buffer_size, key_buffer_length);
             }
-        } else
-#endif /* PSA_WANT_KEY_TYPE_ECC_KEY_PAIR */
-#if defined(PSA_WANT_KEY_TYPE_RSA_KEY_PAIR)
+        }
+#endif /* PSA_WANT_KEY_TYPE_ECC_KEY_PAIR_BASIC */
+#if defined(PSA_WANT_KEY_TYPE_RSA_KEY_PAIR_BASIC)
         if (PSA_KEY_TYPE_IS_RSA(key_type)) {
-            err = cc3xx_internal_gen_rsa_keypair(
+            return cc3xx_internal_gen_rsa_keypair(
                 attributes, key_buffer, key_buffer_size, key_buffer_length);
         }
-#endif /* PSA_WANT_KEY_TYPE_RSA_KEY_PAIR */
+#endif /* PSA_WANT_KEY_TYPE_RSA_KEY_PAIR_BASIC */
     } else if (PSA_KEY_TYPE_IS_UNSTRUCTURED(key_type)) {
         err = psa_generate_random(key_buffer, key_buffer_size);
         if (err == PSA_SUCCESS) {
@@ -387,7 +387,7 @@ psa_status_t cc3xx_export_public_key(const psa_key_attributes_t *attributes,
                                                 data, data_size, data_length));
     }
 
-#if defined(PSA_WANT_KEY_TYPE_ECC_KEY_PAIR)
+#if defined(PSA_WANT_KEY_TYPE_ECC_KEY_PAIR_BASIC)
     if (PSA_KEY_TYPE_IS_ECC(key_type)) {
 
         /* FixMe: Make sure that data_length is set correctly */
@@ -412,15 +412,15 @@ psa_status_t cc3xx_export_public_key(const psa_key_attributes_t *attributes,
         err = cc3xx_ecc_cc_publ_to_psa_publ(&pUserPublKey,
                                             data, data_length);
     } else
-#endif /* PSA_WANT_KEY_TYPE_ECC_KEY_PAIR */
-#if defined(PSA_WANT_KEY_TYPE_RSA_KEY_PAIR)
+#endif /* PSA_WANT_KEY_TYPE_ECC_KEY_PAIR_BASIC */
+#if defined(PSA_WANT_KEY_TYPE_RSA_KEY_PAIR_BASIC)
     if (PSA_KEY_TYPE_IS_RSA(key_type)) {
 
         err = cc3xx_rsa_psa_priv_to_psa_publ((uint8_t *)key_buffer,
                         key_buffer_size, data, data_size, data_length);
 
     } else
-#endif /* PSA_WANT_KEY_TYPE_RSA_KEY_PAIR */
+#endif /* PSA_WANT_KEY_TYPE_RSA_KEY_PAIR_BASIC */
     {
         err = PSA_ERROR_NOT_SUPPORTED;
     }

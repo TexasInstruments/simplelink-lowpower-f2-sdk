@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2023-2024, Texas Instruments Incorporated
+ Copyright (c) 2023-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -3653,8 +3653,8 @@ static uint16_t NVOCMP_findOffset(uint8_t pg, uint16_t ofs)
  * @param   flag - specifies type of search
  * @param   pInfo - pointer to item info
  *
- * @return  When >0, offset to the item header for found item
- *          When <=0, -number of items searched when item not found
+ * @return  NVINTF_SUCCESS, if the item is found
+ *          NVINTF_NOTFOUND, if the item is not found
  *
  */
 #if NVOCMP_FASTITEM
@@ -3663,7 +3663,6 @@ static int8_t NVOCMP_findItem(NVOCMP_nvHandle_t *pNvHandle, uint8_t pg, uint16_t
 {
     bool found = false;
     uint8_t p;
-    uint16_t items = 0;
     uint16_t nvSearched = 0;
 #ifdef NVOCMP_GPRAM
     uint32_t vm;
@@ -3803,8 +3802,6 @@ static int8_t NVOCMP_findItem(NVOCMP_nvHandle_t *pNvHandle, uint8_t pg, uint16_t
               ofs = 0;
               nvSearched = 0;
           }
-          // Running count of items searched
-          items += 1;
       }
     }
 #ifdef NVOCMP_GPRAM
@@ -3821,7 +3818,6 @@ static int8_t NVOCMP_findItem(NVOCMP_nvHandle_t *pNvHandle, uint8_t pg, uint16_t
 {
     bool found = false;
     uint8_t p = pg;
-    uint16_t items = 0;
     uint32_t cid = NVOCMP_CMPRID(pHdr->sysid,pHdr->itemid,pHdr->subid);
 
 #if (NVOCMP_NVPAGES > NVOCMP_NVTWOP)
@@ -3945,8 +3941,6 @@ static int8_t NVOCMP_findItem(NVOCMP_nvHandle_t *pNvHandle, uint8_t pg, uint16_t
               ofs = pNvHandle->actOffset;
 #endif
           }
-          // Running count of items searched
-          items += 1;
       }
 #if (NVOCMP_NVPAGES > NVOCMP_NVTWOP)
     }
@@ -4692,7 +4686,6 @@ static NVOCMP_compactStatus_t NVOCMP_compact(NVOCMP_nvHandle_t *pNvHandle)
     uint16_t crcOff;
     uint8_t dstPg;
     uint8_t srcPg;
-    uint32_t aItem=0;
 #ifndef NVOCMP_RAM_OPTIMIZATION
 #ifdef NVOCMP_GPRAM
     uint32_t vm;
@@ -4808,7 +4801,6 @@ static NVOCMP_compactStatus_t NVOCMP_compact(NVOCMP_nvHandle_t *pNvHandle)
                 NVOCMP_copyItem(srcPg, dstPg, crcOff, dstOff, itemSize);
 #endif
                 dstOff += itemSize;
-                aItem++;
               }
               NVOCMP_ALERT(srcOff > dataLen, "Offset overflow: srcOff")
               srcOff -= dataLen;

@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../../../../../../../source/ti/boards/LP_EM_CC2674P10/Board.html -> Board.html",
+            "+cc13x4_cc26x4_tirtos7.icf -> cc13x4_cc26x4_tirtos7.icf",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../README.html -> README.html",
+            "+../../README.md -> README.md",
+            "+../../sha2hash.c -> sha2hash.c",
+            "+../sha2hash.syscfg -> sha2hash.syscfg"
+        ]
+    }
+]

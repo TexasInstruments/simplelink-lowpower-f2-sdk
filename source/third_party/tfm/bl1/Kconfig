@@ -96,4 +96,12 @@ config TFM_BL1_LOGGING
     bool "Enable BL1 Logging"
     default y
 
+config BL1_2_BUILD_TYPE
+    string "BL1_2 build type"
+    default "$(CMAKE_BUILD_TYPE)"
+
+config BL1_SHARED_SYMBOLS_PATH
+    string "Path to list of symbols that BL1_1 that can be referenced from BL1_2"
+    default "${TFM_SOURCE_DIR}/bl1/bl1_1/bl1_1_shared_symbols.txt"
+
 endif

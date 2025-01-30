@@ -24,22 +24,25 @@ Building TF-M on nRF9160
 To build an S and NS application image for the nRF9160 run the
 following commands:
 
-    **Note**: On OS X change ``readlink`` to ``greadlink``, available by
-    running ``brew install coreutils``.
+.. code-block:: bash
 
-.. code:: bash
+   cmake -S <TF-M base folder> -B build_spe \
+           -DTFM_PLATFORM=nordic_nrf/nrf9160dk_nrf9160 \
+           -DTFM_TOOLCHAIN_FILE=../toolchain_GNUARM.cmake \
+   cmake --build build_spe -- install
 
-    $ mkdir build && cd build
-    $ cmake -DTFM_PLATFORM=nordic_nrf/nrf9160dk_nrf9160 \
-            -DTFM_TOOLCHAIN_FILE=../toolchain_GNUARM.cmake \
-            ../
-    $ make install
+   cmake -S <Application base folder> -B build_app \
+           -DCONFIG_SPE_PATH<Absolute path to TF-M base folder>/build_spe/api_ns
+           -DTFM_TOOLCHAIN_FILE=cmake/toolchain_ns_GNUARM.cmake
+   cmake --build
 
-    **Note**: Currently, applications can only be built using GCC
-    (GNU ARM Embedded toolchain).
+.. note::
+   Currently, applications can only be built using GCC (GNU ARM Embedded
+   toolchain).
 
-    **Note**: For BL2 (MCUBoot) logging output to be available, the project needs
-    to be built with Debug configuration (CMAKE_BUILD_TYPE=Debug).
+.. note::
+   For BL2 (MCUBoot) logging output to be available, the project needs to be
+   built with Debug configuration (CMAKE_BUILD_TYPE=Debug).
 
 Flashing and debugging with Nordic nRF Segger J-Link
 -----------------------------------------------------
@@ -87,7 +90,8 @@ Generate Intel hex files from the output binary (bin) files as follows:
 
 .. code-block:: console
 
-   srec_cat install/outputs/NORDIC_NRF/NRF9160DK_NRF9160/tfm_s_ns_signed.bin -binary --offset=0x10000 -o install/outputs/NORDIC_NRF/NRF9160DK_NRF9160/tfm_s_ns_signed.hex -intel
+   srec_cat build_app/tfm_s_ns_signed.bin -binary --offset 0x10000 \
+         -o build_app/tfm_s_ns_signed.hex -intel
 
 * Connect the micro-USB cable to the nRF9160 DK and to your computer
 * Erase the flash memory in the nRF9160 IC:
@@ -96,12 +100,19 @@ Generate Intel hex files from the output binary (bin) files as follows:
 
    nrfjprog --eraseall -f nrf91
 
+* (Optionally) Erase the flash memory and reset flash protection and disable
+   the read back protection mechanism if enabled.
+
+.. code-block:: console
+
+   nrfjprog --recover -f nrf91
+
 * Flash the BL2 and TF-M image binaries from the sample folder of your choice:
 
 .. code-block:: console
 
-   nrfjprog --program <sample folder>/install/outputs/NORDIC_NRF/NRF9160DK_NRF9160/bl2.hex -f nrf91 --sectorerase
-   nrfjprog --program <sample folder>/install/outputs/NORDIC_NRF/NRF9160DK_NRF9160/tfm_s_ns_signed.hex -f nrf91 --sectorerase
+   nrfjprog --program build_spe/bin/bl2.hex -f nrf91 --sectorerase
+   nrfjprog --program build_app/tfm_s_ns_signed.hex -f nrf91 --sectorerase
 
 * Reset and start TF-M:
 
@@ -117,7 +128,8 @@ is available via USART1.
 
 Non-Secure console output is available via USART0.
 
-    **Note**: By default USART0 and USART1 outputs are routed to separate serial ports.
+.. note::
+   By default USART0 and USART1 outputs are routed to separate serial ports.
 
 .. _nRF Command-Line Tools: https://www.nordicsemi.com/Software-and-Tools/Development-Tools/nRF-Command-Line-Tools
 

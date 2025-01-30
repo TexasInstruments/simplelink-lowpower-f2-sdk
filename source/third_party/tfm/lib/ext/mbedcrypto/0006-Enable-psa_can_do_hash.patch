@@ -1,0 +1,31 @@
+From 5667b4408046e1c6384586cf84ee76b80513c68e Mon Sep 17 00:00:00 2001
+From: Summer Qin <summer.qin@arm.com>
+Date: Fri, 13 Oct 2023 15:22:59 +0800
+Subject: [PATCH 6/6] Enable psa_can_do_hash
+
+CC312 driver want to use hash in md for entropy operations.
+Enable psa_can_do_hash by directly returning 1.
+This is a workaround for current cc312 driver. After switching
+to new driver, this workaround is not needed.
+
+Signed-off-by: Summer Qin <summer.qin@arm.com>
+---
+ library/psa_crypto.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/library/psa_crypto.c b/library/psa_crypto.c
+index 0b934079..71ea2066 100644
+--- a/library/psa_crypto.c
++++ b/library/psa_crypto.c
+@@ -130,7 +130,7 @@ mbedtls_psa_drbg_context_t *const mbedtls_psa_random_state =
+ int psa_can_do_hash(psa_algorithm_t hash_alg)
+ {
+     (void) hash_alg;
+-    return global_data.drivers_initialized;
++    return 1;
+ }
+ #if defined(MBEDTLS_PSA_BUILTIN_KEY_TYPE_DH_KEY_PAIR_IMPORT) ||       \
+     defined(MBEDTLS_PSA_BUILTIN_KEY_TYPE_DH_PUBLIC_KEY) ||     \
+-- 
+2.25.1
+

@@ -26,9 +26,9 @@
 #include "swap_priv.h"
 #include "bootutil/bootutil_log.h"
 
-#include "mcuboot_config/mcuboot_config.h"
+#include "mcuboot_config.h"
 
-MCUBOOT_LOG_MODULE_DECLARE(mcuboot);
+BOOT_LOG_MODULE_DECLARE(mcuboot);
 
 #ifdef MCUBOOT_SWAP_USING_MOVE
 
@@ -47,7 +47,26 @@ int boot_status_fails = 0;
 #define BOOT_STATUS_ASSERT(x) ASSERT(x)
 #endif
 
-static uint32_t g_last_idx = UINT32_MAX;
+uint32_t
+find_last_idx(struct boot_loader_state *state, uint32_t swap_size)
+{
+    uint32_t sector_sz;
+    uint32_t sz;
+    uint32_t last_idx;
+
+    sector_sz = boot_img_sector_size(state, BOOT_PRIMARY_SLOT, 0);
+    sz = 0;
+    last_idx = 0;
+    while (1) {
+        sz += sector_sz;
+        last_idx++;
+        if (sz >= swap_size) {
+            break;
+        }
+    }
+
+    return last_idx;
+}
 
 int
 boot_read_image_header(struct boot_loader_state *state, int slot,
@@ -56,6 +75,8 @@ boot_read_image_header(struct boot_loader_state *state, int slot,
     const struct flash_area *fap;
     uint32_t off;
     uint32_t sz;
+    uint32_t last_idx;
+    uint32_t swap_size;
     int area_id;
     int rc;
 
@@ -64,25 +85,30 @@ boot_read_image_header(struct boot_loader_state *state, int slot,
 #endif
 
     off = 0;
-    if (bs) {
+    if (bs && !boot_status_is_reset(bs)) {
+	boot_find_status(BOOT_CURR_IMG(state), &fap);
+        if (fap == NULL || boot_read_swap_size(fap, &swap_size)) {
+            rc = BOOT_EFLASH;
+            goto done;
+        }
+        flash_area_close(fap);
+
+        last_idx = find_last_idx(state, swap_size);
         sz = boot_img_sector_size(state, BOOT_PRIMARY_SLOT, 0);
-        if (bs->op == BOOT_STATUS_OP_MOVE) {
-            if (slot == 0 && bs->idx > g_last_idx) {
-                /* second sector */
-                off = sz;
-            }
+
+        /*
+         * Find the correct offset or slot where the image header is expected to
+         * be found for the steps where it is moved or swapped.
+         */
+        if (bs->op == BOOT_STATUS_OP_MOVE && slot == 0 && bs->idx > last_idx) {
+            off = sz;
         } else if (bs->op == BOOT_STATUS_OP_SWAP) {
-            if (bs->idx > 1 && bs->idx <= g_last_idx) {
-                if (slot == 0) {
-                    slot = 1;
-                } else {
-                    slot = 0;
-                }
+            if (bs->idx > 1 && bs->idx <= last_idx) {
+                slot = (slot == 0) ? 1 : 0;
             } else if (bs->idx == 1) {
                 if (slot == 0) {
                     off = sz;
-                }
-                if (slot == 1 && bs->state == 2) {
+                } else if (slot == 1 && bs->state == 2) {
                     slot = 0;
                 }
             }
@@ -399,7 +425,7 @@ boot_swap_sectors(int idx, uint32_t sz, struct boot_loader_state *state,
  */
 void
 fixup_revert(const struct boot_loader_state *state, struct boot_status *bs,
-        const struct flash_area *fap_sec, uint8_t sec_id)
+        const struct flash_area *fap_sec)
 {
     struct boot_swap_state swap_state;
     int rc;
@@ -415,7 +441,7 @@ fixup_revert(const struct boot_loader_state *state, struct boot_status *bs,
         return;
     }
 
-    rc = boot_read_swap_state_by_id(sec_id, &swap_state);
+    rc = boot_read_swap_state(fap_sec, &swap_state);
     assert(rc == 0);
 
     BOOT_LOG_SWAP_STATE("Secondary image", &swap_state);
@@ -444,23 +470,16 @@ swap_run(struct boot_loader_state *state, struct boot_status *bs,
     uint32_t idx;
     uint32_t trailer_sz;
     uint32_t first_trailer_idx;
+    uint32_t last_idx;
     uint8_t image_index;
     const struct flash_area *fap_pri;
     const struct flash_area *fap_sec;
     int rc;
 
-    sz = 0;
-    g_last_idx = 0;
+    BOOT_LOG_INF("Starting swap using move algorithm.");
 
+    last_idx = find_last_idx(state, copy_size);
     sector_sz = boot_img_sector_size(state, BOOT_PRIMARY_SLOT, 0);
-    while (1) {
-        sz += sector_sz;
-        /* Skip to next sector because all sectors will be moved up. */
-        g_last_idx++;
-        if (sz >= copy_size) {
-            break;
-        }
-    }
 
     /*
      * When starting a new swap upgrade, check that there is enough space.
@@ -478,8 +497,11 @@ swap_run(struct boot_loader_state *state, struct boot_status *bs,
             first_trailer_idx--;
         }
 
-        if (g_last_idx >= first_trailer_idx) {
+        if (last_idx >= first_trailer_idx) {
             BOOT_LOG_WRN("Not enough free space to run swap upgrade");
+            BOOT_LOG_WRN("required %d bytes but only %d are available",
+                         (last_idx + 1) * sector_sz,
+                         first_trailer_idx * sector_sz);
             bs->swap_type = BOOT_SWAP_TYPE_NONE;
             return;
         }
@@ -493,12 +515,12 @@ swap_run(struct boot_loader_state *state, struct boot_status *bs,
     rc = flash_area_open(FLASH_AREA_IMAGE_SECONDARY(image_index), &fap_sec);
     assert (rc == 0);
 
-    fixup_revert(state, bs, fap_sec, FLASH_AREA_IMAGE_SECONDARY(image_index));
+    fixup_revert(state, bs, fap_sec);
 
     if (bs->op == BOOT_STATUS_OP_MOVE) {
-        idx = g_last_idx;
+        idx = last_idx;
         while (idx > 0) {
-            if (idx <= (g_last_idx - bs->idx + 1)) {
+            if (idx <= (last_idx - bs->idx + 1)) {
                 boot_move_sector_up(idx, sector_sz, state, bs, fap_pri, fap_sec);
             }
             idx--;
@@ -509,7 +531,7 @@ swap_run(struct boot_loader_state *state, struct boot_status *bs,
     bs->op = BOOT_STATUS_OP_SWAP;
 
     idx = 1;
-    while (idx <= g_last_idx) {
+    while (idx <= last_idx) {
         if (idx >= bs->idx) {
             boot_swap_sectors(idx, sector_sz, state, bs, fap_pri, fap_sec);
         }
@@ -518,6 +540,28 @@ swap_run(struct boot_loader_state *state, struct boot_status *bs,
 
     flash_area_close(fap_pri);
     flash_area_close(fap_sec);
+}
+
+int app_max_size(struct boot_loader_state *state)
+{
+    uint32_t sz = 0;
+    uint32_t sector_sz;
+    uint32_t trailer_sz;
+    uint32_t first_trailer_idx;
+
+    sector_sz = boot_img_sector_size(state, BOOT_PRIMARY_SLOT, 0);
+    trailer_sz = boot_trailer_sz(BOOT_WRITE_SZ(state));
+    first_trailer_idx = boot_img_num_sectors(state, BOOT_PRIMARY_SLOT) - 1;
+
+    while (1) {
+        sz += sector_sz;
+        if  (sz >= trailer_sz) {
+            break;
+        }
+        first_trailer_idx--;
+    }
+
+    return (first_trailer_idx * sector_sz);
 }
 
 #endif

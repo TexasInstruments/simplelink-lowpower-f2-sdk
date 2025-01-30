@@ -14,8 +14,9 @@ from typing import Optional
 from tilogger.interface import LogPacket
 from tilogger.logger import Logger
 from tilogger.tracedb import ElfString, Opcode
+from tilogger.helpers import build_value
 
-from .itm_framer import ITMFrame, ITMSourceSWFrame, ITMOpcode, build_value, ITMStimulusPort
+from .itm_framer import ITMFrame, ITMSourceSWFrame, ITMOpcode, ITMStimulusPort
 
 logger = logging.getLogger("ItmPacketiser")
 
@@ -44,7 +45,7 @@ class ItmLogPacketData:
         self.data: bytes = bytes(header.data)
         self.next_frame_has_length: bool = False
 
-        if self.elf_string.opcode in [Opcode.FORMATTED_TEXT, Opcode.EVENT_CONSTRUCT, Opcode.EVENT]:
+        if self.elf_string.opcode == Opcode.FORMATTED_TEXT:
             self.remaining_length = int(elf_string.nargs) * SWIT_SIZE
 
         elif self.elf_string.opcode == Opcode.BUFFER:
@@ -335,3 +336,4 @@ class ITMPacketiser:
 
     def reset(self):
         """Handle reset frame."""
+        pass

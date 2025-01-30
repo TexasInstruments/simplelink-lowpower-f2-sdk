@@ -113,10 +113,10 @@ enum fwu_agent_state_t {
 };
 
 struct efi_guid full_capsule_image_guid = {
-    .time_low = 0xe2bb9c06,
-    .time_mid = 0x70e9,
-    .time_hi_and_version = 0x4b14,
-    .clock_seq_and_node = {0x97, 0xa3, 0x5a, 0x79, 0x13, 0x17, 0x6e, 0x3f}
+    .time_low = 0x989f3a4e,
+    .time_mid = 0x46e0,
+    .time_hi_and_version = 0x4cd0,
+    .clock_seq_and_node = {0x98, 0x77, 0xa2, 0x5c, 0x70, 0xc0, 0x13, 0x29}
 };
 
 
@@ -802,6 +802,8 @@ static enum fwu_agent_error_t flash_full_capsule(
     }
     metadata->active_index = previous_active_index;
     metadata->previous_active_index = active_index;
+    metadata->crc_32 = crc32((uint8_t *)&metadata->version,
+                              sizeof(struct fwu_metadata) - sizeof(uint32_t));
 
     ret = metadata_write(metadata);
     if (ret) {
@@ -913,6 +915,8 @@ static enum fwu_agent_error_t accept_full_capsule(
     if (ret) {
         return ret;
     }
+    metadata->crc_32 = crc32((uint8_t *)&metadata->version,
+                              sizeof(struct fwu_metadata) - sizeof(uint32_t));
 
     ret = metadata_write(metadata);
     if (ret) {
@@ -1007,6 +1011,8 @@ static enum fwu_agent_error_t fwu_select_previous(
     if (ret) {
         return ret;
     }
+    metadata->crc_32 = crc32((uint8_t *)&metadata->version,
+                              sizeof(struct fwu_metadata) - sizeof(uint32_t));
 
     ret = metadata_write(metadata);
     if (ret) {

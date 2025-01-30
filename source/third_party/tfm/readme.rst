@@ -10,7 +10,9 @@ Quick Links
 ###########
 
 .. Note::
-    This git contains the source code for Trusted Firmware-M.
+    This git contains the source code for Trusted Firmware-M. It is primarily
+    hosted at `git.trustedfirmware.org`_ with a read-only mirror available on
+    `GitHub`_.
 
     All official documentation has moved to `Trusted Firmware-M documentation`_
     which is available through `trustedfirmware.org`_.
@@ -44,7 +46,9 @@ Feedback can be submitted via email to
 .. _PSA certified: https://www.psacertified.org/
 .. _Trusted Firmware-M documentation: `Documentation home`_
 .. _Documentation home: https://tf-m-user-guide.trustedfirmware.org/index.html
-.. _trustedfirmware.org: http://www.trustedfirmware.org
+.. _trustedfirmware.org: https://www.trustedfirmware.org
 .. _Release notes: https://tf-m-user-guide.trustedfirmware.org/releases/index.html
+.. _git.trustedfirmware.org: https://git.trustedfirmware.org/
+.. _GitHub: https://github.com/TrustedFirmware-M
 
-*Copyright (c) 2017-2021, Arm Limited. All rights reserved.*
+*Copyright (c) 2017-2023, Arm Limited. All rights reserved.*

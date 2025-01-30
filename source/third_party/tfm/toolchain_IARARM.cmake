@@ -58,6 +58,7 @@ macro(tfm_toolchain_reset_linker_flags)
       --silent
       --semihosting
       --redirect __write=__write_buffered
+      --diag_suppress=lp005
       "SHELL:--fpu none"
     )
 endmacro()
@@ -146,7 +147,7 @@ macro(target_add_scatter_file target)
     target_link_libraries(${target}_scatter
         platform_region_defs
         psa_interface
-        tfm_partition_defs
+        tfm_config
     )
 
     target_compile_options(${target}_scatter

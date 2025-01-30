@@ -4,8 +4,8 @@ Supported Platforms
 
     - Cortex-M85 system:
 
-        - `Corstone-310 Ethos-U55 FVP.
-          <https://arm-software.github.io/AVH/main/simulation/html/Using.html>`_
+        - `Corstone-310 Ethos-U55/U65 Ecosystem FVP.
+          <https://developer.arm.com/tools-and-software/open-source-software/arm-platforms-software/arm-ecosystem-fvps>`_
         - `FPGA image loaded on MPS3 board (AN555).
           <https://developer.arm.com/tools-and-software/development-boards/fpga-prototyping-boards/download-fpga-images>`_
 
@@ -15,7 +15,7 @@ Supported Platforms
           <https://developer.arm.com/tools-and-software/development-boards/fpga-prototyping-boards/download-fpga-images>`_
         - `FPGA image loaded on MPS3 board (AN552).
           <https://developer.arm.com/tools-and-software/development-boards/fpga-prototyping-boards/download-fpga-images>`_
-        - `Corstone-300 Ethos-U55 Ecosystem FVP.
+        - `Corstone-300 Ethos-U55/U65 Ecosystem FVP.
           <https://developer.arm.com/tools-and-software/open-source-software/arm-platforms-software/arm-ecosystem-fvps>`_
 
 
@@ -33,6 +33,8 @@ Supported Platforms
           <https://developer.arm.com/tools-and-software/development-boards/fpga-prototyping-boards/mps3>`_
         - `LPC55S69.
           <https://www.nxp.com/products/processors-and-microcontrollers/arm-microcontrollers/general-purpose-mcus/lpc5500-cortex-m33/lpcxpresso55s69-development-board:LPC55S69-EVK>`_
+        - `STM32H573I-DK.
+          <https://www.st.com/en/evaluation-tools/stm32h573i-dk.html>`_
         - `B-U585I-IOT02A.
           <https://www.st.com/en/evaluation-tools/B-U585I-IOT02A.html>`_
         - `NUCLEO L552ZE Q.

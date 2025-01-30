@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2017-2022 Arm Limited. All rights reserved.
- * Copyright (c) 2021, Cypress Semiconductor Corporation. All rights reserved.
+ * Copyright (c) 2021-2023 Cypress Semiconductor Corporation (an Infineon company)
+ * or an affiliate of Cypress Semiconductor Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,11 +39,6 @@
 #define S_MSP_STACK_SIZE        (0x0000800)
 
 #define BOOT_TFM_SHARED_DATA_SIZE (0x400)
-
-/* This size of buffer is big enough to store an attestation
- * token produced by initial attestation service
- */
-#define PSA_INITIAL_ATTEST_TOKEN_MAX_SIZE   (0x250)
 
 #define IMAGE_TFM_CODE_SIZE \
             (TFM_PARTITION_SIZE - BL2_HEADER_SIZE - BL2_TRAILER_SIZE)
@@ -109,7 +105,7 @@
 #define BL1_1_DATA_LIMIT    (BL1_1_DATA_START + BL1_1_DATA_SIZE - 1)
 
 #define BL1_2_CODE_START    (BL1_1_DATA_START + BL1_1_DATA_SIZE)
-#define BL1_2_CODE_SIZE     (0x00001000)     /* 4 KiB */
+#define BL1_2_CODE_SIZE     (0x0000198C)     /* 6 KiB */
 #define BL1_2_CODE_LIMIT    (BL1_2_CODE_START + BL1_2_CODE_SIZE - 1)
 
 #define BL1_2_DATA_START    (BL1_2_CODE_START+BL1_2_CODE_SIZE)
@@ -120,9 +116,6 @@
 
 #define BOOT_TFM_SHARED_DATA_LIMIT (BOOT_TFM_SHARED_DATA_BASE + \
                                     BOOT_TFM_SHARED_DATA_SIZE - 1)
-
-/* NSPE-to-SPE interrupt */
-#define MAILBOX_IRQ HSE1_RECEIVER_COMBINED_IRQn
 
 #endif /* __REGION_DEFS_H__ */
 

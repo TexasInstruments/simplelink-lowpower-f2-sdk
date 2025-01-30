@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022, Texas Instruments Incorporated
+ * Copyright (c) 2021-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,13 +29,14 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+INCLUDE "ti_utils_build_linker.cmd.genmap"
 
 STACKSIZE = 1024;
 HEAPSIZE = 8196; /* Size of heap buffer used by HeapMem */
 
 MEMORY
 {
-    FLASH (RX)      : ORIGIN = 0x00000000, LENGTH = 0x5800
+    FLASH (RX)      : ORIGIN = ti_utils_build_GenMap_MCUBOOT_FLASH_BASE, LENGTH = ti_utils_build_GenMap_MCUBOOT_FLASH_SIZE
     /*
      * Customer Configuration Area and Bootloader Backdoor configuration in
      * flash, up to 512 bytes

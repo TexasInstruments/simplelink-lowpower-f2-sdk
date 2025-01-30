@@ -28,10 +28,10 @@ __asm("  .global __ARM_use_no_argv\n");
 #endif
 
 /* Check isolation levels. */
-#ifndef TFM_LVL
-#error TFM_LVL is not defined.
-#elif (TFM_LVL != 1) && (TFM_LVL != 2) && (TFM_LVL != 3)
-#error Invalid TFM_LVL value. The possible values are 1, 2 and 3.
+#ifndef TFM_ISOLATION_LEVEL
+#error TFM_ISOLATION_LEVEL is not defined.
+#elif (TFM_ISOLATION_LEVEL != 1) && (TFM_ISOLATION_LEVEL != 2) && (TFM_ISOLATION_LEVEL != 3)
+#error Invalid TFM_ISOLATION_LEVEL value. The possible values are 1, 2 and 3.
 #endif
 
 /* Check if there are unsupported thread priority. */
@@ -39,10 +39,10 @@ __asm("  .global __ARM_use_no_argv\n");
 #include "thread.h"
 
 #if TO_THREAD_PRIORITY(PARTITION_PRI_HIGHEST) != THRD_PRIOR_HIGHEST ||  \
-    TO_THREAD_PRIORITY(PARTITION_PRI_HIGH) != THRD_PRIOR_HIGH ||        \
-    TO_THREAD_PRIORITY(PARTITION_PRI_NORMAL) != THRD_PRIOR_MEDIUM ||    \
-    TO_THREAD_PRIORITY(PARTITION_PRI_LOW) != THRD_PRIOR_LOW ||          \
-    TO_THREAD_PRIORITY(PARTITION_PRI_LOWEST) != THRD_PRIOR_LOWEST
+    TO_THREAD_PRIORITY(PARTITION_PRI_HIGH)    != THRD_PRIOR_HIGH    ||  \
+    TO_THREAD_PRIORITY(PARTITION_PRI_NORMAL)  != THRD_PRIOR_MEDIUM  ||  \
+    TO_THREAD_PRIORITY(PARTITION_PRI_LOW)     != THRD_PRIOR_LOW     ||  \
+    TO_THREAD_PRIORITY(PARTITION_PRI_LOWEST)  != THRD_PRIOR_LOWEST
 #error "Partition priority converting to thread priority error!"
 #endif
 

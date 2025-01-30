@@ -37,11 +37,6 @@
 #define SPU_FLASH_REGION_SIZE   (0x00004000)
 #define SPU_SRAM_REGION_SIZE    (0x00002000)
 
-/* This size of buffer is big enough to store an attestation
- * token produced by initial attestation service
- */
-#define PSA_INITIAL_ATTEST_TOKEN_MAX_SIZE   (0x250)
-
 /*
  * SPU flash region granularity is 16 KB on nRF5340. Alignment
  * of partitions is defined in accordance with this constraint.

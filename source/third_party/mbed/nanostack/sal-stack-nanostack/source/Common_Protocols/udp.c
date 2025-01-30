@@ -161,7 +161,7 @@ buffer_t *udp_up(buffer_t *buf)
 
 
 #ifdef WISUN_NCP_ENABLE
-    if(!wisun_ncp_filter_udp_port(buf->dst_sa.port))
+    if(!wisun_ncp_filter_udp_port(buf->dst_sa.port) && buf->src_sa.port != 1812) //check for source 1812, otherwise RADIUS messages will be sent back up
     {
         nanostack_process_stream_net_from_stack(buf);
         buffer_free(buf);

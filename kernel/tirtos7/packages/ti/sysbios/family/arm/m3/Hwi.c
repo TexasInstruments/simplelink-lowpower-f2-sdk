@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2023 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2015-2024 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -281,8 +281,20 @@ Hwi_Handle Hwi_construct2(Hwi_Struct2 *hwiStruct2, int intNum,
 {
     Hwi_Handle hwi, status;
 
-    /* check vector table entry for already in use vector */
-    if (*(Hwi_module->vectorTable + intNum) != Hwi_nullIsrFunc) {
+    /*
+     * check vector table entry for already in use vector. If optimizations are
+     * enabled and this check evaluates to false, the compiler assumes that the
+     * second check for "Hwi_module->vectorTable + intNum" will always be true.
+     * As a result it removes the checks and returns always NULL. This behaviour
+     * occurs because the compiler doesn't recognize that "vectorTable" is
+     * indirectly modified during the Hwi_construct() call. Specifically,
+     * Hwi_construct() eventually calls Hwi_plug(), which updates
+     * "vectorTableBase", which is assigned to "vectorTable" in Hwi_initNVIC().
+     * By casting the value to volatile, the compiler is informed that
+     * "vectorTable" may be modified outside of its immediate scope, thus
+     * preventing returning always NULL.
+     */
+    if (*((volatile Hwi_VectorFuncPtr *)(Hwi_module->vectorTable + intNum)) != Hwi_nullIsrFunc) {
         return (NULL);
     }
 
@@ -293,7 +305,7 @@ Hwi_Handle Hwi_construct2(Hwi_Struct2 *hwiStruct2, int intNum,
     }
 
     /* check vector table entry for success */
-    if (*(Hwi_module->vectorTable + intNum) == Hwi_nullIsrFunc) {
+    if (*((volatile Hwi_VectorFuncPtr *)(Hwi_module->vectorTable + intNum)) == Hwi_nullIsrFunc) {
         return (NULL);
     }
 
@@ -1823,4 +1835,3 @@ void Hwi_Params_copy(Hwi_Params *dst, Hwi_Params *src)
         *dst = *src;
     }
 }
-

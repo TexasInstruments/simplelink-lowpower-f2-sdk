@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2023, Texas Instruments Incorporated
+ * Copyright (c) 2019-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,9 +42,13 @@
 #include <ti/drivers/dpl/HwiP.h>
 #include <ti/drivers/UART2.h>
 #include <ti/drivers/uart2/UART2Support.h>
+#include <ti/log/Log.h>
 
 extern const UART2_Config UART2_config[];
 extern const uint_least8_t UART2_count;
+
+/* Macro for weak definition of the UART2 Log module */
+Log_MODULE_DEFINE_WEAK(LogModule_UART2, {0});
 
 /* Default UART parameters structure */
 const UART2_Params UART2_defaultParams = {
@@ -114,6 +118,12 @@ int_fast16_t __attribute__((weak)) UART2_read(UART2_Handle handle, void *buffer,
 {
     UART2_Object *object = handle->object;
     int status           = UART2_STATUS_SUCCESS;
+
+    Log_printf(LogModule_UART2,
+               Log_INFO,
+               "UART2_read: Start reading %d byte(s) to buffer address 0x%x",
+               size,
+               buffer);
 
     if ((object->state.readMode == UART2_Mode_BLOCKING) && (object->state.readReturnMode == UART2_ReadReturnMode_FULL))
     {
@@ -240,6 +250,9 @@ int_fast16_t UART2_readTimeout(UART2_Handle handle, void *buffer, size_t size, s
         }
         memcpy((unsigned char *)buffer + object->bytesRead, srcAddr, available);
 
+        Log_printf(LogModule_UART2, Log_VERBOSE,
+                   "UART2_readTimeout: Read %d byte(s) from the ring buffer.",
+                   available);
         RingBuf_getConsume(&object->rxBuffer, available);
 
         object->readCount -= available;
@@ -403,6 +416,10 @@ void __attribute__((weak)) UART2_rxDisable(UART2_Handle handle)
     uintptr_t key = HwiP_disable();
     if (object->state.rxEnabled)
     {
+        Log_printf(LogModule_UART2,
+               Log_INFO,
+               "UART2_rxDisable: Disable RX");
+
         UART2Support_dmaStopRx(handle);
         UART2Support_disableRx(hwAttrs);
 
@@ -445,6 +462,12 @@ void __attribute__((weak)) UART2_rxEnable(UART2_Handle handle)
 int_fast16_t __attribute__((weak))
 UART2_write(UART2_Handle handle, const void *buffer, size_t size, size_t *bytesWritten)
 {
+    Log_printf(LogModule_UART2,
+               Log_INFO,
+               "UART2_write: Start writing %d byte(s) from buffer address 0x%x",
+               size,
+               buffer);
+
     return UART2_writeTimeout(handle, buffer, size, bytesWritten, UART2_WAIT_FOREVER);
 }
 
@@ -474,6 +497,12 @@ int_fast16_t UART2_writePolling(UART2_Handle handle, const void *buffer, size_t 
 
     if (object->eventMask & UART2_EVENT_TX_BEGIN)
     {
+        Log_printf(LogModule_UART2,
+               Log_INFO,
+               "UART2_writePolling: Entering event callback with event = 0x%x and user argument = 0x%x",
+               UART2_EVENT_TX_BEGIN,
+               object->userArg);
+
         object->eventCallback(handle, UART2_EVENT_TX_BEGIN, 0, object->userArg);
     }
 
@@ -492,6 +521,12 @@ int_fast16_t UART2_writePolling(UART2_Handle handle, const void *buffer, size_t 
     UART2Support_disableTx(hwAttrs);
     if (object->eventMask & UART2_EVENT_TX_FINISHED)
     {
+        Log_printf(LogModule_UART2,
+               Log_INFO,
+               "UART2_writePolling: Entering event callback with event = 0x%x and user argument = 0x%x",
+               UART2_EVENT_TX_FINISHED,
+               object->userArg);
+
         object->eventCallback(handle, UART2_EVENT_TX_FINISHED, 0, object->userArg);
     }
 
@@ -518,6 +553,7 @@ int_fast16_t UART2_writeTimeoutBlocking(UART2_Handle handle,
     UART2_Object *object         = handle->object;
     UART2_HWAttrs const *hwAttrs = handle->hwAttrs;
     uintptr_t key;
+    bool globalInterruptsEnabled;
 
     /* Set output argument, if supplied */
     if (bytesWritten != NULL)
@@ -530,6 +566,9 @@ int_fast16_t UART2_writeTimeoutBlocking(UART2_Handle handle,
     {
         return UART2_STATUS_EINVALID;
     }
+
+    /* Save state of global interrupts before entering critical section */
+    globalInterruptsEnabled = HwiP_interruptsEnabled();
 
     /* Enter critical section while checking and modifying state variables */
     key = HwiP_disable();
@@ -564,22 +603,12 @@ int_fast16_t UART2_writeTimeoutBlocking(UART2_Handle handle,
     /* Enable TX - interrupts must be disabled */
     UART2Support_enableTx(hwAttrs);
 
-    /* Leave critical section */
-    HwiP_restore(key);
-
-    if (!HwiP_interruptsEnabled() && object->state.writeMode == UART2_Mode_BLOCKING)
+    if ((globalInterruptsEnabled == false) && (object->state.writeMode == UART2_Mode_BLOCKING))
     {
         /* RTOS not started yet, called from main(), use polling mode */
+        HwiP_restore(key);
         return UART2_writePolling(handle, buffer, size, bytesWritten);
     }
-
-    /* Invoke event callback if necessary */
-    if ((object->eventMask & UART2_EVENT_TX_BEGIN) && object->eventCallback)
-    {
-        object->eventCallback(handle, UART2_EVENT_TX_BEGIN, 0, object->userArg);
-    }
-
-    key = HwiP_disable();
 
     /* Start TX transaction */
     UART2Support_dmaStartTx(handle);
@@ -702,6 +731,9 @@ int_fast16_t UART2_writeTimeoutNonblocking(UART2_Handle handle,
         memcpy(dstAddr, (unsigned char *)buffer + object->bytesWritten, space);
 
         /* Update the ring buffer state with the number of bytes copied */
+        Log_printf(LogModule_UART2, Log_VERBOSE,
+                   "UART2_writeTimeoutNonblocking: Write %d byte(s) to the ring buffer.",
+                   space);
         RingBuf_putAdvance(&object->txBuffer, space);
 
         object->writeCount -= space;

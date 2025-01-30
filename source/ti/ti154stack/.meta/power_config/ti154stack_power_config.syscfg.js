@@ -411,6 +411,15 @@ function validate(inst, validation)
         const rfTransmitPower = rfTxPowerSettings.txPower;
         const rfHighPA = rfTxPowerSettings.highPA;
 
+        if(inst.customPhy == true && inst.radioConfig.txPower !=
+            inst.transmitPower)
+        {
+            validation.logWarning(`The TX power level was changed through the `
+                + `Custom PHY tab instead of the Power tab. Please make sure `
+                + `the Power tab transmit power level matches the Custom PHY `
+                + `selected power level`, inst, "transmitPower");
+        }
+
         // Verify that ccfg forceVddr is set if required
         if(ParameterHandler.validateTxPower(rfTransmitPower, freq, rfHighPA)
             && !ccfg.forceVddr)

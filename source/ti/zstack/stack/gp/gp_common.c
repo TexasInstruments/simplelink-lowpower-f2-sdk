@@ -1090,8 +1090,8 @@ void gp_expireDuplicateFiltering(void)
    zcl_memcpy( &newProxyEntry[PROXY_TBL_RADIUS], &pSinkEntry[SINK_TBL_RADIUS], sizeof(uint8_t) );
    zcl_memset( &newProxyEntry[PROXY_TBL_SEARCH_COUNTER], searchCounter, sizeof(uint8_t) );
 
-   // Update the proxy table
-   gp_UpdateProxyTbl( newProxyEntry, TRUE, FALSE );
+   // Update the proxy table, setting options to 0x08 to force sink add
+   gp_UpdateProxyTbl( newProxyEntry, 0x08, FALSE );
  }
 
  /*********************************************************************

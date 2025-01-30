@@ -43,11 +43,11 @@ The example applications in TI 15.4-Stack are developed for the CC13x2 Launchpad
 > The [Example Usage](#ExampleUsage) section of this document explains how to use the user interface, although both the button presses and the UART perform the
 > same actions.
 
-* `CONFIG_GPIO_RLED` - Set when the collector application is initialized. Flashes when the network is open for joining.
-* `CONFIG_GPIO_BTN1` - Press to initialize the collector application.
-* `CONFIG_GPIO_BTN2` - Press to allow new devices to join the network. While the network is open for joining, `CONFIG_GPIO_RLED` will flash. Press again to disallow joining.
+* `CONFIG_LED_RED` - Set when the collector application is initialized. Flashes when the network is open for joining.
+* `CONFIG_BTN_LEFT` - Press to initialize the collector application.
+* `CONFIG_BTN_RIGHT` - Press to allow new devices to join the network. While the network is open for joining, `CONFIG_LED_RED` will flash. Press again to disallow joining.
 
-> If `CONFIG_GPIO_BTN2` is held while power is applied to the Launchpad, NV Flash will be erased.
+> To erase NV flash, Hold `CONFIG_BTN_RIGHT` down, then press and release the reset button. Wait a second then release BTN-2. You should see a CUI message indicating NV erase. If BTN-2 is not held down constantly during the boot process the NVS flash will not be erased.
 
 ## <a name="Resources&JumperSettings"></a>Resources & Jumper Settings
 
@@ -250,7 +250,7 @@ Device Status: --
 Number of Joined Devices: --
 ```
 
-* Start the application by pressing `CONFIG_GPIO_BTN1` or selecting `FORM NWK` under the `NETWORK ACTIONS` tab.
+* Start the application by pressing `CONFIG_BTN_LEFT` or selecting `FORM NWK` under the `NETWORK ACTIONS` tab.
 ```
  TI Collector
  Press Enter for Help
@@ -272,7 +272,7 @@ Device Status: --
 Number of Joined Devices: 0
 ```
 
-* Now turn on permit join using `CONFIG_GPIO_BTN2` or by selecting `OPEN NWK` under the `NETWORK ACTIONS` tab.
+* Now turn on permit join using `CONFIG_BTN_RIGHT` or by selecting `OPEN NWK` under the `NETWORK ACTIONS` tab.
 Once the network is started, and sensors begin to join, each of the status lines will update accordingly.
 ```
  TI Collector
@@ -288,7 +288,7 @@ Number of Joined Devices: 1
 
 On the sensor side:
 
-* Wait for the sensor device to join a network, after which the output will be updated with the channel number and device ID of the sensor that was started. After joining the network `CONFIG_GPIO_RLED` will be set.
+* Wait for the sensor device to join a network, after which the output will be updated with the channel number and device ID of the sensor that was started. After joining the network `CONFIG_LED_RED` will be set.
 The settings that you selected above in the waiting state will then take effect.
 ```
      TI Sensor
@@ -300,7 +300,7 @@ The settings that you selected above in the waiting state will then take effect.
 
 * After the sensor node has successfully joined the network, it receives a configuration request message from the collector application.
  The node then configures the time interval on how often to report the sensor data to the collector application, and how often to poll
- for buffered messages in case of sleepy devices. After receiving the configuration request message, the green LED (`CONFIG_GPIO_GLED`)
+ for buffered messages in case of sleepy devices. After receiving the configuration request message, the green LED (`CONFIG_LED_GREEN`)
  toggles whenever the device sends the message.
 
 > In order for the network device to join, it must have either the generic PAN Id (0xFFFF, default configuration)

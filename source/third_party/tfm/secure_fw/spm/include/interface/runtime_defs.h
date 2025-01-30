@@ -17,6 +17,7 @@
 #include "psa/client.h"
 #include "psa/error.h"
 #include "psa/service.h"
+#include "ffm/agent_api.h"
 
 /* SFN defs */
 typedef psa_status_t (*service_fn_t)(psa_msg_t *msg);
@@ -64,6 +65,16 @@ struct psa_api_tbl_t {
     void *           (*psa_map_outvec)(psa_handle_t msg_handle, uint32_t outvec_idx);
     void             (*psa_unmap_outvec)(psa_handle_t msg_handle, uint32_t outvec_idx, size_t len);
 #endif /* PSA_FRAMEWORK_HAS_MM_IOVEC */
+#ifdef TFM_PARTITION_NS_AGENT_MAILBOX
+    psa_status_t     (*agent_psa_call)(psa_handle_t handle, uint32_t control,
+                                       const struct client_params_t *params,
+                                       const void *client_data);
+#if CONFIG_TFM_CONNECTION_BASED_SERVICE_API == 1
+    psa_handle_t     (*agent_psa_connect)(uint32_t sid, uint32_t version,
+                                          int32_t ns_client_id,
+                                          const void *client_data);
+#endif /* CONFIG_TFM_CONNECTION_BASED_SERVICE_API == 1 */
+#endif /* TFM_PARTITION_NS_AGENT_MAILBOX */
 };
 
 struct runtime_metadata_t {

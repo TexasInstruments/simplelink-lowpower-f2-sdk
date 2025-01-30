@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2021, Texas Instruments Incorporated
+ * Copyright (c) 2016-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -270,7 +270,7 @@ void ClockP_destruct(ClockP_Struct *clk)
 
 /*
  *  ======== ClockP_doTick ========
- *  Used internally by PowerCC32XX nortos.  Called with interrupts disabled.
+ *  Called with interrupts disabled.
  */
 void ClockP_doTick(uintptr_t arg)
 {
@@ -302,6 +302,16 @@ uint32_t ClockP_getSystemTicks(void)
     ClockP_startup();
 
     return ((uint32_t)ClockP_ctrl.count);
+}
+
+/*
+ *  ======== ClockP_getSystemTicks64 ========
+ */
+uint64_t ClockP_getSystemTicks64(void)
+{
+    ClockP_startup();
+
+    return (ClockP_ctrl.count);
 }
 
 /*
@@ -370,11 +380,26 @@ void ClockP_Params_init(ClockP_Params *params)
 
 /*
  *  ======== ClockP_setTicks ========
- *  Used intenally by PowerCC32XX nortos.  Called with interrupts disabled.
+ *  Called with interrupts disabled.
  */
 void ClockP_setTicks(uint32_t ticks)
 {
     ClockP_ctrl.count = ticks;
+}
+
+/*
+ *  ======== ClockP_setFunc ========
+ */
+void ClockP_setFunc(ClockP_Handle handle, ClockP_Fxn clockFxn, uintptr_t arg)
+{
+    ClockP_Obj *obj = (ClockP_Obj *)handle;
+
+    uintptr_t key = HwiP_disable();
+
+    obj->cbFxn = clockFxn;
+    obj->cbArg = arg;
+
+    HwiP_restore(key);
 }
 
 /*

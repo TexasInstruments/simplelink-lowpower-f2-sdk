@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -66,7 +66,7 @@ let config = [
         description: "Specifies the default transmit buffer value.",
         longDescription: "Value sent when a TX buffer is not specified."
             + " This value must be provided in hexadecimal format;"
-            + " 0 and ~0 also acceptable inputs.",
+            + " 0 and ~0 are also acceptable inputs.",
         default: "~0"
     },
     {

@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2024, Texas Instruments Incorporated
+ Copyright (c) 2009-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -1713,6 +1713,7 @@ extern uint16        LE_ReadMaxAdvDataLen( void );
 extern uint8         LE_ReadNumSupportedAdvSets( void );
 extern llStatus_t    LE_AE_SetData( aeSetDataCmd_t *, uint8 );
 extern llStatus_t    LE_SetExtScanParams( aeSetScanParamCmd_t * );
+extern llStatus_t    LE_SetExtScanParams_sPatch( aeSetScanParamCmd_t * );
 extern llStatus_t    LE_SetExtScanEnable( aeEnableScanCmd_t * );
 extern llStatus_t    LE_ExtCreateConn( aeCreateConnCmd_t * );
 

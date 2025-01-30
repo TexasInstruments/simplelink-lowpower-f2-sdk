@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2022, Texas Instruments Incorporated
+ * Copyright (c) 2017-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -80,6 +80,12 @@
  *  runtime. Since ECB plaintext blocks are simply encrypted with the block cipher block by block,
  *  there is no difference in the ciphertext between encrypting two blocks in one go or encrypting
  *  each block individually.
+ *
+ *  ## Device-Specific Requirements #
+ *
+ *  For CC27XX devices, ECB operations leveraging the HSM engine
+ *  (key encoding suffixed with _HSM) have the following requirements:
+ *      - Output buffer address must be 32-bit aligned.
  *
  *  ## After the ECB operation completes #
  *
@@ -600,6 +606,9 @@ typedef struct
                          *
                          *   Both input and output buffers should be of the size
                          *   \c inputLength in bytes each.
+                         *
+                         *  For CC27XX devices with _HSM-suffixed key encoding,
+                         *  the output buffer needs to be 32-bit aligned.
                          */
     size_t inputLength; /*!<
                          *   - One-step operation: Total length of the input in

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2022, Texas Instruments Incorporated
+ * Copyright (c) 2017-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -104,16 +104,19 @@ static const uint32_t hashModeTable[] = {SHA2_MODE_SELECT_SHA224,
                                          SHA2_MODE_SELECT_SHA384,
                                          SHA2_MODE_SELECT_SHA512};
 
+/* This table converts from SHA2_HashType values to the corresponding block size. */
 static const uint8_t blockSizeTable[] = {SHA2_BLOCK_SIZE_BYTES_224,
                                          SHA2_BLOCK_SIZE_BYTES_256,
                                          SHA2_BLOCK_SIZE_BYTES_384,
                                          SHA2_BLOCK_SIZE_BYTES_512};
 
+/* This table converts from SHA2_HashType values to the corresponding digest size. */
 const uint8_t digestSizeTable[] = {SHA2_DIGEST_LENGTH_BYTES_224,
                                    SHA2_DIGEST_LENGTH_BYTES_256,
                                    SHA2_DIGEST_LENGTH_BYTES_384,
                                    SHA2_DIGEST_LENGTH_BYTES_512};
 
+/* This table converts from SHA2_HashType values to the corresponding intermediate digest size. */
 static const uint8_t intermediateDigestSizeTable[] = {SHA2_DIGEST_LENGTH_BYTES_256,
                                                       SHA2_DIGEST_LENGTH_BYTES_256,
                                                       SHA2_DIGEST_LENGTH_BYTES_512,
@@ -923,7 +926,7 @@ static int_fast16_t SHA2CC26X2_hashData(SHA2_Handle handle, const void *data, si
  *    H(k0 ^ opad || H(k0 ^ ipad || message))
  *      - The intermediate output is saved in SHA2CC26X2_Object.hmacDigest
  */
-int_fast16_t SHA2CC26X2_setupHmac(SHA2_Handle handle, CryptoKey *key)
+int_fast16_t SHA2CC26X2_setupHmac(SHA2_Handle handle, const CryptoKey *key)
 {
     uint8_t xorBuffer[SHA2CC26X2_MAX_BLOCK_SIZE_BYTES];
     SHA2CC26X2_Object *object         = handle->object;
@@ -1101,7 +1104,7 @@ int_fast16_t SHA2CC26X2_setupHmac(SHA2_Handle handle, CryptoKey *key)
 /*
  *  ======== SHA2_setupHmac ========
  */
-int_fast16_t SHA2_setupHmac(SHA2_Handle handle, CryptoKey *key)
+int_fast16_t SHA2_setupHmac(SHA2_Handle handle, const CryptoKey *key)
 {
     /* Try and obtain access to the crypto module.
      * We will be keeping this for multiple operations
@@ -1188,7 +1191,7 @@ int_fast16_t SHA2_finalizeHmac(SHA2_Handle handle, void *hmac)
  *  to concatenate intermediate results and the message, this function is not
  *  actually faster than an application using the segmented APIs.
  */
-int_fast16_t SHA2_hmac(SHA2_Handle handle, CryptoKey *key, const void *data, size_t size, void *hmac)
+int_fast16_t SHA2_hmac(SHA2_Handle handle, const CryptoKey *key, const void *data, size_t size, void *hmac)
 {
     SHA2CC26X2_Object *object         = handle->object;
     SHA2CC26X2_HWAttrs const *hwAttrs = handle->hwAttrs;

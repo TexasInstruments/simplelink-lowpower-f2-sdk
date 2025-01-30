@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Arm Limited. All rights reserved.
+ * Copyright (c) 2017-2023 Arm Limited. All rights reserved.
  * Copyright (c) 2023 Cypress Semiconductor Corporation (an Infineon
  * company) or an affiliate of Cypress Semiconductor Corporation. All rights
  * reserved.
@@ -72,13 +72,13 @@ enum mpu_armv8m_error_t mpu_armv8m_region_enable(
     uint32_t base_cfg;
     uint32_t limit_cfg;
 
-    /*FIXME : Add complete error checking*/
+    /* FIXME : Add region-overlap error check */
     if ((region_cfg->region_base & ~MPU_RBAR_BASE_Msk) != 0) {
         return MPU_ARMV8M_ERROR;
     }
-    /* region_limit doesn't need to be aligned but the scatter
-     * file needs to be setup to ensure that partitions do not overlap.
-     */
+    if ((region_cfg->region_limit & ~MPU_RLAR_LIMIT_Msk) != 0x1F) {
+        return MPU_ARMV8M_ERROR;
+    }
 
     ctrl_before = mpu->CTRL;
     mpu->CTRL = 0;
@@ -93,8 +93,12 @@ enum mpu_armv8m_error_t mpu_armv8m_region_enable(
 
     mpu->RBAR = base_cfg;
 
-    /* This zeroes the lower bits of limit address but they are treated as 1 */
-    limit_cfg = (region_cfg->region_limit-1) & MPU_RLAR_LIMIT_Msk;
+    /* MPU Region Limit Address Register is used to set the limit address, the
+     * attribute set, and to enable/disable the seleted region.
+     * These parameters are passed through the lower 5 bits of this register.
+     * These bits are discarded and treated as ones when decoding the address.
+     */
+    limit_cfg = (region_cfg->region_limit) & MPU_RLAR_LIMIT_Msk;
 
     limit_cfg |= (region_cfg->region_attridx << MPU_RLAR_AttrIndx_Pos) &
                  MPU_RLAR_AttrIndx_Msk;

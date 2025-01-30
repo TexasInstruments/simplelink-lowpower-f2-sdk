@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -252,7 +252,6 @@ extern void *GATT_bm_alloc(uint16 connHandle, uint8 opcode, uint16 size,
 #define HCI_EXT_SetPeripheralLatencyOverrideCmd(...)               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_SetPeripheralLatencyOverrideCmd , ##__VA_ARGS__))
 #define HCI_EXT_SetSlaveLatencyOverrideCmd(...)                    (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_SetPeripheralLatencyOverrideCmd , ##__VA_ARGS__))
 #define HCI_EXT_SetTxPowerCmd(...)                                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_SetTxPowerCmd , ##__VA_ARGS__))
-#define HCI_EXT_SetTxPowerDbmCmd(...)                              (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_SetTxPowerDbmCmd , ##__VA_ARGS__))
 #define HCI_EXT_BuildRevisionCmd(...)                              (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_BuildRevisionCmd , ##__VA_ARGS__))
 #define HCI_EXT_DelaySleepCmd(...)                                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_DelaySleepCmd , ##__VA_ARGS__))
 #define HCI_EXT_DecryptCmd(...)                                    (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_DecryptCmd , ##__VA_ARGS__))
@@ -268,7 +267,6 @@ extern void *GATT_bm_alloc(uint16 connHandle, uint8 opcode, uint16 size,
 #define HCI_EXT_ResetSystemCmd(...)                                (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_ResetSystemCmd , ##__VA_ARGS__))
 #define HCI_EXT_SetLocalSupportedFeaturesCmd(...)                  (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_SetLocalSupportedFeaturesCmd , ##__VA_ARGS__))
 #define HCI_EXT_SetMaxDtmTxPowerCmd(...)                           (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_SetMaxDtmTxPowerCmd , ##__VA_ARGS__))
-#define HCI_EXT_SetMaxDtmTxPowerDbmCmd(...)                        (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_SetMaxDtmTxPowerDbmCmd , ##__VA_ARGS__))
 #define HCI_EXT_SetRxGainCmd(...)                                  (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_SetRxGainCmd , ##__VA_ARGS__))
 #define HCI_EXT_ExtendRfRangeCmd(...)                              (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_ExtendRfRangeCmd))
 #define HCI_EXT_HaltDuringRfCmd(...)                               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_HaltDuringRfCmd , ##__VA_ARGS__))

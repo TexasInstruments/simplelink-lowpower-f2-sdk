@@ -11,7 +11,7 @@
  Target Device: cc13xx_cc26xx
  ******************************************************************************
  
- Copyright (c) 2015-2024, Texas Instruments Incorporated
+ Copyright (c) 2015-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -73,7 +73,7 @@ extern void rfSpinlock( void );
 
 
 #define RF_open              ((RF_Handle    (*)(RF_Object *, RF_Mode *, RF_RadioSetup *, RF_Params *))       DMMSch_rfOpen)
-#define RF_close             ((void         (*)(RF_Handle))                                                  RF_close)
+#define RF_close             ((void         (*)(RF_Handle))                                                  DMMSch_rfClose)
 #define RF_postCmd           ((RF_CmdHandle (*)(RF_Handle, RF_Op *, RF_Priority, RF_Callback, RF_EventMask)) DMMSch_rfPostCmd)
 #define RF_pendCmd           ((RF_EventMask (*)(RF_Handle, RF_CmdHandle, RF_EventMask))                      RF_pendCmd)
 #define RF_runCmd            ((RF_EventMask (*)(RF_Handle, RF_Op *, RF_Priority, RF_Callback, RF_EventMask)) DMMSch_rfRunCmd)

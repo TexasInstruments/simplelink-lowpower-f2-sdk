@@ -93,13 +93,6 @@ extern "C" {
 #define SW_MEASURE_VALUE_NON_EXTENDABLE 0x0B
 #define SW_BOOT_RECORD                  0x3F
 
-/* Initial attestation: General claim does not belong any particular SW
- * component. But they might be part of the boot status.
- */
-#define BOOT_SEED          0x00
-#define CERT_REF           0x01
-#define SECURITY_LIFECYCLE 0x02
-
 /* General macros to handle TLV type */
 #define MAJOR_MASK 0xF     /* 4  bit */
 #define MAJOR_POS  12      /* 12 bit */

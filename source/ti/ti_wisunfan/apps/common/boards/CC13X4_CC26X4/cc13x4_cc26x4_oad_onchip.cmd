@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,7 @@
 /* - 10063: Warning about entry point not being _c_int00                     */
 /* - 16011, 16012: 8-byte alignment errors. Observed when linking in object  */
 /*   files compiled using Keil (ARM compiler)                                */
---diag_suppress=10063,16011,16012
+--diag_suppress=10063,16011,16012,10247-D
 
 /* The following command line options are set as part of the CCS project.    */
 /* If you are building using the command line, or for some reason want to    */

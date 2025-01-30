@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -79,6 +79,42 @@ let config = [
             /* There will be no TX ring buffer if nonblocking mode is disabled */
             ui["txRingBufferSize"].hidden = !(inst.enableNonblocking);
         }
+    },
+    {
+        name        : "dataDirection",
+        displayName : "Data Direction",
+        default     : 'Send and Receive',
+        options     : [
+            { name : 'Send and Receive' },
+            { name : 'Send Only' },
+            { name : 'Receive Only' }
+        ]
+    },
+    {
+        name        : "flowControl",
+        displayName : "Flow Control",
+        default     : false,
+        description : "Enable hardware flow control",
+        longDescription : "Hardware flow control between two devices "
+            + "is accomplished by connecting the UART Request-To-Send "
+            + "(RTS) pin to the Clear-To-Send (CTS) input on the "
+            + "receiving device, and connecting the RTS output of the "
+            + "receiving device to the UART CTS pin"
+    }
+];
+
+/* Array of static UART2 configurables that are common across device families */
+let configStatic = [
+
+    {
+        name: "loggingEnabled",
+        displayName: "Enable Logging",
+        hidden : false,
+        description: `This setting will enable logging for the UART2 module.`,
+        longDescription: "With logging enabled a special version of the driver will be used." +
+        "Log-statments are embedded in this driver version and it should only be used for debugging." +
+        "This implies an overhead in both code size and runtime",
+        default: false
     }
 ];
 
@@ -89,6 +125,153 @@ let config = [
 function _getPinResources(inst)
 {
     return;
+}
+
+/*
+ *  ======== validateStatic ========
+ *  Validate this module's static configuration
+ *
+ *  param inst       - The UART module's static instance to be validated
+ *  param validation - object to hold detected validation issues
+ *
+ */
+function validateStatic(inst, validation)
+{
+    /*
+     * If logging is enabled in the UART2 driver, an error is thrown if LogSinkUART has
+     * been selected as log sink by any driver.
+     */
+    if (inst.loggingEnabled) {
+        for (let i = 0; i < system.modules["/ti/log/LogModule"].$instances.length; i++) {
+            let tinst = system.modules["/ti/log/LogModule"].$instances[i];
+            if (tinst.loggerSink == "/ti/log/LogSinkUART") {
+                let message = 'LogSinkUART can not be selected when logging is enabled in UART2';
+                validation.logError(message, tinst);
+                break;
+            }
+        }
+    }
+}
+
+/*
+ *  ======== moduleInstances ========
+ *  returns PIN instances
+ */
+function moduleInstances(inst) {
+    let pinInstances = new Array();
+    let shortName = inst.$name.replace("CONFIG_", "");
+
+    if (inst.dataDirection != "Receive Only") {
+        pinInstances.push(
+            {
+                name: "txPinInstance",
+                displayName: "TX configuration when not in use",
+                moduleName: "/ti/drivers/GPIO",
+                collapsed: true,
+                requiredArgs: {
+                    parentInterfaceName: "uart",
+                    parentSignalName: "txPin",
+                    parentSignalDisplayName: "TX"
+                },
+                args: {
+                    $name: "CONFIG_GPIO_" + shortName + "_TX",
+                    initialOutputState: "High",
+                    mode: "Output",
+                    pull: "None"
+                }
+            }
+        );
+        if (inst.flowControl) {
+            pinInstances.push({
+                name: "ctsPinInstance",
+                displayName: "CTS configuration when not in use",
+                moduleName: "/ti/drivers/GPIO",
+                collapsed: true,
+                requiredArgs: {
+                    parentInterfaceName: "uart",
+                    parentSignalName: "ctsPin",
+                    parentSignalDisplayName: "CTS"
+                },
+                args: {
+                    $name: "CONFIG_GPIO_" + shortName + "_CTS",
+                    mode: "Input",
+                    pull: "Pull Down"
+                }
+            });
+        }
+    }
+
+    if (inst.dataDirection != "Send Only") {
+        pinInstances.push({
+            name: "rxPinInstance",
+            displayName: "RX configuration when not in use",
+            moduleName: "/ti/drivers/GPIO",
+            collapsed: true,
+            requiredArgs: {
+                parentInterfaceName: "uart",
+                parentSignalName: "rxPin",
+                parentSignalDisplayName: "RX"
+            },
+            args: {
+                $name: "CONFIG_GPIO_" + shortName + "_RX",
+                mode: "Input",
+                pull: "Pull Down"
+            }
+        }
+        );
+        if (inst.flowControl) {
+            pinInstances.push({
+                name: "rtsPinInstance",
+                displayName: "RTS configuration when not in use",
+                moduleName: "/ti/drivers/GPIO",
+                collapsed: true,
+                requiredArgs: {
+                    parentInterfaceName: "uart",
+                    parentSignalName: "rtsPin",
+                    parentSignalDisplayName: "RTS"
+                },
+                args: {
+                    $name: "CONFIG_GPIO_" + shortName + "_RTS",
+                    initialOutputState: "Low",
+                    mode: "Output",
+                    pull: "None"
+                }
+            });
+        }
+    }
+    return (pinInstances);
+}
+
+/*
+ *  ======== moduleInstancesStatic ========
+ *  returns static instances
+ */
+function moduleInstancesStatic(inst) {
+    let staticInstances = new Array();
+
+    /* If logging is enabled, push a dependency on a log module */
+    if (inst.loggingEnabled) {
+        staticInstances.push(
+            {
+                name: "LogModule",
+                displayName: "UART2 Log Configuration",
+                moduleName: "/ti/log/LogModule",
+                collapsed: true,
+                requiredArgs: {
+                    $name: "LogModule_UART2"
+                },
+                args: {
+                    enable_DEBUG: false,
+                    enable_INFO: false,
+                    enable_VERBOSE: false,
+                    // Only enable WARNING and ERROR enabled by default
+                    enable_WARNING: true,
+                    enable_ERROR: true
+                }
+            }
+        );
+    }
+    return (staticInstances);
 }
 
 /*
@@ -118,7 +301,13 @@ of the [__UART driver__][5].
     defaultInstanceName: "CONFIG_UART2_",
     config        : Common.addNameConfig(config, "/ti/drivers/UART2", "CONFIG_UART2_"),
     modules       : Common.autoForceModules(["Board", "Power", "DMA"]),
-    _getPinResources: _getPinResources
+    moduleInstances: moduleInstances,
+    _getPinResources: _getPinResources,
+    moduleStatic: {
+        config: configStatic,
+        moduleInstances: moduleInstancesStatic,
+        validate: validateStatic
+    }
 };
 
 /* get family-specific UART2 module */

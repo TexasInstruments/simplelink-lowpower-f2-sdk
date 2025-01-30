@@ -192,6 +192,16 @@
 #define ITS_STACK_SIZE                         0x720
 #endif
 
+/* The size of the authentication tag used when authentication/encryption of ITS files is enabled */
+#ifndef TFM_ITS_AUTH_TAG_LENGTH
+#define TFM_ITS_AUTH_TAG_LENGTH                16
+#endif
+
+/* The size of the nonce used when ITS file encryption is enabled */
+#ifndef TFM_ITS_ENC_NONCE_LENGTH
+#define TFM_ITS_ENC_NONCE_LENGTH               12
+#endif
+
 /* PS Partition Configs */
 
 /* Create flash FS if it doesn't exist for Protected Storage partition */
@@ -229,11 +239,18 @@
 #define PS_STACK_SIZE                          0x700
 #endif
 
+/* The stack size of the NS Agent Mailbox Secure Partition */
+#ifndef NS_AGENT_MAILBOX_STACK_SIZE
+#define NS_AGENT_MAILBOX_STACK_SIZE            0x800
+#endif
+
 /* SPM Partition Configs */
 
+#ifdef CONFIG_TFM_CONNECTION_POOL_ENABLE
 /* The maximal number of secure services that are connected or requested at the same time */
 #ifndef CONFIG_TFM_CONN_HANDLE_MAX_NUM
 #define CONFIG_TFM_CONN_HANDLE_MAX_NUM          8
+#endif
 #endif
 
 /* Disable the doorbell APIs */
@@ -244,6 +261,11 @@
 /* Do not run the scheduler after handling a secure interrupt if the NSPE was pre-empted */
 #ifndef CONFIG_TFM_SCHEDULE_WHEN_NS_INTERRUPTED
 #define CONFIG_TFM_SCHEDULE_WHEN_NS_INTERRUPTED 0
+#endif
+
+/* Enable OTP/NV_COUNTERS emulation in RAM */
+#ifndef OTP_NV_COUNTERS_RAM_EMULATION
+#define OTP_NV_COUNTERS_RAM_EMULATION           0
 #endif
 
 #endif /* __CONFIG_BASE_H__ */

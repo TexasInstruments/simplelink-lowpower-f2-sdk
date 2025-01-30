@@ -117,6 +117,36 @@ SECTIONS
         . = ALIGN(4);
         *(.text*)
 
+        /* .copy.table
+         * To copy multiple ROM to RAM sections,
+         * uncomment .copy.table and,
+         * define __STARTUP_COPY_MULTIPLE in startup file */
+        . = ALIGN(4);
+        __copy_table_start__ = .;
+
+#ifdef RAM_VECTORS_SUPPORT
+        /* Copy interrupt vectors from flash to RAM */
+        LONG (__Vectors)                                    /* From */
+        LONG (__ram_vectors_start__)                        /* To   */
+        LONG ((__Vectors_End - __Vectors) / 4)              /* Size */
+#endif
+        /* Copy data section to RAM */
+        LONG (__etext)                                      /* From */
+        LONG (__data_start__)                               /* To   */
+        LONG ((__data_end__ - __data_start__) / 4)          /* Size */
+
+        __copy_table_end__ = .;
+
+        /* .zero.table
+         * To clear multiple BSS sections,
+         * uncomment .zero.table and,
+         * define __STARTUP_CLEAR_BSS_MULTIPLE in startup file */
+        . = ALIGN(4);
+        __zero_table_start__ = .;
+        LONG (__bss_start__)
+        LONG ((__bss_end__ - __bss_start__) / 4)
+        __zero_table_end__ = .;
+
         KEEP(*(.init))
         KEEP(*(.fini))
 
@@ -153,42 +183,6 @@ SECTIONS
         *(.ARM.exidx* .gnu.linkonce.armexidx.*)
     } > flash
     __exidx_end = .;
-
-
-    /* To copy multiple ROM to RAM sections,
-     * uncomment .copy.table section and,
-     * define __STARTUP_COPY_MULTIPLE */
-    .copy.table :
-    {
-        . = ALIGN(4);
-        __copy_table_start__ = .;
-
-#ifdef RAM_VECTORS_SUPPORT
-        /* Copy interrupt vectors from flash to RAM */
-        LONG (__Vectors)                                    /* From */
-        LONG (__ram_vectors_start__)                        /* To   */
-        LONG ((__Vectors_End - __Vectors) / 4)              /* Size */
-#endif
-        /* Copy data section to RAM */
-        LONG (__etext)                                      /* From */
-        LONG (__data_start__)                               /* To   */
-        LONG ((__data_end__ - __data_start__) / 4)          /* Size */
-
-        __copy_table_end__ = .;
-    } > flash
-
-
-    /* To clear multiple BSS sections,
-     * uncomment .zero.table section and,
-     * define __STARTUP_CLEAR_BSS_MULTIPLE */
-    .zero.table :
-    {
-        . = ALIGN(4);
-        __zero_table_start__ = .;
-        LONG (__bss_start__)
-        LONG ((__bss_end__ - __bss_start__) / 4)
-        __zero_table_end__ = .;
-    } > flash
 
     __etext =  ALIGN(4);
 

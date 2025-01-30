@@ -149,3 +149,24 @@ void psa_unmap_outvec(psa_handle_t msg_handle, uint32_t outvec_idx, size_t len)
     PART_METADATA()->psa_fns->psa_unmap_outvec(msg_handle, outvec_idx, len);
 }
 #endif /* PSA_FRAMEWORK_HAS_MM_IOVEC */
+
+#ifdef TFM_PARTITION_NS_AGENT_MAILBOX
+psa_status_t agent_psa_call(psa_handle_t handle,
+                            uint32_t control,
+                            const struct client_params_t *params,
+                            const void *client_data_stateless)
+{
+    return PART_METADATA()->psa_fns->agent_psa_call(handle, control, params,
+                                                    client_data_stateless);
+}
+
+#if CONFIG_TFM_CONNECTION_BASED_SERVICE_API == 1
+psa_handle_t agent_psa_connect(uint32_t sid, uint32_t version,
+                               int32_t ns_client_id, const void *client_data)
+{
+    return PART_METADATA()->psa_fns->agent_psa_connect(sid, version,
+                                                       ns_client_id,
+                                                       client_data);
+}
+#endif /* CONFIG_TFM_CONNECTION_BASED_SERVICE_API == 1 */
+#endif /* TFM_PARTITION_NS_AGENT_MAILBOX */

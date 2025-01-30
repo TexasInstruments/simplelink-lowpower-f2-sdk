@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2021-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -18,7 +18,7 @@
 #include "cc_pal_mem.h"
 #include "cc_pal_types.h"
 
-#include "cc3xx_config.h"
+#include "cc3xx_psa_api_config.h"
 
 #include "cc3xx_psa_aead.h"
 #include "cc3xx_internal_ccm.h"

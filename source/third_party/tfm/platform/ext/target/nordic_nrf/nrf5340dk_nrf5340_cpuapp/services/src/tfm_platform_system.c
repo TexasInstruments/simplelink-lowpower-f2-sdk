@@ -12,8 +12,8 @@
 
 void tfm_platform_hal_system_reset(void)
 {
-    /* Reset the system */
-    NVIC_SystemReset();
+	/* Reset the system */
+	NVIC_SystemReset();
 }
 
 enum tfm_platform_err_t tfm_platform_hal_ioctl(tfm_platform_ioctl_req_t request,

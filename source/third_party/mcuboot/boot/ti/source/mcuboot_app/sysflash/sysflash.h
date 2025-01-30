@@ -3,7 +3,7 @@
 #ifndef __SYSFLASH_H__
 #define __SYSFLASH_H__
 
-#include "mcuboot_config/mcuboot_config.h"
+#include "mcuboot_config.h"
 
 
 #define FLASH_AREA_BOOTLOADER 0

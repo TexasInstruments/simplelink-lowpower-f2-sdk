@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2008-2024, Texas Instruments Incorporated
+ Copyright (c) 2008-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -128,10 +128,20 @@ void *osal_bm_alloc( uint16 size )
 {
   halIntState_t  cs;
   bm_desc_t     *bd_ptr;
+  uint16 allocSize;
+
+  allocSize = sizeof( bm_desc_t ) + size;
+
+  // If 'size' is very large and 'allocSize' overflows, the result will be
+  // smaller than size. In this case, don't try to allocate.
+  if ( allocSize < size )
+  {
+    return ((void *)NULL);
+  }
 
   HAL_ENTER_CRITICAL_SECTION(cs);
 
-  bd_ptr = osal_mem_alloc( sizeof( bm_desc_t ) + size );
+  bd_ptr = osal_mem_alloc( allocSize );
 
   if ( bd_ptr != NULL )
   {

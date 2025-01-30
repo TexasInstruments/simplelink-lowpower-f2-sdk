@@ -14,7 +14,7 @@ This document proposes a generic prototype of the communication between NSPE
 (Non-secure Processing Environment) and SPE (Secure Processing Environment) in
 TF-M on a dual core system.
 
-The dual core system should satisfy the following requirements
+The dual core system has the following requirements
 
 - NSPE and SPE are properly isolated and protected following PSA
 - An Arm M-profile core locates in SPE and acts as the Secure core
@@ -27,7 +27,7 @@ Scope
 
 This design document focuses on the dual core communication design inside TF-M.
 Some changes to TF-M core/Secure Partition Manager (SPM) are listed to support
-the dual core communication. This document only discuss about the implementation
+the dual core communication. This document only discusses the implementation
 in TF-M Inter-Process Communication (IPC) model.
 The TF-M non-secure interface library depends on mailbox and NS RTOS
 implementation. The related changes to TF-M non-secure interface library are not
@@ -35,7 +35,7 @@ discussed in detail in this document.
 
 Some requirements to mailbox functionalities are defined in this document. The
 detailed mailbox design or implementations is not specified in this document.
-Please refer to mailbox dedicate document [1]_.
+Please refer to mailbox dedicated document [1]_.
 
 Organization of the document
 ============================
@@ -59,7 +59,7 @@ The overall workflow in dual-core scenario can be described as follows
    Secure service. The TF-M non-secure interface library translates the Secure
    service into PSA Client calls.
 2. TF-M non-secure interface library notifies TF-M of the PSA client call
-   request, via mailbox. Proper generic mailbox APIs in HAL should be defined
+   request, via mailbox. Proper generic mailbox APIs in HAL must be defined
    so that TF-M non-secure interface library can co-work with diverse platform
    specific Inter-Processor Communication implementations.
 3. Inter-Processor Communication interrupt handler and mailbox handling in TF-M
@@ -92,7 +92,7 @@ NSPE and SPE.
 Data transferred between NPSE and SPE
 =====================================
 
-A mailbox message should contain the information and parameters of a PSA client
+A mailbox message shall contain the information and parameters of a PSA client
 call. After SPE is notified by a mailbox event, SPE fetches the parameters from
 NSPE for PSA Client call processing.
 The mailbox design document [1]_ defines the structure of the mailbox message.
@@ -118,16 +118,16 @@ The mailbox implementation may define additional members in mailbox message to
 accomplish mailbox communication between NSPE and SPE.
 
 When the PSA Client call is completed in TF-M, the return result, such as
-PSA_SUCCESS or a handle, should be returned from SPE to NSPE via mailbox.
+PSA_SUCCESS or a handle, shall be returned from SPE to NSPE via mailbox.
 
 Mailbox synchronization between NSPE and SPE
 ============================================
 
 Synchronization and protection between NSPE and SPE accesses to shared mailbox
-objects and variables should be implemented.
+objects and variables shall be implemented.
 
 When a core accesses shared mailbox objects or variables, proper mechanisms
-should protect concurrent operations from the other core.
+must protect concurrent operations from the other core.
 
 Support of multiple ongoing NS PSA client calls (informative)
 =============================================================
@@ -154,7 +154,7 @@ The sequence of handling PSA Client call request in TF-M is listed as below
 
 1. Platform specific Inter-Processor Communication interrupt handler is
    triggered after the mailbox event is asserted by NSPE. The interrupt handler
-   should call ``spm_handle_interrupt()``
+   shall call ``spm_handle_interrupt()``
 2. SPM will send a ``SIGNAL_MAILBOX`` to ``ns_agent_mailbox`` partition
 3. ``ns_agent_mailbox`` partition deals with the mailbox message(s) which
    contain(s) the PSA client call information and parameters.
@@ -166,33 +166,34 @@ The sequence of handling PSA Client call request in TF-M is listed as below
 Several key modules in the whole process are covered in detail in following
 sections.
 
-- `Inter-Processor Communication interrupt handler`_ discusses about the
+- `Inter-Processor Communication interrupt handler`_ discusses the
   Inter-Processor Communication interrupt handler
 - `TF-M Remote Procedure Call (RPC) layer`_ introduces TF-M Remote Procedure
   Call layer to support dual-core communication.
 - `ns_agent_mailbox partition`_ describes the mailbox agent partition.
-- `Return value replying routine in TF-M`_ proposes the routine to reply the
+- `Return value replying routine in TF-M`_ proposes the routine to send the
   return value to NSPE.
 
 Inter-Processor Communication interrupt handler
 ===============================================
 
-Platform specific driver should implement the Inter-Processor Communication
+Platform specific driver shall implement the Inter-Processor Communication
 interrupt handler to deal with the Inter-Processor Communication interrupt
 asserted by NSPE.
-The platform specific interrupt handler should complete the interrupt
+The platform specific interrupt handler shall complete the interrupt
 operations, such as interrupt EOI or acknowledge.
 
-The interrupt handler should call ``spm_handle_interrupt()`` to notify SPM of
+The interrupt handler shall call ``spm_handle_interrupt()`` to notify SPM of
 the interrupt.
 
-The platform's ``region_defs.h`` file should define a macro ``MAILBOX_IRQ`` that
-identifies the interrupt being used. The platform must also provide a function
-``mailbox_irq_init()`` that initialises the interrupt as described in [2]_.
+The platform's ``tfm_peripherals_def.h`` file shall define a macro
+``MAILBOX_IRQ`` that identifies the interrupt being used. The platform must
+also provide a function ``mailbox_irq_init()`` that initialises the interrupt
+as described in [2]_.
 
-Platform specific driver should put Inter-Processor Communication interrupt into
+Platform specific driver shall put Inter-Processor Communication interrupt into
 a proper exception priority, according to system and application requirements.
-The proper priority setting should guarantee that
+The proper priority setting must guarantee that
 
 - TF-M can respond to a PSA client call request in time according to system and
   application requirements.
@@ -204,7 +205,7 @@ The exception priority setting is IMPLEMENTATION DEFINED.
 TF-M Remote Procedure Call (RPC) layer
 ======================================
 
-This design brings up a concept of Remote Procedure Call layer in TF-M.
+This design brings a concept of Remote Procedure Call layer into TF-M.
 
 The RPC layer sits between TF-M SPM and mailbox implementation. The purpose of
 RPC layer is to decouple mailbox implementation and TF-M SPM and enhance the
@@ -241,7 +242,7 @@ Mailbox handling will be done in the context of the ``ns_agent_mailbox``
 partition, which will make any necessary calls to other partitions on behalf of
 the non-secure code.
 
-``ns_agent_mailbox`` should call RPC API ``tfm_rpc_client_call_handler()`` to
+``ns_agent_mailbox`` shall call RPC API ``tfm_rpc_client_call_handler()`` to
 check and handle PSA client call request from NSPE.
 ``tfm_rpc_client_call_handler()`` invokes request handling callback function to
 eventually execute specific mailbox message handling operations. The mailbox
@@ -250,9 +251,9 @@ APIs are defined in mailbox design document [1]_.
 The handling process in mailbox operation consists of the following steps.
 
 1. SPE mailbox fetches the PSA client call parameters from NSPE mailbox.
-   Proper protection and synchronization should be implemented in mailbox to
-   guarantee that the operations are not interfered by NSPE mailbox operations
-   or Inter-Processor Communication interrupt handler.
+   Proper protection and synchronization must be implemented in mailbox to
+   guarantee that the operations are not interfered with by NSPE mailbox
+   operations or Inter-Processor Communication interrupt handler.
    If a queue is maintained inside TF-M core, SPE mailbox can fetch multiple
    PSA client calls together into the queue, to save the time of synchronization
    between two cores.
@@ -275,7 +276,7 @@ The handling process in mailbox operation consists of the following steps.
     handle the PSA message.
 
 The dual-core scenario and single Armv8-M scenario in TF-M IPC implementation
-should share the same PSA client call routines inside TF-M SPM. The current
+will share the same PSA client call routines inside TF-M SPM. The current
 handler definitions can be adjusted to be more generic for dual-core scenario
 and single Armv8-M implementation. Please refer to
 `Summary of changes to TF-M core/SPM`_ for details.
@@ -301,7 +302,7 @@ For ``psa_framework_version()`` and ``psa_version()``, the return value can be
 directly returned from the dedicated TF-M RPC PSA client call handlers.
 Therefore, the return value can be directly replied in mailbox handling process.
 
-A compile flag should be defined to enable replying routine via mailbox in
+A compile flag may be defined to enable replying routine via mailbox in
 dual-core scenario during building.
 
 Replying routine for psa_connect(), psa_call() and psa_close()
@@ -313,13 +314,13 @@ is completed in the target Secure Partition. The target Secure Partition calls
 ``psa_reply()`` in TF-M SPM, TF-M SPM should call TF-M RPC API
 ``tfm_rpc_client_call_reply()`` to return the value to NSPE via mailbox.
 ``tfm_rpc_client_call_reply()`` invokes reply callbacks to execute specific
-mailbox reply operations. The mailbox reply functions must not trigger context
+mailbox reply operations. The mailbox reply functions must not trigger a context
 switch inside SVC handler.
 
 If an error occurs in the handlers, the TF-M RPC handlers,
 ``tfm_rpc_psa_call()``, ``tfm_rpc_psa_connect()`` and ``tfm_rpc_psa_close()``,
 may terminate and return the error, without triggering the target Secure
-Partition. The mailbox implementation should return the error code to NSPE.
+Partition. The mailbox implementation shall return the error code to NSPE.
 
 ***********************************
 Summary of changes to TF-M core/SPM
@@ -336,7 +337,7 @@ including the Inter-Processor Communication interrupt or its interrupt handler.
 Common PSA client call handlers
 ===============================
 
-Common PSA client call handlers should be extracted from current PSA client
+Common PSA client call handlers shall be extracted from current PSA client
 call handlers implementation in TF-M.
 Common PSA client call handlers are shared by both TF-M RPC layer in dual-core
 scenario and SVCall handlers in single Armv8-M scenario.
@@ -449,29 +450,10 @@ the caller after PSA client call is completed.
 
 ``tfm_rpc_set_caller_data()`` invokes callback function ``get_caller_data()`` to
 fetch the private data of caller of PSA client call and set it into TF-M message
-structure.
+structure. It must always return non-NULL.
 
 TF-M RPC definitions for mailbox
 --------------------------------
-
-PSA client call parameters
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-This data structure holds the parameters used in a PSA client call. The
-parameters are passed from non-secure core to secure core via mailbox.
-
-.. code-block:: c
-
-  struct client_call_params_t {
-      uint32_t        sid;
-      psa_handle_t    handle;
-      int32_t         type;
-      const psa_invec *in_vec;
-      size_t          in_len;
-      psa_outvec      *out_vec;
-      size_t          out_len;
-      uint32_t        version;
-  };
 
 Mailbox operations callbacks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -511,7 +493,7 @@ This function registers underlying mailbox operations into TF-M RPC callbacks.
 
 **Usage**
 
-Mailbox should register TF-M RPC callbacks during mailbox initialization, before
+Mailbox shall register TF-M RPC callbacks during mailbox initialization, before
 enabling secure services for NSPE.
 
 Currently one and only one underlying mailbox communication implementation is
@@ -559,15 +541,12 @@ TF-M RPC handler for psa_version().
 
 .. code-block:: c
 
-  uint32_t tfm_rpc_psa_version(const struct client_call_params_t *params,
-                               bool ns_caller);
+  uint32_t tfm_rpc_psa_version(uint32_t sid);
 
 **Parameters**
 
 +---------------+-----------------------------------+
-| ``params``    | Base address of parameters.       |
-+---------------+-----------------------------------+
-| ``ns_caller`` | Whether the caller is non-secure. |
+| ``sid``       | RoT Service identity.             |
 +---------------+-----------------------------------+
 
 **Return**
@@ -582,7 +561,7 @@ TF-M RPC handler for psa_version().
 **Usage**
 
 ``tfm_rpc_psa_version()`` invokes common ``psa_version()`` handler in TF-M.
-The parameters in params should be prepared before calling
+The parameters in params shall be prepared before calling
 ``tfm_rpc_psa_version()``.
 
 ``tfm_rpc_psa_connect()``
@@ -592,16 +571,22 @@ TF-M RPC handler for ``psa_connect()``.
 
 .. code-block:: c
 
-  psa_status_t tfm_rpc_psa_connect(const struct client_call_params_t *params,
-                                   bool ns_caller);
+  psa_status_t tfm_rpc_psa_connect(uint32_t sid,
+                                   uint32_t version,
+                                   int32_t ns_client_id,
+                                   const void *client_data);
 
 **Parameters**
 
-+---------------+-----------------------------------+
-| ``params``    | Base address of parameters.       |
-+---------------+-----------------------------------+
-| ``ns_caller`` | Whether the caller is non-secure. |
-+---------------+-----------------------------------+
++------------------+--------------------------------------------+
+| ``sid``          | RoT Service identity.                      |
++------------------+--------------------------------------------+
+| ``version``      | The version of the RoT Service.            |
++------------------+--------------------------------------------+
+| ``ns_client_id`` | Agent representing NS client's identifier. |
++------------------+--------------------------------------------+
+| ``client_data``  | Client data, treated as opaque by SPM.     |
++------------------+--------------------------------------------+
 
 **Return**
 
@@ -618,8 +603,6 @@ TF-M RPC handler for ``psa_connect()``.
 **Usage**
 
 ``tfm_rpc_psa_connect()`` invokes common ``psa_connect()`` handler in TF-M.
-The parameters in params should be prepared before calling
-``tfm_rpc_psa_connect()``.
 
 ``tfm_rpc_psa_call()``
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -628,16 +611,26 @@ TF-M RPC handler for ``psa_call()``.
 
 .. code-block:: c
 
-  psa_status_t tfm_rpc_psa_call(const struct client_call_params_t *params,
-                                bool ns_caller);
+  psa_status_t tfm_rpc_psa_call(psa_handle_t handle, uint32_t control,
+                                const struct client_params_t *params,
+                                const void *client_data_stateless);
 
 **Parameters**
 
-+---------------+-----------------------------------+
-| ``params``    | Base address of parameters.       |
-+---------------+-----------------------------------+
-| ``ns_caller`` | Whether the caller is non-secure. |
-+---------------+-----------------------------------+
++---------------------------+------------------------------------------------------+
+| ``handle``                | Handle to the service being accessed.                |
++---------------------------+------------------------------------------------------+
+| ``control``               | A composited uint32_t value for controlling purpose, |
+|                           | containing call types, numbers of in/out vectors and |
+|                           | attributes of vectors.                               |
++---------------------------+------------------------------------------------------+
+| ``params``                | Combines the psa_invec and psa_outvec params         |
+|                           | for the psa_call() to be made, as well as            |
+|                           | NS agent's client identifier, which is ignored       |
+|                           | for connection-based services.                       |
++---------------------------+------------------------------------------------------+
+| ``client_data_stateless`` | Client data, treated as opaque by SPM.               |
++---------------------------+------------------------------------------------------+
 
 **Return**
 
@@ -650,8 +643,8 @@ TF-M RPC handler for ``psa_call()``.
 **Usage**
 
 ``tfm_rpc_psa_call()`` invokes common ``psa_call()`` handler in TF-M.
-The parameters in params should be prepared before calling
-``tfm_rpc_psa_call()``.
+The value of control and parameters in params shall be prepared before
+calling ``tfm_rpc_psa_call()``.
 
 ``tfm_rpc_psa_close()``
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -660,16 +653,13 @@ TF-M RPC ``psa_close()`` handler
 
 .. code-block:: c
 
-  void tfm_rpc_psa_close(const struct client_call_params_t *params,
-                         bool ns_caller);
+  void tfm_rpc_psa_close(psa_handle_t handle);
 
 **Parameters**
 
-+---------------+-----------------------------------+
-| ``params``    | Base address of parameters.       |
-+---------------+-----------------------------------+
-| ``ns_caller`` | Whether the caller is non-secure. |
-+---------------+-----------------------------------+
++---------------+----------------------------------------+
+| ``handle``    | A handle to an established connection. |
++---------------+----------------------------------------+
 
 **Return**
 
@@ -682,15 +672,13 @@ TF-M RPC ``psa_close()`` handler
 **Usage**
 
 ``tfm_rpc_psa_close()`` invokes common ``psa_close()`` handler in TF-M.
-The parameters in params should be prepared before calling
-``tfm_rpc_psa_close()``.
 
 Other modifications
 ===================
 
 The following mandatory changes are also required.
 
-- One or more compile flag(s) should be defined to select corresponding
+- One or more compile flag(s) shall be defined to select corresponding
   execution routines in dual-core scenario or single Armv8-M scenario during
   building.
 
@@ -703,6 +691,7 @@ Reference
 
 ----------------
 
-*Copyright (c) 2019-2022 Arm Limited. All Rights Reserved.*
+*Copyright (c) 2019-2023 Arm Limited. All Rights Reserved.*
 
-*Copyright (c) 2020-2022 Cypress Semiconductor Corporation. All Rights Reserved.*
+*Copyright (c) 2020-2023 Cypress Semiconductor Corporation (an Infineon company)
+or an affiliate of Cypress Semiconductor Corporation. All rights reserved.*

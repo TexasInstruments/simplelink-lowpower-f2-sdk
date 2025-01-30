@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2018-2022 Arm Limited
- * Copyright (c) 2020 Nuvoton Technology Corp. All rights reserved.
+ * Copyright (c) 2017-2021 Arm Limited
+ * Copyright (c) 2021 Nuvoton Technology Corp. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,14 @@
 #include "cmsis.h"
 #include "target_cfg.h"
 #include "Driver_MPC.h"
-#include "platform_description.h"
-#include "device_definition.h"
 #include "region_defs.h"
 #include "tfm_plat_defs.h"
 #include "region.h"
+#include "NuMicro.h"
+
+#ifdef PSA_API_TEST_IPC
+#define PSA_FF_TEST_SECURE_UART2
+#endif
 
 #define ARRAY_SIZE(arr) (sizeof(arr)/sizeof(arr[0]))
 
@@ -46,11 +49,8 @@ const struct memory_region_limits memory_regions = {
         (uint32_t)&REGION_NAME(Load$$LR$$, LR_NS_PARTITION, $$Base) +
         NS_PARTITION_SIZE - 1,
 
-    .veneer_base =
-        (uint32_t)&REGION_NAME(Image$$, ER_VENEER, $$Base),
-
-    .veneer_limit =
-        (uint32_t)&REGION_NAME(Image$$, VENEER_ALIGN, $$Limit),
+    .veneer_base = (uint32_t)&REGION_NAME(Image$$, ER_VENEER, $$Base),
+    .veneer_limit = (uint32_t)&REGION_NAME(Image$$, VENEER_ALIGN, $$Limit),
 
 #ifdef BL2
     .secondary_partition_base =
@@ -94,8 +94,8 @@ extern ARM_DRIVER_MPC Driver_SRAM1_MPC, Driver_SRAM2_MPC;
                         NIDEN_SEL_STATUS | DBGEN_SEL_STATUS)
 
 struct platform_data_t tfm_peripheral_std_uart = {
-        UART0_BASE + NS_OFFSET,
-        UART0_BASE + NS_OFFSET + 0xFFF,
+        UART0_BASE+NS_OFFSET,
+        UART0_BASE+NS_OFFSET+0xFFF,
         PPC_SP_DO_NOT_CONFIGURE,
         -1
 };
@@ -114,12 +114,66 @@ struct platform_data_t tfm_peripheral_timer0 = {
         -1
 };
 
+#ifdef PSA_API_TEST_IPC
+
+/* Below data structure are only used for PSA FF tests, and this pattern is
+ * definitely not to be followed for real life use cases, as it can break
+ * security.
+ */
+
+struct platform_data_t
+    tfm_peripheral_FF_TEST_UART_REGION = {
+        UART2_BASE_S,
+        UART2_BASE_S + 0xFFF,
+        PPC_SP_APB_PPC_EXP2,
+        CMSDK_UART2_APB_PPC_POS
+};
+
+struct platform_data_t
+    tfm_peripheral_FF_TEST_WATCHDOG_REGION = {
+        APB_WATCHDOG_BASE_S,
+        APB_WATCHDOG_BASE_S + 0xFFF,
+        PPC_SP_DO_NOT_CONFIGURE,
+        -1
+};
+
+#define FF_TEST_NVMEM_REGION_START            0x102FFC00
+#define FF_TEST_NVMEM_REGION_END              0x102FFFFF
+#define FF_TEST_SERVER_PARTITION_MMIO_START   0x3801FC00
+#define FF_TEST_SERVER_PARTITION_MMIO_END     0x3801FD00
+#define FF_TEST_DRIVER_PARTITION_MMIO_START   0x3801FE00
+#define FF_TEST_DRIVER_PARTITION_MMIO_END     0x3801FF00
+
+struct platform_data_t
+    tfm_peripheral_FF_TEST_NVMEM_REGION = {
+        FF_TEST_NVMEM_REGION_START,
+        FF_TEST_NVMEM_REGION_END,
+        PPC_SP_DO_NOT_CONFIGURE,
+        -1
+};
+
+struct platform_data_t
+    tfm_peripheral_FF_TEST_SERVER_PARTITION_MMIO = {
+        FF_TEST_SERVER_PARTITION_MMIO_START,
+        FF_TEST_SERVER_PARTITION_MMIO_END,
+        PPC_SP_DO_NOT_CONFIGURE,
+        -1
+};
+
+struct platform_data_t
+    tfm_peripheral_FF_TEST_DRIVER_PARTITION_MMIO = {
+        FF_TEST_DRIVER_PARTITION_MMIO_START,
+        FF_TEST_DRIVER_PARTITION_MMIO_END,
+        PPC_SP_DO_NOT_CONFIGURE,
+        -1
+};
+#endif
+
 enum tfm_plat_err_t enable_fault_handlers(void)
 {
-    /* Secure fault is not present in the Baseline implementation. */
-    /* Fault handler enable registers are not present in a Baseline
-     * implementation.
-     */
+    /* Explicitly set secure fault priority to the highest */
+    NVIC_SetPriority(SCU_IRQn, 0);
+
     return TFM_PLAT_ERR_SUCCESS;
 }
 
@@ -130,7 +184,7 @@ enum tfm_plat_err_t system_reset_cfg(void)
     /* Clear SCB_AIRCR_VECTKEY value */
     reg_value &= ~(uint32_t)(SCB_AIRCR_VECTKEY_Msk);
 
-    /* Enable system reset request for the secure world only */
+    /* Enable system reset request only to the secure world */
     reg_value |= (uint32_t)(SCB_AIRCR_WRITE_MASK | SCB_AIRCR_SYSRESETREQS_Msk);
 
     SCB->AIRCR = reg_value;
@@ -140,12 +194,36 @@ enum tfm_plat_err_t system_reset_cfg(void)
 
 enum tfm_plat_err_t init_debug(void)
 {
-    /* Set UART0 to NS for debug message */
-    SCU_SET_PNSSET(UART0_Attr);
+
+#if defined(DAUTH_NONE)
+
+    /* Disable secure and non-secure debug */
+    DPM->NSCTL = 0x5a000000 | DPM_NSCTL_DBGDIS_Msk;
+
+#elif defined(DAUTH_NS_ONLY)
+
+    /* Disable secure debug */
+    DPM->CTL = 0x5a000000 | DPM_CTL_DBGDIS_Msk;
+
+#elif defined(DAUTH_FULL)
+    /* By default, all debug is available */
+    /* If secure or all debug is disable, it may need erase whole chip to alow debug again. */
+#else
+
+#if !defined(DAUTH_CHIP_DEFAULT)
+#error "No debug authentication setting is provided."
+#endif
+
+    /* Set all the debug enable selector bits to 0 */
+
+
+    /* No need to set any enable bits because the value depends on
+     * input signals.
+     */
+#endif
 
     return TFM_PLAT_ERR_SUCCESS;
 }
-
 
 /*----------------- NVIC interrupt target state to NS configuration ----------*/
 enum tfm_plat_err_t nvic_interrupt_target_state_cfg(void)
@@ -155,10 +233,11 @@ enum tfm_plat_err_t nvic_interrupt_target_state_cfg(void)
         NVIC->ITNS[i] = 0xFFFFFFFF;
     }
 
+    /* Make sure that SCU are targeted to S state */
+    NVIC_ClearTargetState(SCU_IRQn);
+
 #ifdef SECURE_UART1
     /* UART1 is a secure peripheral, so its IRQs have to target S state */
-    NVIC_ClearTargetState(UARTRX1_IRQn);
-    NVIC_ClearTargetState(UARTTX1_IRQn);
     NVIC_ClearTargetState(UART1_IRQn);
 #endif
 
@@ -168,6 +247,11 @@ enum tfm_plat_err_t nvic_interrupt_target_state_cfg(void)
 /*----------------- NVIC interrupt enabling for S peripherals ----------------*/
 enum tfm_plat_err_t nvic_interrupt_enable(void)
 {
+    NVIC_EnableIRQ(SCU_IRQn);
+
+#ifdef PSA_FF_TEST_SECURE_UART2
+# error "Not support PSA_FF_TEST_SECURE_UART2 in M2354"    
+#endif
 
     return TFM_PLAT_ERR_SUCCESS;
 }
@@ -195,13 +279,10 @@ const struct sau_cfg_t sau_cfg[] = {
         (uint32_t)&REGION_NAME(Image$$, ER_VENEER, $$Base),
         (uint32_t)&REGION_NAME(Image$$, VENEER_ALIGN, $$Limit),
         true,
-    },
-    {
-        (PERIPH_BASE + NS_OFFSET),
-        (PERIPH_BASE + NS_OFFSET + 0x10000000 - 1),
-        false,
     }
 };
+
+#define NR_SAU_INIT_STEP                 3
 
 void sau_and_idau_cfg(void)
 {
@@ -210,22 +291,117 @@ void sau_and_idau_cfg(void)
     /* Enables SAU */
     TZ_SAU_Enable();
 
-    for(i = 0; i < ARRAY_SIZE(sau_cfg); i++) {
+    for (i = 0; i < ARRAY_SIZE(sau_cfg); i++) {
         SAU->RNR = i;
         SAU->RBAR = sau_cfg[i].RBAR & SAU_RBAR_BADDR_Msk;
         SAU->RLAR = (sau_cfg[i].RLAR & SAU_RLAR_LADDR_Msk) |
-            (sau_cfg[i].nsc ? SAU_RLAR_NSC_Msk : 0U) |
-            SAU_RLAR_ENABLE_Msk;
+                    (sau_cfg[i].nsc ? SAU_RLAR_NSC_Msk : 0U) |
+                    SAU_RLAR_ENABLE_Msk;
     }
 
 }
 
 /*------------------- Memory configuration functions -------------------------*/
+#ifdef BL2
+#define NR_MPC_INIT_STEP                 7
+#else
+#define NR_MPC_INIT_STEP                 6
+#endif
 
 int32_t mpc_init_cfg(void)
 {
-    /* Secure COnfiguration Setup */
-    SCU_Setup();
+    int32_t i;
+
+    SCU->PNSSET[0] = SCU_INIT_PNSSET0_VAL;
+    SCU->PNSSET[1] = SCU_INIT_PNSSET1_VAL;
+    SCU->PNSSET[2] = SCU_INIT_PNSSET2_VAL;
+    SCU->PNSSET[3] = SCU_INIT_PNSSET3_VAL;
+    SCU->PNSSET[4] = SCU_INIT_PNSSET4_VAL;
+    SCU->PNSSET[5] = SCU_INIT_PNSSET5_VAL;
+    SCU->PNSSET[6] = SCU_INIT_PNSSET6_VAL;
+
+    SCU->IONSSET = SCU_INIT_IONSSET_VAL;
+
+    /* Set Non-secure SRAM */
+    for(i = 11; i >= S_DATA_SIZE / 8192; i--)
+    {
+        SCU->SRAMNSSET |= (1U << i);
+    }
+
+    /* Set interrupt to non-secure according to PNNSET settings */
+    if(SCU_INIT_PNSSET0_VAL & BIT9) NVIC->ITNS[1] |= BIT22; /* Int of USBH_INT     */
+    if(SCU_INIT_PNSSET0_VAL & BIT13) NVIC->ITNS[2] |= BIT0; /* Int of SDHOST0_INT  */
+    if(SCU_INIT_PNSSET0_VAL & BIT24) NVIC->ITNS[3] |= BIT2; /* Int of PDMA1_INT    */
+    if(SCU_INIT_PNSSET1_VAL & BIT18) NVIC->ITNS[2] |= BIT7; /* Int of CRYPTO       */
+    if(SCU_INIT_PNSSET2_VAL & BIT2) NVIC->ITNS[3] |= BIT15; /* Int of EWDT_INT     */
+    if(SCU_INIT_PNSSET2_VAL & BIT2) NVIC->ITNS[3] |= BIT16; /* Int of EWWDT_INT    */
+    if(SCU_INIT_PNSSET2_VAL & BIT3) NVIC->ITNS[1] |= BIT10; /* Int of EADC0_INT    */
+    if(SCU_INIT_PNSSET2_VAL & BIT3) NVIC->ITNS[1] |= BIT11; /* Int of EADC1_INT    */
+    if(SCU_INIT_PNSSET2_VAL & BIT3) NVIC->ITNS[1] |= BIT14; /* Int of EADC2_INT    */
+    if(SCU_INIT_PNSSET2_VAL & BIT3) NVIC->ITNS[1] |= BIT15; /* Int of EADC3_INT    */
+    if(SCU_INIT_PNSSET2_VAL & BIT5) NVIC->ITNS[1] |= BIT12; /* Int of ACMP01_INT   */
+    if(SCU_INIT_PNSSET2_VAL & BIT7) NVIC->ITNS[1] |= BIT9; /* Int of DAC_INT      */
+    if(SCU_INIT_PNSSET2_VAL & BIT8) NVIC->ITNS[2] |= BIT4; /* Int of I2S0_INT     */
+    if(SCU_INIT_PNSSET2_VAL & BIT13) NVIC->ITNS[1] |= BIT23; /* Int of USBOTG_INT   */
+    if(SCU_INIT_PNSSET2_VAL & BIT17) NVIC->ITNS[1] |= BIT2; /* Int of TMR2_INT     */
+    if(SCU_INIT_PNSSET2_VAL & BIT17) NVIC->ITNS[1] |= BIT3; /* Int of TMR3_INT     */
+    if(SCU_INIT_PNSSET2_VAL & BIT18) NVIC->ITNS[3] |= BIT18; /* Int of TMR4_INT     */
+    if(SCU_INIT_PNSSET2_VAL & BIT18) NVIC->ITNS[3] |= BIT19; /* Int of TMR5_INT     */
+    if(SCU_INIT_PNSSET2_VAL & BIT24) NVIC->ITNS[0] |= BIT25; /* Int of EPWM0_P0_INT */
+    if(SCU_INIT_PNSSET2_VAL & BIT24) NVIC->ITNS[0] |= BIT26; /* Int of EPWM0_P1_INT */
+    if(SCU_INIT_PNSSET2_VAL & BIT24) NVIC->ITNS[0] |= BIT27; /* Int of EPWM0_P2_INT */
+    if(SCU_INIT_PNSSET2_VAL & BIT25) NVIC->ITNS[0] |= BIT29; /* Int of EPWM1_P0_INT */
+    if(SCU_INIT_PNSSET2_VAL & BIT25) NVIC->ITNS[0] |= BIT30; /* Int of EPWM1_P1_INT */
+    if(SCU_INIT_PNSSET2_VAL & BIT25) NVIC->ITNS[0] |= BIT31; /* Int of EPWM1_P2_INT */
+    if(SCU_INIT_PNSSET2_VAL & BIT26) NVIC->ITNS[2] |= BIT14; /* Int of BPWM0_INT    */
+    if(SCU_INIT_PNSSET2_VAL & BIT27) NVIC->ITNS[2] |= BIT15; /* Int of BPWM1_INT    */
+    if(SCU_INIT_PNSSET3_VAL & BIT0) NVIC->ITNS[0] |= BIT22; /* Int of QSPI0_INT    */
+    if(SCU_INIT_PNSSET3_VAL & BIT1) NVIC->ITNS[0] |= BIT23; /* Int of SPI0_INT     */
+    if(SCU_INIT_PNSSET3_VAL & BIT2) NVIC->ITNS[1] |= BIT19; /* Int of SPI1_INT     */
+    if(SCU_INIT_PNSSET3_VAL & BIT3) NVIC->ITNS[1] |= BIT20; /* Int of SPI2_INT     */
+    if(SCU_INIT_PNSSET3_VAL & BIT4) NVIC->ITNS[1] |= BIT30; /* Int of SPI3_INT     */
+    if(SCU_INIT_PNSSET3_VAL & BIT16) NVIC->ITNS[1] |= BIT4; /* Int of UART0_INT    */
+    if(SCU_INIT_PNSSET3_VAL & BIT17) NVIC->ITNS[1] |= BIT5; /* Int of UART1_INT    */
+    if(SCU_INIT_PNSSET3_VAL & BIT18) NVIC->ITNS[1] |= BIT16; /* Int of UART2_INT    */
+    if(SCU_INIT_PNSSET3_VAL & BIT19) NVIC->ITNS[1] |= BIT17; /* Int of UART3_INT    */
+    if(SCU_INIT_PNSSET3_VAL & BIT20) NVIC->ITNS[2] |= BIT10; /* Int of UART4_INT    */
+    if(SCU_INIT_PNSSET3_VAL & BIT21) NVIC->ITNS[2] |= BIT11; /* Int of UART5_INT    */
+    if(SCU_INIT_PNSSET4_VAL & BIT0) NVIC->ITNS[1] |= BIT6; /* Int of I2C0_INT     */
+    if(SCU_INIT_PNSSET4_VAL & BIT1) NVIC->ITNS[1] |= BIT7; /* Int of I2C1_INT     */
+    if(SCU_INIT_PNSSET4_VAL & BIT2) NVIC->ITNS[2] |= BIT18; /* Int of I2C2_INT     */
+    if(SCU_INIT_PNSSET4_VAL & BIT16) NVIC->ITNS[1] |= BIT26; /* Int of SC0_INT      */
+    if(SCU_INIT_PNSSET4_VAL & BIT17) NVIC->ITNS[1] |= BIT27; /* Int of SC1_INT      */
+    if(SCU_INIT_PNSSET4_VAL & BIT18) NVIC->ITNS[1] |= BIT28; /* Int of SC2_INT      */
+    if(SCU_INIT_PNSSET5_VAL & BIT0) NVIC->ITNS[1] |= BIT24; /* Int of CAN0_INT     */
+    if(SCU_INIT_PNSSET5_VAL & BIT16) NVIC->ITNS[2] |= BIT20; /* Int of QEI0_INT     */
+    if(SCU_INIT_PNSSET5_VAL & BIT17) NVIC->ITNS[2] |= BIT21; /* Int of QEI1_INT     */
+    if(SCU_INIT_PNSSET5_VAL & BIT20) NVIC->ITNS[2] |= BIT22; /* Int of ECAP0_INT    */
+    if(SCU_INIT_PNSSET5_VAL & BIT21) NVIC->ITNS[2] |= BIT23; /* Int of ECAP1_INT    */
+    if(SCU_INIT_PNSSET5_VAL & BIT25) NVIC->ITNS[3] |= BIT5; /* Int of TRNG_INT     */
+    if(SCU_INIT_PNSSET5_VAL & BIT27) NVIC->ITNS[3] |= BIT4; /* Int of LCD_INT      */
+    if(SCU_INIT_PNSSET6_VAL & BIT0) NVIC->ITNS[1] |= BIT21; /* Int of USBD_INT     */
+    if(SCU_INIT_PNSSET6_VAL & BIT16) NVIC->ITNS[2] |= BIT12; /* Int of USCI0_INT    */
+    if(SCU_INIT_PNSSET6_VAL & BIT17) NVIC->ITNS[2] |= BIT13; /* Int of USCI1_INT    */
+    if(SCU_INIT_IONSSET_VAL & BIT0) NVIC->ITNS[0] |= BIT16; /* Int of PA           */
+    if(SCU_INIT_IONSSET_VAL & BIT1) NVIC->ITNS[0] |= BIT17; /* Int of PB           */
+    if(SCU_INIT_IONSSET_VAL & BIT2) NVIC->ITNS[0] |= BIT18; /* Int of PC           */
+    if(SCU_INIT_IONSSET_VAL & BIT3) NVIC->ITNS[0] |= BIT19; /* Int of PD           */
+    if(SCU_INIT_IONSSET_VAL & BIT4) NVIC->ITNS[0] |= BIT20; /* Int of PE           */
+    if(SCU_INIT_IONSSET_VAL & BIT5) NVIC->ITNS[0] |= BIT21; /* Int of PF           */
+    if(SCU_INIT_IONSSET_VAL & BIT6) NVIC->ITNS[2] |= BIT8; /* Int of PG           */
+    if(SCU_INIT_IONSSET_VAL & BIT7) NVIC->ITNS[2] |= BIT24; /* Int of PH           */
+    if(SCU_INIT_IONSSET_VAL & BIT8) NVIC->ITNS[0] |= BIT10; /* Int of EINT0        */
+    if(SCU_INIT_IONSSET_VAL & BIT9) NVIC->ITNS[0] |= BIT11; /* Int of EINT1        */
+    if(SCU_INIT_IONSSET_VAL & BIT10) NVIC->ITNS[0] |= BIT12; /* Int of EINT2        */
+    if(SCU_INIT_IONSSET_VAL & BIT11) NVIC->ITNS[0] |= BIT13; /* Int of EINT3        */
+    if(SCU_INIT_IONSSET_VAL & BIT12) NVIC->ITNS[0] |= BIT14; /* Int of EINT4        */
+    if(SCU_INIT_IONSSET_VAL & BIT13) NVIC->ITNS[0] |= BIT15; /* Int of EINT5        */
+    if(SCU_INIT_IONSSET_VAL & BIT14) NVIC->ITNS[2] |= BIT9;  /* Int of EINT6        */
+    if(SCU_INIT_IONSSET_VAL & BIT15) NVIC->ITNS[2] |= BIT25; /* Int of EINT7        */
+
+    /* Enable SCU Int status */
+    SCU->SVIOIEN = (uint32_t)(-1);
+    NVIC_EnableIRQ(SCU_IRQn);
 
     /* Set UART0 for Non-secure */
     SCU_SET_PNSSET(UART0_Attr);
@@ -233,9 +409,17 @@ int32_t mpc_init_cfg(void)
     /* Set TIMER2 for Non-secure */
     SCU_SET_PNSSET(TMR23_Attr);
 
-    return 0;
+    /* Add barriers to assure the MPC configuration is done before continue
+     * the execution.
+     */
+    __DSB();
+    __ISB();
+
+    return ARM_DRIVER_OK;
 }
+
 /*---------------------- PPC configuration functions -------------------------*/
+#define NR_PPC_INIT_STEP                 4
 
 void ppc_init_cfg(void)
 {

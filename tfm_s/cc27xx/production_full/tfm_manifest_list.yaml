@@ -1,0 +1,28 @@
+#-------------------------------------------------------------------------------
+# Copyright (c) 2024, Texas Instruments Incorporated
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+#-------------------------------------------------------------------------------
+
+{
+    "name": "TF-M secure partition manifests",
+    "type": "manifest_list",
+    "version_major": 0,
+    "version_minor": 1,
+    "manifest_list": [
+        {
+            "description": "TI System Service",
+            "manifest": "system_sp/system_sp.yaml",
+            "output_path": "secure_fw/partitions/ti_system",
+            "version_major": 0,
+            "version_minor": 1,
+            "pid": 302,
+            "linker_pattern": {
+                "library_list": [
+                    "*ti_*partition_system.*",
+                ]
+            }
+        },
+    ]
+}

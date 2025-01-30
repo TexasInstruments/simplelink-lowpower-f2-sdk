@@ -581,7 +581,7 @@ void dhcpv6_renew(protocol_interface_info_entry_t *interface, if_address_entry_t
 {
 
     uint8_t *payload_ptr;
-    uint32_t payload_len;
+    uint16_t payload_len;
     dhcp_client_class_t *dhcp_client = dhcpv6_client_entry_discover(interface->id);
     if (!dhcp_client) {
         return;
@@ -613,8 +613,18 @@ void dhcpv6_renew(protocol_interface_info_entry_t *interface, if_address_entry_t
         tr_warn("Do not trig new pending renew request");
         return;
     }
+    bool skip_address_info = dhcp_client->no_address_hint;
 
-    payload_len = libdhcpv6_address_request_message_len(srv_data_ptr->clientDUID.duid_length, srv_data_ptr->serverDUID.duid_length, 0, !dhcp_client->no_address_hint);
+    // Allocate enough space for a Solicit message if enabled, otherwise allocate enough for a Renew message. It's okay to over-allocate if some options go unused.
+    if (dhcp_client->renew_uses_solicit)
+    {
+        payload_len = libdhcpv6_solication_message_length(srv_data_ptr->clientDUID.duid_length, skip_address_info, 0);
+    }
+    else
+    {
+        payload_len = libdhcpv6_address_request_message_len(srv_data_ptr->clientDUID.duid_length, srv_data_ptr->serverDUID.duid_length, 0, !skip_address_info);
+    }
+
     payload_ptr = ns_dyn_mem_temporary_alloc(payload_len);
     if (payload_ptr == NULL) {
         if (addr) {
@@ -637,27 +647,54 @@ void dhcpv6_renew(protocol_interface_info_entry_t *interface, if_address_entry_t
         packetReq.messageType = DHCPV6_SOLICATION_TYPE;
     }
 
+    uint8_t* returned_ptr;
 
-
-    if (dhcp_client->no_address_hint && dhcp_client->renew_uses_solicit) {
+    if (skip_address_info) {
         packetReq.timerT0 = 0;
         packetReq.timerT1 = 0;
-        libdhcpv6_generic_nontemporal_address_message_write(payload_ptr, &packetReq, NULL, &srv_data_ptr->serverDUID);
+
+        // RFC 8415 States that DHCP Solicit messages explicitly CANNOT include the Server Identifier, so don't use it when making a Solicit message
+        if(dhcp_client->renew_uses_solicit)
+        {
+            returned_ptr = libdhcpv6_generic_nontemporal_address_message_write(payload_ptr, &packetReq, NULL, NULL);
+        }
+        else
+        {
+            returned_ptr = libdhcpv6_generic_nontemporal_address_message_write(payload_ptr, &packetReq, NULL, &srv_data_ptr->serverDUID);
+        }
     } else {
         // Set Address information
         dhcpv6_ia_non_temporal_address_s nonTemporalAddress = {0};
         nonTemporalAddress.requestedAddress = srv_data_ptr->iaNontemporalAddress.addressPrefix;
         nonTemporalAddress.preferredLifeTime = srv_data_ptr->iaNontemporalAddress.preferredTime;
         nonTemporalAddress.validLifeTime = srv_data_ptr->iaNontemporalAddress.validLifetime;
-        libdhcpv6_generic_nontemporal_address_message_write(payload_ptr, &packetReq, &nonTemporalAddress, &srv_data_ptr->serverDUID);
+
+        if(dhcp_client->renew_uses_solicit)
+        {
+            returned_ptr = libdhcpv6_generic_nontemporal_address_message_write(payload_ptr, &packetReq, &nonTemporalAddress, NULL);
+        }
+        else
+        {
+            returned_ptr = libdhcpv6_generic_nontemporal_address_message_write(payload_ptr, &packetReq, &nonTemporalAddress, &srv_data_ptr->serverDUID);
+        }
     }
-    // send solicit
+
+    uint16_t payload_bytes_written = ((uint32_t) returned_ptr) - ((uint32_t) payload_ptr);
+
+    if(payload_bytes_written > payload_len)
+    {
+        tr_error("Wrote too many bytes to the heap when trying to renew our DHCP address!");
+        return;
+    }
+
+    // Get address
     uint8_t *server_address = dhcp_service_relay_global_addres_get(dhcp_client->relay_instance);
     if (!server_address) {
         server_address = srv_data_ptr->server_address;
     }
 
-    srv_data_ptr->transActionId = dhcp_service_send_req(dhcp_client->service_instance, 0, srv_data_ptr, server_address, payload_ptr, payload_len, dhcp_solicit_resp_cb);
+    // Send message
+    srv_data_ptr->transActionId = dhcp_service_send_req(dhcp_client->service_instance, 0, srv_data_ptr, server_address, payload_ptr, payload_bytes_written, dhcp_solicit_resp_cb);
     if (srv_data_ptr->transActionId == 0) {
         ns_dyn_mem_free(payload_ptr);
         if (addr) {

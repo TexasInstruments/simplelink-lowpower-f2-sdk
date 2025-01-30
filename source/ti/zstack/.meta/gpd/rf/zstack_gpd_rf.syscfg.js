@@ -304,7 +304,10 @@ function getRfDesignOptions()
     }
     else if(deviceId === "CC2674P10RGZ")
     {
-        newRfDesignOptions = [{name: "LP_CC2674P10_RGZ"}];
+        newRfDesignOptions = [
+            {name: "LP_CC2674P10_RGZ"},
+            {name: "LP_EM_CC2674P10"}
+        ];
     }
     else
     {

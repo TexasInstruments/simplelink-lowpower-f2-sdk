@@ -5,6 +5,11 @@
 #
 #----------------------------------------------------------------------------*/
 
+/* Override table no-wrap */
+.wy-table-responsive table td, .wy-table-responsive table th {
+    white-space: normal;
+}
+
 /* Limit page width */
 @media only screen and (min-width: 780px) {
     .wy-nav-content {

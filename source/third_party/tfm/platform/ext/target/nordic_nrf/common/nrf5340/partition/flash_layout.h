@@ -143,6 +143,7 @@
 #define MCUBOOT_STATUS_MAX_ENTRIES      (0)
 
 
+/* Protected Storage (PS) Service definitions */
 #define FLASH_PS_AREA_OFFSET            (FLASH_AREA_SCRATCH_OFFSET + \
                                          FLASH_AREA_SCRATCH_SIZE)
 #define FLASH_PS_AREA_SIZE              (0x4000)   /* 16 KB */
@@ -175,6 +176,7 @@
  * Name is defined in flash driver file: Driver_Flash.c
  */
 #define FLASH_DEV_NAME Driver_FLASH0
+/* Smallest flash programmable unit in bytes */
 #define TFM_HAL_FLASH_PROGRAM_UNIT       (0x4)
 
 /* Protected Storage (PS) Service definitions

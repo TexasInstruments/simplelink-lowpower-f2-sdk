@@ -16,7 +16,7 @@ Or do it manually using the following commands:
 
 .. code:: bash
 
-    $ cmake -S . -B build -DTFM_PLATFORM=nxp/lpcxpresso55s69 -DTFM_TOOLCHAIN_FILE=toolchain_GNUARM.cmake -DTFM_PROFILE=profile_medium -DCMAKE_BUILD_TYPE=Relwithdebinfo -DBL2=OFF -DTFM_ISOLATION_LEVEL=2 -G"Unix Makefiles"
+    $ cmake -S . -B build -DTFM_PLATFORM=nxp/lpcxpresso55s69 -DTFM_TOOLCHAIN_FILE=toolchain_GNUARM.cmake -DTFM_PROFILE=profile_medium -DBL2=OFF -G"Unix Makefiles"
     $ cd build && make install
 
 1.2 Building TF-M demo with BL2
@@ -29,7 +29,7 @@ Or do it manually using the following commands:
 
 .. code:: bash
 
-    $ cmake -S . -B build -DTFM_PLATFORM=nxp/lpcxpresso55s69 -DTFM_TOOLCHAIN_FILE=toolchain_GNUARM.cmake -DTFM_PROFILE=profile_medium -DCMAKE_BUILD_TYPE=Relwithdebinfo -DTFM_ISOLATION_LEVEL=2 -G"Unix Makefiles"
+    $ cmake -S . -B build -DTFM_PLATFORM=nxp/lpcxpresso55s69 -DTFM_TOOLCHAIN_FILE=toolchain_GNUARM.cmake -DTFM_PROFILE=profile_medium -DBL2=ON -G"Unix Makefiles"
     $ cd build && make install
 
 1.3 Building TF-M regression tests
@@ -42,14 +42,8 @@ or do it manually using following commands:
 
 .. code:: bash
 
-    $ cmake -S . -B build -DTFM_PLATFORM=nxp/lpcxpresso55s69 -DTFM_TOOLCHAIN_FILE=toolchain_GNUARM.cmake -DTFM_PROFILE=profile_medium -DCMAKE_BUILD_TYPE=Relwithdebinfo -DBL2=OFF -DTEST_S=ON -DTEST_NS=ON -DTFM_ISOLATION_LEVEL=2 -G"Unix Makefiles"
+    $ cmake -S . -B build -DTFM_PLATFORM=nxp/lpcxpresso55s69 -DTFM_TOOLCHAIN_FILE=toolchain_GNUARM.cmake -DTFM_PROFILE=profile_medium -DBL2=OFF -DTEST_S=ON -DTEST_NS=ON -G"Unix Makefiles"
     $ cd build && make install
-
-.. Note::
-
-    Currently ``Debug`` cannot be selected as build type and regression tests
-    cannot be run on the board without modifying the flash layout due to the
-    amount of available on-chip flash memory.
 
 ****************
 2. Flashing TF-M
@@ -193,16 +187,14 @@ If you built TF-M with the BL2 secondary bootloader, use the following commands:
 ::
 
     $ pyocd erase --mass -t LPC55S69
-    $ pyocd flash ${BUILD_DIR}/tfm_s.hex -t LPC55S69
-    $ pyocd flash ${BUILD_DIR}/tfm_ns.hex -t LPC55S69
+    $ pyocd flash ${BUILD_DIR}/tfm_s.hex ${BUILD_DIR}/tfm_ns.hex -t LPC55S69
 
 When BL2 is disabled, flash the generated hex secure and non-secure images:
 ::
 
     $ pyocd erase --mass -t LPC55S69
     $ pyocd flash ${BUILD_DIR}/bl2.hex -t LPC55S69
-    $ pyocd flash ${BUILD_DIR}/tfm_s_signed.bin --base-address 0x8000 -t LPC55S69
-    $ pyocd flash ${BUILD_DIR}/tfm_ns_signed.bin --base-address 0x30000 -t LPC55S69
+    $ pyocd flash ${BUILD_DIR}/tfm_s_ns_signed.bin --base-address 0x8000 -t LPC55S69
 
 .. Note::
 
@@ -354,7 +346,7 @@ common problems.
 
 --------------
 
-*Copyright (c) 2021, NXP Semiconductors. All rights reserved.*
 *Copyright (c) 2020, Linaro. All rights reserved.*
 *Copyright (c) 2020-2021, Arm Limited. All rights reserved.*
+*Copyright 2020-2023 NXP. All rights reserved.
 *SPDX-License-Identifier: BSD-3-Clause*

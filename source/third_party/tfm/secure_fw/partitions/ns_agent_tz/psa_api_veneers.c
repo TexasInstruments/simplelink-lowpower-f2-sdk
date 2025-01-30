@@ -40,7 +40,9 @@ psa_status_t tfm_psa_call_veneer(psa_handle_t handle,
                                  const psa_invec *in_vec,
                                  psa_outvec *out_vec)
 {
-    return tfm_psa_call_pack(handle, ctrl_param, in_vec, out_vec);
+    return tfm_psa_call_pack(handle,
+                             PARAM_SET_NS_VEC(ctrl_param),
+                             in_vec, out_vec);
 }
 
 /* Following veneers are only needed by connection-based services */

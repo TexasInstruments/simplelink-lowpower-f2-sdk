@@ -73,6 +73,11 @@ for (let i in clusters) {
       }
     }
   }
+
+  if (tempServerAttributeOptions.length == 0) {
+    acmaServerAlwaysHidden.push(cluster._id + "acmaServer");
+    tempServerAttributeOptions.push({name: "dummy", displayName: "dummy"});
+  }
   acmaModule.config.push({
     name: cluster._id + "acmaServer",
     displayName: cluster._name + " Server Attributes",
@@ -85,7 +90,6 @@ for (let i in clusters) {
     onChange: bdbScript.bdbOnChange
   })
   acmaServerDropDowns.push(cluster._id + "acmaServer");
-  if (tempServerAttributeOptions.length == 0) { acmaServerAlwaysHidden.push(cluster._id + "acmaServer"); }
 
   let tempClientAttributeDefault = [];
   let tempClientAttributeOptions = [];
@@ -97,6 +101,11 @@ for (let i in clusters) {
         tempClientAttributeOptions.push({name: attribute._id, displayName: attribute._name});
       }
     }
+  }
+
+  if (tempClientAttributeOptions.length == 0) {
+    acmaClientAlwaysHidden.push(cluster._id + "acmaClient");
+    tempClientAttributeOptions.push({name: "dummy", displayName: "dummy"});
   }
   acmaModule.config.push({
     name: cluster._id + "acmaClient",
@@ -110,7 +119,6 @@ for (let i in clusters) {
     onChange: bdbScript.bdbOnChange
   })
   acmaClientDropDowns.push(cluster._id + "acmaClient");
-  if (tempClientAttributeOptions.length == 0) { acmaClientAlwaysHidden.push(cluster._id + "acmaClient"); }
 }
 
 /* Function to handle changes in the additional server clusters */

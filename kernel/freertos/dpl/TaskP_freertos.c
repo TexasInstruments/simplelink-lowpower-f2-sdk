@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,37 @@
 
 #include <FreeRTOS.h>
 #include <task.h>
+
+/*
+ * Defensively ensure the TaskP struct size is big enough to contain the
+ * user-configured FreeRTOS task struct.
+ *
+ * If you see this compile-time error, it typically means the user has
+ * configured the FreeRTOS kernel such that the FreeRTOS task object
+ * (StaticTask_t) is larger than the max size TaskP.h has reserved for the
+ * object (TaskP_STRUCT_SIZE).  For example, changing the
+ * configMAX_TASK_NAME_LEN can increase the size of the FreeRTOS task object
+ * beyond the default defined in TaskP.h's TaskP_STRUCT_SIZE.
+ *
+ * There are two solutions if you experience this error:
+ *   - Easiest: modify the FreeRTOS config to reduce the size of StaticTask_t
+ *   - Harder: modify the TaskP_STRUCT_SIZE value in TaskP.h and (critically!)
+ *     ensure you rebuild all users of TaskP.h, including any pre-built
+ *     libraries you may be using!
+ *
+ * Note, this check uses C11-defined static_assert(), which may be problematic
+ * for some toolchains versions/options.  It is recommended to leave this check
+ * enabled to catch issues(!), but it can be disabled by defining
+ * DISABLE_STATIC_DPL_SIZE_CHECKS when compiling this file.
+ */
+#if !defined(DISABLE_STATIC_DPL_SIZE_CHECKS)
+    #if (defined(__clang__) && defined(__ti_version__)) || defined(__IAR_SYSTEMS_ICC__)
+        #include <assert.h>
+static_assert(TaskP_STRUCT_SIZE >= sizeof(StaticTask_t), "TaskP object too small");
+    #elif defined(__GNUC__)
+    /* TODO: enable a GCC check, possibly after removing the need for -std=c99 */
+    #endif
+#endif
 
 /*
  *  ======== Array for conversion of FreeRTOS task state to DPL task state ========

@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Copyright (c) 2021-2022, Arm Limited. All rights reserved.
+# Copyright (c) 2021-2023, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -22,5 +22,5 @@ target_include_directories(bl1_1_lib
 target_link_libraries(bl1_1_lib
     INTERFACE
         bl1_1_shared_lib
-        platform_bl1
+        platform_bl1_1
 )

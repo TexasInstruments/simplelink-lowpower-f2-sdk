@@ -207,6 +207,7 @@ static void service_event_handler(arm_event_s *event)
     if (event->event_type == ARM_LIB_TASKLET_INIT_EVENT) {
         tr_debug("service tasklet initialised");
         /*initialize coap service and listen socket*/
+        return;
     }
 
     if (event->event_type == ARM_LIB_SYSTEM_TIMER_EVENT && event->event_id == COAP_TICK_TIMER) {
@@ -393,7 +394,11 @@ int8_t coap_service_initialize(int8_t interface_id, uint16_t listen_port, uint8_
         tr_debug("service tasklet init");
         tasklet_id = eventOS_event_handler_create(&service_event_handler, ARM_LIB_TASKLET_INIT_EVENT);
     }
-
+    if (tasklet_id != -1) {
+        // Kick off service_event_handler timer. ARM_LIB_TASKLET_INIT_EVENT may not kick off 
+        // service_event_handler timer due to lower priority of mainThread compared to eventOS loop.
+        eventOS_event_timer_request((uint8_t)COAP_TICK_TIMER, ARM_LIB_SYSTEM_TIMER_EVENT, tasklet_id, 1000);
+    }
     this->conn_handler = connection_handler_create(recv_cb, virtual_send_cb, get_passwd_cb, sec_done_cb);
     if (!this->conn_handler) {
         ns_dyn_mem_free(this);

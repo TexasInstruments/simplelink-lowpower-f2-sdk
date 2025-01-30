@@ -358,7 +358,7 @@ int mbedtls_cipher_cmac( const mbedtls_cipher_info_t *cipher_info,
     {
         return( MBEDTLS_ERR_CIPHER_BAD_INPUT_DATA );
     }
-    if( cipher_info->MBEDTLS_PRIVATE(base) == NULL )
+    if( cipher_info->MBEDTLS_PRIVATE(name) == NULL )
     {
         return( MBEDTLS_ERR_CIPHER_BAD_INPUT_DATA );
     }

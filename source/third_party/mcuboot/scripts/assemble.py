@@ -26,6 +26,7 @@ import io
 import re
 import os
 import os.path
+import pickle
 import sys
 
 def same_keys(a, b):
@@ -95,13 +96,12 @@ class Assembly():
             ofd.write(ibuf)
 
 def find_board_name(bootdir):
-    suffix = ".dts.pre.tmp"
-
-    for _, _, files in os.walk(os.path.join(bootdir, "zephyr")):
-        for filename in files:
-            if filename.endswith(suffix):
-                return filename[:-len(suffix)]
-
+    dot_config = os.path.join(bootdir, "zephyr", ".config")
+    with open(dot_config, "r") as f:
+        for line in f:
+            if line.startswith("CONFIG_BOARD="):
+                return line.split("=", 1)[1].strip('"')
+    raise Exception("Expected CONFIG_BOARD line in {}".format(dot_config))
 
 def main():
     parser = argparse.ArgumentParser()
@@ -127,15 +127,15 @@ def main():
             print('Need to either have ZEPHYR_BASE in environment or pass in -z')
             sys.exit(1)
 
-    sys.path.insert(0, os.path.join(zephyr_base, "scripts", "dts"))
-    import edtlib
+    sys.path.insert(0, os.path.join(zephyr_base, "scripts", "dts", "python-devicetree", "src"))
+    import devicetree.edtlib
 
     board = find_board_name(args.bootdir)
 
-    dts_path = os.path.join(args.bootdir, "zephyr", board + ".dts.pre.tmp")
-
-    edt = edtlib.EDT(dts_path, [os.path.join(zephyr_base, "dts", "bindings")],
-            warn_reg_unit_address_mismatch=False)
+    edt_pickle = os.path.join(args.bootdir, "zephyr", "edt.pickle")
+    with open(edt_pickle, 'rb') as f:
+        edt = pickle.load(f)
+        assert isinstance(edt, devicetree.edtlib.EDT)
 
     output = Assembly(args.output, args.bootdir, edt)
 

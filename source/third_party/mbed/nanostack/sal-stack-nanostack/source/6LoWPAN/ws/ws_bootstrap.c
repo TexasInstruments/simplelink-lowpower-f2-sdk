@@ -46,6 +46,7 @@
 #include "Common_Protocols/icmpv6.h"
 #include "Common_Protocols/icmpv6_radv.h"
 #include "Common_Protocols/ipv6_constants.h"
+#include "Common_Protocols/udp.h"
 #include "Common_Protocols/ip.h"
 #include "Service_Libs/Trickle/trickle.h"
 #include "Service_Libs/fhss/channel_list.h"
@@ -118,6 +119,11 @@ uint16_t num_of_joined =0;
 extern int8_t add_multicast_addr(const uint8_t *address);
 extern bool udpSocketSetup(void);
 uint8_t isUDPSetUp = 0;
+#endif
+
+#ifdef FEATURE_TEST_EAPOL_ACTIVE_MAX
+uint8_t test_eapol_active_max = 3;
+uint16_t num_eapol_active_max_rejections = 0;
 #endif
 
 void ws_bootstrap_set_MAC_panid(protocol_interface_info_entry_t *cur);
@@ -1201,7 +1207,7 @@ static int8_t ws_bootstrap_up(protocol_interface_info_entry_t *cur)
 
     dhcp_client_init(cur->id, DHCPV6_DUID_HARDWARE_IEEE_802_NETWORKS_TYPE);
     dhcp_service_link_local_rx_cb_set(cur->id, ws_bootstrap_dhcp_neighbour_update_cb);
-    dhcp_client_configure(cur->id, true, true, true); //RENEW uses SOLICIT, Interface will use 1 instance for address get, IAID address hint is not used.
+    dhcp_client_configure(cur->id, ti_wisun_config.use_dhcp_solicit_for_renew, true, true); //Interface will use 1 instance for address get, IAID address hint is not used.
 
     uint16_t dhcp_timeout = WS_DHCP_SOLICIT_TIMEOUT;
     uint16_t dhcp_max_rt = WS_DHCP_SOLICIT_MAX_RT;
@@ -1598,7 +1604,7 @@ static void ws_bootstrap_candidate_list_clean(struct protocol_interface_info_ent
         if ((current_time - entry->age) > WS_PARENT_LIST_MAX_AGE) {
 #ifdef FEATURE_FHNT_CONTROL
             if (cur->nwk_bootstrap_state == ER_ACTIVE_SCAN || cur->nwk_bootstrap_state == ER_PANA_AUTH) {
-                status = FHNT_deleteTableEntry(FHNT_TABLE_TYPE_JOIN, entry->addr);
+                status = FHNT_deleteTableEntry(FHNT_TABLE_TYPE_JOIN, (uint8_t *) entry->addr);
                 tr_warn("FHNT ns: ws_bs_pa clean delete join b/c of age: %s | status: %d", trace_array(entry->addr, 8), status);
             }
 #endif
@@ -1614,7 +1620,7 @@ static void ws_bootstrap_candidate_list_clean(struct protocol_interface_info_ent
                 if (cur->nwk_bootstrap_state == ER_ACTIVE_SCAN) {
                     parent_info_t *selected_parent_ptr = ws_bootstrap_candidate_parent_get_best(cur);
                     if (!(selected_parent_ptr && (memcmp(selected_parent_ptr->addr, entry->addr, 8) == 0))) {
-                        status = FHNT_deleteTableEntry(FHNT_TABLE_TYPE_JOIN, entry->addr);
+                        status = FHNT_deleteTableEntry(FHNT_TABLE_TYPE_JOIN, (uint8_t *) entry->addr);
                         tr_warn("FHNT ns: ws_bs_pa clean delete join b/c of max: %s | status: %d", trace_array(entry->addr, 8), status);
                     }
                 }
@@ -1676,7 +1682,7 @@ static void ws_bootstrap_pan_information_store(struct protocol_interface_info_en
     ws_bootstrap_candidate_parent_sort(cur, new_entry);
 #ifdef FEATURE_FHNT_CONTROL
     if (cur->nwk_bootstrap_state == ER_ACTIVE_SCAN || cur->nwk_bootstrap_state == ER_PANA_AUTH) {
-        FHAPI_status status = FHNT_createTableEntry(FHNT_TABLE_TYPE_JOIN, data->SrcAddr);
+        FHAPI_status status = FHNT_createTableEntry(FHNT_TABLE_TYPE_JOIN, (uint8_t *) data->SrcAddr);
         tr_warn("FHNT ns: ws_bs_pa store add join: %s | status: %d", trace_array(data->SrcAddr, 8), status);
     }
 #endif
@@ -1717,7 +1723,7 @@ static void ws_bootstrap_pan_advertisement_analyse(struct protocol_interface_inf
     if (fhnt_delete)
     {
 #ifdef FEATURE_FHNT_CONTROL
-        FHAPI_status status = FHNT_deleteEntry(data->SrcAddr);
+        FHAPI_status status = FHNT_deleteEntry((sAddrExt_t *) data->SrcAddr);
         tr_warn("FHNT ns: ws_bs_pa delete: %s | status: %d", trace_array(data->SrcAddr, 8), status);
 #endif
         return;
@@ -1886,7 +1892,7 @@ static void ws_bootstrap_pan_config_analyse(struct protocol_interface_info_entry
 
     if (fhnt_delete) {
 #ifdef FEATURE_FHNT_CONTROL
-        FHAPI_status status = FHNT_deleteEntry(data->SrcAddr);
+        FHAPI_status status = FHNT_deleteEntry((sAddrExt_t *) data->SrcAddr);
         tr_warn("FHNT ns: ws_bs_pc delete: %s | status: %d", trace_array(data->SrcAddr, 8), status);
 #endif
         return;
@@ -2017,7 +2023,7 @@ static void ws_bootstrap_pan_config_solicit_analyse(struct protocol_interface_in
 {
     if (data->SrcPANId != cur->ws_info->network_pan_id) {
 #ifdef FEATURE_FHNT_CONTROL
-        FHAPI_status status = FHNT_deleteEntry(data->SrcAddr);
+        FHAPI_status status = FHNT_deleteEntry((sAddrExt_t *) data->SrcAddr);
         tr_warn("FHNT ns: ws_bs_pcs delete: %s | status: %d", trace_array(data->SrcAddr, 8), status);
 #endif
         return;
@@ -2211,7 +2217,7 @@ static void ws_bootstrap_asynch_ind(struct protocol_interface_info_entry *cur, c
     }
     if (fhnt_delete) {
 #ifdef FEATURE_FHNT_CONTROL
-        FHAPI_status status = FHNT_deleteEntry(data->SrcAddr);
+        FHAPI_status status = FHNT_deleteEntry((sAddrExt_t *) data->SrcAddr);
         tr_warn("FHNT ns: async_ind delete: %s | status: %d", trace_array(data->SrcAddr, 8), status);
 #endif
         return;
@@ -2925,6 +2931,18 @@ static void ws_bootstrap_ip_stack_reset(protocol_interface_info_entry_t *cur)
 static void ws_bootstrap_ip_stack_activate(protocol_interface_info_entry_t *cur)
 {
     tr_debug("ip stack init");
+
+    if (cur->bootsrap_mode == ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER)
+    {
+        if (ti_br_config.use_external_dhcp_server)
+        {
+            tr_debug("Adding route to host PC for DHCP Server");
+            ipv6_route_add(ti_br_config.external_dhcp_server_addr, 128, 1, NULL, ROUTE_STATIC, 0xFFFFFFFF, 0);
+            tr_debug("Enable DHCPv6 relay");
+            dhcp_relay_agent_enable(cur->id, ti_br_config.external_dhcp_server_addr);
+        }
+    }
+
     clear_power_state(ICMP_ACTIVE);
     cur->lowpan_info |= INTERFACE_NWK_BOOTSRAP_ACTIVE;
     ws_bootstrap_ip_stack_reset(cur);
@@ -3724,7 +3742,15 @@ static bool ws_bootstrap_eapol_congestion_get(protocol_interface_info_entry_t *c
     } else
 #endif
     {
+#ifdef FEATURE_TEST_EAPOL_ACTIVE_MAX
+        active_max = test_eapol_active_max;
+#else
         active_max = (heap_size / 50000) * 2 + 1;
+        if (cur->bootsrap_mode == ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER &&
+            ti_br_config.use_external_radius_server) {
+            active_max = 50; // External radius server reduces memory requirements. More simultaneous connections allowed.
+        }
+#endif
 
         if (active_max > 50) {
             active_max = 50;
@@ -3741,6 +3767,9 @@ static bool ws_bootstrap_eapol_congestion_get(protocol_interface_info_entry_t *c
     // Maximum for active supplicants based on memory reached, fail
     if (active_supp >= active_max) {
         return_value = true;
+#ifdef FEATURE_TEST_EAPOL_ACTIVE_MAX
+        num_eapol_active_max_rejections++;
+#endif
         goto congestion_get_end;
     }
 
@@ -4174,6 +4203,15 @@ static void ws_bootstrap_event_handler(arm_event_s *event)
 
                     // Set backbone IP address get callback
                     ws_pae_controller_auth_cb_register(cur, ws_bootstrap_backbone_ip_addr_get);
+
+                    // Enable RADIUS protocol
+                    if (ti_br_config.use_external_radius_server)
+                    {
+                        tr_info("Setting external RADIUS Server address and shared secret");
+                        ipv6_route_add(ti_br_config.external_radius_server_addr, 128, 1, NULL, ROUTE_STATIC, 0xFFFFFFFF, 0);
+                        ws_pae_controller_radius_address_set(cur->id, ti_br_config.external_radius_server_addr);
+                        ws_pae_controller_radius_shared_secret_set(cur->id, ti_br_config.external_radius_server_shared_secret_length, ti_br_config.external_radius_server_shared_secret);
+                    }
                 }
 #endif
 
@@ -4269,6 +4307,7 @@ static void ws_bootstrap_event_handler(arm_event_s *event)
             break;
         case WS_ROUTING_READY:
             tr_info("Routing ready");
+
             // stopped all to make sure we can enter here from any state
             ws_bootstrap_asynch_trickle_stop(cur);
 #if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(MBED_LIBRARY)
@@ -4599,35 +4638,40 @@ void ws_bootstrap_state_machine(protocol_interface_info_entry_t *cur)
 void ws_bootstrap_trickle_timer(protocol_interface_info_entry_t *cur, uint16_t ticks)
 {
 #ifndef WISUN_CERT_CONFIG
-    if (ti_wisun_config.rapid_join) {
-        if (cur->ws_info->trickle_pas_running || cur->ws_info->trickle_pcs_running)
-        {
-            // Reduce rate/increase redundancy factor (k) for PAS/PCS to avoid flooding
-            cur->ws_info->trickle_params_pan_discovery.Imin = 60;  // 6 sec
-            cur->ws_info->trickle_params_pan_discovery.Imax = 120; // 12 sec
-            cur->ws_info->trickle_params_pan_discovery.k = 2;
-        }
-        else if (cur->ws_info->trickle_pa_running || cur->ws_info->trickle_pc_running)
-        {
-            // Increase responsiveness/rate of PA/PC. BRs will transmit PA/PC more frequently
-            // than RTs to encourage direct connection to BR for faster join time.
-            cur->ws_info->trickle_params_pan_discovery.Imin = 30;   // 3 sec
-            cur->ws_info->trickle_params_pan_discovery.Imax = 15*600;  // 15 min
-            if (cur->bootsrap_mode == ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER) {
-                cur->ws_info->trickle_params_pan_discovery.k = 5;
-            }
-            else {
+    if (ti_wisun_config.network_size_config == CONFIG_NETWORK_SIZE_LARGE) {
+        // No changes
+    } else if (ti_wisun_config.network_size_config == CONFIG_NETWORK_SIZE_MEDIUM) {
+        // No changes
+    } else { // CONFIG_NETWORK_SIZE_SMALL
+        if (ti_wisun_config.rapid_join) {
+            if (cur->ws_info->trickle_pas_running || cur->ws_info->trickle_pcs_running)
+            {
+                // Reduce rate/increase redundancy factor (k) for PAS/PCS to avoid flooding
+                cur->ws_info->trickle_params_pan_discovery.Imin = 60;  // 6 sec
+                cur->ws_info->trickle_params_pan_discovery.Imax = 120; // 12 sec
                 cur->ws_info->trickle_params_pan_discovery.k = 2;
             }
-        }
-    } else {
-        if (cur->ws_info->trickle_pa_running || cur->ws_info->trickle_pc_running)
-        {
-            cur->ws_info->trickle_params_pan_discovery.Imax = cur->ws_info->trickle_params_pan_discovery.Imin * 80;
-        }
-        else{
-            //cur->ws_info->trickle_params_pan_discovery.Imin = 120; //KV - Hardcoding Value for now
-            cur->ws_info->trickle_params_pan_discovery.Imax = cur->ws_info->trickle_params_pan_discovery.Imin;
+            else if (cur->ws_info->trickle_pa_running || cur->ws_info->trickle_pc_running)
+            {
+                // Increase responsiveness/rate of PA/PC. BRs will transmit PA/PC more frequently
+                // than RTs to encourage direct connection to BR for faster join time.
+                cur->ws_info->trickle_params_pan_discovery.Imin = 30;   // 3 sec
+                cur->ws_info->trickle_params_pan_discovery.Imax = 15*600;  // 15 min
+                if (cur->bootsrap_mode == ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER) {
+                    cur->ws_info->trickle_params_pan_discovery.k = 5;
+                }
+                else {
+                    cur->ws_info->trickle_params_pan_discovery.k = 2;
+                }
+            }
+        } else {
+            if (cur->ws_info->trickle_pa_running || cur->ws_info->trickle_pc_running)
+            {
+                cur->ws_info->trickle_params_pan_discovery.Imax = cur->ws_info->trickle_params_pan_discovery.Imin * 80;
+            }
+            else{
+                cur->ws_info->trickle_params_pan_discovery.Imax = cur->ws_info->trickle_params_pan_discovery.Imin;
+            }
         }
     }
 #else

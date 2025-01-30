@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, Texas Instruments Incorporated
+ * Copyright (c) 2022-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,23 +38,49 @@
 #include DeviceFamily_constructPath(driverlib/aon_rtc.h)
 #include <ti/drivers/dpl/TimestampP.h>
 
-#if defined(__IAR_SYSTEMS_ICC__)
-__root const TimestampP_Format
-#elif defined(__TI_COMPILER_VERSION__) || (defined(__clang__) && defined(__ti_version__)) || defined(__GNUC__)
-const TimestampP_Format __attribute__((used))
-#endif
-    TimestampP_nativeFormat64 = {
-        .format = {.exponent = TimestampP_Exponent_Seconds, .fracBytes = 4, .intBytes = 4, .multiplier = 1}};
+#define TIMESTAMPP_NATIVEFORMAT32_INITIALIZER                                                                \
+    {                                                                                                        \
+        .format = {.exponent = TimestampP_Exponent_Seconds, .fracBytes = 2, .intBytes = 2, .multiplier = 1 } \
+    }
+#define TIMESTAMPP_NATIVEFORMAT64_INITIALIZER                                                                \
+    {                                                                                                        \
+        .format = {.exponent = TimestampP_Exponent_Seconds, .fracBytes = 4, .intBytes = 4, .multiplier = 1 } \
+    }
 
 #if defined(__IAR_SYSTEMS_ICC__)
 __root const TimestampP_Format
-#elif (defined(__clang__) && defined(__ti_version__))
+#elif defined(__TI_COMPILER_VERSION__) || (defined(__clang__) && defined(__ti_version__))
 const TimestampP_Format __attribute__((used))
 #elif defined(__GNUC__)
 const TimestampP_Format __attribute__((section(".timestampPFormat"), used))
 #endif
-    TimestampP_nativeFormat32 = {
-        .format = {.exponent = TimestampP_Exponent_Seconds, .fracBytes = 2, .intBytes = 2, .multiplier = 1}};
+    TimestampP_nativeFormat64 = TIMESTAMPP_NATIVEFORMAT64_INITIALIZER;
+
+#if defined(__IAR_SYSTEMS_ICC__)
+__root const TimestampP_Format
+#elif defined(__TI_COMPILER_VERSION__) || (defined(__clang__) && defined(__ti_version__))
+const TimestampP_Format __attribute__((used))
+#elif defined(__GNUC__)
+const TimestampP_Format __attribute__((section(".timestampPFormat"), used))
+#endif
+    TimestampP_nativeFormat32 = TIMESTAMPP_NATIVEFORMAT32_INITIALIZER;
+
+/* Copy of timestamp native formats in .log_data section */
+#if defined(__IAR_SYSTEMS_ICC__)
+    #pragma location = ".log_data"
+__root const TimestampP_Format
+#elif defined(__TI_COMPILER_VERSION__) || (defined(__clang__) && defined(__ti_version__)) || defined(__GNUC__)
+const TimestampP_Format __attribute__((section(".log_data"), used))
+#endif
+    TimestampP_nativeFormat64_copy = TIMESTAMPP_NATIVEFORMAT64_INITIALIZER;
+
+#if defined(__IAR_SYSTEMS_ICC__)
+    #pragma location = ".log_data"
+__root const TimestampP_Format
+#elif defined(__TI_COMPILER_VERSION__) || (defined(__clang__) && defined(__ti_version__)) || defined(__GNUC__)
+const TimestampP_Format __attribute__((section(".log_data"), used))
+#endif
+    TimestampP_nativeFormat32_copy = TIMESTAMPP_NATIVEFORMAT32_INITIALIZER;
 
 uint64_t TimestampP_getNative64()
 {

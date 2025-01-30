@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2024, Texas Instruments Incorporated
+ Copyright (c) 2013-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -340,6 +340,13 @@ void macFH_ChanPlanInit(void)
     FHIE_channelPlan[0].operatingClass = CONFIG_OP_MODE_CLASS;
 
     FHIE_channelPlan[0].regulatoryDomain = CONFIG_REG_DOMAIN ;
+
+    /* update the exclude channel list for node's USIE/BSIE
+     * regChanList bit value: 1 == valid regulation channel
+     * see PHY Spec 2V00 (specification, page #18)
+     */
+    uint8_t regChanList[MAX_NO_OF_CHANNELS] = CONFIG_REGULATION_CHANNEL_MASK; // Sysconfig defined channel mask based regulatory domain and operating class.
+    MAP_osal_memcpy(FHIE_channelPlan[0].regChannelList, &regChanList, MAX_NO_OF_CHANNELS);
 
     if (CONFIG_CHANNEL_SPACING == 100)
         FHIE_channelPlan[0].channelSpacing = 3;

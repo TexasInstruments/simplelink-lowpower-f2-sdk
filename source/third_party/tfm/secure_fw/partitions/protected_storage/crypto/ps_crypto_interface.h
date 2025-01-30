@@ -28,9 +28,9 @@ extern "C" {
 union ps_crypto_t {
     struct {
         uint8_t tag[PS_TAG_LEN_BYTES]; /*!< MAC value of AEAD object */
-        uint8_t iv[PS_IV_LEN_BYTES];   /*!< IV value of AEAD object */
         psa_storage_uid_t uid;         /*!< UID for key label */
         int32_t client_id;             /*!< Owner client ID for key label */
+        uint8_t iv[PS_IV_LEN_BYTES];   /*!< IV value of AEAD object */
     } ref;
 };
 

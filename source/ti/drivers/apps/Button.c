@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2021, Texas Instruments Incorporated
+ * Copyright (c) 2016-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -360,6 +360,7 @@ static void Button_clockTimeoutHandler(uintptr_t arg)
                 {
                     obj->buttonStateVariables.state = Button_PRESSED;
                 }
+                break;
 
             /*
              * Any other case, mark the button as pressed.

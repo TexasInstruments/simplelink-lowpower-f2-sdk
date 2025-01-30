@@ -16,6 +16,9 @@
  */
 
 #include <string.h>
+#if defined(__TI_COMPILER_VERSION__) || defined(__GNUC__)
+#include <strings.h>
+#endif
 #include "nsconfig.h"
 #include "ns_types.h"
 #include "ns_trace.h"
@@ -755,7 +758,14 @@ static void ws_bbr_rpl_status_check(protocol_interface_info_entry_t *cur)
                 prefix_flags |= PIO_A;
                 prefix_lifetime = WS_ULA_LIFETIME;
             }
-            ws_bbr_dhcp_server_start(cur, global_prefix, cur->ws_info->cfg->bbr.dhcp_address_lifetime);
+            if (cur->bootsrap_mode == ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER)
+            {
+                if (!ti_br_config.use_external_dhcp_server)
+                {
+                    // only start the internal dhcp server when not using an external dhcp server
+                    ws_bbr_dhcp_server_start(cur, global_prefix, cur->ws_info->cfg->bbr.dhcp_address_lifetime);
+                }
+            }
             rpl_control_update_dodag_prefix(protocol_6lowpan_rpl_root_dodag, global_prefix, 64, prefix_flags, prefix_lifetime, prefix_lifetime, false);
             // no check for failure should have
 

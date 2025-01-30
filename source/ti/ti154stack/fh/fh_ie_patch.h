@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -104,6 +104,7 @@ uint16_t FHIEPATCH_genHie(uint8_t *pData, uint32_t bitmap, macTx_t *pMacTx,
 FHAPI_status FHIEPATCH_parsePie(uint8_t subIeId, uint16_t subIeLength, uint8_t *pBuf, sAddrExt_t *pSrcAddr);
 FHAPI_status FHIEPATCH_parseHie(uint8_t subIeId, uint16_t ieLength, uint8_t *pBuf, uint32_t ts, sAddrExt_t *pSrcAddr);
 uint32 FHIE_getCcaSfdTime(uint8 fhFrameType);
+void FHIE_genBTIE(uint8_t *pBuf, uint8_t frameType);
 MAC_INTERNAL_API FHAPI_status FHAPI_getTxParams(uint32_t *pBackOffDur, uint8_t *pChIdx);
 uint32_t FHDATA_CheckMinTxOffTime(uint8_t txChan,uint32_t csmaDelay);
 uint32_t FHDATA_getASYNCDelay(void);

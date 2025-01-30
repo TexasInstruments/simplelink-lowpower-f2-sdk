@@ -55,6 +55,10 @@ const testModeScript = system.getScript("/ti/ti_wisunfan/test_config/"
 const securityScript = system.getScript("/ti/ti_wisunfan/security_config/"
     + "ti_wisunfan_security_config");
 
+// Get wfantund settings script
+const wfantundScript = system.getScript("/ti/ti_wisunfan/wfantund_config/"
+    + "ti_wisunfan_wfantund_config");
+
 // Get advanced settings script
 const advancedScript = system.getScript("/ti/ti_wisunfan/advanced_config/"
     + "ti_wisunfan_advanced_config");
@@ -148,6 +152,7 @@ const moduleStatic = {
         networkScript.config,
         powerScript.config,
         securityScript.config,
+        wfantundScript.config,
         advancedScript.config
         //testModeScript.config
     ],
@@ -208,6 +213,8 @@ function onProjectChange(inst, ui)
     // Solar example defaults/hidden setting changes
     networkScript.setDefaultNetname(inst);
     networkScript.setDefaultDwellTime(inst);
+    wfantundScript.setDefaultWfantundSettings(inst);
+    wfantundScript.setWfantundSettingsHiddenState(inst, ui);
     advancedScript.setDefaultAdvancedSettings(inst);
     advancedScript.setAdvancedSettingsHiddenState(inst, ui);
 }
@@ -322,6 +329,10 @@ function validate(inst, vo)
     networkScript.validate(inst, vo);
     powerScript.validate(inst, vo);
     securityScript.validate(inst, vo);
+    if(inst.project.includes("borderrouter"))
+    {
+        wfantundScript.validate(inst, vo);
+    }
     advancedScript.validate(inst, vo);
 }
 

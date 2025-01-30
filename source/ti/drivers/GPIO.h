@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2023, Texas Instruments Incorporated
+ * Copyright (c) 2015-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -266,8 +266,6 @@
      DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2 || \
      DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
     #include <ti/drivers/gpio/GPIOCC26XX.h>
-#elif (DeviceFamily_ID == DeviceFamily_ID_CC3220 || DeviceFamily_ID == DeviceFamily_ID_CC3200)
-    #include <ti/drivers/gpio/GPIOCC32XX.h>
 #elif (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0 || DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX)
     #include <ti/drivers/gpio/GPIOLPF3.h>
 #elif (DeviceFamily_PARENT == DeviceFamily_PARENT_CC35XX)
@@ -453,6 +451,16 @@ typedef uint32_t GPIO_PinConfig;
 #define GPIO_CFG_SHUTDOWN_WAKE_HIGH GPIO_CFG_SHUTDOWN_WAKE_HIGH_INTERNAL
 /*! @hideinitializer A low value will wake the device from shutdown */
 #define GPIO_CFG_SHUTDOWN_WAKE_LOW  GPIO_CFG_SHUTDOWN_WAKE_LOW_INTERNAL
+/** @} */
+
+/** @name GPIO_pinconfig macro preventing configuration
+ *  @brief Should be used if a pin is configured before the first GPIO_init()
+ *  call, and should not be overwritten
+ *  @{
+ */
+/*! @hideinitializer Prevent this GPIO from being configured
+ *   by the GPIO driver */
+#define GPIO_CFG_DO_NOT_CONFIG GPIO_CFG_DO_NOT_CONFIG_INTERNAL
 /** @} */
 
 /** @name GPIO_Mux configuration macros
@@ -657,8 +665,6 @@ extern void GPIO_getConfig(uint_least8_t index, GPIO_PinConfig *pinConfig);
  *  The default pin configuration is provided in the static GPIO_PinConfig
  *  array, defined by sysconfig or the board file at compile time. Also clears
  *  the callback and user argument.
- *
- *  This function is not supported on CC32XX devices.
  *
  *  @param      index       GPIO index
  */

@@ -3,8 +3,6 @@
         "files": [
             "+../mcuboot_blinky.syscfg -> mcuboot_blinky.syscfg",
             "+../../../../../../source/third_party/mcuboot/boot/ti/source/blinky_app/blinky.c -> blinky.c",
-            "+../../../../../../source/third_party/mcuboot/boot/ti/source/blinky_app/slate_test.c -> slate_test.c",
-            "+../../../../../../source/third_party/mcuboot/boot/ti/source/blinky_app/slate_test.h -> slate_test.h",
             "+../../../../../../source/third_party/mcuboot/boot/ti/source/blinky_app/main_nortos.c -> main_nortos.c",
             "+../../../../../../source/third_party/mcuboot/boot/ti/source/mcuboot_app/mcuboot_config/trace.c -> mcuboot_config/trace.c",
             "+../../../../../../source/third_party/mcuboot/boot/ti/source/mcuboot_app/mcuboot_config/trace.h -> mcuboot_config/trace.h",

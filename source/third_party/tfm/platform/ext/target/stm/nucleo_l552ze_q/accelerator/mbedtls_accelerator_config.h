@@ -24,22 +24,9 @@ extern "C" {
 #undef MBEDTLS_AES_DECRYPT_ALT
 
 /****************************************************************/
-/* Require built-in implementations based on PSA requirements */
-/****************************************************************/
-#if defined(MBEDTLS_PSA_CRYPTO_CONFIG)
-
-#ifdef PSA_WANT_ALG_SHA_1
-#define MBEDTLS_SHA1_ALT
-#endif /* PSA_WANT_ALG_SHA_1 */
-
-#ifdef PSA_WANT_ALG_SHA_256
-#define MBEDTLS_SHA256_ALT
-#endif /* PSA_WANT_ALG_SHA_256 */
-
-#else /* MBEDTLS_PSA_CRYPTO_CONFIG */
-/****************************************************************/
 /* Infer PSA requirements from Mbed TLS capabilities */
 /****************************************************************/
+#ifndef MBEDTLS_PSA_CRYPTO_CONFIG
 
 #ifdef MBEDTLS_SHA1_C
 #define MBEDTLS_SHA1_ALT

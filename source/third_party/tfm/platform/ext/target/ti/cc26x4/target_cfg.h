@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-200 Arm Limited. All rights reserved.
+ * Copyright (c) 2017-2021 Arm Limited
  * Copyright (c) 2023, Texas Instruments Incorporated. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -71,7 +71,7 @@ enum tfm_plat_err_t system_reset_cfg(void);
  *
  * \return Returns values as specified by the \ref tfm_plat_err_t
  */
-enum tfm_plat_err_t init_debug(void);
+FIH_RET_TYPE(enum tfm_plat_err_t) init_debug(void);
 
 /**
  * \brief Configures all external interrupts to target the

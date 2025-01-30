@@ -16,7 +16,7 @@ set(CMAKE_IMPORT_FILE_VERSION 1)
 set(_targetsDefined)
 set(_targetsNotDefined)
 set(_expectedTargets)
-foreach(_expectedTarget Drivers::drivers_cc13x1 Drivers::drivers_cc26x1)
+foreach(_expectedTarget Drivers::drivers_cc13x1 Drivers::drivers_cc13x1_log Drivers::drivers_cc26x1 Drivers::drivers_cc26x1_log)
   list(APPEND _expectedTargets ${_expectedTarget})
   if(NOT TARGET ${_expectedTarget})
     list(APPEND _targetsNotDefined ${_expectedTarget})
@@ -56,7 +56,15 @@ add_library(Drivers::drivers_cc13x1 STATIC IMPORTED)
 
 set_target_properties(Drivers::drivers_cc13x1 PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/source"
-  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:Tirtos7Generic::tirtos7>;Driverlib::cc13x1;TOOLCHAIN_ticlang_m4"
+  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:Tirtos7Generic::tirtos7>;Driverlib::cc13x1;TOOLCHAIN_ticlang_m4;TiUtils::json_m4"
+)
+
+# Create imported target Drivers::drivers_cc13x1_log
+add_library(Drivers::drivers_cc13x1_log STATIC IMPORTED)
+
+set_target_properties(Drivers::drivers_cc13x1_log PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/source"
+  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:Tirtos7Generic::tirtos7>;Driverlib::cc13x1;TOOLCHAIN_ticlang_m4;TiUtils::json_m4"
 )
 
 # Create imported target Drivers::drivers_cc26x1
@@ -64,7 +72,15 @@ add_library(Drivers::drivers_cc26x1 STATIC IMPORTED)
 
 set_target_properties(Drivers::drivers_cc26x1 PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/source"
-  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:Tirtos7Generic::tirtos7>;Driverlib::cc26x1;TOOLCHAIN_ticlang_m4"
+  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:Tirtos7Generic::tirtos7>;Driverlib::cc26x1;TOOLCHAIN_ticlang_m4;TiUtils::json_m4"
+)
+
+# Create imported target Drivers::drivers_cc26x1_log
+add_library(Drivers::drivers_cc26x1_log STATIC IMPORTED)
+
+set_target_properties(Drivers::drivers_cc26x1_log PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/source"
+  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:Tirtos7Generic::tirtos7>;Driverlib::cc26x1;TOOLCHAIN_ticlang_m4;TiUtils::json_m4"
 )
 
 if(CMAKE_VERSION VERSION_LESS 2.8.12)
@@ -103,7 +119,7 @@ unset(_IMPORT_CHECK_TARGETS)
 # Make sure the targets which have been exported in some other
 # export set exist.
 unset(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets)
-foreach(_target "Tirtos7Generic::tirtos7" "Driverlib::cc13x1" "Driverlib::cc26x1" )
+foreach(_target "Tirtos7Generic::tirtos7" "Driverlib::cc13x1" "TiUtils::json_m4" "Driverlib::cc26x1" )
   if(NOT TARGET "${_target}" )
     set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets "${${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets} ${_target}")
   endif()

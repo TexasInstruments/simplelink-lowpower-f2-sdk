@@ -2,6 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  *
  * Copyright (c) 2017 Linaro Limited
+ * Copyright (c) 2021-2023 Arm Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +18,7 @@
  */
 
 #include <bootutil/caps.h>
-#include "mcuboot_config/mcuboot_config.h"
+#include "mcuboot_config.h"
 
 uint32_t bootutil_get_caps(void)
 {
@@ -31,11 +32,11 @@ uint32_t bootutil_get_caps(void)
     res |= BOOTUTIL_CAP_RSA3072;
 #endif
 #endif
-#if defined(MCUBOOT_SIGN_EC)
-    res |= BOOTUTIL_CAP_ECDSA_P224;
-#endif
 #if defined(MCUBOOT_SIGN_EC256)
     res |= BOOTUTIL_CAP_ECDSA_P256;
+#endif
+#if defined(MCUBOOT_SIGN_EC384)
+    res |= BOOTUTIL_CAP_ECDSA_P384;
 #endif
 #if defined(MCUBOOT_SIGN_ED25519)
     res |= BOOTUTIL_CAP_ED25519;
@@ -67,6 +68,18 @@ uint32_t bootutil_get_caps(void)
 #endif
 #if defined(MCUBOOT_BOOTSTRAP)
     res |= BOOTUTIL_CAP_BOOTSTRAP;
+#endif
+#if defined(MCUBOOT_AES_256)
+    res |= BOOTUTIL_CAP_AES256;
+#endif
+#if defined(MCUBOOT_RAM_LOAD)
+    res |= BOOTUTIL_CAP_RAM_LOAD;
+#endif
+#if defined(MCUBOOT_DIRECT_XIP)
+    res |= BOOTUTIL_CAP_DIRECT_XIP;
+#endif
+#if defined(MCUBOOT_HW_ROLLBACK_PROT)
+    res |= BOOTUTIL_CAP_HW_ROLLBACK_PROT;
 #endif
 
     return res;

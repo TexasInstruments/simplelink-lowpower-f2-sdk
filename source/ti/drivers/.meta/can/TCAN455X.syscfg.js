@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2023-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,6 +45,11 @@ let logError = Common.logError;
  * FreeRTOS and TIRTOS7 default configurations.
  */
 const defaultTaskPriority = 5;
+
+/* The default task stack size is based on worst case usage which is currently
+ * dictated by FreeRTOS with GCC compiler. Size must be a word multiple.
+ */
+const defaultTaskStackSize = 664;
 
 /* get device ID */
 const deviceId = system.deviceData.deviceId;
@@ -92,7 +97,7 @@ let config = [
         name: "taskStackSize",
         displayName: "Task Stack Size",
         description: "Specifies the stack size for the interrupt handler task.",
-        default: 640
+        default: defaultTaskStackSize
     }
 ];
 

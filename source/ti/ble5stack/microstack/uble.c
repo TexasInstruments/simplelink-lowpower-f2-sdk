@@ -11,7 +11,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2012-2024, Texas Instruments Incorporated
+ Copyright (c) 2012-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,7 @@
 #include <driverlib/ioc.h>
 
 #include <ti/drivers/rf/RF.h>
+#include <string.h>
 
 #include <bcomdef.h>
 #include <ll_common.h>
@@ -109,34 +110,34 @@ void uble_processGAPMsg(ubleEvtMsg_t *pEvtMsg);
  */
 
 ubleParams_t ubleParams = {
-  UBLE_PARAM_DFLT_RFPRIORITY,             /* rfPriority */
-  UBLE_PARAM_DFLT_TXPOWER,                /* txPower */
+  .rfPriority                              = UBLE_PARAM_DFLT_RFPRIORITY,             /* rfPriority */
+  .txPower                                 = UBLE_PARAM_DFLT_TXPOWER,                /* txPower */
 #if defined(FEATURE_ADVERTISER)
-  UBLE_PARAM_DFLT_ADVINTERVAL,            /* advInterval */
-  UBLE_PARAM_DFLT_ADVCHANMAP,             /* advChanMap */
-  UBLE_PARAM_DFLT_ADVTYPE,                /* advType */
-  UBLE_PARAM_DFLT_TIMETOADV,              /* timeToAdv */
-  UBLE_PARAM_DFLT_ADVDATA,                /* advData */
+  .advInterval                             = UBLE_PARAM_DFLT_ADVINTERVAL,            /* advInterval */
+  .advChanMap                              = UBLE_PARAM_DFLT_ADVCHANMAP,             /* advChanMap */
+  .advType                                 = UBLE_PARAM_DFLT_ADVTYPE,                /* advType */
+  .timeToAdv                               = UBLE_PARAM_DFLT_TIMETOADV,              /* timeToAdv */
+  .advData[UBLE_MAX_ADVDATA_LEN]           = UBLE_PARAM_DFLT_ADVDATA,                /* advData */
   #if defined(FEATURE_SCAN_RESPONSE)
-  UBLE_PARAM_DFLT_SCANRSPDATA,            /* scanRspData */
-  UBLE_PARAM_DFLT_ADVFILTPOLICY,          /* advFiltPolicy */
+  uint8  scanRspData[UBLE_MAX_ADVDATA_LEN] = UBLE_PARAM_DFLT_SCANRSPDATA,            /* scanRspData */
+  uint8  advFltPolicy                      = UBLE_PARAM_DFLT_ADVFILTPOLICY,          /* advFiltPolicy */
   #endif /* FEATURE_SCAN_RESPONSE */
 #endif /* FEATURE_ADVERTISER */
 #if defined(FEATURE_SCANNER)
-  UBLE_PARAM_DFLT_SCANINTERVAL,           /* scanInterval */
-  UBLE_PARAM_DFLT_SCANWINDOW,             /* scanWindow */
-  UBLE_PARAM_DFLT_SCANCHAN,               /* scanChanMap */
-  UBLE_PARAM_DFLT_SCANTYPE,               /* scanType */
-  UBLE_PARAM_DFLT_FLTDUPLICATE,           /* fltDuplicate */
-  UBLE_PARAM_DFLT_SCANFLTPOLICY,          /* scanFltPolicy */
+  .scanInterval                            = UBLE_PARAM_DFLT_SCANINTERVAL,           /* scanInterval */
+  .scanWindow                              = UBLE_PARAM_DFLT_SCANWINDOW,             /* scanWindow */
+  .scanChanMap                             = UBLE_PARAM_DFLT_SCANCHAN,               /* scanChanMap */
+  .scanType                                = UBLE_PARAM_DFLT_SCANTYPE,               /* scanType */
+  .fltDuplicate                            = UBLE_PARAM_DFLT_FLTDUPLICATE,           /* fltDuplicate */
+  .scanFltPolicy                           = UBLE_PARAM_DFLT_SCANFLTPOLICY,          /* scanFltPolicy */
 #endif /* FEATURE_SCANNER */
 #if defined(FEATURE_MONITOR)
-  UBLE_PARAM_DFLT_MONITOR_HANDLE,         /* monitorHandle */
-  UBLE_PARAM_DFLT_MONITOR_CHAN,           /* monitorChan */
-  UBLE_PARAM_DFLT_MONITOR_DURATION,       /* monitorDuration */
-  UBLE_PARAM_DFLT_MONITOR_START_TIME,     /* startTime */
-  UBLE_PARAM_DFLT_MONITOR_ACCESS_ADDR,    /* access address */
-  UBLE_PARAM_DFLT_MONITOR_CRCINIT         /* crcInit */
+  .monitorHandle                           = UBLE_PARAM_DFLT_MONITOR_HANDLE,         /* monitorHandle */
+  .monitorChan                             = UBLE_PARAM_DFLT_MONITOR_CHAN,           /* monitorChan */
+  .monitorDuration                         = UBLE_PARAM_DFLT_MONITOR_DURATION,       /* monitorDuration */
+  .startTime                               = UBLE_PARAM_DFLT_MONITOR_START_TIME,     /* startTime */
+  .accessAddr                              = UBLE_PARAM_DFLT_MONITOR_ACCESS_ADDR,    /* access address */
+  .crcInit                                 = UBLE_PARAM_DFLT_MONITOR_CRCINIT,        /* crcInit */
 #endif /* FEATURE_MONITOR */
 };
 
@@ -205,7 +206,7 @@ const static ubParamLookup_t ubParamLookup[] = {
 static ublePostEvtProxyCB_t uble_postEvtProxy;
 
 /* Queue object used for internal messages */
-static struct port_queueObject_s *qEvtMsg;
+struct port_queueObject_s *qEvtMsg;
 
 /* Message processing functions of all modules.
    IMPORTANT NOTE: The order of the functions in the array should coincide with
@@ -334,14 +335,14 @@ bStatus_t uble_stackInit(ubleAddrType_t addrType, uint8 *pStaticAddr,
     return INVALIDPARAMETER;
   }
 
-  /* Initilaize Micro Link Layer */
+  /* Initialize Micro Link Layer */
   if (ull_init() != SUCCESS)
   {
     return FAILURE;
   }
 
   /* Setup the queue for SetParam messages */
-  qEvtMsg = port_queueCreate("qEvtMsg");
+  qEvtMsg = port_queueCreate("qEvtMsg", sizeof(ubleEvtMsg_t));
 
   return SUCCESS;
 }
@@ -567,7 +568,7 @@ bStatus_t uble_setParameter(uint8 param, uint8 len, void *pValue)
 
   if (ret == SUCCESS)
   {
-    /* copy desired value to the cooresponding location of the parameter list */
+    /* copy desired value to the corresponding location of the parameter list */
     memcpy((uint8*) &ubleParams + ubParamLookup[param].offset,
            pValue, len);
   }
@@ -836,25 +837,24 @@ bStatus_t uble_registerAntSwitchCB(ubleAntSwitchCB_t pfnAntSwitchCB)
  */
 void uble_processMsg(void)
 {
-  port_key_t key;
+  volatile port_key_t key;
 
-  while (!port_queueEmpty(qEvtMsg))
+  if (!port_queueEmpty(qEvtMsg))
   {
     // Dequeue event message
-    ubleEvtMsg_t *pEvtMsg;
+    ubleEvtMsg_t pEvtMsg;
 
-    port_queueGet(qEvtMsg, (port_queueElem_t **)&pEvtMsg);
+    port_queueGet(qEvtMsg, (char *)&pEvtMsg);
+    ubProcessMsg[pEvtMsg.hdr.dst](&pEvtMsg);
 
-    if (pEvtMsg != NULL)
+    if (pEvtMsg.msg)
     {
-      ubProcessMsg[pEvtMsg->hdr.dst](pEvtMsg);
-
       key = port_enterCS_HW();
       // Free record
 #ifdef USE_ICALL
-      ICall_free(pEvtMsg);
+      ICall_free(pEvtMsg.msg);
 #else
-      free(pEvtMsg);
+      free(pEvtMsg.msg);
 #endif /* USE_ICALL */
       port_exitCS_HW(key);
     }
@@ -905,36 +905,53 @@ void uble_getPublicAddr(uint8 *pPublicAddr)
  * @return  SUCCESS or bleMemAllocError
  */
 bStatus_t uble_buildAndPostEvt(ubleEvtDst_t evtDst, ubleEvt_t evt,
-                               ubleMsg_t* pMsg, uint16 len)
+                               uint8 *pMsg, uint16 len)
 {
-  port_key_t key;
-  ubleEvtMsg_t *pEvtMsg;
-
+  volatile port_key_t key;
+  volatile port_key_t key_s;
+  ubleEvtMsg_t evtMsg;
+  int status;
   // This function is entered in SW critical section.
   key = port_enterCS_HW();
-#if USE_ICALL
-  if ((pEvtMsg = ICall_malloc(sizeof(ubleEvtMsg_t) + len)) == NULL)
-#else /* USE_ICALL */
-  if ((pEvtMsg = (ubleEvtMsg_t*) malloc(sizeof(ubleEvtMsg_t) + len)) == NULL)
-#endif /* USE_ICALL */
+  key_s = port_enterCS_SW();
+  if ((len) && (NULL != pMsg))
   {
-    port_exitCS_HW(key);
-    return bleMemAllocError;
+#if USE_ICALL
+    evtMsg.msg = ICall_malloc(len));
+#else /* USE_ICALL */
+    evtMsg.msg = (uint8_t *)malloc(len);
+#endif /* USE_ICALL */
+    if (NULL != evtMsg.msg)
+    {
+      memcpy(evtMsg.msg, pMsg, len);
+    }
+    else
+    {
+      port_exitCS_HW(key);
+      port_exitCS_SW(key_s);
+      return bleMemAllocError;
+    }
+  }
+  else
+  {
+    evtMsg.msg = NULL;
+  }
+
+  evtMsg.hdr.dst = evtDst;
+  evtMsg.hdr.evt = evt;
+
+  status = port_queuePut(qEvtMsg, (char *)&evtMsg, sizeof(ubleEvtMsg_t));
+
+  if (SUCCESS != status && NULL != evtMsg.msg)
+  {
+     free(evtMsg.msg);
   }
   port_exitCS_HW(key);
+  port_exitCS_SW(key_s);
 
-  pEvtMsg->hdr.dst = evtDst;
-  pEvtMsg->hdr.evt = evt;
-
-  if (pMsg != NULL)
-  {
-    memcpy(&(pEvtMsg->msg), pMsg, len);
-  }
-
-  port_queuePut(qEvtMsg, (port_queueElem_t *)pEvtMsg, sizeof(ubleEvtMsg_t) + len);
   uble_postEvtProxy();
 
-  return SUCCESS;
+  return status;
 }
 
 /*-------------------------------------------------------------------
@@ -1000,6 +1017,5 @@ void bleLog_handleCyclicBuf(uint32_t len)
 }
 
 #endif //BLE_LOG
-
 /*********************************************************************
 *********************************************************************/

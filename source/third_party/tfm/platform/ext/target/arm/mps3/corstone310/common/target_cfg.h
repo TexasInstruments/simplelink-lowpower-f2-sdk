@@ -18,7 +18,6 @@
 #define __TARGET_CFG_H__
 
 #include <stdint.h>
-#include "tfm_plat_defs.h"
 
 #define TFM_DRIVER_STDIO    Driver_USART0
 #define NS_DRIVER_STDIO     Driver_USART0
@@ -27,7 +26,7 @@
  * \brief Defines the word offsets of Slave Peripheral Protection Controller
  *        Registers
  */
-enum ppc_bank_e
+typedef enum
 {
     PPC_SP_DO_NOT_CONFIGURE = -1,
     PPC_SP_MAIN0 = 0,
@@ -41,7 +40,7 @@ enum ppc_bank_e
     PPC_SP_PERIPH_EXP1 = 8,
     PPC_SP_PERIPH_EXP2 = 9,
     PPC_SP_PERIPH_EXP3 = 10,
-};
+} ppc_bank_t;
 
 /**
  * \brief Initialize the DMA devices and channels.

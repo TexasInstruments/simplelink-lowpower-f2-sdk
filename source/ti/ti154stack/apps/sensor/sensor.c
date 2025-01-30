@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -105,6 +105,8 @@
 #ifdef MAC_OVERRIDE_TX_DELAY
 #include "mac_api.h"
 #endif
+
+#include <ti/log/Log.h>
 
 /******************************************************************************
  Constants and definitions
@@ -670,6 +672,8 @@ void Sensor_init(void)
     // register the app callbacks
     DMMPolicy_registerAppCbs(dmmPolicyAppCBs, DMMPolicy_StackRole_154Sensor);
 #endif
+
+    Log_printf(LogModule_154_App, Log_INFO, "Sensor Initialized");
 }
 
 /*!

@@ -73,6 +73,11 @@ for (let i in clusters) {
       }
     }
   }
+
+  if (tempServerAttributeOptions.length == 0) {
+    mcmaServerAlwaysHidden.push(cluster._id + "mcmaServer");
+    tempServerAttributeOptions.push({name: "dummy", displayName: "dummy"});
+  }
   mcmaModule.config.push({
     name: cluster._id + "mcmaServer",
     displayName: cluster._name + " Server Attributes",
@@ -85,7 +90,6 @@ for (let i in clusters) {
     onChange: bdbScript.bdbOnChange
   })
   mcmaServerDropDowns.push(cluster._id + "mcmaServer");
-  if (tempServerAttributeOptions.length == 0) { mcmaServerAlwaysHidden.push(cluster._id + "mcmaServer"); }
 
   let tempClientAttributeDefault = [];
   let tempClientAttributeOptions = [];
@@ -97,6 +101,11 @@ for (let i in clusters) {
         tempClientAttributeOptions.push({name: attribute._id, displayName: attribute._name});
       }
     }
+  }
+
+  if (tempClientAttributeOptions.length == 0) {
+    mcmaClientAlwaysHidden.push(cluster._id + "mcmaClient");
+    tempClientAttributeOptions.push({name: "dummy", displayName: "dummy"});
   }
   mcmaModule.config.push({
     name: cluster._id + "mcmaClient",
@@ -110,7 +119,6 @@ for (let i in clusters) {
     onChange: bdbScript.bdbOnChange
   })
   mcmaClientDropDowns.push(cluster._id + "mcmaClient");
-  if (tempClientAttributeOptions.length == 0) { mcmaClientAlwaysHidden.push(cluster._id + "mcmaClient"); }
 }
 
 /* Function to handle changes in the mandatory server clusters */

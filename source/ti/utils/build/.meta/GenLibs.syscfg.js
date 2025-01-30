@@ -410,7 +410,6 @@ function getDeviceIsa(devId = null)
     let isa = "";
 
     switch (true) {
-        case /CC32/.test(devId):
         case /CC(?:13|26).1/.test(devId):
             isa = "m4";
             break;

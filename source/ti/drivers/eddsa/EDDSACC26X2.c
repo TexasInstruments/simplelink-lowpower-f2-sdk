@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Texas Instruments Incorporated
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@
 /*
  *  ======== EDDSACC26X2.c ========
  *
- *  This file contains the CC26X2 implementation of EDDSA
+ *  This file contains the CC26X2 implementation of EdDSA
  *
  */
 
@@ -71,6 +71,34 @@
 #include <ti/drivers/dpl/SwiP.h>
 #include <ti/drivers/dpl/SemaphoreP.h>
 
+#if (ENABLE_KEY_STORAGE == 1)
+    #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_helpers.h>
+    #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_init.h>
+    #if (TFM_ENABLED == 1)
+        #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_s.h>
+    #endif
+
+    /*
+     * Since EDDSA driver only supports Curve 25519 curves on CC26X2
+     * Max key sizes 256b private keys,
+     * 256b for public keys as montgomery keys are all in little-endian
+     */
+    #define EDDSA_MAX_KEYSTORE_PUBLIC_KEY_SIZE  32
+    #define EDDSA_MAX_KEYSTORE_PRIVATE_KEY_SIZE 32
+
+uint8_t EDDSACC26X2_keyStorePrivateKeyMaterial[EDDSA_MAX_KEYSTORE_PRIVATE_KEY_SIZE];
+uint8_t EDDSACC26X2_keyStorePublicKeyMaterial[EDDSA_MAX_KEYSTORE_PUBLIC_KEY_SIZE];
+#endif
+
+/* Operations types supported by EDDSACC26X2 driver */
+typedef enum
+{
+    EDDSACC26X2_OPTYPE_INVALID = 0,
+    EDDSACC26X2_OPTYPE_SIGN    = 1,
+    EDDSACC26X2_OPTYPE_VERIFY  = 2,
+    EDDSACC26X2_OPTYPE_DERIVE  = 3
+} EDDSACC26X2_OperationType;
+
 /* Octet string format requires an extra byte at the start of the public key */
 #define OCTET_STRING_OFFSET 1
 
@@ -89,17 +117,21 @@
 
 /* Forward declarations */
 static void EDDSACC26X2_hwiFxn(uintptr_t arg0);
-
+#if (TFM_ENABLED == 0)
 static void EDDSACC26X2_internalCallbackFxn(EDDSA_Handle handle,
                                             int_fast16_t returnStatus,
                                             EDDSA_Operation operation,
                                             EDDSA_OperationType operationType);
+#endif
 static int_fast16_t EDDSACC26X2_waitForAccess(EDDSA_Handle handle);
 static int_fast16_t EDDSACC26X2_waitForResult(EDDSA_Handle handle);
+static int_fast16_t EDDSACC26X2_storePublicKey(EDDSA_Handle handle,
+                                               const uint8_t *xCoordinate,
+                                               const uint8_t *yCoordinate);
 static int_fast16_t EDDSACC26X2_encodePublicKey(EDDSA_Handle handle,
                                                 uint8_t *outputKey,
-                                                uint8_t *xCoordinate,
-                                                uint8_t *yCoordinate);
+                                                const uint8_t *xCoordinate,
+                                                const uint8_t *yCoordinate);
 static uint32_t EDDSACC26X2_runWeiToEdFSM(EDDSA_Handle handle);
 static int_fast16_t EDDSACC26X2_runGeneratePublicKeyFSM(EDDSA_Handle handle);
 static int_fast16_t EDDSACC26X2_runSignFSM(EDDSA_Handle handle);
@@ -108,6 +140,10 @@ static int_fast16_t EDDSACC26X2_convertReturnValue(uint32_t pkaResult);
 
 /* Extern globals */
 extern const EDDSA_Params EDDSA_defaultParams;
+#if (TFM_ENABLED == 1)
+extern const ECCParams_CurveParams ECCParams_s_Ed25519;
+extern const ECCParams_CurveParams ECCParams_s_Wei25519;
+#endif
 
 /* Static globals */
 static bool EDDSACC26X2_isInitialized = false;
@@ -119,6 +155,9 @@ static uint32_t EDDSACC26X2_scratchBuffer0Size = SCRATCH_BUFFER_SIZE;
 static uint32_t EDDSACC26X2_scratchBuffer1Size = SCRATCH_BUFFER_SIZE;
 static uint32_t EDDSACC26X2_scratchBuffer2Size = SCRATCH_BUFFER_SIZE;
 static uint32_t EDDSACC26X2_scratchBuffer3Size = SCRATCH_BUFFER_SIZE;
+
+static const ECCParams_CurveParams *curveEd25519;
+static const ECCParams_CurveParams *curveWei25519;
 
 /* Temporary constant for 1 */
 const uint8_t EDDSACC26X2_one[32] = {0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -155,6 +194,7 @@ const uint8_t EDDSACC26X2_decodeConst2[32] = {0xb0, 0xa0, 0x0e, 0x4a, 0x27, 0x1b
                                               0xad, 0x06, 0x18, 0x43, 0x2f, 0xa7, 0xd7, 0xfb, 0x3d, 0x99, 0x00,
                                               0x4d, 0x2b, 0x0b, 0xdf, 0xc1, 0x4f, 0x80, 0x24, 0x83, 0x2b};
 
+#if (TFM_ENABLED == 0)
 /*
  *  ======== EDDSACC26X2_internalCallbackFxn ========
  */
@@ -178,6 +218,7 @@ static void EDDSACC26X2_internalCallbackFxn(EDDSA_Handle handle,
         PKAResourceCC26XX_pollingFlag = 1;
     }
 }
+#endif
 
 /*
  *  ======== EDDSACC26X2_hwiFxn ========
@@ -296,6 +337,162 @@ static void EDDSACC26X2_hwiFxn(uintptr_t arg0)
     }
 }
 
+#if (ENABLE_KEY_STORAGE == 1)
+/*
+ *  ======== EDDSA_getKeyStoreKey ========
+ */
+static KeyStore_PSA_KeyUsage EDDSA_getKeyStoreUsage(EDDSACC26X2_OperationType opType)
+{
+    KeyStore_PSA_KeyUsage usage = EDDSACC26X2_OPTYPE_INVALID;
+
+    switch (opType)
+    {
+        case EDDSACC26X2_OPTYPE_SIGN:
+            usage = KEYSTORE_PSA_KEY_USAGE_SIGN_MESSAGE;
+            break;
+        case EDDSACC26X2_OPTYPE_VERIFY:
+            usage = KEYSTORE_PSA_KEY_USAGE_VERIFY_MESSAGE;
+            break;
+        case EDDSACC26X2_OPTYPE_DERIVE:
+            usage = KEYSTORE_PSA_KEY_USAGE_DERIVE;
+            break;
+        default:
+            usage = EDDSACC26X2_OPTYPE_INVALID;
+            break;
+    }
+
+    return usage;
+}
+#endif
+
+/*
+ *  ======== EDDSA_getPrivateKey ========
+ */
+static int_fast16_t EDDSA_getPrivateKey(const CryptoKey *privateKey,
+                                        uint8_t **privateKeyMaterial,
+                                        size_t *privateKeyLength,
+                                        EDDSACC26X2_OperationType opType)
+{
+    int_fast16_t status;
+
+#if (ENABLE_KEY_STORAGE == 1)
+    int_fast16_t keyStoreStatus;
+    KeyStore_PSA_KeyFileId keyID;
+    KeyStore_PSA_KeyUsage usage;
+#endif
+    if (privateKey->encoding == CryptoKey_PLAINTEXT)
+    {
+        *privateKeyMaterial = privateKey->u.plaintext.keyMaterial;
+        *privateKeyLength   = privateKey->u.plaintext.keyLength;
+        status              = EDDSA_STATUS_SUCCESS;
+    }
+#if (ENABLE_KEY_STORAGE == 1)
+    else if (privateKey->encoding == CryptoKey_KEYSTORE)
+    {
+        /* Since this is a pure EDDSA, there is no pre-hashing. So, the keys
+         * can only be used for signing/verifying a message and not a hash.
+         * The private key can also be used to derive public key for EDDSA operations.
+         */
+        usage = EDDSA_getKeyStoreUsage(opType);
+        if (usage == EDDSACC26X2_OPTYPE_INVALID)
+        {
+            return EDDSA_STATUS_ERROR;
+        }
+
+        memset(EDDSACC26X2_keyStorePrivateKeyMaterial, 0, sizeof(EDDSACC26X2_keyStorePrivateKeyMaterial));
+
+        GET_KEY_ID(keyID, privateKey->u.keyStore.keyID);
+
+        /* Obtain the private key from keystore */
+        keyStoreStatus = KeyStore_PSA_getKey(keyID,
+                                             EDDSACC26X2_keyStorePrivateKeyMaterial,
+                                             sizeof(EDDSACC26X2_keyStorePrivateKeyMaterial),
+                                             privateKeyLength,
+                                             KEYSTORE_PSA_ALG_PURE_EDDSA,
+                                             usage);
+        if ((keyStoreStatus != KEYSTORE_PSA_STATUS_SUCCESS) || (*privateKeyLength != privateKey->u.keyStore.keyLength))
+        {
+            status = EDDSA_STATUS_KEYSTORE_ERROR;
+        }
+        else
+        {
+            *privateKeyMaterial = EDDSACC26X2_keyStorePrivateKeyMaterial;
+            status              = EDDSA_STATUS_SUCCESS;
+        }
+    }
+#endif
+    else
+    {
+        status = EDDSA_STATUS_ERROR;
+    }
+
+    return status;
+}
+
+/*
+ *  ======== EDDSA_getPublicKey ========
+ */
+static int_fast16_t EDDSA_getPublicKey(const CryptoKey *publicKey,
+                                       uint8_t **publicKeyMaterial,
+                                       size_t *publicKeyLength,
+                                       EDDSACC26X2_OperationType opType)
+{
+    int_fast16_t status;
+
+#if (ENABLE_KEY_STORAGE == 1)
+    int_fast16_t keyStoreStatus;
+    KeyStore_PSA_KeyFileId keyID;
+    KeyStore_PSA_KeyUsage usage;
+#endif
+    if (publicKey->encoding == CryptoKey_PLAINTEXT)
+    {
+        *publicKeyMaterial = publicKey->u.plaintext.keyMaterial;
+        *publicKeyLength   = publicKey->u.plaintext.keyLength;
+        status             = EDDSA_STATUS_SUCCESS;
+    }
+#if (ENABLE_KEY_STORAGE == 1)
+    else if (publicKey->encoding == CryptoKey_KEYSTORE)
+    {
+        /* Since this is a pure EDDSA, there is no pre-hashing. So, the keys
+         * can only be used for signing/verifying a message and not a hash.
+         * The private key can also be used to derive public key for EDDSA operations.
+         */
+        usage = EDDSA_getKeyStoreUsage(opType);
+        if (usage == EDDSACC26X2_OPTYPE_INVALID)
+        {
+            return EDDSA_STATUS_ERROR;
+        }
+
+        memset(EDDSACC26X2_keyStorePublicKeyMaterial, 0, sizeof(EDDSACC26X2_keyStorePublicKeyMaterial));
+
+        GET_KEY_ID(keyID, publicKey->u.keyStore.keyID);
+
+        /* Obtain the public key from keystore */
+        keyStoreStatus = KeyStore_PSA_getKey(keyID,
+                                             EDDSACC26X2_keyStorePublicKeyMaterial,
+                                             sizeof(EDDSACC26X2_keyStorePublicKeyMaterial),
+                                             publicKeyLength,
+                                             KEYSTORE_PSA_ALG_PURE_EDDSA,
+                                             usage);
+        if (keyStoreStatus != KEYSTORE_PSA_STATUS_SUCCESS || (*publicKeyLength != publicKey->u.keyStore.keyLength))
+        {
+            status = EDDSA_STATUS_KEYSTORE_ERROR;
+        }
+        else
+        {
+            *publicKeyMaterial = EDDSACC26X2_keyStorePublicKeyMaterial;
+            status             = EDDSA_STATUS_SUCCESS;
+        }
+    }
+#endif
+    else
+    {
+        status = EDDSA_STATUS_ERROR;
+    }
+
+    return status;
+}
+
 /*
  *  ======== EDDSACC26X2_sha2Callback ========
  */
@@ -325,16 +522,100 @@ void EDDSACC26X2_sha2Callback(SHA2_Handle handle, int_fast16_t returnValue)
     }
 }
 
+#if (ENABLE_KEY_STORAGE == 1)
+
+/*
+ *  ======== EDDSACC26X2_importSecureKey ========
+ */
+static int_fast16_t EDDSACC26X2_importSecureKey(CryptoKey *key, const uint8_t *keyingMaterial)
+{
+    KeyStore_PSA_KeyFileId keyID;
+    int_fast16_t keyStoreResult;
+    int_fast16_t status = EDDSA_STATUS_KEYSTORE_ERROR;
+    KeyStore_PSA_KeyAttributes *attributesPtr;
+
+    /* Copy key identifier from CryptoKey */
+    GET_KEY_ID(keyID, key->u.keyStore.keyID);
+
+    #if (TFM_ENABLED == 0)
+    attributesPtr = (KeyStore_PSA_KeyAttributes *)key->u.keyStore.keyAttributes;
+    #else
+    KeyStore_PSA_KeyAttributes attributes = KEYSTORE_PSA_KEY_ATTRIBUTES_INIT;
+    attributesPtr                         = &attributes;
+    keyStoreResult = KeyStore_s_copyKeyAttributesFromClient((struct psa_client_key_attributes_s *)
+                                                                key->u.keyStore.keyAttributes,
+                                                            KEYSTORE_PSA_DEFAULT_OWNER,
+                                                            attributesPtr);
+    #endif
+    keyStoreResult = KeyStore_PSA_importKey(attributesPtr,
+                                            (uint8_t *)keyingMaterial,
+                                            key->u.keyStore.keyLength,
+                                            &keyID);
+
+    if (keyStoreResult == KEYSTORE_PSA_STATUS_SUCCESS)
+    {
+        KeyStore_PSA_initKey(key, keyID, key->u.keyStore.keyLength, attributesPtr);
+        status = EDDSA_STATUS_SUCCESS;
+    }
+
+    return status;
+}
+#endif
+
+/*
+ *  ======== EDDSACC26X2_storePublicKey ========
+ */
+static int_fast16_t EDDSACC26X2_storePublicKey(EDDSA_Handle handle,
+                                               const uint8_t *xCoordinate,
+                                               const uint8_t *yCoordinate)
+{
+#if (ENABLE_KEY_STORAGE == 1)
+    uint8_t EDDSACC26X2_keyStorePublicKeyMaterial[EDDSA_MAX_KEYSTORE_PUBLIC_KEY_SIZE];
+#endif
+    EDDSACC26X2_Object *object = handle->object;
+    int_fast16_t status        = EDDSA_STATUS_ERROR;
+
+    if (object->operation.generatePublicKey->myPublicKey->encoding == CryptoKey_BLANK_PLAINTEXT)
+    {
+        status = EDDSACC26X2_encodePublicKey(handle,
+                                             object->operation.generatePublicKey->myPublicKey->u.plaintext.keyMaterial,
+                                             xCoordinate,
+                                             yCoordinate);
+
+        /* Mark the public key CryptoKey as non-empty */
+        object->operation.generatePublicKey->myPublicKey->encoding = CryptoKey_PLAINTEXT;
+    }
+#if (ENABLE_KEY_STORAGE == 1)
+    else if (object->operation.generatePublicKey->myPublicKey->encoding == CryptoKey_BLANK_KEYSTORE)
+    {
+        /* EDDSACC26X2_encodePublicKey always returns success */
+        (void)EDDSACC26X2_encodePublicKey(handle, EDDSACC26X2_keyStorePublicKeyMaterial, xCoordinate, yCoordinate);
+
+        status = EDDSACC26X2_importSecureKey(object->operation.generatePublicKey->myPublicKey,
+                                             (const uint8_t *)EDDSACC26X2_keyStorePublicKeyMaterial);
+    }
+#endif
+    else
+    {
+        status = EDDSA_STATUS_ERROR;
+    }
+
+    return status;
+}
+
+/*
+ *  ======== EDDSACC26X2_encodePublicKey ========
+ */
 static int_fast16_t EDDSACC26X2_encodePublicKey(EDDSA_Handle handle,
                                                 uint8_t *outputKey,
-                                                uint8_t *xCoordinate,
-                                                uint8_t *yCoordinate)
+                                                const uint8_t *xCoordinate,
+                                                const uint8_t *yCoordinate)
 {
     /*
      * Copy the y-coordinate to the buffer. The input and output
      * both are little endian.
      */
-    memcpy(outputKey, yCoordinate, ECCParams_Ed25519.length);
+    memcpy(outputKey, yCoordinate, curveEd25519->length);
 
     /*
      * If the least significant bit of the x-coordinate is 0x1, then we set
@@ -366,9 +647,9 @@ static uint32_t EDDSACC26X2_runWeiToEdFSM(EDDSA_Handle handle)
              * stay positive
              */
             PKABigNumAddStart(SCRATCH_PUBLIC_X,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->length,
                               EDDSACC26X2_isoConst3,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
@@ -381,9 +662,9 @@ static uint32_t EDDSACC26X2_runWeiToEdFSM(EDDSA_Handle handle)
         case EDDSACC26X2_SUBFSM_MONT_TO_ED_ADD_ONE:
             /* Compute u - X25519.A/3 + 1 */
             PKABigNumAddStart(SCRATCH_PUBLIC_X,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->length,
                               EDDSACC26X2_one,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
@@ -396,9 +677,9 @@ static uint32_t EDDSACC26X2_runWeiToEdFSM(EDDSA_Handle handle)
         case EDDSACC26X2_SUBFSM_MONT_TO_ED_MULT_V:
             /* Compute (v * (u - X25519.A/3 + 1)) */
             PKABigNumMultiplyStart(SCRATCH_PUBLIC_Y,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    SCRATCH_BUFFER_0,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    &EDDSACC26X2_resultAddress);
 
             break;
@@ -412,8 +693,8 @@ static uint32_t EDDSACC26X2_runWeiToEdFSM(EDDSA_Handle handle)
             /* Compute (v * (u - X25519.A/3 + 1)) mod p */
             PKABigNumModStart(SCRATCH_BUFFER_1,
                               EDDSACC26X2_scratchBuffer1Size,
-                              ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->prime,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
@@ -425,9 +706,9 @@ static uint32_t EDDSACC26X2_runWeiToEdFSM(EDDSA_Handle handle)
         case EDDSACC26X2_SUBFSM_MONT_TO_ED_INVERSION:
             /* Compute (v * (u - X25519.A/3 + 1))^-1 */
             PKABigNumInvModStart(SCRATCH_BUFFER_1,
-                                 ECCParams_Ed25519.length,
-                                 ECCParams_Ed25519.prime,
-                                 ECCParams_Ed25519.length,
+                                 curveEd25519->length,
+                                 curveEd25519->prime,
+                                 curveEd25519->length,
                                  &EDDSACC26X2_resultAddress);
 
             break;
@@ -440,9 +721,9 @@ static uint32_t EDDSACC26X2_runWeiToEdFSM(EDDSA_Handle handle)
         case EDDSACC26X2_SUBFSM_MONT_TO_ED_MULT_INVERSE1:
             /* Compute (v)^-1 */
             PKABigNumMultiplyStart(SCRATCH_BUFFER_1,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    SCRATCH_BUFFER_0,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    &EDDSACC26X2_resultAddress);
 
             break;
@@ -455,9 +736,9 @@ static uint32_t EDDSACC26X2_runWeiToEdFSM(EDDSA_Handle handle)
         case EDDSACC26X2_SUBFSM_MONT_TO_ED_MULT_INVERSE2:
             /* Compute (u - X25519.A/3 + 1)^-1 */
             PKABigNumMultiplyStart(SCRATCH_BUFFER_1,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    SCRATCH_PUBLIC_Y,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    &EDDSACC26X2_resultAddress);
 
             break;
@@ -473,9 +754,9 @@ static uint32_t EDDSACC26X2_runWeiToEdFSM(EDDSA_Handle handle)
              * u - X25519.A/3 + (p - 1)
              */
             PKABigNumAddStart(SCRATCH_PUBLIC_X,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->length,
                               EDDSACC26X2_negOne,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
@@ -489,22 +770,22 @@ static uint32_t EDDSACC26X2_runWeiToEdFSM(EDDSA_Handle handle)
             /* Compute x mod p */
             PKABigNumModStart(SCRATCH_BUFFER_0,
                               EDDSACC26X2_scratchBuffer0Size,
-                              ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->prime,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
 
         case EDDSACC26X2_SUBFSM_MONT_TO_ED_MOD_SUB_RESULT:
             EDDSACC26X2_scratchPublicXSize = SCRATCH_KEY_SIZE;
-            return (PKABigNumModGetResult(SCRATCH_BUFFER_0, ECCParams_Ed25519.length, EDDSACC26X2_resultAddress));
+            return (PKABigNumModGetResult(SCRATCH_BUFFER_0, curveEd25519->length, EDDSACC26X2_resultAddress));
 
         case EDDSACC26X2_SUBFSM_MONT_TO_ED_MULT_RETRIEVE_Y:
             /* Compute y = (u - X25519.A/3 - 1) * (u - X25519.A/3 + 1)^-1 */
             PKABigNumMultiplyStart(SCRATCH_BUFFER_0,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    SCRATCH_BUFFER_1,
-                                   2 * ECCParams_Ed25519.length,
+                                   2 * curveEd25519->length,
                                    &EDDSACC26X2_resultAddress);
 
             break;
@@ -518,23 +799,23 @@ static uint32_t EDDSACC26X2_runWeiToEdFSM(EDDSA_Handle handle)
             /* Compute y mod p */
             PKABigNumModStart(SCRATCH_BUFFER_0,
                               EDDSACC26X2_scratchBuffer0Size,
-                              ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->prime,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
 
         case EDDSACC26X2_SUBFSM_MONT_TO_ED_MOD_Y_RESULT:
             return (PKABigNumModGetResult(object->EDDSACC26X2_GlobalWorkspace.yResult,
-                                          ECCParams_Ed25519.length,
+                                          curveEd25519->length,
                                           EDDSACC26X2_resultAddress));
 
         case EDDSACC26X2_SUBFSM_MONT_TO_ED_U_MULT_ISO_CONST:
             /* Compute sqrt(-486664) * (u - X25519.A/3) */
             PKABigNumMultiplyStart(EDDSACC26X2_isoConst1,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    SCRATCH_PUBLIC_X,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    &EDDSACC26X2_resultAddress);
 
             break;
@@ -547,9 +828,9 @@ static uint32_t EDDSACC26X2_runWeiToEdFSM(EDDSA_Handle handle)
         case EDDSACC26X2_SUBFSM_MONT_TO_ED_MULT_V_INVERSE:
             /* Compute x = sqrt(-486664) * (u - X25519.A/3) * (v)^-1 */
             PKABigNumMultiplyStart(SCRATCH_BUFFER_0,
-                                   2 * ECCParams_Ed25519.length,
+                                   2 * curveEd25519->length,
                                    SCRATCH_BUFFER_2,
-                                   2 * ECCParams_Ed25519.length,
+                                   2 * curveEd25519->length,
                                    &EDDSACC26X2_resultAddress);
 
             break;
@@ -563,8 +844,8 @@ static uint32_t EDDSACC26X2_runWeiToEdFSM(EDDSA_Handle handle)
             /* Compute x mod p */
             PKABigNumModStart(SCRATCH_BUFFER_0,
                               EDDSACC26X2_scratchBuffer0Size,
-                              ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->prime,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
@@ -572,7 +853,7 @@ static uint32_t EDDSACC26X2_runWeiToEdFSM(EDDSA_Handle handle)
         case EDDSACC26X2_SUBFSM_MONT_TO_ED_MOD_X_RESULT:
             EDDSACC26X2_scratchPublicXSize = SCRATCH_KEY_SIZE;
             return (PKABigNumModGetResult(object->EDDSACC26X2_GlobalWorkspace.xResult,
-                                          ECCParams_Ed25519.length,
+                                          curveEd25519->length,
                                           EDDSACC26X2_resultAddress));
 
         default:
@@ -591,14 +872,29 @@ static int_fast16_t EDDSACC26X2_runGeneratePublicKeyFSM(EDDSA_Handle handle)
 {
     EDDSACC26X2_Object *object = handle->object;
     uint32_t pkaResult;
+    uint8_t *privateKeyMaterial;
+    size_t privateKeyLength;
+    int_fast16_t status;
 
     switch (object->fsmState)
     {
         case EDDSACC26X2_FSM_GEN_PUB_KEY_HASH_PRIVATE_KEY:
+
+            /* Obtain the private key material */
+            status = EDDSA_getPrivateKey(object->operation.generatePublicKey->myPrivateKey,
+                                         &privateKeyMaterial,
+                                         &privateKeyLength,
+                                         EDDSACC26X2_OPTYPE_DERIVE);
+
+            if (status != EDDSA_STATUS_SUCCESS)
+            {
+                return status;
+            }
+
             /* Hash and prune the private key to generate the public key */
             SHA2_hashData(object->sha2Handle,
-                          object->operation.generatePublicKey->myPrivateKey->u.plaintext.keyMaterial,
-                          ECCParams_Ed25519.length,
+                          privateKeyMaterial,
+                          privateKeyLength,
                           object->EDDSACC26X2_GlobalWorkspace.digestResult);
 
             return (EDDSACC26X2_STATUS_FSM_RUN_PKA_OP);
@@ -622,19 +918,19 @@ static int_fast16_t EDDSACC26X2_runGeneratePublicKeyFSM(EDDSA_Handle handle)
              */
             CryptoUtils_copyPad(object->EDDSACC26X2_GlobalWorkspace.digestResult,
                                 SCRATCH_PRIVATE_KEY,
-                                ECCParams_Ed25519.length);
+                                curveEd25519->length);
 
             /*
              * Perform the point multiplication A = s*B to generate the public
              * key point in short Weierstrass form
              */
             PKAEccMultiplyStart((uint8_t *)SCRATCH_PRIVATE_KEY,
-                                ECCParams_Wei25519.generatorX,
-                                ECCParams_Wei25519.generatorY,
-                                ECCParams_Wei25519.prime,
-                                ECCParams_Wei25519.a,
-                                ECCParams_Wei25519.b,
-                                ECCParams_Wei25519.length,
+                                curveWei25519->generatorX,
+                                curveWei25519->generatorY,
+                                curveWei25519->prime,
+                                curveWei25519->a,
+                                curveWei25519->b,
+                                curveWei25519->length,
                                 &EDDSACC26X2_resultAddress);
             break;
 
@@ -643,7 +939,7 @@ static int_fast16_t EDDSACC26X2_runGeneratePublicKeyFSM(EDDSA_Handle handle)
             pkaResult = PKAEccMultiplyGetResult(SCRATCH_PUBLIC_X,
                                                 SCRATCH_PUBLIC_Y,
                                                 EDDSACC26X2_resultAddress,
-                                                ECCParams_Ed25519.length);
+                                                curveEd25519->length);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
 
@@ -666,15 +962,11 @@ static int_fast16_t EDDSACC26X2_runGeneratePublicKeyFSM(EDDSA_Handle handle)
 
         case EDDSACC26X2_FSM_GEN_PUB_KEY_ENCODE_PUBLIC_KEY:
             /* Encode the public key to the output */
-            EDDSACC26X2_encodePublicKey(handle,
-                                        object->operation.generatePublicKey->myPublicKey->u.plaintext.keyMaterial,
-                                        object->EDDSACC26X2_GlobalWorkspace.xResult,
-                                        object->EDDSACC26X2_GlobalWorkspace.yResult);
+            status = EDDSACC26X2_storePublicKey(handle,
+                                                (const uint8_t *)object->EDDSACC26X2_GlobalWorkspace.xResult,
+                                                (const uint8_t *)object->EDDSACC26X2_GlobalWorkspace.yResult);
 
-            /* Mark the public key CryptoKey as non-empty */
-            object->operation.generatePublicKey->myPublicKey->encoding = CryptoKey_PLAINTEXT;
-
-            return (EDDSA_STATUS_SUCCESS);
+            return (status);
 
         default:
             return (EDDSA_STATUS_ERROR);
@@ -694,15 +986,32 @@ static int_fast16_t EDDSACC26X2_runSignFSM(EDDSA_Handle handle)
 {
     EDDSACC26X2_Object *object = handle->object;
     uint32_t pkaResult;
+    uint8_t *privateKeyMaterial;
+    size_t privateKeyLength;
+    uint8_t *publicKeyMaterial;
+    size_t publicKeyLength;
+    int_fast16_t status;
 
     switch (object->fsmState)
     {
 
         case EDDSACC26X2_FSM_SIGN1_HASH_PRIVATE_KEY:
+
+            /* Obtain the private key material */
+            status = EDDSA_getPrivateKey(object->operation.sign->myPrivateKey,
+                                         &privateKeyMaterial,
+                                         &privateKeyLength,
+                                         EDDSACC26X2_OPTYPE_SIGN);
+
+            if (status != EDDSA_STATUS_SUCCESS)
+            {
+                return status;
+            }
+
             /* Hash and prune the private key to sign the message */
             SHA2_hashData(object->sha2Handle,
-                          object->operation.sign->myPrivateKey->u.plaintext.keyMaterial,
-                          ECCParams_Ed25519.length,
+                          privateKeyMaterial,
+                          privateKeyLength,
                           object->EDDSACC26X2_GlobalWorkspace.digestResult);
 
             return (EDDSACC26X2_STATUS_FSM_RUN_PKA_OP);
@@ -716,7 +1025,7 @@ static int_fast16_t EDDSACC26X2_runSignFSM(EDDSA_Handle handle)
              */
             SHA2_addData(object->sha2Handle,
                          &object->EDDSACC26X2_GlobalWorkspace.digestResult[32],
-                         ECCParams_Ed25519.length);
+                         curveEd25519->length);
 
             return (EDDSACC26X2_STATUS_FSM_RUN_PKA_OP);
 
@@ -726,11 +1035,11 @@ static int_fast16_t EDDSACC26X2_runSignFSM(EDDSA_Handle handle)
              * Perform a first hash so that the following hashes are only in
              * preHashedMessage
              */
-            if ((ECCParams_Ed25519.length + object->operation.sign->preHashedMessageLength) > SHA2_BLOCK_SIZE_BYTES_512)
+            if ((curveEd25519->length + object->operation.sign->preHashedMessageLength) > SHA2_BLOCK_SIZE_BYTES_512)
             {
                 SHA2_addData(object->sha2Handle,
                              object->operation.sign->preHashedMessage,
-                             SHA2_BLOCK_SIZE_BYTES_512 - ECCParams_Ed25519.length);
+                             SHA2_BLOCK_SIZE_BYTES_512 - curveEd25519->length);
             }
             else
             {
@@ -746,13 +1055,13 @@ static int_fast16_t EDDSACC26X2_runSignFSM(EDDSA_Handle handle)
              * Perform an additional hash of the remaining preHashedMessage, if
              * needed.
              */
-            if ((ECCParams_Ed25519.length + object->operation.sign->preHashedMessageLength) > SHA2_BLOCK_SIZE_BYTES_512)
+            if ((curveEd25519->length + object->operation.sign->preHashedMessageLength) > SHA2_BLOCK_SIZE_BYTES_512)
             {
                 SHA2_addData(object->sha2Handle,
                              &object->operation.sign
-                                  ->preHashedMessage[SHA2_BLOCK_SIZE_BYTES_512 - ECCParams_Ed25519.length],
+                                  ->preHashedMessage[SHA2_BLOCK_SIZE_BYTES_512 - curveEd25519->length],
                              object->operation.sign->preHashedMessageLength -
-                                 (SHA2_BLOCK_SIZE_BYTES_512 - ECCParams_Ed25519.length));
+                                 (SHA2_BLOCK_SIZE_BYTES_512 - curveEd25519->length));
 
                 return (EDDSACC26X2_STATUS_FSM_RUN_PKA_OP);
             }
@@ -786,7 +1095,7 @@ static int_fast16_t EDDSACC26X2_runSignFSM(EDDSA_Handle handle)
              */
             CryptoUtils_copyPad(object->EDDSACC26X2_GlobalWorkspace.digestResult2,
                                 SCRATCH_PRIVATE_KEY,
-                                2 * ECCParams_Ed25519.length);
+                                2 * curveEd25519->length);
 
             /*
              * Compute r mod n. This is necessary to run the ECC point
@@ -794,9 +1103,9 @@ static int_fast16_t EDDSACC26X2_runSignFSM(EDDSA_Handle handle)
              * multiplication
              */
             PKABigNumModStart((uint8_t *)SCRATCH_PRIVATE_KEY,
-                              2 * ECCParams_Ed25519.length,
-                              ECCParams_Ed25519.order,
-                              ECCParams_Ed25519.length,
+                              2 * curveEd25519->length,
+                              curveEd25519->order,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
@@ -804,7 +1113,7 @@ static int_fast16_t EDDSACC26X2_runSignFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_SIGN2_MOD_SECRET_HASH_RESULT:
 
             pkaResult = PKABigNumModGetResult(object->EDDSACC26X2_GlobalWorkspace.secretScalar,
-                                              ECCParams_Ed25519.length,
+                                              curveEd25519->length,
                                               EDDSACC26X2_resultAddress);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
@@ -815,12 +1124,12 @@ static int_fast16_t EDDSACC26X2_runSignFSM(EDDSA_Handle handle)
              * key point in short Weierstrass form
              */
             PKAEccMultiplyStart(object->EDDSACC26X2_GlobalWorkspace.secretScalar,
-                                ECCParams_Wei25519.generatorX,
-                                ECCParams_Wei25519.generatorY,
-                                ECCParams_Wei25519.prime,
-                                ECCParams_Wei25519.a,
-                                ECCParams_Wei25519.b,
-                                ECCParams_Wei25519.length,
+                                curveWei25519->generatorX,
+                                curveWei25519->generatorY,
+                                curveWei25519->prime,
+                                curveWei25519->a,
+                                curveWei25519->b,
+                                curveWei25519->length,
                                 &EDDSACC26X2_resultAddress);
 
             break;
@@ -830,7 +1139,7 @@ static int_fast16_t EDDSACC26X2_runSignFSM(EDDSA_Handle handle)
             pkaResult = PKAEccMultiplyGetResult(SCRATCH_PUBLIC_X,
                                                 SCRATCH_PUBLIC_Y,
                                                 EDDSACC26X2_resultAddress,
-                                                ECCParams_Wei25519.length);
+                                                curveWei25519->length);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
 
@@ -855,8 +1164,8 @@ static int_fast16_t EDDSACC26X2_runSignFSM(EDDSA_Handle handle)
             /* Encode the public key to the output */
             EDDSACC26X2_encodePublicKey(handle,
                                         object->operation.sign->R,
-                                        object->EDDSACC26X2_GlobalWorkspace.xResult,
-                                        object->EDDSACC26X2_GlobalWorkspace.yResult);
+                                        (const uint8_t *)object->EDDSACC26X2_GlobalWorkspace.xResult,
+                                        (const uint8_t *)object->EDDSACC26X2_GlobalWorkspace.yResult);
 
             return (EDDSACC26X2_STATUS_FSM_RUN_FSM);
 
@@ -867,15 +1176,24 @@ static int_fast16_t EDDSACC26X2_runSignFSM(EDDSA_Handle handle)
              * public key A, and prehashed message PH(M)
              * H ( R || A || PH(M))
              */
-            SHA2_addData(object->sha2Handle, object->operation.sign->R, ECCParams_Ed25519.length);
+            SHA2_addData(object->sha2Handle, object->operation.sign->R, curveEd25519->length);
 
             return (EDDSACC26X2_STATUS_FSM_RUN_PKA_OP);
 
         case EDDSACC26X2_FSM_SIGN3_HASH_PUBLIC_KEY:
 
-            SHA2_addData(object->sha2Handle,
-                         object->operation.sign->myPublicKey->u.plaintext.keyMaterial,
-                         ECCParams_Ed25519.length);
+            /* Obtain the public key material */
+            status = EDDSA_getPublicKey(object->operation.sign->myPublicKey,
+                                        &publicKeyMaterial,
+                                        &publicKeyLength,
+                                        EDDSACC26X2_OPTYPE_SIGN);
+
+            if (status != EDDSA_STATUS_SUCCESS)
+            {
+                return status;
+            }
+
+            SHA2_addData(object->sha2Handle, publicKeyMaterial, publicKeyLength);
 
             return (EDDSACC26X2_STATUS_FSM_RUN_PKA_OP);
 
@@ -885,12 +1203,12 @@ static int_fast16_t EDDSACC26X2_runSignFSM(EDDSA_Handle handle)
              * Perform a first hash so that the following hashes are only in
              * preHashedMessage
              */
-            if (((2 * ECCParams_Ed25519.length) + object->operation.sign->preHashedMessageLength) >
+            if (((2 * curveEd25519->length) + object->operation.sign->preHashedMessageLength) >
                 SHA2_BLOCK_SIZE_BYTES_512)
             {
                 SHA2_addData(object->sha2Handle,
                              object->operation.sign->preHashedMessage,
-                             SHA2_BLOCK_SIZE_BYTES_512 - (2 * ECCParams_Ed25519.length));
+                             SHA2_BLOCK_SIZE_BYTES_512 - (2 * curveEd25519->length));
             }
             else
             {
@@ -907,14 +1225,14 @@ static int_fast16_t EDDSACC26X2_runSignFSM(EDDSA_Handle handle)
              * Perform an additional hash of the remaining preHashedMessage,
              * if needed.
              */
-            if (((2 * ECCParams_Ed25519.length) + object->operation.sign->preHashedMessageLength) >
+            if (((2 * curveEd25519->length) + object->operation.sign->preHashedMessageLength) >
                 SHA2_BLOCK_SIZE_BYTES_512)
             {
                 SHA2_addData(object->sha2Handle,
                              &object->operation.sign
-                                  ->preHashedMessage[SHA2_BLOCK_SIZE_BYTES_512 - (2 * ECCParams_Ed25519.length)],
+                                  ->preHashedMessage[SHA2_BLOCK_SIZE_BYTES_512 - (2 * curveEd25519->length)],
                              object->operation.sign->preHashedMessageLength -
-                                 (SHA2_BLOCK_SIZE_BYTES_512 - (2 * ECCParams_Ed25519.length)));
+                                 (SHA2_BLOCK_SIZE_BYTES_512 - (2 * curveEd25519->length)));
 
                 return (EDDSACC26X2_STATUS_FSM_RUN_PKA_OP);
             }
@@ -939,9 +1257,9 @@ static int_fast16_t EDDSACC26X2_runSignFSM(EDDSA_Handle handle)
              */
             /* Compute H(R || A || M) * s */
             PKABigNumMultiplyStart(object->EDDSACC26X2_GlobalWorkspace.digestResult2,
-                                   2 * ECCParams_Ed25519.length,
+                                   2 * curveEd25519->length,
                                    object->EDDSACC26X2_GlobalWorkspace.digestResult,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    &EDDSACC26X2_resultAddress);
 
             break;
@@ -958,9 +1276,9 @@ static int_fast16_t EDDSACC26X2_runSignFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_SIGN4_ADD_SECRET_HASH_TO_MULT:
             /* Compute S = r + H(R || A || M) * s */
             PKABigNumAddStart(SCRATCH_BUFFER_0,
-                              3 * ECCParams_Ed25519.length,
+                              3 * curveEd25519->length,
                               object->EDDSACC26X2_GlobalWorkspace.secretScalar,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
@@ -977,9 +1295,9 @@ static int_fast16_t EDDSACC26X2_runSignFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_SIGN4_MOD_S:
             /* Compute S mod n */
             PKABigNumModStart(SCRATCH_BUFFER_0,
-                              3 * ECCParams_Ed25519.length,
-                              ECCParams_Ed25519.order,
-                              ECCParams_Ed25519.length,
+                              3 * curveEd25519->length,
+                              curveEd25519->order,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
@@ -987,7 +1305,7 @@ static int_fast16_t EDDSACC26X2_runSignFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_SIGN4_MOD_S_RESULT:
 
             pkaResult = PKABigNumModGetResult(object->operation.sign->S,
-                                              ECCParams_Ed25519.length,
+                                              curveEd25519->length,
                                               EDDSACC26X2_resultAddress);
 
             if (pkaResult == PKA_STATUS_SUCCESS)
@@ -1016,6 +1334,9 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
 {
     EDDSACC26X2_Object *object = handle->object;
     uint32_t pkaResult;
+    uint8_t *publicKeyMaterial;
+    size_t publicKeyLength;
+    int_fast16_t status;
 
     switch (object->fsmState)
     {
@@ -1026,15 +1347,24 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
              * R, public key A, and prehashed message PH(M)
              * H ( R || A || PH(M))
              */
-            SHA2_addData(object->sha2Handle, object->operation.verify->R, ECCParams_Ed25519.length);
+            SHA2_addData(object->sha2Handle, object->operation.verify->R, curveEd25519->length);
 
             return (EDDSACC26X2_STATUS_FSM_RUN_PKA_OP);
 
         case EDDSACC26X2_FSM_VERIFY1_HASH_PUBLIC_KEY:
 
-            SHA2_addData(object->sha2Handle,
-                         object->operation.verify->theirPublicKey->u.plaintext.keyMaterial,
-                         ECCParams_Ed25519.length);
+            /* Obtain the public key material */
+            status = EDDSA_getPublicKey(object->operation.verify->theirPublicKey,
+                                        &publicKeyMaterial,
+                                        &publicKeyLength,
+                                        EDDSACC26X2_OPTYPE_VERIFY);
+
+            if (status != EDDSA_STATUS_SUCCESS)
+            {
+                return status;
+            }
+
+            SHA2_addData(object->sha2Handle, publicKeyMaterial, publicKeyLength);
 
             return (EDDSACC26X2_STATUS_FSM_RUN_PKA_OP);
 
@@ -1044,12 +1374,12 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
              * Perform a first hash so that the following hashes are only in
              * preHashedMessage
              */
-            if (((2 * ECCParams_Ed25519.length) + object->operation.verify->preHashedMessageLength) >
+            if (((2 * curveEd25519->length) + object->operation.verify->preHashedMessageLength) >
                 SHA2_BLOCK_SIZE_BYTES_512)
             {
                 SHA2_addData(object->sha2Handle,
                              object->operation.verify->preHashedMessage,
-                             SHA2_BLOCK_SIZE_BYTES_512 - (2 * ECCParams_Ed25519.length));
+                             SHA2_BLOCK_SIZE_BYTES_512 - (2 * curveEd25519->length));
             }
             else
             {
@@ -1066,14 +1396,14 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
              * Perform an additional hash of the remaining preHashedMessage,
              * if needed.
              */
-            if (((2 * ECCParams_Ed25519.length) + object->operation.verify->preHashedMessageLength) >
+            if (((2 * curveEd25519->length) + object->operation.verify->preHashedMessageLength) >
                 SHA2_BLOCK_SIZE_BYTES_512)
             {
                 SHA2_addData(object->sha2Handle,
                              &object->operation.verify
-                                  ->preHashedMessage[SHA2_BLOCK_SIZE_BYTES_512 - (2 * ECCParams_Ed25519.length)],
+                                  ->preHashedMessage[SHA2_BLOCK_SIZE_BYTES_512 - (2 * curveEd25519->length)],
                              object->operation.verify->preHashedMessageLength -
-                                 (SHA2_BLOCK_SIZE_BYTES_512 - (2 * ECCParams_Ed25519.length)));
+                                 (SHA2_BLOCK_SIZE_BYTES_512 - (2 * curveEd25519->length)));
 
                 return (EDDSACC26X2_STATUS_FSM_RUN_PKA_OP);
             }
@@ -1095,7 +1425,7 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
             SHA2_close(object->sha2Handle);
 
             /* Check if S < n ? */
-            PKABigNumCmpStart(object->operation.verify->S, ECCParams_Ed25519.order, ECCParams_Ed25519.length);
+            PKABigNumCmpStart(object->operation.verify->S, curveEd25519->order, curveEd25519->length);
 
             while (PKAGetOpsStatus() == PKA_STATUS_OPERATION_BUSY)
             {
@@ -1114,10 +1444,18 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
 
         case EDDSACC26X2_FSM_VERIFY1_A_IS_NOT_POINT_AT_INFINITY:
 
-            /* Retrieve the public key */
-            memcpy(object->EDDSACC26X2_GlobalWorkspace.publicKey,
-                   object->operation.verify->theirPublicKey->u.plaintext.keyMaterial,
-                   ECCParams_Ed25519.length);
+            /* Obtain the public key material */
+            status = EDDSA_getPublicKey(object->operation.verify->theirPublicKey,
+                                        &publicKeyMaterial,
+                                        &publicKeyLength,
+                                        EDDSACC26X2_OPTYPE_VERIFY);
+
+            if (status != EDDSA_STATUS_SUCCESS)
+            {
+                return status;
+            }
+
+            memcpy(object->EDDSACC26X2_GlobalWorkspace.publicKey, publicKeyMaterial, publicKeyLength);
 
             /* The MSB of the public key indicates if sqrt(x) is even or odd */
             object->EDDSACC26X2_GlobalWorkspace.x_0 = object->EDDSACC26X2_GlobalWorkspace.publicKey[31] >> 7;
@@ -1129,7 +1467,7 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
             object->EDDSACC26X2_GlobalWorkspace.publicKey[31] &= 0x7F;
 
             /* Check if y <= 1 ? */
-            PKABigNumCmpStart(object->EDDSACC26X2_GlobalWorkspace.publicKey, EDDSACC26X2_one, ECCParams_Ed25519.length);
+            PKABigNumCmpStart(object->EDDSACC26X2_GlobalWorkspace.publicKey, EDDSACC26X2_one, curveEd25519->length);
 
             while (PKAGetOpsStatus() == PKA_STATUS_OPERATION_BUSY)
             {
@@ -1165,9 +1503,9 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
 
             /* Compute y^2 */
             PKABigNumMultiplyStart(object->EDDSACC26X2_GlobalWorkspace.publicKey,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    object->EDDSACC26X2_GlobalWorkspace.publicKey,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    &EDDSACC26X2_resultAddress);
 
             break;
@@ -1184,9 +1522,9 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY1_MOD_Y2:
             /* Compute y^2 mod p */
             PKABigNumModStart(SCRATCH_BUFFER_1,
-                              2 * ECCParams_Ed25519.length,
-                              ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+                              2 * curveEd25519->length,
+                              curveEd25519->prime,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
@@ -1194,16 +1532,16 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY1_MOD_Y2_RESULT:
 
             EDDSACC26X2_scratchBuffer1Size = SCRATCH_BUFFER_SIZE;
-            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_1, ECCParams_Ed25519.length, EDDSACC26X2_resultAddress);
+            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_1, curveEd25519->length, EDDSACC26X2_resultAddress);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
 
         case EDDSACC26X2_FSM_VERIFY1_SUBTRACT_ONE_FROM_Y2:
             /* Compute u = y^2 - 1 */
             PKABigNumAddStart(SCRATCH_BUFFER_1,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->length,
                               EDDSACC26X2_negOne,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
@@ -1220,9 +1558,9 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY1_MULT_D_BY_Y2:
             /* Compute d * y^2 */
             PKABigNumMultiplyStart(SCRATCH_BUFFER_1,
-                                   ECCParams_Ed25519.length,
-                                   ECCParams_Ed25519.b,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
+                                   curveEd25519->b,
+                                   curveEd25519->length,
                                    &EDDSACC26X2_resultAddress);
 
             break;
@@ -1239,9 +1577,9 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY1_MOD_D_Y2:
             /* Compute d * y^2 mod p */
             PKABigNumModStart(SCRATCH_BUFFER_1,
-                              2 * ECCParams_Ed25519.length,
-                              ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+                              2 * curveEd25519->length,
+                              curveEd25519->prime,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
@@ -1249,16 +1587,16 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY1_MOD_D_Y2_RESULT:
 
             EDDSACC26X2_scratchBuffer1Size = SCRATCH_BUFFER_SIZE;
-            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_1, ECCParams_Ed25519.length, EDDSACC26X2_resultAddress);
+            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_1, curveEd25519->length, EDDSACC26X2_resultAddress);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
 
         case EDDSACC26X2_FSM_VERIFY1_ADD_ONE_TO_D_Y2:
             /* Compute v = d * y^2 + 1 */
             PKABigNumAddStart(SCRATCH_BUFFER_1,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->length,
                               EDDSACC26X2_one,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
@@ -1278,9 +1616,9 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
              */
             /* Compute v^2 */
             PKABigNumMultiplyStart(SCRATCH_BUFFER_1,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    SCRATCH_BUFFER_1,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    &EDDSACC26X2_resultAddress);
 
             break;
@@ -1297,9 +1635,9 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY1_MOD_V2:
             /* Compute v^2 mod p */
             PKABigNumModStart(SCRATCH_BUFFER_2,
-                              2 * ECCParams_Ed25519.length,
-                              ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+                              2 * curveEd25519->length,
+                              curveEd25519->prime,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
@@ -1307,16 +1645,16 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY1_MOD_V2_RESULT:
 
             EDDSACC26X2_scratchBuffer1Size = SCRATCH_BUFFER_SIZE;
-            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_2, ECCParams_Ed25519.length, EDDSACC26X2_resultAddress);
+            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_2, curveEd25519->length, EDDSACC26X2_resultAddress);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
 
         case EDDSACC26X2_FSM_VERIFY1_MULT_V2_BY_V:
             /* Compute v^3 */
             PKABigNumMultiplyStart(SCRATCH_BUFFER_1,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    SCRATCH_BUFFER_2,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    &EDDSACC26X2_resultAddress);
 
             break;
@@ -1333,25 +1671,25 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY1_MOD_V3:
             /* Compute v^3 mod p */
             PKABigNumModStart(SCRATCH_BUFFER_2,
-                              2 * ECCParams_Ed25519.length,
-                              ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+                              2 * curveEd25519->length,
+                              curveEd25519->prime,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
 
         case EDDSACC26X2_FSM_VERIFY1_MOD_V3_RESULT:
 
-            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_3, ECCParams_Ed25519.length, EDDSACC26X2_resultAddress);
+            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_3, curveEd25519->length, EDDSACC26X2_resultAddress);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
 
         case EDDSACC26X2_FSM_VERIFY1_MULT_V3_BY_U:
             /* Compute u * v^3 */
             PKABigNumMultiplyStart(SCRATCH_BUFFER_0,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    SCRATCH_BUFFER_3,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    &EDDSACC26X2_resultAddress);
 
             break;
@@ -1368,9 +1706,9 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY1_MOD_U_V3:
             /* Compute leftside = u * v^3 mod p */
             PKABigNumModStart(SCRATCH_BUFFER_2,
-                              2 * ECCParams_Ed25519.length,
-                              ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+                              2 * curveEd25519->length,
+                              curveEd25519->prime,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
@@ -1378,16 +1716,16 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY1_MOD_U_V3_RESULT:
 
             EDDSACC26X2_scratchBuffer1Size = SCRATCH_BUFFER_SIZE;
-            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_2, ECCParams_Ed25519.length, EDDSACC26X2_resultAddress);
+            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_2, curveEd25519->length, EDDSACC26X2_resultAddress);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
 
         case EDDSACC26X2_FSM_VERIFY1_MULT_U_V3_BY_V3:
             /* Compute u * v^6 */
             PKABigNumMultiplyStart(SCRATCH_BUFFER_3,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    SCRATCH_BUFFER_2,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    &EDDSACC26X2_resultAddress);
 
             break;
@@ -1404,25 +1742,25 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY1_MOD_U_V6:
             /* Compute u * v^6 mod p */
             PKABigNumModStart(SCRATCH_BUFFER_3,
-                              2 * ECCParams_Ed25519.length,
-                              ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+                              2 * curveEd25519->length,
+                              curveEd25519->prime,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
 
         case EDDSACC26X2_FSM_VERIFY1_MOD_U_V6_RESULT:
 
-            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_3, ECCParams_Ed25519.length, EDDSACC26X2_resultAddress);
+            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_3, curveEd25519->length, EDDSACC26X2_resultAddress);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
 
         case EDDSACC26X2_FSM_VERIFY1_MULT_U_V6_BY_V:
             /* Compute rightside = u * v^7 */
             PKABigNumMultiplyStart(SCRATCH_BUFFER_3,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    SCRATCH_BUFFER_1,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    &EDDSACC26X2_resultAddress);
 
             break;
@@ -1439,27 +1777,27 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY1_MOD_U_V7:
             /* Compute u * v^7 mod p */
             PKABigNumModStart(SCRATCH_BUFFER_3,
-                              2 * ECCParams_Ed25519.length,
-                              ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+                              2 * curveEd25519->length,
+                              curveEd25519->prime,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
 
         case EDDSACC26X2_FSM_VERIFY1_MOD_U_V7_RESULT:
 
-            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_3, ECCParams_Ed25519.length, EDDSACC26X2_resultAddress);
+            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_3, curveEd25519->length, EDDSACC26X2_resultAddress);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
 
         case EDDSACC26X2_FSM_VERIFY1_EXP_U_V7:
             /* Compute (u * v^7) ^ ((p - 5) / 8) */
             PKABigNumExpModStart(SCRATCH_BUFFER_3,
-                                 ECCParams_Ed25519.length,
+                                 curveEd25519->length,
                                  EDDSACC26X2_decodeConst1,
-                                 ECCParams_Ed25519.length,
-                                 ECCParams_Ed25519.prime,
-                                 ECCParams_Ed25519.length,
+                                 curveEd25519->length,
+                                 curveEd25519->prime,
+                                 curveEd25519->length,
                                  &EDDSACC26X2_resultAddress);
 
             break;
@@ -1477,9 +1815,9 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY1_MULT_U_V3_BY_EXP:
             /* Compute u * v^3 * (u * v^7) ^ ((p - 5) / 8 ) */
             PKABigNumMultiplyStart(SCRATCH_BUFFER_2,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    SCRATCH_BUFFER_3,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    &EDDSACC26X2_resultAddress);
 
             break;
@@ -1498,9 +1836,9 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
              * Compute candidate x = u * v^3 * (u * v^7) ^ ((p - 5) / 8 ) mod p
              */
             PKABigNumModStart(SCRATCH_BUFFER_2,
-                              2 * ECCParams_Ed25519.length,
-                              ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+                              2 * curveEd25519->length,
+                              curveEd25519->prime,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
@@ -1508,7 +1846,7 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY1_MOD_CANDIDATE_X_RESULT:
 
             pkaResult = PKABigNumModGetResult(object->EDDSACC26X2_GlobalWorkspace.xResult,
-                                              ECCParams_Ed25519.length,
+                                              curveEd25519->length,
                                               EDDSACC26X2_resultAddress);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
@@ -1524,9 +1862,9 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
 
             /* Compute candidate x^2 */
             PKABigNumMultiplyStart(object->EDDSACC26X2_GlobalWorkspace.xResult,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    object->EDDSACC26X2_GlobalWorkspace.xResult,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    &EDDSACC26X2_resultAddress);
 
             break;
@@ -1543,25 +1881,25 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY1_MOD_X2:
             /* Compute candidate x^2 mod p */
             PKABigNumModStart(SCRATCH_BUFFER_3,
-                              2 * ECCParams_Ed25519.length,
-                              ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+                              2 * curveEd25519->length,
+                              curveEd25519->prime,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
 
         case EDDSACC26X2_FSM_VERIFY1_MOD_X2_RESULT:
 
-            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_3, ECCParams_Ed25519.length, EDDSACC26X2_resultAddress);
+            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_3, curveEd25519->length, EDDSACC26X2_resultAddress);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
 
         case EDDSACC26X2_FSM_VERIFY1_MULT_X2_BY_V:
             /* Compute candidate v * x^2 */
             PKABigNumMultiplyStart(SCRATCH_BUFFER_1,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    SCRATCH_BUFFER_3,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    &EDDSACC26X2_resultAddress);
 
             break;
@@ -1578,25 +1916,25 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY1_MOD_V_X2:
             /* Compute candidate v * x^2 mod p */
             PKABigNumModStart(SCRATCH_BUFFER_3,
-                              2 * ECCParams_Ed25519.length,
-                              ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+                              2 * curveEd25519->length,
+                              curveEd25519->prime,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
 
         case EDDSACC26X2_FSM_VERIFY1_MOD_V_X2_RESULT:
 
-            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_3, ECCParams_Ed25519.length, EDDSACC26X2_resultAddress);
+            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_3, curveEd25519->length, EDDSACC26X2_resultAddress);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
 
         case EDDSACC26X2_FSM_VERIFY1_MOD_U:
             /* Compute u mod p */
             PKABigNumModStart(SCRATCH_BUFFER_0,
-                              ECCParams_Ed25519.length,
-                              ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->length,
+                              curveEd25519->prime,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
@@ -1604,7 +1942,7 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY1_MOD_U_RESULT:
 
             EDDSACC26X2_scratchBuffer0Size = SCRATCH_BUFFER_SIZE;
-            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_0, ECCParams_Ed25519.length, EDDSACC26X2_resultAddress);
+            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_0, curveEd25519->length, EDDSACC26X2_resultAddress);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
 
@@ -1613,10 +1951,10 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
              * Compute -u mod p by performing p - u (note that if u = 0,
              * then -u = p, but the comparison will either pass or fail if
              * v * x^2 = u mod p */
-            PKABigNumSubStart(ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+            PKABigNumSubStart(curveEd25519->prime,
+                              curveEd25519->length,
                               SCRATCH_BUFFER_0,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
@@ -1644,7 +1982,7 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
              * object->EDDSACC26X2_GlobalWorkspace.xResult buffer.
              */
             /* Check if v * x^2 == u ? */
-            PKABigNumCmpStart(SCRATCH_BUFFER_3, SCRATCH_BUFFER_0, ECCParams_Ed25519.length);
+            PKABigNumCmpStart(SCRATCH_BUFFER_3, SCRATCH_BUFFER_0, curveEd25519->length);
 
             while (PKAGetOpsStatus() == PKA_STATUS_OPERATION_BUSY)
             {
@@ -1657,7 +1995,7 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
             if (pkaResult != PKA_STATUS_EQUAL)
             {
                 /* Check if condition 2 is true that v * x^2 == -u mod p */
-                PKABigNumCmpStart(SCRATCH_BUFFER_3, SCRATCH_BUFFER_1, ECCParams_Ed25519.length);
+                PKABigNumCmpStart(SCRATCH_BUFFER_3, SCRATCH_BUFFER_1, curveEd25519->length);
 
                 while (PKAGetOpsStatus() == PKA_STATUS_OPERATION_BUSY)
                 {
@@ -1669,9 +2007,9 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
                 {
                     /* Compute x * 2^((p - 1) / 4) */
                     PKABigNumMultiplyStart(object->EDDSACC26X2_GlobalWorkspace.xResult,
-                                           ECCParams_Ed25519.length,
+                                           curveEd25519->length,
                                            EDDSACC26X2_decodeConst2,
-                                           ECCParams_Ed25519.length,
+                                           curveEd25519->length,
                                            &EDDSACC26X2_resultAddress);
 
                     while (PKAGetOpsStatus() == PKA_STATUS_OPERATION_BUSY)
@@ -1691,9 +2029,9 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
 
                     /* Compute x * 2^((p - 1) / 4) mod p */
                     PKABigNumModStart(SCRATCH_BUFFER_2,
-                                      2 * ECCParams_Ed25519.length,
-                                      ECCParams_Ed25519.prime,
-                                      ECCParams_Ed25519.length,
+                                      2 * curveEd25519->length,
+                                      curveEd25519->prime,
+                                      curveEd25519->length,
                                       &EDDSACC26X2_resultAddress);
 
                     while (PKAGetOpsStatus() == PKA_STATUS_OPERATION_BUSY)
@@ -1702,7 +2040,7 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
                     }
 
                     pkaResult = PKABigNumModGetResult(object->EDDSACC26X2_GlobalWorkspace.xResult,
-                                                      ECCParams_Ed25519.length,
+                                                      curveEd25519->length,
                                                       EDDSACC26X2_resultAddress);
 
                     if (pkaResult != PKA_STATUS_SUCCESS)
@@ -1728,10 +2066,10 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
             if (object->EDDSACC26X2_GlobalWorkspace.x_0 != (object->EDDSACC26X2_GlobalWorkspace.xResult[0] & 0x1))
             {
                 /* Wrong square root result selected, so perform p - x */
-                PKABigNumSubStart(ECCParams_Ed25519.prime,
-                                  ECCParams_Ed25519.length,
+                PKABigNumSubStart(curveEd25519->prime,
+                                  curveEd25519->length,
                                   object->EDDSACC26X2_GlobalWorkspace.xResult,
-                                  ECCParams_Ed25519.length,
+                                  curveEd25519->length,
                                   &EDDSACC26X2_resultAddress);
 
                 while (PKAGetOpsStatus() == PKA_STATUS_OPERATION_BUSY)
@@ -1764,10 +2102,10 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
              */
 
             /* Compute p + 1 so that we can perform 1 - y */
-            PKABigNumAddStart(ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+            PKABigNumAddStart(curveEd25519->prime,
+                              curveEd25519->length,
                               EDDSACC26X2_one,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
@@ -1784,9 +2122,9 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY2_SUBTRACT_Y_FROM_P_PLUS_ONE:
             /* Compute 1 - y + p (positive number) */
             PKABigNumSubStart(SCRATCH_BUFFER_0,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->length,
                               object->EDDSACC26X2_GlobalWorkspace.publicKey,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
@@ -1803,9 +2141,9 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY2_MULT_ONE_MINUS_Y_BY_X:
             /* Compute (1 - y) * x */
             PKABigNumMultiplyStart(SCRATCH_BUFFER_0,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    object->EDDSACC26X2_GlobalWorkspace.xResult,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    &EDDSACC26X2_resultAddress);
 
             break;
@@ -1822,25 +2160,25 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY2_MOD_ONE_MINUS_Y_X:
             /* Compute (1 - y) * x mod p */
             PKABigNumModStart(SCRATCH_BUFFER_1,
-                              2 * ECCParams_Ed25519.length,
-                              ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+                              2 * curveEd25519->length,
+                              curveEd25519->prime,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
 
         case EDDSACC26X2_FSM_VERIFY2_MOD_ONE_MINUS_Y_X_RESULT:
 
-            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_1, ECCParams_Ed25519.length, EDDSACC26X2_resultAddress);
+            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_1, curveEd25519->length, EDDSACC26X2_resultAddress);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
 
         case EDDSACC26X2_FSM_VERIFY2_INVERSION:
             /* Compute ((1 - y) * x) ^ (-1) mod p */
             PKABigNumInvModStart(SCRATCH_BUFFER_1,
-                                 ECCParams_Ed25519.length,
-                                 ECCParams_Ed25519.prime,
-                                 ECCParams_Ed25519.length,
+                                 curveEd25519->length,
+                                 curveEd25519->prime,
+                                 curveEd25519->length,
                                  &EDDSACC26X2_resultAddress);
 
             break;
@@ -1857,9 +2195,9 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY2_MULT_INVERSE_BY_X:
             /* Compute (1 - y)^-1 */
             PKABigNumMultiplyStart(SCRATCH_BUFFER_1,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    object->EDDSACC26X2_GlobalWorkspace.xResult,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    &EDDSACC26X2_resultAddress);
 
             break;
@@ -1876,25 +2214,25 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY2_MOD_ONE_MINUS_Y_INV:
             /* Compute (1 - y)^-1 mod p */
             PKABigNumModStart(SCRATCH_BUFFER_2,
-                              2 * ECCParams_Ed25519.length,
-                              ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+                              2 * curveEd25519->length,
+                              curveEd25519->prime,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
 
         case EDDSACC26X2_FSM_VERIFY2_MOD_ONE_MINUS_Y_INV_RESULT:
 
-            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_2, ECCParams_Ed25519.length, EDDSACC26X2_resultAddress);
+            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_2, curveEd25519->length, EDDSACC26X2_resultAddress);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
 
         case EDDSACC26X2_FSM_VERIFY2_MULT_INVERSE_BY_ONE_MINUS_Y:
             /* Compute (x)^-1 */
             PKABigNumMultiplyStart(SCRATCH_BUFFER_1,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    SCRATCH_BUFFER_0,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    &EDDSACC26X2_resultAddress);
 
             break;
@@ -1911,25 +2249,25 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY2_MOD_X_INV:
             /* Compute (x)^-1 mod p */
             PKABigNumModStart(SCRATCH_BUFFER_3,
-                              2 * ECCParams_Ed25519.length,
-                              ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+                              2 * curveEd25519->length,
+                              curveEd25519->prime,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
 
         case EDDSACC26X2_FSM_VERIFY2_MOD_X_INV_RESULT:
 
-            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_3, ECCParams_Ed25519.length, EDDSACC26X2_resultAddress);
+            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_3, curveEd25519->length, EDDSACC26X2_resultAddress);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
 
         case EDDSACC26X2_FSM_VERIFY2_ADD_ONE_TO_Y:
             /* Compute y + 1 */
             PKABigNumAddStart(object->EDDSACC26X2_GlobalWorkspace.publicKey,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->length,
                               EDDSACC26X2_one,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
@@ -1946,9 +2284,9 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY2_MULT_ONE_MINUS_Y_INV_BY_ONE_PLUS_Y:
             /* Compute um = (1 + y) * (1 - y)^-1 */
             PKABigNumMultiplyStart(SCRATCH_BUFFER_0,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    SCRATCH_BUFFER_2,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    &EDDSACC26X2_resultAddress);
 
             break;
@@ -1965,16 +2303,16 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY2_MOD_UM:
             /* Compute um = (1 + y) * (1 - y)^-1 mod p */
             PKABigNumModStart(SCRATCH_BUFFER_0,
-                              2 * ECCParams_Ed25519.length,
-                              ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+                              2 * curveEd25519->length,
+                              curveEd25519->prime,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
 
         case EDDSACC26X2_FSM_VERIFY2_MOD_UM_RESULT:
 
-            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_0, ECCParams_Ed25519.length, EDDSACC26X2_resultAddress);
+            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_0, curveEd25519->length, EDDSACC26X2_resultAddress);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
 
@@ -1982,9 +2320,9 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
 
             /* Compute um * (x)^-1 */
             PKABigNumMultiplyStart(SCRATCH_BUFFER_0,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    SCRATCH_BUFFER_3,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    &EDDSACC26X2_resultAddress);
 
             break;
@@ -2001,25 +2339,25 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY2_MOD_UM_X_INV:
             /* Compute um * (x)^-1 mod p */
             PKABigNumModStart(SCRATCH_BUFFER_3,
-                              2 * ECCParams_Ed25519.length,
-                              ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+                              2 * curveEd25519->length,
+                              curveEd25519->prime,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
 
         case EDDSACC26X2_FSM_VERIFY2_MOD_UM_X_INV_RESULT:
 
-            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_3, ECCParams_Ed25519.length, EDDSACC26X2_resultAddress);
+            pkaResult = PKABigNumModGetResult(SCRATCH_BUFFER_3, curveEd25519->length, EDDSACC26X2_resultAddress);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
 
         case EDDSACC26X2_FSM_VERIFY2_ADD_CONST_TO_UM:
             /* Compute u = um + Ed25519.A / 3 */
             PKABigNumAddStart(SCRATCH_BUFFER_0,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->length,
                               EDDSACC26X2_isoConst2,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
@@ -2036,25 +2374,25 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY2_MOD_WEIERX:
             /* Compute u = um + Ed25519.A / 3 mod p */
             PKABigNumModStart(SCRATCH_BUFFER_0,
-                              ECCParams_Ed25519.length,
-                              ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->length,
+                              curveEd25519->prime,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
 
         case EDDSACC26X2_FSM_VERIFY2_MOD_WEIERX_RESULT:
 
-            pkaResult = PKABigNumModGetResult(SCRATCH_PUBLIC_X, ECCParams_Ed25519.length, EDDSACC26X2_resultAddress);
+            pkaResult = PKABigNumModGetResult(SCRATCH_PUBLIC_X, curveEd25519->length, EDDSACC26X2_resultAddress);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
 
         case EDDSACC26X2_FSM_VERIFY2_MULT_UM_X_INV_BY_CONST:
             /* Compute v = sqrt(-486664) * um * (x)^-1 */
             PKABigNumMultiplyStart(EDDSACC26X2_isoConst1,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    SCRATCH_BUFFER_3,
-                                   ECCParams_Ed25519.length,
+                                   curveEd25519->length,
                                    &EDDSACC26X2_resultAddress);
 
             break;
@@ -2071,16 +2409,16 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY2_MOD_WEIERY:
             /* Compute v = sqrt(-486664) * um * (x)^-1 mod p */
             PKABigNumModStart(SCRATCH_BUFFER_3,
-                              2 * ECCParams_Ed25519.length,
-                              ECCParams_Ed25519.prime,
-                              ECCParams_Ed25519.length,
+                              2 * curveEd25519->length,
+                              curveEd25519->prime,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
 
         case EDDSACC26X2_FSM_VERIFY2_MOD_WEIERY_RESULT:
 
-            pkaResult = PKABigNumModGetResult(SCRATCH_PUBLIC_Y, ECCParams_Ed25519.length, EDDSACC26X2_resultAddress);
+            pkaResult = PKABigNumModGetResult(SCRATCH_PUBLIC_Y, curveEd25519->length, EDDSACC26X2_resultAddress);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
 
@@ -2090,9 +2428,9 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
              * order
              */
             PKABigNumModStart(object->EDDSACC26X2_GlobalWorkspace.digestResult2,
-                              2 * ECCParams_Ed25519.length,
-                              ECCParams_Ed25519.order,
-                              ECCParams_Ed25519.length,
+                              2 * curveEd25519->length,
+                              curveEd25519->order,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
@@ -2100,7 +2438,7 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
         case EDDSACC26X2_FSM_VERIFY2_MOD_SIG_DIGEST_RESULT:
 
             pkaResult = PKABigNumModGetResult((uint8_t *)SCRATCH_PRIVATE_KEY,
-                                              ECCParams_Ed25519.length,
+                                              curveEd25519->length,
                                               EDDSACC26X2_resultAddress);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
@@ -2110,10 +2448,10 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
              * Perform order - H(R || A || M) to get
              * -H(R || A || M) mod order
              */
-            PKABigNumSubStart(ECCParams_Ed25519.order,
-                              ECCParams_Ed25519.length,
+            PKABigNumSubStart(curveEd25519->order,
+                              curveEd25519->length,
                               (uint8_t *)SCRATCH_PRIVATE_KEY,
-                              ECCParams_Ed25519.length,
+                              curveEd25519->length,
                               &EDDSACC26X2_resultAddress);
 
             break;
@@ -2132,10 +2470,10 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
             PKAEccMultiplyStart((uint8_t *)SCRATCH_PRIVATE_KEY,
                                 SCRATCH_PUBLIC_X,
                                 SCRATCH_PUBLIC_Y,
-                                ECCParams_Wei25519.prime,
-                                ECCParams_Wei25519.a,
-                                ECCParams_Wei25519.b,
-                                ECCParams_Wei25519.length,
+                                curveWei25519->prime,
+                                curveWei25519->a,
+                                curveWei25519->b,
+                                curveWei25519->length,
                                 &EDDSACC26X2_resultAddress);
 
             break;
@@ -2145,22 +2483,22 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
             pkaResult = PKAEccMultiplyGetResult(object->EDDSACC26X2_GlobalWorkspace.xResult,
                                                 object->EDDSACC26X2_GlobalWorkspace.yResult,
                                                 EDDSACC26X2_resultAddress,
-                                                ECCParams_Ed25519.length);
+                                                curveEd25519->length);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
 
         case EDDSACC26X2_FSM_VERIFY2_MULT_BASE_POINT_BY_S:
 
-            CryptoUtils_copyPad(object->operation.verify->S, SCRATCH_PRIVATE_KEY, ECCParams_Wei25519.length);
+            CryptoUtils_copyPad(object->operation.verify->S, SCRATCH_PRIVATE_KEY, curveWei25519->length);
 
             /* Perform S * B using short Weierstrass curves */
             PKAEccMultiplyStart((uint8_t *)SCRATCH_PRIVATE_KEY,
-                                ECCParams_Wei25519.generatorX,
-                                ECCParams_Wei25519.generatorY,
-                                ECCParams_Wei25519.prime,
-                                ECCParams_Wei25519.a,
-                                ECCParams_Wei25519.b,
-                                ECCParams_Wei25519.length,
+                                curveWei25519->generatorX,
+                                curveWei25519->generatorY,
+                                curveWei25519->prime,
+                                curveWei25519->a,
+                                curveWei25519->b,
+                                curveWei25519->length,
                                 &EDDSACC26X2_resultAddress);
 
             break;
@@ -2170,7 +2508,7 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
             pkaResult = PKAEccMultiplyGetResult(SCRATCH_BUFFER_0,
                                                 SCRATCH_BUFFER_1,
                                                 EDDSACC26X2_resultAddress,
-                                                ECCParams_Ed25519.length);
+                                                curveEd25519->length);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
 
@@ -2183,9 +2521,9 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
                            SCRATCH_BUFFER_1,
                            object->EDDSACC26X2_GlobalWorkspace.xResult,
                            object->EDDSACC26X2_GlobalWorkspace.yResult,
-                           ECCParams_Wei25519.prime,
-                           ECCParams_Wei25519.a,
-                           ECCParams_Wei25519.length,
+                           curveWei25519->prime,
+                           curveWei25519->a,
+                           curveWei25519->length,
                            &EDDSACC26X2_resultAddress);
 
             break;
@@ -2195,7 +2533,7 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
             pkaResult = PKAEccAddGetResult(SCRATCH_PUBLIC_X,
                                            SCRATCH_PUBLIC_Y,
                                            EDDSACC26X2_resultAddress,
-                                           ECCParams_Wei25519.length);
+                                           curveWei25519->length);
 
             return (EDDSACC26X2_convertReturnValue(pkaResult));
 
@@ -2220,13 +2558,13 @@ static int_fast16_t EDDSACC26X2_runVerifyFSM(EDDSA_Handle handle)
             /* Encode the public key and check if it matches R */
             EDDSACC26X2_encodePublicKey(handle,
                                         object->EDDSACC26X2_GlobalWorkspace.publicKey,
-                                        object->EDDSACC26X2_GlobalWorkspace.xResult,
-                                        object->EDDSACC26X2_GlobalWorkspace.yResult);
+                                        (const uint8_t *)object->EDDSACC26X2_GlobalWorkspace.xResult,
+                                        (const uint8_t *)object->EDDSACC26X2_GlobalWorkspace.yResult);
 
             /* Check R' == R, which indicates a valid signature */
             PKABigNumCmpStart(object->EDDSACC26X2_GlobalWorkspace.publicKey,
                               object->operation.verify->R,
-                              ECCParams_Ed25519.length);
+                              curveEd25519->length);
 
             while (PKAGetOpsStatus() == PKA_STATUS_OPERATION_BUSY)
             {
@@ -2391,10 +2729,22 @@ EDDSA_Handle EDDSA_construct(EDDSA_Config *config, const EDDSA_Params *params)
 
     DebugP_assert((params->returnBehavior == EDDSA_RETURN_BEHAVIOR_CALLBACK) ? params->callbackFxn : true);
 
-    object->returnBehavior   = params->returnBehavior;
+    object->returnBehavior = params->returnBehavior;
+
+#if (TFM_ENABLED == 1)
+    curveEd25519  = &ECCParams_s_Ed25519;
+    curveWei25519 = &ECCParams_s_Wei25519;
+
+    /* Always use the secure callback function */
+    object->callbackFxn = params->callbackFxn;
+#else
+    curveEd25519  = &ECCParams_Ed25519;
+    curveWei25519 = &ECCParams_Wei25519;
+
     object->callbackFxn      = params->returnBehavior == EDDSA_RETURN_BEHAVIOR_CALLBACK ? params->callbackFxn
                                                                                         : EDDSACC26X2_internalCallbackFxn;
     object->semaphoreTimeout = params->timeout;
+#endif
 
     /*
      * Set power dependency --> power up and enable clock for PKA
@@ -2415,12 +2765,18 @@ int_fast16_t EDDSA_generatePublicKey(EDDSA_Handle handle, EDDSA_OperationGenerat
     SHA2_Params sha2Params;
 
     /* Validate key sizes */
-    if (operation->myPrivateKey->u.plaintext.keyLength != operation->curve->length)
+    if (((operation->myPrivateKey->encoding == CryptoKey_PLAINTEXT) &&
+         (operation->myPrivateKey->u.plaintext.keyLength != operation->curve->length)) ||
+        ((operation->myPrivateKey->encoding == CryptoKey_BLANK_KEYSTORE) &&
+         (operation->myPrivateKey->u.keyStore.keyLength != operation->curve->length)))
     {
         return (EDDSA_STATUS_INVALID_PRIVATE_KEY_SIZE);
     }
 
-    if (operation->myPublicKey->u.plaintext.keyLength != operation->curve->length)
+    if (((operation->myPublicKey->encoding == CryptoKey_BLANK_PLAINTEXT) &&
+         (operation->myPublicKey->u.plaintext.keyLength != operation->curve->length)) ||
+        ((operation->myPublicKey->encoding == CryptoKey_BLANK_KEYSTORE) &&
+         (operation->myPublicKey->u.keyStore.keyLength != operation->curve->length)))
     {
         return (EDDSA_STATUS_INVALID_PUBLIC_KEY_SIZE);
     }
@@ -2495,12 +2851,18 @@ int_fast16_t EDDSA_sign(EDDSA_Handle handle, EDDSA_OperationSign *operation)
     SHA2_Params sha2Params;
 
     /* Validate key sizes */
-    if (operation->myPrivateKey->u.plaintext.keyLength != operation->curve->length)
+    if (((operation->myPrivateKey->encoding == CryptoKey_PLAINTEXT) &&
+         (operation->myPrivateKey->u.plaintext.keyLength != operation->curve->length)) ||
+        ((operation->myPrivateKey->encoding == CryptoKey_KEYSTORE) &&
+         (operation->myPrivateKey->u.keyStore.keyLength != operation->curve->length)))
     {
         return (EDDSA_STATUS_INVALID_PRIVATE_KEY_SIZE);
     }
 
-    if (operation->myPublicKey->u.plaintext.keyLength != operation->curve->length)
+    if (((operation->myPublicKey->encoding == CryptoKey_PLAINTEXT) &&
+         (operation->myPublicKey->u.plaintext.keyLength != operation->curve->length)) ||
+        ((operation->myPublicKey->encoding == CryptoKey_KEYSTORE) &&
+         (operation->myPublicKey->u.keyStore.keyLength != operation->curve->length)))
     {
         return (EDDSA_STATUS_INVALID_PUBLIC_KEY_SIZE);
     }
@@ -2575,7 +2937,10 @@ int_fast16_t EDDSA_verify(EDDSA_Handle handle, EDDSA_OperationVerify *operation)
     SHA2_Params sha2Params;
 
     /* Validate key sizes */
-    if (operation->theirPublicKey->u.plaintext.keyLength != operation->curve->length)
+    if (((operation->theirPublicKey->encoding == CryptoKey_PLAINTEXT) &&
+         (operation->theirPublicKey->u.plaintext.keyLength != operation->curve->length)) ||
+        ((operation->theirPublicKey->encoding == CryptoKey_KEYSTORE) &&
+         (operation->theirPublicKey->u.keyStore.keyLength != operation->curve->length)))
     {
         return (EDDSA_STATUS_INVALID_PUBLIC_KEY_SIZE);
     }

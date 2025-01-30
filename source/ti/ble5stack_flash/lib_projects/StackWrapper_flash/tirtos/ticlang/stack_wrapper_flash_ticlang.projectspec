@@ -15,7 +15,6 @@
     >
 
         <!-- Project properties -->
-        <property name="products" value="com.ti.rtsc.XDCtools:3.62.01.15_core"/>
         <property name="target" value="ti.targets.arm.clang.M4"/>
         <property name="platform" value="ti.platforms.simplelink:CC2651P3"/>
         <property name="buildProfile" value="release"/>
@@ -43,9 +42,7 @@
             -mfpu=none
             -DDeviceFamily_CC26X1
             -DFLASH_ONLY_BUILD
-            -D${XDC_SYMBOLS}
             -I${CG_TOOL_ROOT}/include
-            -I${XDC_INCLUDE_PATH}
             -I${SRC_BLE_DIR}/controller/cc26xx/inc
             -I${SRC_BLE_DIR}/inc
             -I${SRC_BLE_DIR}/rom
@@ -69,8 +66,7 @@
             -I${SRC_BLE_DIR}/../../../source/ti/devices/cc13x1_cc26x1/rf_patches
             -I${SRC_BLE_DIR}/../../../source/ti/devices/cc13x1_cc26x1/inc
             -I${SRC_BLE_DIR}/../../../source
-            -I${SRC_BLE_DIR}/../../../kernel/tirtos7/packages
-            -I${XDC_CG_ROOT}/packages"
+            -I${SRC_BLE_DIR}/../../../kernel/tirtos7/packages"
         />
 
         <pathVariable name="EXAMPLE_BLE_ROOT" path=".." scope="project"/>

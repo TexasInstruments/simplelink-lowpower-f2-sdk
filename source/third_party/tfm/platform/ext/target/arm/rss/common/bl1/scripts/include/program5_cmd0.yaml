@@ -1,0 +1,51 @@
+#-------------------------------------------------------------------------------
+# Copyright (c) 2023, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+#-------------------------------------------------------------------------------
+
+# This command loads the SAM configuration from OTP into the SAM registers
+# (FIXME which ones?)
+
+Header:
+  - REGCLEAR: 0
+  - Reserved: 0
+  - INTREN: 0
+  - CTRL: 1
+  - SRCADDR: 1
+  - SRCADDRHI: 0
+  - DESADDR: 1
+  - DESADDRHI: 0
+  - XSIZE: 1
+  - XSIZEHI: 0
+  - SRCTRANSCFG: 1
+  - DESTRANSCFG: 1
+  - XADDRINC: 0
+  - YADDRSTRIDE: 0
+  - FILLVAL: 0
+  - YSIZE: 0
+  - TMPLTCFG: 0
+  - SRCTMPLT: 0
+  - DESTMPLT: 0
+  - SRCTRIGINCFG: 0
+  - DESTRIGINCFG: 0
+  - TRIGOUTCFG: 0
+  - GPOEN0: 0
+  - Reserved: 0
+  - GPOVAL0: 1
+  - Reserved: 0
+  - STREAMINTCFG: 0
+  - Reserved: 0
+  - LINKATTR: 0
+  - AUTOCFG: 0
+  - LINKADDR: 1
+  - LINKADDRHI: 0
+CTRL: 0x10000202
+SRCADDR: "otp_sam_config_base_address"
+DESADDR: "sam_base_address + 0x14"
+XSIZE: 0x00180018
+SRCTRANSCFG: 0x00000000
+DSTTRANSCFG: 0x00000000
+GPOVAL0: 0x0000000B
+LINKADDR: "program5_cmd1_exec_addr"

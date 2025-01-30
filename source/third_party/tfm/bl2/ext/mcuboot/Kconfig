@@ -36,11 +36,15 @@ config MCUBOOT_NS_IMAGE_FLASH_AREA_NUM
 config MCUBOOT_IMAGE_NUMBER
     int "Whether to combine S and NS into either 1 image, or sign each seperately"
     default 2
-    range 1 4
+    range 1 9
 
 config MCUBOOT_EXECUTION_SLOT
     int "Slot from which to execute the image, used for XIP mode"
     default 1
+
+config MCUBOOT_USE_PSA_CRYPTO
+    bool "Enable cryptography through PSA Crypto APIs"
+    default n
 
 config MCUBOOT_HW_KEY
     bool "Embed the entire public key"
@@ -163,29 +167,29 @@ config MCUBOOT_FIH_PROFILE
     default "HIGH" if MCUBOOT_FIH_PROFILE_HIGH
 
 config MCUBOOT_SIGNATURE_TYPE
-    string "Algorithm to use for signature validation"
-    default "RSA"
+    string "Algorithm to use for signature validation [RSA-2048, RSA-3072, EC-P256, EC-P384]"
+    default "RSA-3072"
     help
       Note - If either SIGNATURE_TYPE or KEY_LEN are changed, the entries for KEY_S
       and KEY_NS will either have to be updated manually or removed from the cache.
       `cmake .. -UMCUBOOT_KEY_S -UMCUBOOT_KEY_NS`. Once removed from the cache it
       will be set to default again.
 
-config MCUBOOT_SIGNATURE_KEY_LEN
-    int "Key length to use for signature validation"
-    default 3072
+config MCUBOOT_GENERATE_SIGNING_KEYPAIR
+    bool "Generate new keypair or use MCUBOOT_KEY_S and MCUBOOT_KEY_NS for signing"
+    default n
 
 config MCUBOOT_KEY_S
     string "Path to key with which to sign secure binary"
-    default "$(TFM_SOURCE_DIR)/bl2/ext/mcuboot/root-${MCUBOOT_SIGNATURE_TYPE}-${MCUBOOT_SIGNATURE_KEY_LEN}.pem"
+    default "$(TFM_SOURCE_DIR)/bl2/ext/mcuboot/root-${MCUBOOT_SIGNATURE_TYPE}.pem"
 
 config MCUBOOT_KEY_NS
     string "Path to key with which to sign non-secure binary"
-    default "$(TFM_SOURCE_DIR)/bl2/ext/mcuboot/root-${MCUBOOT_SIGNATURE_TYPE}-${MCUBOOT_SIGNATURE_KEY_LEN}_1.pem"
+    default "$(TFM_SOURCE_DIR)/bl2/ext/mcuboot/root-${MCUBOOT_SIGNATURE_TYPE}_1.pem"
 
 config MCUBOOT_IMAGE_VERSION_S
     string "Version number of S image"
-    default "$(TFM_VERSION)"
+    default "${TFM_VERSION}"
 
 config MCUBOOT_IMAGE_VERSION_NS
     string "Version number of NS image"

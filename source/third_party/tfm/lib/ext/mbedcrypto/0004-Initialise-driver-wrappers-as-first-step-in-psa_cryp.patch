@@ -1,0 +1,47 @@
+From 05d237704ded16405382cbef7cc867e2d7382e13 Mon Sep 17 00:00:00 2001
+From: Antonio de Angelis <Antonio.deAngelis@arm.com>
+Date: Tue, 23 Aug 2022 13:06:07 +0100
+Subject: [PATCH 4/6] Initialise driver wrappers as first step in
+ psa_crypto_init()
+
+This patch amends the order of initialisations performed in psa_crypto_init()
+to make sure that the driver wrappers based on the PSA driver API are initialised
+just after the key slots in memory, both of them at the beginning of the
+initialisation sequence.
+
+Signed-off-by: Antonio de Angelis <antonio.deangelis@arm.com>
+---
+ library/psa_crypto.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/library/psa_crypto.c b/library/psa_crypto.c
+index 755091aa..0b934079 100644
+--- a/library/psa_crypto.c
++++ b/library/psa_crypto.c
+@@ -7730,6 +7730,11 @@ psa_status_t psa_crypto_init(void)
+         return PSA_SUCCESS;
+     }
+ 
++    status = psa_initialize_key_slots();
++    if (status != PSA_SUCCESS) {
++        goto exit;
++    }
++
+     /* Init drivers */
+     status = psa_driver_wrapper_init();
+     if (status != PSA_SUCCESS) {
+@@ -7746,11 +7751,6 @@ psa_status_t psa_crypto_init(void)
+     }
+     global_data.rng_state = RNG_SEEDED;
+ 
+-    status = psa_initialize_key_slots();
+-    if (status != PSA_SUCCESS) {
+-        goto exit;
+-    }
+-
+ #if defined(PSA_CRYPTO_STORAGE_HAS_TRANSACTIONS)
+     status = psa_crypto_load_transaction();
+     if (status == PSA_SUCCESS) {
+-- 
+2.25.1
+

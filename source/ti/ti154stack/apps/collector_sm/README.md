@@ -38,11 +38,11 @@ The example applications in TI 15.4-Stack are developed for the CC13x2 Launchpad
 > The [Example Usage](#ExampleUsage) section of this document explains how to use the user interface, although both the button presses and the UART perform the
 > same actions.
 
-* `CONFIG_GPIO_RLED` - Set when the collector application is initialized. Flashes when the network is open for joining.
-* `CONFIG_GPIO_BTN1` - Press to initialize the collector application.
-* `CONFIG_GPIO_BTN2` - Press to allow new devices to join the network. While the network is open for joining, `CONFIG_GPIO_RLED` will flash. Press again to disallow joining.
+* `CONFIG_LED_RED` - Set when the collector application is initialized. Flashes when the network is open for joining.
+* `CONFIG_BTN_LEFT` - Press to initialize the collector application.
+* `CONFIG_BTN_RIGHT` - Press to allow new devices to join the network. While the network is open for joining, `CONFIG_LED_RED` will flash. Press again to disallow joining.
 
-> If `CONFIG_GPIO_BTN2` is held while power is applied to the Launchpad, NV Flash will be erased.
+> To erase NV flash, Hold `CONFIG_BTN_RIGHT` down, then press and release the reset button. Wait a second then release BTN-2. You should see a CUI message indicating NV erase. If BTN-2 is not held down constantly during the boot process the NVS flash will not be erased.
 
 ## <a name="Resources&JumperSettings"></a>Resources & Jumper Settings
 
@@ -263,7 +263,7 @@ Device Status: --
 Number of Joined Devices: --
 ```
 
-* Start the application by pressing `CONFIG_GPIO_BTN1` or selecting `FORM NWK` under the `NETWORK ACTIONS` tab.
+* Start the application by pressing `CONFIG_BTN_LEFT` or selecting `FORM NWK` under the `NETWORK ACTIONS` tab.
 ```
  TI Collector
  Press Enter for Help
@@ -286,7 +286,7 @@ Device Status: --
 Number of Joined Devices: 0
 ```
 
-Now turn on permit join using `CONFIG_GPIO_BTN2` or by selecting `OPEN NWK` under the `NETWORK ACTIONS` tab.
+Now turn on permit join using `CONFIG_BTN_RIGHT` or by selecting `OPEN NWK` under the `NETWORK ACTIONS` tab.
 Once the network is started, and sensors begin to join, each of the status lines will update accordingly.
 The network coordinator (Collector) will update the Security Status line with the Commissioning progress:
 

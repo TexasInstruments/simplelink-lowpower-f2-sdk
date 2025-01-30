@@ -8,6 +8,9 @@
 config MBEDCRYPTO_BUILD_TYPE
     default "minsizerel"
 
+config BL1_2_BUILD_TYPE
+    default "minsizerel"
+
 if BL2
 config MCUBOOT_LOG_LEVEL
     default "OFF"

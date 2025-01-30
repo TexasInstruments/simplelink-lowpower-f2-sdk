@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Texas Instruments Incorporated
+ * Copyright (c) 2023-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,8 +47,9 @@ extern int_fast16_t CAN_deinitDevice(void);
 
 /* Default CAN parameters structure */
 static const CAN_Params CAN_defaultParams = {
-    .msgRAMConfig = NULL,
+    .msgRamConfig = NULL,
     .bitTiming    = NULL,
+    .tsPrescaler  = 24U,
     .eventCbk     = NULL,
     .eventMask    = 0U,
     .userArg      = NULL,
@@ -63,7 +64,7 @@ void CAN_Params_init(CAN_Params *params)
 }
 
 /*
- * ======== CAN_init ========
+ *  ======== CAN_init ========
  */
 __attribute__((weak)) void CAN_init(void)
 {
@@ -71,7 +72,7 @@ __attribute__((weak)) void CAN_init(void)
 }
 
 /*
- * ======== CAN_open ========
+ *  ======== CAN_open ========
  */
 CAN_Handle CAN_open(uint_least8_t index, CAN_Params *params)
 {
@@ -101,6 +102,7 @@ CAN_Handle CAN_open(uint_least8_t index, CAN_Params *params)
     else
     {
         object->eventMask = params->eventMask;
+        object->userArg   = params->userArg;
     }
 
     StructRingBuf_construct(&object->rxStructRingBuf,
@@ -125,7 +127,7 @@ CAN_Handle CAN_open(uint_least8_t index, CAN_Params *params)
 }
 
 /*
- * ======== CAN_close ========
+ *  ======== CAN_close ========
  */
 __attribute__((weak)) void CAN_close(CAN_Handle handle)
 {
@@ -135,7 +137,7 @@ __attribute__((weak)) void CAN_close(CAN_Handle handle)
 }
 
 /*
- * ======== CAN_read ========
+ *  ======== CAN_read ========
  */
 int_fast16_t CAN_read(CAN_Handle handle, MCAN_RxBufElement *buf)
 {
@@ -151,21 +153,21 @@ int_fast16_t CAN_read(CAN_Handle handle, MCAN_RxBufElement *buf)
 }
 
 /*
- * ======== CAN_write ========
+ *  ======== CAN_write ========
  */
 int_fast16_t CAN_write(CAN_Handle handle, const MCAN_TxBufElement *elem)
 {
     CAN_Object *object             = handle->object;
     int_fast16_t status            = CAN_STATUS_ERROR;
-    MCAN_TxFIFOQStatus fifoQStatus = {0};
+    MCAN_TxFifoQStatus fifoQStatus = {0};
     uintptr_t hwiKey;
 
-    if (object->txFIFOQNum != 0U)
+    if (object->txFifoQNum != 0U)
     {
         /* Disable interrupts as the ISR may call CAN_write */
         hwiKey = HwiP_disable();
 
-        MCAN_getTxFIFOQStatus(&fifoQStatus);
+        MCAN_getTxFifoQStatus(&fifoQStatus);
 
         if (fifoQStatus.fifoFull == 0U)
         {
@@ -193,7 +195,7 @@ int_fast16_t CAN_write(CAN_Handle handle, const MCAN_TxBufElement *elem)
 }
 
 /*
- * ======== CAN_writeBuffer ========
+ *  ======== CAN_writeBuffer ========
  */
 int_fast16_t CAN_writeBuffer(CAN_Handle handle, uint32_t bufIdx, const MCAN_TxBufElement *elem)
 {
@@ -212,6 +214,29 @@ int_fast16_t CAN_writeBuffer(CAN_Handle handle, uint32_t bufIdx, const MCAN_TxBu
             MCAN_setTxBufAddReq(bufIdx);
 
             status = CAN_STATUS_SUCCESS;
+        }
+    }
+
+    return status;
+}
+
+/*
+ *  ======== CAN_readTxEvent ========
+ */
+int_fast16_t CAN_readTxEvent(CAN_Handle handle, CAN_TxEventElement *elem)
+{
+    CAN_Object *object  = handle->object;
+    int_fast16_t status = CAN_STATUS_ERROR;
+
+    if (object->txEventFifoNum != 0U)
+    {
+        if (MCAN_readTxEventFifo(elem) == MCAN_STATUS_SUCCESS)
+        {
+            status = CAN_STATUS_SUCCESS;
+        }
+        else
+        {
+            status = CAN_STATUS_NO_TX_EVENT_AVAIL;
         }
     }
 

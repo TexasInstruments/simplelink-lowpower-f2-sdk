@@ -139,6 +139,9 @@ const boardSpecificRfDesignSettings = {
     },
     LP_EM_CC2745R10_Q1_RF_DESIGN_SETTINGS: {
         rfDesign: "LP_EM_CC2745R10_Q1"
+    },
+    LP_EM_CC2674P10_RF_DESIGN_SETTINGS: {
+        rfDesign: "LP_EM_CC2674P10"
     }
 };
 

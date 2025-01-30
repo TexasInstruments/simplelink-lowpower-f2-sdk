@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ let Common = system.getScript("/ti/drivers/Common.js");
 
 let intPriority = Common.newIntPri()[0];
 intPriority.name = "dmaInterruptPriority";
-intPriority.displayName = "DMA Interrupt Priority";
+intPriority.displayName = "Interrupt Priority";
 
 let swiPriority = Common.newSwiPri();
 swiPriority.name = "softwareInterruptPriority";
@@ -340,7 +340,7 @@ function moduleInstances(inst)
  *  Extends a base exports object to include any device specifics
  *
  *  This function is invoked by the generic SPI module to
- *  allow us to augment/override as needed for the CC32XX
+ *  allow us to augment/override as needed for the device-specific module
  */
 function extend(base)
 {

@@ -5,7 +5,7 @@ Mcuboot is a open source bootloader. This example is the result of Texas Instrum
 The following information is for reference only. In a production environment, the end user is must to do the proper modifications that best serve the needs of the particular application. 
 
 ## Configuration (mcuboot_config.h)
-This release supports two configurations. See more details and change the current configuration within the `<example_root>/mcuboot_config/mcuboot_config.h` file.
+This release supports two configurations. See more details and change the current configuration within SysConfig.
 
 * `MCUBOOT_DIRECT_XIP` (default):
 In this configuration mcuboot runs an image directly from either the primary or the secondary slot (without moving and or copying it into the primary slot). In other words, mcuboot e**X**ecutes **I**n **P**lace (**XIP**).
@@ -34,7 +34,7 @@ image if its security counter has the same or higher value.</br>
 **Note**: This feature is not supported in CC13x2x7/CC26x2x7 devices.
 
 ## Image Slots
-The flash memory is partitioned into two image slots: a primary slot and a secondary slot. Each slot must have a fixed location and associated length, which is set up in the `<example_root>/flash_map_backend/flash_map_backend.h` file.
+The flash memory is partitioned into two image slots: a primary slot and a secondary slot. Each slot must have a fixed location and associated length, which is set up in SysConfig.
 Default values are provided, but user is free to modify the partitions defined for a particular device if needed. Note that the address of a partition is required to be aligned to a sector boundary, and its length must be multiple
 of sector size. 
 
@@ -87,7 +87,7 @@ For 1 upgradeable image, MCUBoot will overwrite the Primary slot image with that
 
 MCUBoot will attempt to boot Primary after performing an update, if any. 
 
-**NOTE**: When using the **TZ Disabled** build configuration, make sure to set **Address of Flash Vector Table** to 0x00000000, under syscfg **Device Configuration**.
+**NOTE**: When using the **TZ Disabled** build configuration, make sure to set **Address of Flash Vector Table** to 0x00000000, under SysConfig **Device Configuration**.
 
 
 For 2 upgradeable images:
@@ -96,7 +96,7 @@ The same procedure as for 1 upgradeable image described above is followed, but i
 
 MCUBoot will attempt to boot Primary 0 after performing an update, if any.
 
-**NOTE 1**: When using the **TZ Enabled** build configuration, make sure to set **Address of Flash Vector Table** to 0x00000800, under syscfg **Device Configuration**.</br>
+**NOTE 1**: When using the **TZ Enabled** build configuration, make sure to set **Address of Flash Vector Table** to 0x00000800, under SysConfig **Device Configuration**.</br>
 **NOTE 2**: The SDK includes the **Secure Image** ELF file (tfm_s.axf) and a **Non-Secure example** project called tfm_aescbc, which can be imported into CCS, so that both secure and non-secure images be used in MCUBoot 2-image upgrade mode. </br>
 **NOTE 3**: HW Antirollback Protection is not supported in this mode.</br></br>
 

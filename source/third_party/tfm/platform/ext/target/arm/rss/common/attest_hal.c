@@ -96,14 +96,7 @@ tfm_attest_hal_get_profile_definition(uint32_t *size, uint8_t *buf)
 
 enum tfm_plat_err_t tfm_plat_get_boot_seed(uint32_t size, uint8_t *buf)
 {
-    enum tfm_plat_err_t err;
-
-    err = tfm_plat_otp_read(PLAT_OTP_ID_BOOT_SEED, size, buf);
-    if(err != TFM_PLAT_ERR_SUCCESS) {
-        return err;
-    }
-
-    return TFM_PLAT_ERR_SUCCESS;
+    return TFM_PLAT_ERR_UNSUPPORTED;
 }
 
 enum tfm_plat_err_t tfm_plat_get_implementation_id(uint32_t *size,
@@ -133,29 +126,7 @@ enum tfm_plat_err_t tfm_plat_get_implementation_id(uint32_t *size,
 
 enum tfm_plat_err_t tfm_plat_get_cert_ref(uint32_t *size, uint8_t *buf)
 {
-    enum tfm_plat_err_t err;
-    size_t otp_size;
-    size_t copy_size;
-    uint32_t tmp_buf[(CERTIFICATION_REF_MAX_SIZE / sizeof(uint32_t)) + 1];
-
-    err = tfm_plat_otp_read(PLAT_OTP_ID_CERT_REF, sizeof(tmp_buf),
-                            (uint8_t *)tmp_buf);
-    if(err != TFM_PLAT_ERR_SUCCESS) {
-        return err;
-    }
-
-    err =  tfm_plat_otp_get_size(PLAT_OTP_ID_CERT_REF, &otp_size);
-    if(err != TFM_PLAT_ERR_SUCCESS) {
-        return err;
-    }
-
-    /* Actually copied data is always the smaller */
-    copy_size = *size < otp_size ? *size : otp_size;
-    /* String content */
-    *size = tfm_strnlen((char*)buf, copy_size);
-    memcpy(buf, tmp_buf, *size);
-
-    return TFM_PLAT_ERR_SUCCESS;
+    return TFM_PLAT_ERR_UNSUPPORTED;
 }
 
 enum tfm_plat_err_t tfm_attest_hal_get_platform_config(uint32_t *size,

@@ -117,8 +117,8 @@ services complied with PSA FF-M.
 Folder name                    Description
 ============================== =============================================
 include                        SPM public headers.
-ffm                            SPM logic complies with PSA FF-M specification
-cmsis_psa                      CMSIS implementation for PSA FF-M SPM
+core                           SPM base functionalities
+\*ext                          Extended SPM functionalities
 ============================== =============================================
 
 --------------

@@ -29,22 +29,6 @@ target_add_scatter_file(tfm_s
     $<$<C_COMPILER_ID:IAR>:${PLATFORM_DIR}/ext/common/iar/tfm_common_s.icf>
 )
 
-if(NS)
-    target_sources(tfm_ns
-        PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/device/source/startup_an524.c
-    )
-    target_add_scatter_file(tfm_ns
-        $<$<C_COMPILER_ID:ARMClang>:${PLATFORM_DIR}/ext/common/armclang/tfm_common_ns.sct>
-        $<$<C_COMPILER_ID:GNU>:${PLATFORM_DIR}/ext/common/gcc/tfm_common_ns.ld>
-        $<$<C_COMPILER_ID:IAR>:${PLATFORM_DIR}/ext/common/iar/tfm_common_ns.icf>
-    )
-    target_link_libraries(CMSIS_5_tfm_ns
-        INTERFACE
-            CMSIS_5_RTX_V8MMN
-    )
-endif()
-
 if(BL2)
     target_sources(bl2
         PRIVATE
@@ -99,33 +83,6 @@ target_compile_options(platform_s
         ${COMPILER_CMSE_FLAG}
 )
 
-#========================= Platform Non-Secure ================================#
-
-target_sources(platform_ns
-    PRIVATE
-        device/source/system_core_init.c
-        device/source/device_definition.c
-        ${PLATFORM_DIR}/ext/target/arm/drivers/usart/cmsdk/uart_cmsdk_drv.c
-        ${PLATFORM_DIR}/ext/target/arm/drivers/timer/cmsdk/timer_cmsdk_drv.c
-        cmsis_drivers/Driver_USART.c
-        $<$<BOOL:${TFM_PARTITION_PLATFORM}>:${CMAKE_CURRENT_SOURCE_DIR}/plat_test.c>
-)
-
-target_include_directories(platform_ns
-    PUBLIC
-        .
-        ${CMAKE_SOURCE_DIR}
-        device/include
-        device/config
-        native_drivers
-        cmsis_drivers/config
-        ${PLATFORM_DIR}/ext/common
-        ${PLATFORM_DIR}/ext/target/arm/drivers/usart/cmsdk
-        ${PLATFORM_DIR}/ext/target/arm/drivers/usart/common
-        ${PLATFORM_DIR}/ext/target/arm/drivers/mpc_sie
-        ${PLATFORM_DIR}/ext/target/arm/drivers/timer/cmsdk
-)
-
 #========================= Platform BL2 =======================================#
 
 if(BL2)
@@ -168,3 +125,61 @@ target_sources(tfm_spm
         ${PLATFORM_DIR}/ext/common/tfm_hal_isolation_v8m.c
         $<$<OR:$<BOOL:${CONFIG_TFM_FLIH_API}>,$<BOOL:${CONFIG_TFM_SLIH_API}>>:${PLATFORM_DIR}/ext/common/tfm_interrupts.c>
 )
+
+target_compile_definitions(platform_region_defs
+    INTERFACE
+        PROVISIONING_CODE_PADDED_SIZE=${PROVISIONING_CODE_PADDED_SIZE}
+        PROVISIONING_VALUES_PADDED_SIZE=${PROVISIONING_VALUES_PADDED_SIZE}
+        PROVISIONING_DATA_PADDED_SIZE=${PROVISIONING_DATA_PADDED_SIZE}
+)
+
+if(NOT PLATFORM_DEFAULT_PROVISIONING)
+    add_subdirectory(${PLATFORM_DIR}/ext/target/arm/mps3/common/provisioning provisioning)
+endif()
+
+#========================= Files for building NS side platform ================#
+
+install(FILES       ${TARGET_PLATFORM_PATH}/cmsis_drivers/Driver_USART.c
+                    ${TARGET_PLATFORM_PATH}/device/source/device_definition.c
+                    ${TARGET_PLATFORM_PATH}/device/source/system_core_init.c
+                    ${PLATFORM_DIR}/ext/target/arm/drivers/usart/cmsdk/uart_cmsdk_drv.c
+                    ${PLATFORM_DIR}/ext/target/arm/drivers/timer/cmsdk/timer_cmsdk_drv.c
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+install(DIRECTORY   ${TARGET_PLATFORM_PATH}/device
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+install(FILES       ${TARGET_PLATFORM_PATH}/device/include/platform_base_address.h
+                    ${PLATFORM_DIR}/ext/target/arm/drivers/usart/cmsdk/uart_cmsdk_drv.h
+                    ${PLATFORM_DIR}/ext/target/arm/drivers/usart/cmsdk/uart_cmsdk_reg_map.h
+                    ${PLATFORM_DIR}/ext/target/arm/drivers/timer/cmsdk/timer_cmsdk_drv.h
+                    ${TARGET_PLATFORM_PATH}/target_cfg.h
+                    ${TARGET_PLATFORM_PATH}/device/config/device_cfg.h
+                    ${TARGET_PLATFORM_PATH}/tfm_peripherals_def.h
+                    ${TARGET_PLATFORM_PATH}/cmsis_drivers/config/cmsis_driver_config.h
+                    ${TARGET_PLATFORM_PATH}/cmsis_drivers/config/RTE_Device.h
+                    ${TARGET_PLATFORM_PATH}/native_drivers/ppc_sse200_drv.h
+                    ${PLATFORM_DIR}/ext/target/arm/drivers/usart/cmsdk/Driver_USART_CMSDK.h
+                    ${PLATFORM_DIR}/ext/target/arm/drivers/usart/common/Driver_USART_Common.h
+                    ${PLATFORM_DIR}/ext/driver/Driver_USART.h
+                    ${PLATFORM_DIR}/ext/driver/Driver_Common.h
+                    ${PLATFORM_DIR}/include/tfm_plat_defs.h
+                    ${PLATFORM_DIR}/ext/target/arm/drivers/mpc_sie/mpc_sie_drv.h
+                    ${PLATFORM_DIR}/ext/target/arm/drivers/mpu/armv8m/mpu_armv8m_drv.h
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/include)
+
+install(DIRECTORY   ${TARGET_PLATFORM_PATH}/partition
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+install(FILES       ${PLATFORM_DIR}/ext/common/gcc/tfm_common_ns.ld
+                    ${PLATFORM_DIR}/ext/common/armclang/tfm_common_ns.sct
+                    ${PLATFORM_DIR}/ext/common/iar/tfm_common_ns.icf
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/linker_scripts)
+
+# copy all files from active platform directory
+install(DIRECTORY   ${TARGET_PLATFORM_PATH}/ns/
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+install(FILES       ${TARGET_PLATFORM_PATH}/cpuarch.cmake
+                    ${TARGET_PLATFORM_PATH}/config.cmake
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})

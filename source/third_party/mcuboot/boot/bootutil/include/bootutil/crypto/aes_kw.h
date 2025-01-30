@@ -10,7 +10,7 @@
 #ifndef __BOOTUTIL_CRYPTO_AES_KW_H_
 #define __BOOTUTIL_CRYPTO_AES_KW_H_
 
-#include "mcuboot_config/mcuboot_config.h"
+#include "mcuboot_config.h"
 
 #if (defined(MCUBOOT_USE_MBED_TLS) + \
      defined(MCUBOOT_USE_TINYCRYPT)) != 1
@@ -23,6 +23,9 @@
 #endif /* MCUBOOT_USE_MBED_TLS */
 
 #if defined(MCUBOOT_USE_TINYCRYPT)
+    #if defined(MCUBOOT_AES_256)
+        #error "Cannot use AES-256 for encryption with Tinycrypt library."
+    #endif
     #include <tinycrypt/aes.h>
     #include <tinycrypt/constants.h>
 #endif /* MCUBOOT_USE_TINYCRYPT */

@@ -1,0 +1,19 @@
+#-------------------------------------------------------------------------------
+# Copyright (c) 2023, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+#-------------------------------------------------------------------------------
+
+# This CMake script template contains the set of options settled on secure side
+# build but necessary for building the non-secure side too.
+
+set(RSS_XIP                                 @RSS_XIP@ CACHE BOOL "Whether to use XIP via SIC")
+set(RSS_DEBUG_UART                          @RSS_DEBUG_UART@ CACHE BOOL "Whether to use the RSS debug UART")
+set(RSS_USE_HOST_UART                       @RSS_USE_HOST_UART@ CACHE BOOL "Whether to use the host system UART")
+set(RSS_USE_HOST_FLASH                      @RSS_USE_HOST_FLASH@ CACHE BOOL "Whether to use the host system flash")
+set(RSS_GPT_SUPPORT                         @RSS_GPT_SUPPORT@ CACHE BOOL "Whether to read a GPT header to find images")
+set(RSS_HAS_EXPANSION_PERIPHERALS           @RSS_HAS_EXPANSION_PERIPHERALS@ CACHE BOOL "Whether there are extra peripherals on the RSS subsystem")
+set(PLATFORM_HAS_PS_NV_OTP_COUNTERS         @PLATFORM_HAS_PS_NV_OTP_COUNTERS@ CACHE BOOL "Whether OTP counters will be used for PS")
+set(RSS_ENABLE_BRINGUP_HELPERS              @RSS_ENABLE_BRINGUP_HELPERS@ CACHE BOOL "Whether RSS bringup helpers are enabled")
+set(RSS_OTP_TRNG                            @RSS_OTP_TRNG@ CACHE BOOL "Whether to use the TRNG from the OTP")

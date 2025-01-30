@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2023, Texas Instruments Incorporated
+ * Copyright (c) 2015-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -198,6 +198,20 @@ int_fast16_t GPIO_setConfigAndMux(uint_least8_t index, GPIO_PinConfig pinConfig,
 
     if ((previousConfig & 0xFF) != mux)
     {
+        /* If we're changing the mux to GPIO, then we need to change the output
+         * configuration before changing the mux, to ensure that the correct
+         * configuration is ready when we change the mux. Otherwise a glitch
+         * might occur.
+         */
+        if (mux == GPIO_MUX_GPIO)
+        {
+            if (pinWillBeOutput)
+            {
+                GPIO_write(index, pinConfig & GPIO_CFG_OUT_HIGH ? 1 : 0);
+            }
+            GPIO_setOutputEnableDio(index, pinWillBeOutput ? GPIO_OUTPUT_ENABLE : GPIO_OUTPUT_DISABLE);
+        }
+
         /* If we're updating mux as well, we can write the whole register */
         HWREG(iocfgRegAddr) = tmpConfig | mux;
     }
@@ -214,18 +228,30 @@ int_fast16_t GPIO_setConfigAndMux(uint_least8_t index, GPIO_PinConfig pinConfig,
         HWREGB(iocfgRegAddr + 2) = (uint8_t)(tmpConfig >> 16);
         HWREGB(iocfgRegAddr + 3) = (uint8_t)(tmpConfig >> 24);
         HwiP_restore(key);
+
+        /* The output configuration needs to be changed after changing the IOCFG
+         * register, to ensure that the output is only enabled/disabled for the
+         * desired IO configuration. For example if the configuration is changed
+         * from an input to an open drain output, then we don't want to enable
+         * the output before the IO has been configured to open drain, since
+         * driving the signal high might have some undesired side effect.
+         * Another example is if the IO is changed from a high output to an
+         * input with a pull-up, then to avoid glitches, we want the pull-up to
+         * be enabled before we disable the output.
+         *
+         * If this pin is being configured to an output, set the new output
+         * value. It's important to do this before we change from INPUT to
+         * OUTPUT if applicable. If we're already an output this is fine, and if
+         * we're input changing to input this statement will not execute.
+         */
+        if (pinWillBeOutput)
+        {
+            GPIO_write(index, pinConfig & GPIO_CFG_OUT_HIGH ? 1 : 0);
+        }
+
+        GPIO_setOutputEnableDio(index, pinWillBeOutput ? GPIO_OUTPUT_ENABLE : GPIO_OUTPUT_DISABLE);
     }
 
-    /* If this pin is being configured to an output, set the new output value
-     * It's important to do this before we change from INPUT to OUTPUT if
-     * applicable. If we're already an output this is fine, and if we're input
-     * changing to input this statement will not execute. */
-    if (pinWillBeOutput)
-    {
-        GPIO_write(index, pinConfig & GPIO_CFG_OUT_HIGH ? 1 : 0);
-    }
-
-    GPIO_setOutputEnableDio(index, pinWillBeOutput ? GPIO_OUTPUT_ENABLE : GPIO_OUTPUT_DISABLE);
     return GPIO_STATUS_SUCCESS;
 }
 

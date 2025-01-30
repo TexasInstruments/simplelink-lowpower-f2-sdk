@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021, Texas Instruments Incorporated
+ * Copyright (c) 2019-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -69,6 +69,12 @@
  *        Devices without a key store will not support CryptoKeys with keying material
  *        stored in a key store for example.
  *        All devices support plaintext CryptoKeys.
+ *
+ *  ## Device-Specific Requirements #
+ *
+ *  For CC27XX devices, CMAC operations leveraging the HSM engine
+ *  (key encoding suffixed with _HSM) have the following requirements:
+ *      - Input length must be a block-size (16-byte) multiple.
  *
  *  ## Starting a CMAC operation #
  *
@@ -140,6 +146,56 @@
  *  AESCMAC_Handle handle = AESCMAC_open(0, NULL);
  *
  *  CryptoKeyPlaintext_initKey(&cryptoKey, keyingMaterial, sizeof(keyingMaterial));
+ *
+ *  AESCMAC_Operation_init(&operation);
+ *  operation.input        = input;
+ *  operation.inputLength  = sizeof(input);
+ *  operation.mac          = mac;
+ *  operation.macLength    = sizeof(mac);
+ *
+ *  int_fast16_t result = AESCMAC_oneStepSign(handle, &operation, &cryptoKey);
+ *
+ *  if (result != AESCMAC_STATUS_SUCCESS) {
+ *      // handle error
+ *  }
+ *
+ *  // The resulting MAC should equal the following after the operation:
+ *  // 0x07, 0x0A, 0x16, 0xB4, 0x6B, 0x4D, 0x41, 0x44,
+ *  // 0xF7, 0x9B, 0xDD, 0x9D, 0xD0, 0x4A, 0x28, 0x7C
+ *
+ *  AESCMAC_close(handle);
+ *
+ *  @endcode
+ *
+ *  ### Single call CMAC authentication with plaintext CryptoKey in polling return mode and using HSM engine #
+ *  @code
+ *
+ *  #include <ti/drivers/AESCMAC.h>
+ *  #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyPlaintext.h>
+ *
+ *  ...
+ *
+ *  uint8_t message[16]         = {0x6B, 0xC1, 0xBE, 0xE2, 0x2E, 0x40, 0x9F, 0x96,
+ *                                 0xE9, 0x3D, 0x7E, 0x11, 0x73, 0x93, 0x17, 0x2A};
+ *  uint8_t keyingMaterial[16]  = {0x2B, 0x7E, 0x15, 0x16, 0x28, 0xAE, 0xD2, 0xA6,
+ *                                 0xAB, 0xF7, 0x15, 0x88, 0x09, 0xCF, 0x4F, 0x3C};
+ *  uint8_t mac[16];
+ *
+ *  ...
+ *
+ *  AESCMAC_Params params;
+ *  AESCMAC_Handle handle;
+ *  CryptoKey cryptoKey;
+ *  AESCMAC_Params_init(&params)
+ *  params.returnBehavior = AESCMAC_RETURN_BEHAVIOR_POLLING;
+ *  params.operationalMode = AESCMAC_OPMODE_CBCMAC;
+ *  AESCMAC_Operation operation;
+ *
+ *  AESCMAC_init();
+ *
+ *  handle = AESCMAC_open(0, &params);
+ *
+ *  CryptoKeyPlaintextHSM_initKey(&cryptoKey, keyingMaterial, sizeof(keyingMaterial));
  *
  *  AESCMAC_Operation_init(&operation);
  *  operation.input        = input;
@@ -563,6 +619,12 @@ extern "C" {
 #define AESCMAC_STATUS_CANCELED AES_STATUS_CANCELED
 
 /*!
+ *  @brief  The operation requested is not supported either by the target hardware
+ *          or the driver implementation.
+ */
+#define AESCMAC_STATUS_FEATURE_NOT_SUPPORTED AES_STATUS_FEATURE_NOT_SUPPORTED
+
+/*!
  *  @brief  The operation tried to load a key from the keystore using an invalid key ID.
  */
 #define AESCMAC_STATUS_KEYSTORE_INVALID_ID AES_STATUS_KEYSTORE_INVALID_ID
@@ -675,6 +737,9 @@ typedef struct
                          *   May be zero for CMAC but must be non-zero for CBC-MAC.
                          *   See function descriptions for further restrictions.
                          *   Max length supported may be limited depending on the return behavior.
+                         *
+                         *   For CC27XX devices with _HSM-suffixed key encoding,
+                         *   the inputLength must be block-size aligned.
                          */
     size_t macLength;   /*!< Length of the MAC in bytes.
                          *   Must be <= 16. A length of < 8 is not recommended and

@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2017-2024, Texas Instruments Incorporated
+ Copyright (c) 2017-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -74,9 +74,6 @@
 /*******************************************************************************
  * INCLUDES
  */
-#ifdef CC23X0
-#include "hal_trng_wrapper.h"
-#else
 #include "bcomdef.h"
 #include "hal_types.h"
 #include <inc/hw_types.h>
@@ -162,65 +159,6 @@ extern void rfPUpCallback( RF_Handle, RF_CmdHandle, RF_EventMask );
 extern void ll_eccInit(void);
 extern void ll_GenerateDHKey(void);
 extern void ll_ReadLocalP256PublicKey(void);
-extern void L2CAP_SendDataPkt(void);
-extern void l2capAllocChannel(void);
-extern void l2capAllocConnChannel(void);
-extern void l2capBuildInfoReq(void);
-extern void l2capBuildParamUpdateReq(void);
-extern void l2capBuildSignalHdr(void);
-extern void l2capDisconnectAllChannels(void);
-extern void l2capEncapSendData(void);
-extern void l2capFindLocalId(void);
-extern void l2capFreeChannel(void);
-extern void l2capFreePendingPkt(void);
-extern void l2capHandleTimerCB(void);
-extern void l2capHandleRxError(void);
-extern void l2capNotifyData(void);
-extern void l2capNotifyEvent(void);
-extern void l2capNotifySignal(void);
-extern void l2capParseCmdReject(void);
-extern void l2capParsePacket(void);
-extern void l2capParseParamUpdateRsp(void);
-extern void l2capParseSignalHdr(void);
-extern void l2capProcessOSALMsg(void);
-extern void l2capProcessReq(void);
-extern void l2capProcessRsp(void);
-extern void l2capProcessRxData(void);
-extern void l2capProcessSignal(void);
-extern void l2capSendCmd(void);
-extern void l2capSendFCPkt(void);
-extern void l2capSendPkt(void);
-extern void l2capSendReq(void);
-extern void l2capStartTimer(void);
-extern void l2capStopTimer(void);
-extern void l2capStoreFCPkt(void);
-extern void l2capFindPsm(void);
-extern void l2capAllocPsm(void);
-extern void l2capNumActiveChannnels(void);
-extern void l2capFindLocalCID(void);
-extern void l2capGetCoChannelInfo(void);
-extern void l2capFindRemoteId(void);
-extern void l2capSendConnectRsp(void);
-extern void l2capBuildDisconnectReq(void);
-extern void l2capFlowCtrlCredit(void);
-extern void l2capReassembleSegment(void);
-extern void l2capParseConnectRsp(void);
-extern void l2capNotifyChannelEstEvt(void);
-extern void l2capParseDisconnectRsp(void);
-extern void l2capNotifyChannelTermEvt(void);
-extern void l2capProcessConnectReq(void);
-extern void l2capParseDisconnectReq(void);
-extern void l2capBuildDisconnectRsp(void);
-extern void l2capFindRemoteCID(void);
-extern void l2capDisconnectChannel(void);
-extern void l2capSendNextSegment(void);
-extern void l2capFindNextSegment(void);
-extern void l2capSendSegment(void);
-extern void l2capFreeTxSDU(void);
-extern void l2capNotifyCreditEvt(void);
-extern void l2capBuildConnectRsp(void);
-extern void l2capNotifySendSduDoneEvt(void);
-extern void l2capBuildFlowCtrlCredit(void);
 extern void attSendMsg(void);
 extern void attSendRspMsg(void);
 extern void gattClientHandleConnStatusCB(void);
@@ -402,6 +340,7 @@ extern void smpInitiatorProcessIdentityInfo(void);
 extern void smpInitiatorProcessIdentityAddrInfo(void);
 extern void smpInitiatorProcessSigningInfo(void);
 extern void smInitiatorAuthStageTwo(void);
+extern uint8 smpInitiatorContProcessPairingPubKey(void);
 extern void setupInitiatorKeys(void);
 extern void smInitiatorSendNextKeyInfo(void);
 extern void smpResponderProcessIncoming(void);
@@ -419,11 +358,22 @@ extern void gapScan_saveRptAndNotify(void);
 extern void gapScan_processAdvRptCb(void);
 extern void gapScan_processStartEndCb(void);
 extern void gapScan_processErrorCb(void);
-extern void gapScan_processSessionEndEvt(void);
 extern void gapInit_connect_internal(void);
 extern void gapInit_sendConnCancelledEvt(void);
 extern void gapInit_initiatingEnd(void);
-
+extern uint8  l2capSendNextSegment(void);
+extern uint8  l2capReassembleSegment(uint16 connHandle, void *pPkt );
+extern uint8  l2capParseConnectRsp( void *pCmd, uint8 *pData, uint16 len );
+extern uint8  l2capParseDisconnectReq( void *pCmd, uint8 *pData, uint16 len );
+extern uint8  l2capParseDisconnectRsp( void *pCmd, uint8 *pData, uint16 len );
+extern uint16 l2capBuildDisconnectRsp( uint8 *pBuf, uint8 *pData );
+extern void   l2capProcessConnectReq( uint16 connHandle, uint8 id, void *pConnReq );
+extern void   l2capGetCoChannelInfo( void *pCoC, void *pInfo );
+extern void   l2capNotifyChannelEstEvt( void *pChannel, uint8 status, uint16 result );
+extern void  *l2capFindRemoteCID( uint16 connHandle, uint16 CID );
+extern void   l2capNotifyChannelTermEvt( void *pChannel, uint8 status, uint16 reason );
+extern void  *l2capFindLocalCID( uint16 CID );
+extern void   l2capDisconnectChannel( void *pChannel, uint16 reason );
 /*******************************************************************************
  * PROTOTYPES
  */
@@ -461,8 +411,6 @@ typedef void (*RT_Init_fp)(void);
 /*******************************************************************************
  * GLOBAL VARIABLES
  */
-#endif //CC23X0
-
 #include "ll.h"
 #include "ll_ae.h"
 #include "ll_enc.h"
@@ -1020,7 +968,7 @@ uint8 MAP_llCompareSecondaryPrimaryTasksQoSParam( uint8 qosParamType,
                                                   void *secTask,
                                                   void *primConnPtr )
 {
-#if defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_CONN_CFG | INIT_CFG))
+#if defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_CONN_CFG | INIT_CFG | SCAN_CFG))
   return llCompareSecondaryPrimaryTasksQoSParam(qosParamType,secTask,primConnPtr);
 #else
   return 0;
@@ -1031,7 +979,7 @@ uint8 MAP_llCheckIsSecTaskCollideWithPrimTaskInLsto( void *secTask,
                                                      uint32 timeGap,
                                                      uint16 selectedConnId )
 {
-#if defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_CONN_CFG | INIT_CFG))
+#if defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_CONN_CFG | INIT_CFG | SCAN_CFG))
   return llCheckIsSecTaskCollideWithPrimTaskInLsto(secTask,timeGap,selectedConnId);
 #else
   return 0;
@@ -1383,6 +1331,15 @@ uint8 MAP_llSetStarvationMode(uint16 connId, uint8 setOnOffValue)
 #endif
 }
 
+uint8 MAP_llGetStarvationMode(uint16 connId)
+{
+#ifdef USE_DMM
+  return LL_INACTIVE_CONNECTIONS;
+#else
+  return llGetStarvationMode(connId);
+#endif
+}
+
 void MAP_llCentral_TaskEnd(void)
 {
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & INIT_CFG)
@@ -1466,6 +1423,18 @@ uint8 MAP_LL_EXT_CoexEnable(uint8 enable)
   return LL_EXT_CoexEnable(enable);
 #else
   return 1;
+#endif
+}
+
+/*******************************************************************************
+ * Osprey Coex hooks
+ */
+void MAP_llCoexSetHighPriorityGroup(uint16 cmdNum)
+{
+#ifdef CC33xx
+#ifdef OSPREY_COEX
+  llCoexSetHighPriorityGroup(cmdNum);
+#endif
 #endif
 }
 
@@ -2038,8 +2007,248 @@ void MAP_llSetRxCfg(void)
 }
 
 /*******************************************************************************
+ * Link time configuration functions
+ */
+
+// (CENTRAL_CFG | OBSERVER_CFG) functions
+uint8 MAP_gapScan_init(void)
+{
+#if ( HOST_CONFIG & ( CENTRAL_CFG | OBSERVER_CFG ) )
+  return gapScan_init();
+#else
+  return LL_STATUS_SUCCESS;
+#endif
+}
+uint8 MAP_SM_InitiatorInit(void)
+{
+#if ( HOST_CONFIG & ( CENTRAL_CFG | OBSERVER_CFG ) )
+  return SM_InitiatorInit();
+#else
+  return LL_STATUS_SUCCESS;
+#endif
+}
+void MAP_gap_CentConnRegister(void)
+{
+#if ( HOST_CONFIG & ( CENTRAL_CFG | OBSERVER_CFG ) )
+  gap_CentConnRegister();
+#endif
+}
+void MAP_gapScan_processSessionEndEvt(void* pSession, uint8_t status)
+{
+#if ( HOST_CONFIG & ( CENTRAL_CFG | OBSERVER_CFG ) )
+  gapScan_processSessionEndEvt( pSession, status);
+#endif
+}
+
+// (PERIPHERAL_CFG | BROADCASTER_CFG) functions
+uint8 MAP_gapAdv_init(void)
+{
+#if ( HOST_CONFIG & ( PERIPHERAL_CFG | BROADCASTER_CFG ) )
+  return gapAdv_init();
+#else
+  return LL_STATUS_SUCCESS;
+#endif
+}
+uint8 MAP_SM_ResponderInit(void)
+{
+#if ( HOST_CONFIG & ( PERIPHERAL_CFG ) )
+  return SM_ResponderInit();
+#else
+  return LL_STATUS_SUCCESS;
+#endif
+}
+void MAP_gap_PeriConnRegister(void)
+{
+#if ( HOST_CONFIG & ( PERIPHERAL_CFG ) )
+  gap_PeriConnRegister();
+#endif
+}
+
+// (ADV_CONN_CFG) functions
+void MAP_llExtAdv_PostProcess(void)
+{
+#if defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_NCONN_CFG | ADV_CONN_CFG))
+  llExtAdv_PostProcess();
+#endif
+}
+
+// (SCAN_CFG) functions
+void MAP_llExtScan_PostProcess(void)
+{
+#if defined(CTRL_CONFIG) && (CTRL_CONFIG & SCAN_CFG)
+  llExtScan_PostProcess();
+#endif
+}
+
+// (INIT_CFG) functions
+void MAP_llExtInit_PostProcess(void)
+{
+#if defined(CTRL_CONFIG) && (CTRL_CONFIG & INIT_CFG)
+  llExtInit_PostProcess();
+#endif
+}
+
+// (L2CAP_COC_CFG) functions
+uint8  MAP_l2capSendNextSegment(void)
+{
+#if defined (BLE_V41_FEATURES) && (BLE_V41_FEATURES & L2CAP_COC_CFG)
+  return l2capSendNextSegment();
+#else
+  return ( FALSE );
+#endif
+}
+uint8  MAP_l2capReassembleSegment(uint16 connHandle, void *pPkt )
+{
+#if defined (BLE_V41_FEATURES) && (BLE_V41_FEATURES & L2CAP_COC_CFG)
+  return l2capReassembleSegment( connHandle, pPkt );
+#else
+  return ( TRUE );
+#endif
+}
+uint8  MAP_L2CAP_ParseConnectReq( void *pCmd, uint8 *pData, uint16 len )
+{
+#if defined (BLE_V41_FEATURES) && (BLE_V41_FEATURES & L2CAP_COC_CFG)
+  return L2CAP_ParseConnectReq( pCmd, pData, len );
+#else
+  return ( FAILURE );
+#endif
+}
+uint8  MAP_l2capParseConnectRsp( void *pCmd, uint8 *pData, uint16 len )
+{
+#if defined (BLE_V41_FEATURES) && (BLE_V41_FEATURES & L2CAP_COC_CFG)
+  return l2capParseConnectRsp( pCmd, pData, len );
+#else
+  return ( FAILURE );
+#endif
+}
+uint8  MAP_L2CAP_ParseFlowCtrlCredit( void *pCmd, uint8 *pData, uint16 len )
+{
+#if defined (BLE_V41_FEATURES) && (BLE_V41_FEATURES & L2CAP_COC_CFG)
+  return L2CAP_ParseFlowCtrlCredit( pCmd, pData, len );
+#else
+  return ( FAILURE );
+#endif
+}
+uint8  MAP_l2capParseDisconnectReq( void *pCmd, uint8 *pData, uint16 len )
+{
+#if defined (BLE_V41_FEATURES) && (BLE_V41_FEATURES & L2CAP_COC_CFG)
+  return l2capParseDisconnectReq( pCmd, pData, len );
+#else
+  return ( FAILURE );
+#endif
+}
+uint8  MAP_l2capParseDisconnectRsp( void *pCmd, uint8 *pData, uint16 len )
+{
+#if defined (BLE_V41_FEATURES) && (BLE_V41_FEATURES & L2CAP_COC_CFG)
+  return l2capParseDisconnectRsp( pCmd, pData, len );
+#else
+  return ( FAILURE );
+#endif
+}
+uint8  MAP_L2CAP_DisconnectReq( uint16 CID )
+{
+#if defined (BLE_V41_FEATURES) && (BLE_V41_FEATURES & L2CAP_COC_CFG)
+  return L2CAP_DisconnectReq( CID );
+#else
+  return ( INVALIDPARAMETER );
+#endif
+}
+uint16 MAP_l2capBuildDisconnectRsp( uint8 *pBuf, uint8 *pData )
+{
+#if defined (BLE_V41_FEATURES) && (BLE_V41_FEATURES & L2CAP_COC_CFG)
+  return l2capBuildDisconnectRsp( pBuf, pData );
+#else
+  return ( FAILURE );
+#endif
+}
+void   MAP_l2capProcessConnectReq( uint16 connHandle, uint8 id, void *pConnReq )
+{
+#if defined (BLE_V41_FEATURES) && (BLE_V41_FEATURES & L2CAP_COC_CFG)
+  l2capProcessConnectReq( connHandle, id, pConnReq );
+#endif
+}
+void   MAP_l2capGetCoChannelInfo( void *pCoC, void *pInfo )
+{
+#if defined (BLE_V41_FEATURES) && (BLE_V41_FEATURES & L2CAP_COC_CFG)
+  l2capGetCoChannelInfo( pCoC, pInfo );
+#endif
+}
+void   MAP_l2capNotifyChannelEstEvt( void *pChannel, uint8 status, uint16 result )
+{
+#if defined (BLE_V41_FEATURES) && (BLE_V41_FEATURES & L2CAP_COC_CFG)
+  l2capNotifyChannelEstEvt( pChannel, status, result );
+#endif
+}
+void  *MAP_l2capFindRemoteCID( uint16 connHandle, uint16 CID )
+{
+#if defined (BLE_V41_FEATURES) && (BLE_V41_FEATURES & L2CAP_COC_CFG)
+  return l2capFindRemoteCID( connHandle, CID );
+#else
+  return ( NULL );
+#endif
+}
+void   MAP_l2capNotifyChannelTermEvt( void *pChannel, uint8 status, uint16 reason )
+{
+#if defined (BLE_V41_FEATURES) && (BLE_V41_FEATURES & L2CAP_COC_CFG)
+  l2capNotifyChannelTermEvt( pChannel, status, reason );
+#endif
+}
+void  *MAP_l2capFindLocalCID( uint16 CID )
+{
+#if defined (BLE_V41_FEATURES) && (BLE_V41_FEATURES & L2CAP_COC_CFG)
+  return l2capFindLocalCID( CID );
+#else
+  return ( NULL );
+#endif
+}
+void   MAP_l2capDisconnectChannel( void *pChannel, uint16 reason )
+{
+#if defined (BLE_V41_FEATURES) && (BLE_V41_FEATURES & L2CAP_COC_CFG)
+  l2capDisconnectChannel( pChannel, reason );
+#endif
+}
+
+// (CENTRAL_CFG) functions
+uint8 MAP_gapIsInitiating( void )
+{
+#if (HOST_CONFIG & CENTRAL_CFG)
+  return gapIsInitiating();
+#else
+  return ( FALSE );
+#endif
+}
+uint8 MAP_GapInit_cancelConnect( void )
+{
+#if (HOST_CONFIG & CENTRAL_CFG)
+  return MAP_GapInit_cancelConnect();
+#else
+  return ( bleIncorrectMode );
+#endif
+}
+uint8 MAP_smpInitiatorContProcessPairingPubKey( void )
+{
+#if (HOST_CONFIG & CENTRAL_CFG)
+  return smpInitiatorContProcessPairingPubKey();
+#else
+  return LL_STATUS_ERROR_INVALID_PARAMS;
+#endif
+}
+void MAP_gapInit_initiatingEnd( void )
+{
+#if (HOST_CONFIG & CENTRAL_CFG)
+  gapInit_initiatingEnd();
+#endif
+}
+void MAP_gapInit_sendConnCancelledEvt( void )
+{
+#if (HOST_CONFIG & CENTRAL_CFG)
+  gapInit_sendConnCancelledEvt();
+#endif
+}
+/*******************************************************************************
 * SDAA module
 */
+extern void  llHandleSDAALastCmdDone( void );
 extern uint8 llHandleSDAAControlTX( void *nextConnPtr,
                                    void *secTask,
                                    uint8 startTaskType);

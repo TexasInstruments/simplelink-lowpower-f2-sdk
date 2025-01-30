@@ -15,7 +15,7 @@
 #include "cc3xx_internal_rsa_util.h"
 #include "cc3xx_internal_asn1_util.h"
 
-#include "cc3xx_config.h"
+#include "cc3xx_psa_api_config.h"
 
 #include "cc_common.h"
 #include "cc_rnd_error.h"

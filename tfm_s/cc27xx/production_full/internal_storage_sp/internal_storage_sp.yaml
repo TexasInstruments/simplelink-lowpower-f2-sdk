@@ -1,0 +1,28 @@
+#-------------------------------------------------------------------------------
+# Copyright (c) 2024 Texas Instruments Incorporated
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+#-------------------------------------------------------------------------------
+
+{
+    "psa_framework_version": 1.1,
+    "description": "Internal Storage Secure Partition",
+    "name": "INTERNAL_STORAGE_SP",
+    "type": "APPLICATION-ROT",
+    "priority": "HIGH",
+    "model": "IPC",
+    "entry_point": "FlashCC27XX_s_main",
+    "stack_size": "0x1000",
+    "services" : [
+        {
+            "description": "TI Secure Flash ARoT Service",
+            "name": "TI_FLASH_SERVICE",
+            "sid": "0xAE000070",  # VendorID = 0xAE000, FunctionID = 0x70 (internal_trusted_storage)
+            "non_secure_clients": true,
+            "connection_based": true,
+            "version": 1,
+            "version_policy": "STRICT",
+        }
+    ],
+}

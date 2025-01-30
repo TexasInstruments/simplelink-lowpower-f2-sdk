@@ -68,6 +68,11 @@ for (let i in clusters) {
       }
     }
   }
+
+  if (tempClientCommandOptions.length == 0) {
+    acocgClientAlwaysHidden.push(cluster._id + "acocgClient");
+    tempClientCommandOptions.push({name: "dummy", displayName: "dummy"});
+  }
   acocgModule.config.push({
     name: cluster._id + "acocgClient",
     displayName: cluster._name + " Client Commands Generated",
@@ -79,7 +84,6 @@ for (let i in clusters) {
     minSelections: 0
   })
   acocgClientDropDowns.push(cluster._id + "acocgClient");
-  if (tempClientCommandOptions.length == 0) { acocgClientAlwaysHidden.push(cluster._id + "acocgClient"); }
 
   let tempServerCommandOptions = [];
   if (cluster.client && cluster.client.command) {
@@ -89,6 +93,11 @@ for (let i in clusters) {
         tempServerCommandOptions.push({name: command._id, displayName: command._name});
       }
     }
+  }
+
+  if (tempServerCommandOptions.length == 0) {
+    acocgServerAlwaysHidden.push(cluster._id + "acocgServer");
+    tempServerCommandOptions.push({name: "dummy", displayName: "dummy"});
   }
   acocgModule.config.push({
     name: cluster._id + "acocgServer",
@@ -101,7 +110,6 @@ for (let i in clusters) {
     minSelections: 0
   })
   acocgServerDropDowns.push(cluster._id + "acocgServer");
-  if (tempServerCommandOptions.length == 0) { acocgServerAlwaysHidden.push(cluster._id + "acocgServer"); }
 }
 
 /* Function to handle changes in the additional server clusters */

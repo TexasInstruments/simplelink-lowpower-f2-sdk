@@ -63,55 +63,61 @@ void SystemInit (void)
   SCB->VTOR = (uint32_t) &__Vectors;
 #endif
 
-//#if __DOMAIN_NS == 0
+#ifdef BL2
+
+    /* Initial the system */
+    SYS_UnlockReg();
+
+#ifdef NV_ENABLE_ETM
+    /* Init ETM Trace */
+    SYS->GPE_MFPH = (SYS->GPE_MFPH & (~(TRACE_CLK_PE12_Msk | TRACE_DATA0_PE11_Msk | TRACE_DATA1_PE10_Msk | TRACE_DATA2_PE9_Msk | TRACE_DATA3_PE8_Msk))) |
+        TRACE_CLK_PE12 | TRACE_DATA0_PE11 | TRACE_DATA1_PE10 | TRACE_DATA2_PE9 | TRACE_DATA3_PE8;
+
+    CLK->AHBCLK |= CLK_AHBCLK_TRACECKEN_Msk;
+#endif
+
+    /* Enable HIRC and waiting for stable */
+    CLK->PWRCTL |= CLK_PWRCTL_HIRCEN_Msk;
+    while((CLK->STATUS & CLK_STATUS_HIRCSTB_Msk) == 0);
+
+    /* Enable PLL and waiting for stable */
+    CLK->PLLCTL = CLK_PLLCTL_64MHz_HIRC;
+    while((CLK->STATUS & CLK_STATUS_PLLSTB_Msk) == 0);
+
+    /* Set system to use PLL with HCLK_DIV = 1 */
+    CLK->CLKSEL0 = CLK_CLKSEL0_HCLKSEL_PLL;
+    CLK->CLKDIV0 = 0;
+
+    /* Switch HCLK clock source to PLL */
+    CLK->CLKSEL0 = (CLK->CLKSEL0 & (~CLK_CLKSEL0_HCLKSEL_Msk)) | CLK_CLKSEL0_HCLKSEL_PLL;
+
+    /* Enable IP clock */
+    CLK->APBCLK0 |= CLK_APBCLK0_UART0CKEN_Msk | CLK_APBCLK0_TMR0CKEN_Msk | CLK_APBCLK0_TMR2CKEN_Msk;
+
+    /* Select UART clock source */
+    CLK->CLKSEL1 = (CLK->CLKSEL1 & (~CLK_CLKSEL1_UART0SEL_Msk)) | CLK_CLKSEL1_UART0SEL_HIRC;
+
+    /* Timer clock source */
+    CLK->CLKSEL1 = (CLK->CLKSEL1 & (~CLK_CLKSEL1_TMR0SEL_Msk)) | CLK_CLKSEL1_TMR0SEL_HIRC;
+    CLK->CLKSEL1 = (CLK->CLKSEL1 & (~CLK_CLKSEL1_TMR2SEL_Msk)) | CLK_CLKSEL1_TMR2SEL_HIRC;
+
+    /* Set multi-function pins for UART0 RXD and TXD */
+    SYS->GPB_MFPH = (SYS->GPB_MFPH & (~(UART0_RXD_PB12_Msk | UART0_TXD_PB13_Msk))) | UART0_RXD_PB12 | UART0_TXD_PB13;
+
+    /* Set UART 0 to Non-secure */
+    SCU_SET_PNSSET(UART0_Attr);
+
+
+#endif // BL2
+
 #if defined (__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3L)
 
-  /* Initial the system */
-  SYS_UnlockReg();
 
-  /* Enable HIRC and waiting for stable */
-  CLK->PWRCTL |= CLK_PWRCTL_HIRCEN_Msk;
-  while((CLK->STATUS & CLK_STATUS_HIRCSTB_Msk) == 0);
-
-  /* Enable PLL and waiting for stable */
-  CLK->PLLCTL = CLK_PLLCTL_64MHz_HIRC;
-  while((CLK->STATUS & CLK_STATUS_PLLSTB_Msk) == 0);
-
-  /* Set system to use PLL with HCLK_DIV = 1 */
-  CLK->CLKSEL0 = CLK_CLKSEL0_HCLKSEL_PLL;
-  CLK->CLKDIV0 = 0;
-
-  /* Switch HCLK clock source to PLL */
-  CLK->CLKSEL0 = (CLK->CLKSEL0 & (~CLK_CLKSEL0_HCLKSEL_Msk)) | CLK_CLKSEL0_HCLKSEL_PLL;
-
-  /* Enable IP clock */
-  CLK->APBCLK0 |= CLK_APBCLK0_UART0CKEN_Msk | CLK_APBCLK0_TMR0CKEN_Msk | CLK_APBCLK0_TMR2CKEN_Msk;
-
-  /* Select UART clock source */
-  CLK->CLKSEL1 = (CLK->CLKSEL1 & (~CLK_CLKSEL1_UART0SEL_Msk)) | CLK_CLKSEL1_UART0SEL_HIRC;
-
-  /* Timer clock source */
-  CLK->CLKSEL1 = (CLK->CLKSEL1 & (~CLK_CLKSEL1_TMR0SEL_Msk)) | CLK_CLKSEL1_TMR0SEL_HIRC;
-  CLK->CLKSEL1 = (CLK->CLKSEL1 & (~CLK_CLKSEL1_TMR2SEL_Msk)) | CLK_CLKSEL1_TMR2SEL_HIRC;
-
-  /* Set multi-function pins for UART0 RXD and TXD */
-  SYS->GPB_MFPH = (SYS->GPB_MFPH & (~(UART0_RXD_PB12_Msk | UART0_TXD_PB13_Msk))) | UART0_RXD_PB12 | UART0_TXD_PB13;
-
-  /* Set UART 0 to Non-secure */
-  SCU_SET_PNSSET(UART0_Attr);
-
-  /* Set SAU */
-  SAU->RNR = 3;
-  SAU->RBAR = 0x50000000;
-  SAU->RLAR = (0x5FFFFFFF & SAU_RLAR_LADDR_Msk) | SAU_RLAR_ENABLE_Msk;
-
-  /* Init ETM Trace */
-  SYS->GPE_MFPH = (SYS->GPE_MFPH & (~(TRACE_CLK_PE12_Msk | TRACE_DATA0_PE11_Msk | TRACE_DATA1_PE10_Msk | TRACE_DATA2_PE9_Msk | TRACE_DATA3_PE8_Msk))) |
-      TRACE_CLK_PE12 | TRACE_DATA0_PE11 | TRACE_DATA1_PE10 | TRACE_DATA2_PE9 | TRACE_DATA3_PE8;
-
-
-
-#endif
+    /* Set SAU */
+    SAU->RNR = 3;
+    SAU->RBAR = 0x50000000;
+    SAU->RLAR = (0x5FFFFFFF & SAU_RLAR_LADDR_Msk) | SAU_RLAR_ENABLE_Msk;
+# endif // defined (__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3L)
 
 
   SystemCoreClock = SYSTEM_CLOCK;

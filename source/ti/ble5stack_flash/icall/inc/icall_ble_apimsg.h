@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2024, Texas Instruments Incorporated
+ Copyright (c) 2013-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -1103,10 +1103,8 @@ typedef union _ICall_EvtMsg_
   ICall_HciExtEvt    hciExtEvt;    //!< HCI EXT CMD event message header
 #ifndef CONTROLLER_ONLY
   ICall_GapCmdStatus gapCmdStatus; //!< GAP Command Status event
-#endif // CONTROLLER_ONLY
-#ifndef CC33xx
   ICall_NPIUartMsg   npiUartRxBuf; //!< NPI UART message to app
-#endif // CC33xx
+#endif // CONTROLLER_ONLY
 } ICall_EvtMsg;
 
 /** HCI Generic Command Complete event */

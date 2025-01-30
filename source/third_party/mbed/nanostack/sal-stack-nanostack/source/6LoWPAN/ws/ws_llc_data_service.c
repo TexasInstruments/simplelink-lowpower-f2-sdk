@@ -1623,7 +1623,7 @@ static void ws_llc_release_eapol_temp_entry(temp_entriest_t *base, const uint8_t
     ns_list_add_to_end(&base->free_temp_neigh, neighbor);
 
 #ifdef FEATURE_FHNT_CONTROL
-    FHAPI_status status = FHNT_deleteTableEntry(FHNT_TABLE_TYPE_JOIN, mac64);
+    FHAPI_status status = FHNT_deleteTableEntry(FHNT_TABLE_TYPE_JOIN, (uint8_t *) mac64);
     tr_warn("FHNT ns: release_eapol_temp delete: %s | status: %d", trace_array(mac64, 8), status);
 #endif
 }
@@ -1702,7 +1702,7 @@ static ws_neighbor_temp_class_t *ws_allocate_eapol_temp_entry(temp_entriest_t *b
     ws_init_temporary_neigh_data(entry, mac64);
 
 #ifdef FEATURE_FHNT_CONTROL
-    FHAPI_status status = FHNT_createTableEntry(FHNT_TABLE_TYPE_JOIN, mac64);
+    FHAPI_status status = FHNT_createTableEntry(FHNT_TABLE_TYPE_JOIN, (uint8_t *) mac64);
     tr_warn("FHNT ns: allocate_eapol_temp create: %s | status: %d", trace_array(mac64, 8), status);
 #endif
     return entry;

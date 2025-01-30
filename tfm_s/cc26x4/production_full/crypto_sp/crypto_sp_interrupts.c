@@ -3,7 +3,7 @@
  * Copyright (c) 2022 Cypress Semiconductor Corporation (an Infineon
  * company) or an affiliate of Cypress Semiconductor Corporation. All rights
  * reserved.
- * Copyright (c) 2023, Texas Instruments Incorporated. All rights reserved.
+ * Copyright (c) 2023-2024, Texas Instruments Incorporated. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -13,7 +13,7 @@
 #include "spm.h"
 #include "tfm_hal_interrupt.h"
 #include "tfm_peripherals_def.h"
-#include "ffm/interrupt.h"
+#include "interrupt.h"
 #include "load/interrupt_defs.h"
 #include "platform_irq.h"
 

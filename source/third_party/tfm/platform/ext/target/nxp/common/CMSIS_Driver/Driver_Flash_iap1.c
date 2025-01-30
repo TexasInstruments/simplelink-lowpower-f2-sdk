@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2013-2022 ARM Limited. All rights reserved.
- * Copyright 2019-2020 NXP. All rights reserved.
+ * Copyright 2019-2022 NXP. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -15,12 +15,6 @@
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * Copyright (c) 2013 - 2015, Freescale Semiconductor, Inc.
- * Copyright 2016-2019 NXP
- * All rights reserved.
- *
- * SPDX-License-Identifier: BSD-3-Clause
  */
 
 #include "Driver_Flash.h"
@@ -65,9 +59,13 @@
 #define ARM_FLASH_DRV_VERSION    ARM_DRIVER_VERSION_MAJOR_MINOR(1, 0)
 
 /**
- * Data width values for ARM_FLASH_CAPABILITIES::data_width
- * \ref ARM_FLASH_CAPABILITIES
+ * \brief Flash driver capability macro definitions \ref ARM_FLASH_CAPABILITIES
  */
+/* Flash Ready event generation capability values */
+#define EVENT_READY_NOT_AVAILABLE   (0u)
+#define EVENT_READY_AVAILABLE       (1u)
+
+/* Data access size values */
  enum {
     DATA_WIDTH_8BIT   = 0u,
     DATA_WIDTH_16BIT,
@@ -81,9 +79,12 @@ static const uint32_t data_width_byte[DATA_WIDTH_ENUM_SIZE] = {
     sizeof(uint32_t),
 };
 
+/* Chip erase capability values */
+#define CHIP_ERASE_NOT_SUPPORTED    (0u)
+#define CHIP_ERASE_SUPPORTED        (1u)
+
 /* ARM FLASH device structure */
 struct arm_flash_dev_t {
-    const uint32_t memory_base;   /*!< FLASH memory base address */
     ARM_FLASH_INFO *data;         /*!< FLASH data */
     flash_config_t flashInstance; /*!< FLASH config*/
 };
@@ -99,9 +100,9 @@ static const ARM_DRIVER_VERSION DriverVersion = {
 
 /* Driver Capabilities */
 static const ARM_FLASH_CAPABILITIES DriverCapabilities = {
-    0, /* event_ready */
-    2, /* data_width = 0:8-bit, 1:16-bit, 2:32-bit */
-    1  /* erase_chip */
+    EVENT_READY_NOT_AVAILABLE,
+    DATA_WIDTH_8BIT,
+    CHIP_ERASE_NOT_SUPPORTED
 };
 
 static ARM_FLASH_INFO ARM_FLASH0_DEV_DATA = {
@@ -113,14 +114,9 @@ static ARM_FLASH_INFO ARM_FLASH0_DEV_DATA = {
     .erased_value = 0x00};
 
 static struct arm_flash_dev_t ARM_FLASH0_DEV = {
-#if (__DOMAIN_NS == 1)
-    .memory_base = FLASH0_BASE_NS,
-#else
-    .memory_base = FLASH0_BASE_S,
-#endif /* __DOMAIN_NS == 1 */
     .data        = &(ARM_FLASH0_DEV_DATA)};
 
-struct arm_flash_dev_t *FLASH0_DEV = &ARM_FLASH0_DEV;
+static struct arm_flash_dev_t *FLASH0_DEV = &ARM_FLASH0_DEV;
 
 /* Prototypes */
 
@@ -148,38 +144,43 @@ static ARM_FLASH_CAPABILITIES ARM_Flash_GetCapabilities(void)
     return DriverCapabilities;
 }
 
+static bool flash_init_is_done = false;
 static int32_t ARM_Flash_Initialize(ARM_Flash_SignalEvent_t cb_event)
 {
     ARG_UNUSED(cb_event);
-    status_t status = kStatus_Success;
+    status_t status;
 
-    if (DriverCapabilities.data_width >= DATA_WIDTH_ENUM_SIZE) {
-        return ARM_DRIVER_ERROR;
+    if (flash_init_is_done == false)
+    {
+        if (DriverCapabilities.data_width >= DATA_WIDTH_ENUM_SIZE) {
+            return ARM_DRIVER_ERROR;
+        }
+
+        /* Call initialization from Flash API */
+        status = FLASH_Init(&FLASH0_DEV->flashInstance);
+
+        if(status != kStatus_Success){
+            return ARM_DRIVER_ERROR;
+        }
+
+
+        /* Disable Error Detection functionality */
+        FLASH0_DEV->flashInstance.modeConfig.readSingleWord.readWithEccOff = 0x1;
+        flash_init_is_done = true;
+        #if 0
+            /* Initialization of Flash by means of its registers to be able read data*/
+            if(FLASH_ReadInit(&FLASH0_DEV->flashInstance) != kStatus_Success){
+			    return ARM_DRIVER_ERROR;
+            }
+        #endif
     }
-
-    /* Call initialization from Flash API */
-    status = FLASH_Init(&FLASH0_DEV->flashInstance);
-
-    if(status != kStatus_Success){
-    	return ARM_DRIVER_ERROR;
-    }
-
-
-    /* Disable Error Detection functionality */
-    FLASH0_DEV->flashInstance.modeConfig.readSingleWord.readWithEccOff = 0x1;
-
-#if 0
-    /* Initialization of Flash by means of its registers to be able read data*/
-    if(FLASH_ReadInit(&FLASH0_DEV->flashInstance) != kStatus_Success){
-			return ARM_DRIVER_ERROR;
-    }
-#endif
 
     return ARM_DRIVER_OK;
 }
 
 static int32_t ARM_Flash_Uninitialize(void)
 {
+    flash_init_is_done = false;
     /* Nothing to be done */
     return ARM_DRIVER_OK;
 }
@@ -274,18 +275,6 @@ static int32_t ARM_Flash_EraseSector(uint32_t addr)
     return ARM_DRIVER_OK;
 }
 
-static int32_t ARM_Flash_EraseChip(void)
-{
-    static uint32_t status;
-    uint32_t addr = FLASH0_DEV->memory_base;
-
-    status = FLASH_Erase(&FLASH0_DEV->flashInstance, addr, FLASH_TOTAL_SIZE, kFLASH_ApiEraseKey);
-    if (status != kStatus_Success)
-        return ARM_DRIVER_ERROR;
-
-    return ARM_DRIVER_OK;
-}
-
 static ARM_FLASH_STATUS ARM_Flash_GetStatus(void)
 {
     return FlashStatus;
@@ -297,17 +286,16 @@ static ARM_FLASH_INFO * ARM_Flash_GetInfo(void)
 }
 
 ARM_DRIVER_FLASH Driver_FLASH0 = {
-    ARM_Flash_GetVersion,
-    ARM_Flash_GetCapabilities,
-    ARM_Flash_Initialize,
-    ARM_Flash_Uninitialize,
-    ARM_Flash_PowerControl,
-    ARM_Flash_ReadData,
-    ARM_Flash_ProgramData,
-    ARM_Flash_EraseSector,
-    ARM_Flash_EraseChip,
-    ARM_Flash_GetStatus,
-    ARM_Flash_GetInfo
+    .GetVersion = ARM_Flash_GetVersion,
+    .GetCapabilities = ARM_Flash_GetCapabilities,
+    .Initialize = ARM_Flash_Initialize,
+    .Uninitialize = ARM_Flash_Uninitialize,
+    .PowerControl = ARM_Flash_PowerControl,
+    .ReadData = ARM_Flash_ReadData,
+    .ProgramData = ARM_Flash_ProgramData,
+    .EraseSector = ARM_Flash_EraseSector,
+    .GetStatus = ARM_Flash_GetStatus,
+    .GetInfo = ARM_Flash_GetInfo
 };
 
 #if 0
@@ -315,7 +303,7 @@ static status_t FLASH_ReadInit(flash_config_t *config)
 {
     status_t status = kStatus_Fail;
 
-	    if (config == NULL)
+	if (config == NULL)
     {
         return kStatus_FLASH_InvalidArgument;
     }

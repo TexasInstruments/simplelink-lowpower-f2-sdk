@@ -1,4 +1,4 @@
-# Copyright (c) 2022-2023, Texas Instruments Incorporated
+# Copyright (c) 2022-2024, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -42,11 +42,13 @@ if(WIN32)
     set(CMAKE_CXX_COMPILER "${GCC_ARMCOMPILER}/bin/arm-none-eabi-gcc.exe")
     set(CMAKE_ASM_COMPILER "${GCC_ARMCOMPILER}/bin/arm-none-eabi-gcc.exe")
     set(CMAKE_AR "${GCC_ARMCOMPILER}/bin/arm-none-eabi-gcc-ar.exe")
+    set(CMAKE_RANLIB "${GCC_ARMCOMPILER}/bin/arm-none-eabi-gcc-ranlib.exe")
 else()
     set(CMAKE_C_COMPILER "${GCC_ARMCOMPILER}/bin/arm-none-eabi-gcc")
     set(CMAKE_CXX_COMPILER "${GCC_ARMCOMPILER}/bin/arm-none-eabi-gcc")
     set(CMAKE_ASM_COMPILER "${GCC_ARMCOMPILER}/bin/arm-none-eabi-gcc")
     set(CMAKE_AR "${GCC_ARMCOMPILER}/bin/arm-none-eabi-gcc-ar")
+    set(CMAKE_RANLIB "${GCC_ARMCOMPILER}/bin/arm-none-eabi-gcc-ranlib")
 endif()
 
 #Specify how the compilers should be invoked
@@ -103,7 +105,6 @@ if(NOT TARGET TOOLCHAIN_gcc)
         # If map-file property exists, set map file
         $<$<NOT:$<STREQUAL:$<TARGET_PROPERTY:TI_LINKER_MAP_FILE>,>>:-Wl,-Map,$<TARGET_PROPERTY:TI_LINKER_MAP_FILE>>
         -specs=nano.specs
-        -specs=nosys.specs
         # Disables 0x10000 sector allocation boundaries, which interfere
         # with the SPE layouts and prevent proper secure operation
         -Wl,--nmagic

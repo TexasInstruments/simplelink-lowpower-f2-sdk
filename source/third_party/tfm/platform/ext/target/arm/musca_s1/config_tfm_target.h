@@ -9,12 +9,10 @@
 #define __CONFIG_TFM_TARGET_H__
 
 /* Use stored NV seed to provide entropy */
-#undef CRYPTO_NV_SEED
 #define CRYPTO_NV_SEED                         0
 
 #ifdef PSA_API_TEST_CRYPTO
-#undef CRYPTO_STACK_SIZE
-#define CRYPTO_STACK_SIZE                      0x2200
+#define CRYPTO_STACK_SIZE                      0x2500
 #endif
 
 #endif /* __CONFIG_TFM_TARGET_H__ */

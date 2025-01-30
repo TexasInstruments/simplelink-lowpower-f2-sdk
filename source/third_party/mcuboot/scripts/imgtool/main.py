@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 #
 # Copyright 2017-2020 Linaro Limited
-# Copyright 2019-2020 Arm Limited
+# Copyright 2019-2023 Arm Limited
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -22,8 +22,10 @@ import click
 import getpass
 import imgtool.keys as keys
 import sys
+import base64
 from imgtool import image, imgtool_version
 from imgtool.version import decode_version
+from imgtool.dumpinfo import dump_imginfo
 from .keys import (
     RSAUsageError, ECDSAUsageError, Ed25519UsageError, X25519UsageError)
 
@@ -52,6 +54,9 @@ def gen_ecdsa_p521(keyfile, passwd):
 
 def gen_ecdsa_p224(keyfile, passwd):
     print("TODO: p-224 not yet implemented")
+    
+def gen_ecdsa_p384(keyfile, passwd):
+    keys.ECDSA384P1.generate().export_private(keyfile, passwd=passwd)
 
 
 def gen_ed25519(keyfile, passwd):
@@ -63,15 +68,31 @@ def gen_x25519(keyfile, passwd):
 
 
 valid_langs = ['c', 'rust']
+valid_hash_encodings = ['lang-c', 'raw']
+valid_encodings = ['lang-c', 'lang-rust', 'pem', 'raw']
 keygens = {
     'rsa-2048':   gen_rsa2048,
     'rsa-3072':   gen_rsa3072,
     'ecdsa-p256': gen_ecdsa_p256,
     'ecdsa-p224': gen_ecdsa_p224,
     'ecdsa-p521': gen_ecdsa_p521,
+    'ecdsa-p384': gen_ecdsa_p384,
     'ed25519':    gen_ed25519,
     'x25519':     gen_x25519,
 }
+valid_formats = ['openssl', 'pkcs8']
+
+
+def load_signature(sigfile):
+    with open(sigfile, 'rb') as f:
+        signature = base64.b64decode(f.read())
+        return signature
+
+
+def save_signature(sigfile, sig):
+    with open(sigfile, 'wb') as f:
+        signature = base64.b64encode(sig)
+        f.write(signature)
 
 
 def load_key(keyfile):
@@ -108,20 +129,71 @@ def keygen(type, key, password):
     keygens[type](key, password)
 
 
-@click.option('-l', '--lang', metavar='lang', default=valid_langs[0],
-              type=click.Choice(valid_langs))
+@click.option('-l', '--lang', metavar='lang',
+              type=click.Choice(valid_langs),
+              help='This option is deprecated. Please use the '
+                   '`--encoding` option. '
+                   'Valid langs: {}'.format(', '.join(valid_langs)))
+@click.option('-e', '--encoding', metavar='encoding',
+              type=click.Choice(valid_encodings),
+              help='Valid encodings: {}'.format(', '.join(valid_encodings)))
 @click.option('-k', '--key', metavar='filename', required=True)
+@click.option('-o', '--output', metavar='output', required=False,
+              help='Specify the output file\'s name. \
+                    The stdout is used if it is not provided.')
 @click.command(help='Dump public key from keypair')
-def getpub(key, lang):
+def getpub(key, encoding, lang, output):
+    if encoding and lang:
+        raise click.UsageError('Please use only one of `--encoding/-e` '
+                               'or `--lang/-l`')
+    elif not encoding and not lang:
+        # Preserve old behavior defaulting to `c`. If `lang` is removed,
+        # `default=valid_encodings[0]` should be added to `-e` param.
+        lang = valid_langs[0]
     key = load_key(key)
+
+    if not output:
+        output = sys.stdout
     if key is None:
         print("Invalid passphrase")
-    elif lang == 'c':
-        key.emit_c_public()
-    elif lang == 'rust':
-        key.emit_rust_public()
+    elif lang == 'c' or encoding == 'lang-c':
+        key.emit_c_public(file=output)
+    elif lang == 'rust' or encoding == 'lang-rust':
+        key.emit_rust_public(file=output)
+    elif encoding == 'pem':
+        key.emit_public_pem(file=output)
+    elif encoding == 'raw':
+        key.emit_raw_public(file=output)
     else:
-        raise ValueError("BUG: should never get here!")
+        raise click.UsageError()
+
+
+@click.option('-e', '--encoding', metavar='encoding',
+              type=click.Choice(valid_hash_encodings),
+              help='Valid encodings: {}. '
+                   'Default value is {}.'
+                   .format(', '.join(valid_hash_encodings),
+                           valid_hash_encodings[0]))
+@click.option('-k', '--key', metavar='filename', required=True)
+@click.option('-o', '--output', metavar='output', required=False,
+              help='Specify the output file\'s name. \
+                    The stdout is used if it is not provided.')
+@click.command(help='Dump the SHA256 hash of the public key')
+def getpubhash(key, output, encoding):
+    if not encoding:
+        encoding = valid_hash_encodings[0]
+    key = load_key(key)
+
+    if not output:
+        output = sys.stdout
+    if key is None:
+        print("Invalid passphrase")
+    elif encoding == 'lang-c':
+        key.emit_c_public_hash(file=output)
+    elif encoding == 'raw':
+        key.emit_raw_public_hash(file=output)
+    else:
+        raise click.UsageError()
 
 
 @click.option('--minimal', default=False, is_flag=True,
@@ -130,13 +202,17 @@ def getpub(key, lang):
                    'might require changes to the build config. Check the docs!'
               )
 @click.option('-k', '--key', metavar='filename', required=True)
+@click.option('-f', '--format',
+              type=click.Choice(valid_formats),
+              help='Valid formats: {}'.format(', '.join(valid_formats))
+              )
 @click.command(help='Dump private key from keypair')
-def getpriv(key, minimal):
+def getpriv(key, minimal, format):
     key = load_key(key)
     if key is None:
         print("Invalid passphrase")
     try:
-        key.emit_private(minimal)
+        key.emit_private(minimal, format)
     except (RSAUsageError, ECDSAUsageError, Ed25519UsageError,
             X25519UsageError) as e:
         raise click.UsageError(e)
@@ -164,12 +240,24 @@ def verify(key, imgfile, rsa_pss):
     elif ret == image.VerifyResult.INVALID_TLV_INFO_MAGIC:
         print("Invalid TLV info magic; is this an MCUboot image?")
     elif ret == image.VerifyResult.INVALID_HASH:
-        print("Image has an invalid sha256 digest")
+        print("Image has an invalid hash")
     elif ret == image.VerifyResult.INVALID_SIGNATURE:
         print("No signature found for the given key")
     else:
         print("Unknown return code: {}".format(ret))
     sys.exit(1)
+
+
+@click.argument('imgfile')
+@click.option('-o', '--outfile', metavar='filename', required=False,
+              help='Save image information to outfile in YAML format')
+@click.option('-s', '--silent', default=False, is_flag=True,
+              help='Do not print image information to output')
+@click.command(help='Print header, TLV area and trailer information '
+                    'of a signed image')
+def dumpinfo(imgfile, outfile, silent):
+    dump_imginfo(imgfile, outfile, silent)
+    print("dumpinfo has run successfully")
 
 
 def validate_version(ctx, param, value):
@@ -263,6 +351,14 @@ class BasedIntParamType(click.ParamType):
 @click.option('-E', '--encrypt', metavar='filename',
               help='Encrypt image using the provided public key. '
                    '(Not supported in direct-xip or ram-load mode.)')
+@click.option('--encrypt-keylen', default='128',
+              type=click.Choice(['128', '256']),
+              help='When encrypting the image using AES, select a 128 bit or '
+                   '256 bit key len.')
+@click.option('-c', '--clear', required=False, is_flag=True, default=False,
+              help='Output a non-encrypted image with encryption capabilities,'
+                   'so it can be installed in the primary slot, and encrypted '
+                   'when swapped to the secondary.')
 @click.option('-e', '--endian', type=click.Choice(['little', 'big']),
               default='little', help="Select little or big endian")
 @click.option('--overwrite-only', default=False, is_flag=True,
@@ -297,20 +393,38 @@ class BasedIntParamType(click.ParamType):
               help='Specify the value of security counter. Use the `auto` '
               'keyword to automatically generate it from the image version.')
 @click.option('-v', '--version', callback=validate_version,  required=True)
-@click.option('--align', type=click.Choice(['1', '2', '4', '8']),
+@click.option('--align', type=click.Choice(['1', '2', '4', '8', '16', '32']),
               required=True)
+@click.option('--max-align', type=click.Choice(['8', '16', '32']),
+              required=False,
+              help='Maximum flash alignment. Set if flash alignment of the '
+              'primary and secondary slot differ and any of them is larger '
+              'than 8.')
 @click.option('--public-key-format', type=click.Choice(['hash', 'full']),
               default='hash', help='In what format to add the public key to '
               'the image manifest: full key or hash of the key.')
 @click.option('-k', '--key', metavar='filename')
+@click.option('--fix-sig', metavar='filename',
+              help='fixed signature for the image. It will be used instead of '
+              'the signature calculated using the public key')
+@click.option('--fix-sig-pubkey', metavar='filename',
+              help='public key relevant to fixed signature')
+@click.option('--sig-out', metavar='filename',
+              help='Path to the file to which signature will be written. '
+              'The image signature will be encoded as base64 formatted string')
+@click.option('--vector-to-sign', type=click.Choice(['payload', 'digest']),
+              help='send to OUTFILE the payload or payload''s digest instead '
+              'of complied image. These data can be used for external image '
+              'signing')
 @click.command(help='''Create a signed or unsigned image\n
                INFILE and OUTFILE are parsed as Intel HEX if the params have
                .hex extension, otherwise binary format is used''')
 def sign(key, public_key_format, align, version, pad_sig, header_size,
          pad_header, slot_size, pad, confirm, max_sectors, overwrite_only,
-         endian, encrypt, infile, outfile, dependencies, load_addr, hex_addr,
-         erased_val, save_enctlv, security_counter, boot_record, custom_tlv,
-         rom_fixed, rsa_pss):
+         endian, encrypt_keylen, encrypt, infile, outfile, dependencies,
+         load_addr, hex_addr, erased_val, save_enctlv, security_counter,
+         boot_record, custom_tlv, rom_fixed, rsa_pss, max_align, clear, fix_sig,
+         fix_sig_pubkey, sig_out, vector_to_sign):
 
     if confirm:
         # Confirmed but non-padded images don't make much sense, because
@@ -322,7 +436,7 @@ def sign(key, public_key_format, align, version, pad_sig, header_size,
                       max_sectors=max_sectors, overwrite_only=overwrite_only,
                       endian=endian, load_addr=load_addr, rom_fixed=rom_fixed,
                       erased_val=erased_val, save_enctlv=save_enctlv,
-                      security_counter=security_counter)
+                      security_counter=security_counter, max_align=max_align)
     img.load(infile)
     key = load_key(key) if key else None
     enckey = load_key(encrypt) if encrypt else None
@@ -331,6 +445,8 @@ def sign(key, public_key_format, align, version, pad_sig, header_size,
              not isinstance(enckey, keys.ECDSA256P1Public))
                 or (isinstance(key, keys.ECDSA521P1) and
              not isinstance(enckey, keys.ECDSA521P1Public))
+                or (isinstance(key, keys.ECDSA384P1) and
+               not isinstance(enckey, keys.ECDSA384P1Public))
                 or (isinstance(key, keys.RSA) and
                     not isinstance(enckey, keys.RSAPublic))):
             # FIXME
@@ -361,9 +477,31 @@ def sign(key, public_key_format, align, version, pad_sig, header_size,
         else:
             custom_tlvs[tag] = value.encode('utf-8')
 
+    # Allow signature calculated externally.
+    raw_signature = load_signature(fix_sig) if fix_sig else None
+
+    baked_signature = None
+    pub_key = None
+
+    if raw_signature is not None:
+        if fix_sig_pubkey is None:
+            raise click.UsageError(
+                'public key of the fixed signature is not specified')
+
+        pub_key = load_key(fix_sig_pubkey)
+
+        baked_signature = {
+            'value': raw_signature
+        }
+
     img.create(key, public_key_format, enckey, dependencies, boot_record,
-               custom_tlvs)
+               custom_tlvs, int(encrypt_keylen), clear, baked_signature,
+               pub_key, vector_to_sign)
     img.save(outfile, hex_addr)
+
+    if sig_out is not None:
+        new_signature = img.get_signature()
+        save_signature(sig_out, new_signature)
 
 
 class AliasesGroup(click.Group):
@@ -399,10 +537,12 @@ def imgtool():
 
 imgtool.add_command(keygen)
 imgtool.add_command(getpub)
+imgtool.add_command(getpubhash)
 imgtool.add_command(getpriv)
 imgtool.add_command(verify)
 imgtool.add_command(sign)
 imgtool.add_command(version)
+imgtool.add_command(dumpinfo)
 
 
 if __name__ == '__main__':

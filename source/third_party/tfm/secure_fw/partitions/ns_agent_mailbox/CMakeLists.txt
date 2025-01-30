@@ -16,10 +16,12 @@ cmake_policy(SET CMP0079 NEW)
 
 add_library(tfm_psa_rot_partition_ns_agent_mailbox STATIC)
 
+add_dependencies(tfm_psa_rot_partition_ns_agent_mailbox manifest_tool)
+
 target_sources(tfm_psa_rot_partition_ns_agent_mailbox
     PRIVATE
-        ${CMAKE_SOURCE_DIR}/secure_fw/spm/cmsis_psa/tfm_rpc.c
-        $<$<NOT:$<BOOL:${TFM_PLAT_SPECIFIC_MULTI_CORE_COMM}>>:${CMAKE_SOURCE_DIR}/secure_fw/spm/cmsis_psa/tfm_spe_mailbox.c>
+        ${CMAKE_SOURCE_DIR}/secure_fw/spm/core/tfm_rpc.c
+        $<$<NOT:$<BOOL:${TFM_PLAT_SPECIFIC_MULTI_CORE_COMM}>>:${CMAKE_SOURCE_DIR}/secure_fw/spm/core/tfm_spe_mailbox.c>
         ns_agent_mailbox.c
         tfm_multi_core_mem_check.c
 )
@@ -57,7 +59,7 @@ target_link_libraries(tfm_partitions
         tfm_psa_rot_partition_ns_agent_mailbox
 )
 
-target_compile_definitions(tfm_partition_defs
+target_compile_definitions(tfm_config
     INTERFACE
         TFM_PARTITION_NS_AGENT_MAILBOX
 )

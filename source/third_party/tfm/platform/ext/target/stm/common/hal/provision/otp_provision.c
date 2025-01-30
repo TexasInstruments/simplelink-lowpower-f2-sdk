@@ -105,7 +105,7 @@ const struct flash_otp_nv_counters_region_t otp_stm_provision = {
     .verification_service_url = "www.trustedfirmware.org",
     /* attestation_profile_definition */
     .profile_definition ="PSA_IOT_PROFILE_1",
-#if (MCUBOOT_SIGN_RSA_LEN == 2048)
+#if (MCUBOOT_SIGNATURE_TYPE == RSA-2048)
 
     .bl2_rotpk_0 = {
         0xfc, 0x57, 0x01, 0xdc, 0x61, 0x35, 0xe1, 0x32,
@@ -129,7 +129,8 @@ const struct flash_otp_nv_counters_region_t otp_stm_provision = {
         0xbf, 0x00, 0xb9, 0xd3, 0x2c, 0x1f, 0x03, 0x96,
 
     },
-#elif (MCUBOOT_SIGN_RSA_LEN == 3072)
+#elif (MCUBOOT_SIGNATURE_TYPE == RSA-3072)
+
     .bl2_rotpk_0 = {
         0xbf, 0xe6, 0xd8, 0x6f, 0x88, 0x26, 0xf4, 0xff,
         0x97, 0xfb, 0x96, 0xc4, 0xe6, 0xfb, 0xc4, 0x99,

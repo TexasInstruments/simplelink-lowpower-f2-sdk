@@ -58,6 +58,15 @@ extern "C" {
  */
 #define PSA_MAX_IOVEC               (4u)
 
+
+/**
+ * The minimum and maximum value in THIS implementation that can be passed
+ * as the type parameter in a call to psa_call().
+ */
+
+#define PSA_CALL_TYPE_MIN           (0)
+#define PSA_CALL_TYPE_MAX           (INT16_MAX)
+
 /**
  * An IPC message type that indicates a generic client request.
  */

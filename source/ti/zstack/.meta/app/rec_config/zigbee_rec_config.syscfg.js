@@ -96,6 +96,11 @@ for (let i=0; i<devices.length; i++) {
       }
     }
   }
+
+  if (tempServerClusterOptions.length == 0) {
+    recAlwaysHidden.push(device._id + "recServer");
+    tempServerClusterOptions.push({name: "dummy", displayName: "dummy"});
+  }
   recModule.config.push({
     name: device._id + "recServer",
     displayName: "Server Clusters",
@@ -108,9 +113,6 @@ for (let i=0; i<devices.length; i++) {
     minSelections: 0
   })
   recDropDowns.push(device._id + "recServer");
-  if (tempServerClusterOptions.length == 0) {
-    recAlwaysHidden.push(device._id + "recServer");
-  }
 
   let tempClientClusterOptions = [];
   if (device.client && device.client.cluster) {
@@ -120,6 +122,11 @@ for (let i=0; i<devices.length; i++) {
         tempClientClusterOptions.push({name: cluster._id, displayName: clusterDict[cluster._id]._name});
       }
     }
+  }
+
+  if (tempClientClusterOptions.length == 0) {
+    recAlwaysHidden.push(device._id + "recClient");
+    tempClientClusterOptions.push({name: "dummy", displayName: "dummy"});
   }
   recModule.config.push({
     name: device._id + "recClient",
@@ -133,7 +140,6 @@ for (let i=0; i<devices.length; i++) {
     minSelections: 0
   })
   recDropDowns.push(device._id + "recClient");
-  if (recOnClientClustersChange.length == 0) { recAlwaysHidden.push(device._id + "recClient"); }
 }
 
 /* Add Attribute Groups */

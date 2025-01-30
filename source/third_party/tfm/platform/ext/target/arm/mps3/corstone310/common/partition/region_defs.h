@@ -33,11 +33,6 @@
 #define NS_HEAP_SIZE            (0x0001000)
 #define NS_STACK_SIZE           (0x0001000)
 
-/* This size of buffer is big enough to store an attestation
- * token produced by initial attestation service
- */
-#define PSA_INITIAL_ATTEST_TOKEN_MAX_SIZE   (0x250)
-
 #ifdef BL2
 #ifndef LINK_TO_SECONDARY_PARTITION
 #define S_IMAGE_PRIMARY_PARTITION_OFFSET   (FLASH_AREA_0_OFFSET)
@@ -154,5 +149,18 @@
 #define BOOT_TFM_SHARED_DATA_SIZE (0x400)
 #define BOOT_TFM_SHARED_DATA_LIMIT (BOOT_TFM_SHARED_DATA_BASE + \
                                     BOOT_TFM_SHARED_DATA_SIZE - 1)
+
+#define PROVISIONING_BUNDLE_CODE_START (BL2_CODE_START + BL2_CODE_SIZE)
+#define PROVISIONING_BUNDLE_CODE_SIZE  (PROVISIONING_CODE_PADDED_SIZE)
+/* The max size of the values(keys, seeds) that are going to be provisioned
+ * into the OTP. */
+#define PROVISIONING_BUNDLE_VALUES_START (BL2_DATA_START + BL2_DATA_SIZE)
+#define PROVISIONING_BUNDLE_VALUES_SIZE (PROVISIONING_VALUES_PADDED_SIZE)
+#define PROVISIONING_BUNDLE_DATA_START (PROVISIONING_BUNDLE_VALUES_START + \
+                                        PROVISIONING_BUNDLE_VALUES_SIZE)
+#define PROVISIONING_BUNDLE_DATA_SIZE (PROVISIONING_DATA_PADDED_SIZE)
+
+#define PROVISIONING_BUNDLE_START (PROVISIONING_BUNDLE_CODE_START + \
+                                      PROVISIONING_BUNDLE_CODE_SIZE)
 
 #endif /* __REGION_DEFS_H__ */

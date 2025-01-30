@@ -129,18 +129,30 @@ extern JOIN_TIME_s node_join_time;
 ti_wisun_config_t ti_wisun_config =
 {
     .rapid_join = FEATURE_RAPID_JOIN_ENABLE,
+    .network_size_config = FEATURE_NETWORK_PROFILE,
     .mpl_low_latency = FEATURE_MPL_LOW_LATENCY_ENABLE,
     .rapid_disconnect_detect_br = FEATURE_RAPID_DISCONNECT_DETECT_BR_SEC,
     .rapid_disconnect_detect_rn = FEATURE_RAPID_DISCONNECT_DETECT_RN_SEC,
     .auth_type  = NETWORK_AUTH_TYPE,
     .use_fixed_gtk_keys = false,
     .force_star_topology = FEATURE_FORCE_STAR_TOPOLOGY,
+    .use_dhcp_solicit_for_renew = true,
     .fixed_gtk_keys = {
         FIXED_GTK_KEY_1,
         FIXED_GTK_KEY_2,
         FIXED_GTK_KEY_3,
         FIXED_GTK_KEY_4,
-    },
+    }
+};
+
+ti_br_config_t ti_br_config =
+{
+    .use_external_dhcp_server = FEATURE_EXTERNAL_DHCP_SERVER_ENABLE,
+    .external_dhcp_server_addr = FEATURE_EXTERNAL_DHCP_SERVER_ADDR,
+    .use_external_radius_server = FEATURE_EXTERNAL_RADIUS_SERVER_ENABLE,
+    .external_radius_server_addr = FEATURE_EXTERNAL_RADIUS_SERVER_ADDR,
+    .external_radius_server_shared_secret = FEATURE_EXTERNAL_RADIUS_SERVER_SHARED_SECRET,
+    .external_radius_server_shared_secret_length = FEATURE_EXTERNAL_RADIUS_SERVER_SHARED_SECRET_LENGTH,
 };
 
 configurable_props_t cfg_props = { .phyTxPower = CONFIG_TRANSMIT_POWER, \

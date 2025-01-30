@@ -1,11 +1,11 @@
 # SimpleLink&trade; CC1312PSIP LaunchPad&trade; Settings & Resources
 
-The [__SimpleLink&trade; CC1312PSIP LaunchPad&trade;__][launchpad] contains a
+The [__SimpleLink&trade; CC1312PSIP LaunchPad&trade;__][board] contains a
 [__CC1312PSIP__][device] device.
 
 ## Jumper Settings
 
-* Close the __`LEDs`__ jumper to enable the on-board LEDs.
+* Close the __`LEDs`__ jumpers to enable the on-board LEDs.
 
 ## SysConfig Board File
 
@@ -37,7 +37,7 @@ The following BoosterPacks are used with some driver examples.
 * No modifications are needed.
 
 [device]: https://www.ti.com/product/CC1312PSIP
-[launchpad]: https://www.ti.com/tool/LP-EM-CC1312PSIP
+[board]: https://www.ti.com/tool/LP-EM-CC1312PSIP
 [boostxl-sharp128]: https://www.ti.com/tool/BOOSTXL-SHARP128
 [bp-bassensorsmkii]: https://www.ti.com/tool/BP-BASSENSORSMKII
 [cc3200audboost]: https://www.ti.com/tool/CC3200AUDBOOST

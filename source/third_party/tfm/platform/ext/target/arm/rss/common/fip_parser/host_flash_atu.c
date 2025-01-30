@@ -74,7 +74,8 @@ int host_flash_atu_setup_image_input_slots_from_fip(uint64_t fip_offset,
                                                     uint32_t slot,
                                                     uintptr_t logical_address,
                                                     uuid_t image_uuid,
-                                                    uint32_t *logical_address_offset)
+                                                    uint32_t *logical_address_offset,
+                                                    size_t *slot_size)
 {
     enum atu_error_t err;
     int rc;
@@ -116,7 +117,12 @@ int host_flash_atu_setup_image_input_slots_from_fip(uint64_t fip_offset,
         return rc;
     }
 
-    *logical_address_offset = alignment_offset;
+    if (logical_address_offset != NULL) {
+        *logical_address_offset = alignment_offset;
+    }
+    if (slot_size != NULL) {
+        *slot_size = atu_slot_size;
+    }
 
     return 0;
 }
@@ -232,7 +238,7 @@ static int setup_image_input_slots(uuid_t image_uuid, uint32_t offsets[2])
     rc = host_flash_atu_setup_image_input_slots_from_fip(fip_offsets[0],
                                           RSS_ATU_REGION_INPUT_IMAGE_SLOT_0,
                                           HOST_FLASH0_IMAGE0_BASE_S, image_uuid,
-                                          &offsets[0]);
+                                          &offsets[0], NULL);
     if (rc == 0) {
         fip_mapped[0] = true;
     }
@@ -240,7 +246,7 @@ static int setup_image_input_slots(uuid_t image_uuid, uint32_t offsets[2])
     rc = host_flash_atu_setup_image_input_slots_from_fip(fip_offsets[1],
                                           RSS_ATU_REGION_INPUT_IMAGE_SLOT_1,
                                           HOST_FLASH0_IMAGE1_BASE_S, image_uuid,
-                                          &offsets[1]);
+                                          &offsets[1], NULL);
     if (rc == 0) {
         fip_mapped[1] = true;
     }
@@ -256,7 +262,7 @@ static int setup_image_input_slots(uuid_t image_uuid, uint32_t offsets[2])
         rc = host_flash_atu_setup_image_input_slots_from_fip(fip_offsets[0],
                                               RSS_ATU_REGION_INPUT_IMAGE_SLOT_1,
                                               HOST_FLASH0_IMAGE1_BASE_S,
-                                              image_uuid, &offsets[1]);
+                                              image_uuid, &offsets[1], NULL);
         if (rc) {
             return rc;
         }
@@ -264,7 +270,7 @@ static int setup_image_input_slots(uuid_t image_uuid, uint32_t offsets[2])
         rc = host_flash_atu_setup_image_input_slots_from_fip(fip_offsets[1],
                                               RSS_ATU_REGION_INPUT_IMAGE_SLOT_0,
                                               HOST_FLASH0_IMAGE0_BASE_S,
-                                              image_uuid, &offsets[0]);
+                                              image_uuid, &offsets[0], NULL);
         if (rc) {
             return rc;
         }

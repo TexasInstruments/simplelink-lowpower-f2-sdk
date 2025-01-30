@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Copyright (c) 2018-2022, Arm Limited. All rights reserved.
+# Copyright (c) 2018-2023, Arm Limited. All rights reserved.
 # Copyright (c) 2022 Cypress Semiconductor Corporation (an Infineon company)
 # or an affiliate of Cypress Semiconductor Corporation. All rights reserved.
 #
@@ -33,6 +33,11 @@ TFM_PID_BASE = 256
 
 # variable for checking for duplicated sid
 sid_list = []
+
+# Summary of manifest attributes defined by FFM for use in the Secure Partition manifest file.
+ffm_manifest_attributes = ['psa_framework_version', 'name', 'type', 'priority', 'model', 'entry_point', \
+'stack_size', 'description', 'entry_init', 'heap_size', 'mmio_regions', 'services', 'irqs', 'dependencies']
+
 class TemplateLoader(BaseLoader):
     """
     Template loader class.
@@ -216,6 +221,20 @@ def validate_dependency_chain(partition,
         validate_dependency_chain(dependency, dependency_table, dependency_chain)
     dependency_table[partition]['validated'] = True
 
+def manifest_attribute_check(manifest, manifest_item):
+    """
+    Check whether Non-FF-M compliant attributes are explicitly registered in manifest lists.
+
+    Inputs:
+        - manifest:        next manifest to be checked
+        - manifest_item:   the manifest items in manifest lists
+    """
+    allowed_attributes = ffm_manifest_attributes + manifest_item.get('non_ffm_attributes', [])
+    for keyword in manifest.keys():
+        if keyword not in allowed_attributes:
+            logging.error('The Non-FFM attribute {} is used by {} without registration.'.format(keyword, manifest['name']))
+            exit(1)
+
 def process_partition_manifests(manifest_lists, configs):
     """
     Parse the input manifest lists, check if manifest settings are valid,
@@ -249,13 +268,17 @@ def process_partition_manifests(manifest_lists, configs):
     config_impl = {
         'CONFIG_TFM_SPM_BACKEND_SFN'              : '0',
         'CONFIG_TFM_SPM_BACKEND_IPC'              : '0',
-        'CONFIG_TFM_PSA_API_SFN_CALL'             : '0',
-        'CONFIG_TFM_PSA_API_CROSS_CALL'           : '0',
-        'CONFIG_TFM_PSA_API_SUPERVISOR_CALL'      : '0',
         'CONFIG_TFM_CONNECTION_BASED_SERVICE_API' : '0',
         'CONFIG_TFM_MMIO_REGION_ENABLE'           : '0',
         'CONFIG_TFM_FLIH_API'                     : '0',
         'CONFIG_TFM_SLIH_API'                     : '0'
+    }
+    priority_map = {
+        'LOWEST'              : '00',
+        'LOW'                 : '01',
+        'NORMAL'              : '02',
+        'HIGH'                : '03',
+        'HIGHEST'             : '04'
     }
 
     isolation_level = int(configs['TFM_ISOLATION_LEVEL'], base = 10)
@@ -271,11 +294,18 @@ def process_partition_manifests(manifest_lists, configs):
         with open(item) as manifest_list_yaml_file:
             manifest_dic = yaml.safe_load(manifest_list_yaml_file)['manifest_list']
             for dict in manifest_dic:
-                # Replace environment variables in the manifest path and convert to absolute path.
-                # If it's already abspath, the path will not be changed.
-                manifest_path = os.path.join(os.path.dirname(item), # path of manifest list
-                                             os.path.expandvars(dict['manifest']))\
-                                             .replace('\\', '/')
+                # Replace environment variables in the manifest path.
+                expanded_path = os.path.expandvars(dict['manifest']).replace('\\', '/')
+
+                # If the manifest exists relative to the manifest list, then use
+                # that. Else, either interpret it as an absolute path or one
+                # relative to the current working directory
+                path_relative_to_manifest_list = os.path.join(os.path.dirname(item), # path of manifest list
+                                                              expanded_path)
+                if os.path.isfile(path_relative_to_manifest_list):
+                    manifest_path = path_relative_to_manifest_list
+                else:
+                    manifest_path = expanded_path
                 dict['manifest'] = manifest_path
                 all_manifests.append(dict)
 
@@ -324,11 +354,17 @@ def process_partition_manifests(manifest_lists, configs):
         manifest_path = manifest_item['manifest']
         with open(manifest_path) as manifest_file:
             manifest = yaml.safe_load(manifest_file)
+            # Check manifest attribute validity
+            manifest_attribute_check(manifest, manifest_item)
+
             if manifest.get('model', None) == 'dual':
                 # If a Partition supports both models, it can set the "model" to "backend".
                 # The actual model used follows the backend being used.
                 manifest['model'] = backend
             manifest = manifest_validation(manifest, pid)
+
+            # Priority mapping
+            numbered_priority = priority_map[manifest['priority']]
 
         if pid == None or pid >= TFM_PID_BASE:
             # Count the number of IPC/SFN partitions
@@ -394,7 +430,8 @@ def process_partition_manifests(manifest_lists, configs):
                                'header_file': manifest_head_file,
                                'intermedia_file': intermedia_file,
                                'loadinfo_file': load_info_file,
-                               'output_dir':output_dir})
+                               'output_dir': output_dir,
+                               'numbered_priority': numbered_priority})
 
     logging.info("------------ Display partition configuration - end ------------")
 
@@ -419,13 +456,8 @@ def process_partition_manifests(manifest_lists, configs):
             exit(1)
 
         config_impl['CONFIG_TFM_SPM_BACKEND_SFN'] = '1'
-        config_impl['CONFIG_TFM_PSA_API_SFN_CALL'] = '1'
     elif backend == 'IPC':
         config_impl['CONFIG_TFM_SPM_BACKEND_IPC'] = '1'
-        if isolation_level > 1:
-            config_impl['CONFIG_TFM_PSA_API_SUPERVISOR_CALL'] = '1'
-        else:
-            config_impl['CONFIG_TFM_PSA_API_CROSS_CALL'] = '1'
 
     if partition_statistics['connection_based_srv_num'] > 0:
         config_impl['CONFIG_TFM_CONNECTION_BASED_SERVICE_API'] = 1
@@ -468,6 +500,7 @@ def gen_per_partition_files(context):
         partition_context['manifest'] = one_partition['manifest']
         partition_context['attr'] = one_partition['attr']
         partition_context['manifest_out_basename'] = one_partition['manifest_out_basename']
+        partition_context['numbered_priority'] = one_partition['numbered_priority']
 
         logging.info ('Generating {} in {}'.format(one_partition['attr']['description'],
                                             one_partition['output_dir']))

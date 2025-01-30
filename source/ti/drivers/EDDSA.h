@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Texas Instruments Incorporated
+ * Copyright (c) 2020-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -321,6 +321,41 @@
  * @endcode
  *
  *
+ * ## Using KeyStore for EDDSA Keys #
+ *
+ * @code
+ *
+ * // This example shows how to import persistent public key into KeyStore and
+ * // how to use KeyStore public key to verify EDDSA signature
+ * KeyStore_PSA_KeyFileId publicKeyID;
+ * KeyStore_PSA_KeyAttributes pubKeyAttributes = KEYSTORE_PSA_KEY_ATTRIBUTES_INIT;
+ * int_fast16_t status = KEYSTORE_PSA_STATUS_GENERIC_ERROR;
+ *
+ * // Public Key
+ * KeyStore_PSA_setKeyAlgorithm(&pubKeyAttributes, KEYSTORE_PSA_ALG_PURE_EDDSA);
+ * KeyStore_PSA_setKeyUsageFlags(&pubKeyAttributes, KEYSTORE_PSA_KEY_USAGE_VERIFY_MESSAGE);
+ * // In this example, we assume public key to be stored is for Curve25519
+ * KeyStore_PSA_setKeyType(&priKeyAttributes,
+ *                         KEYSTORE_PSA_KEY_TYPE_ECC_KEY_PAIR_BASE | KEYSTORE_PSA_ECC_CURVE_CURVE25519);
+ * // Set key ID for persistent keys
+ * GET_KEY_ID(publicKeyID, KEYSTORE_PSA_KEY_ID_USER_MIN);
+ * KeyStore_PSA_setKeyLifetime(&pubKeyAttributes, KEYSTORE_PSA_KEY_LIFETIME_PERSISTENT);
+ * status = KeyStore_PSA_importKey(&pubKeyAttributes,
+ *                                 publicKey,
+ *                                 sizeof(publicKey),
+ *                                 &publicKeyID);
+ * if (status != KEYSTORE_PSA_STATUS_SUCCESS)
+ * {
+ *     while(1); // handle error
+ * }
+ * KeyStore_PSA_initKey(&theirPublicKey, publicKeyID, sizeof(theirPublicKeyingMaterial), NULL);
+ *
+ *
+ * // The application can continue to use the theirPublicKey as they would use
+ * // plaintext keys with EDDSA driver
+ * @endcode
+ *
+ *
  */
 
 #ifndef ti_drivers_EDDSA__include
@@ -479,6 +514,14 @@ extern "C" {
  * The SHA2 module did not successfully hash a required value.
  */
 #define EDDSA_STATUS_SHA2_HASH_FAILURE (-15)
+
+/*!
+ * @brief   The KeyStore module returned an error while importing/exporting key
+ *
+ * Functions return EDDSA_STATUS_KEYSTORE_ERROR if any KeyStore operation
+ * did not return KEYSTORE_PSA_STATUS_SUCCESS
+ */
+#define EDDSA_STATUS_KEYSTORE_ERROR (-16)
 
 /*!
  *  @brief EDDSA Global configuration
@@ -839,6 +882,7 @@ void EDDSA_OperationVerify_init(EDDSA_OperationVerify *operation);
  *  @retval #EDDSA_STATUS_KEYSTORE_GENERIC_FAILURE  The KeyStore entered some
  *                                                  error state when storing
  *                                                  the public or private key.
+ *  @retval #EDDSA_STATUS_KEYSTORE_ERROR            The keystore module returned an error.
  */
 int_fast16_t EDDSA_generatePublicKey(EDDSA_Handle handle, EDDSA_OperationGeneratePublicKey *operation);
 
@@ -878,6 +922,7 @@ int_fast16_t EDDSA_generatePublicKey(EDDSA_Handle handle, EDDSA_OperationGenerat
  *  @retval #EDDSA_STATUS_KEYSTORE_GENERIC_FAILURE  The KeyStore entered some
  *                                                  error state when retrieving
  *                                                  the public or private key.
+ *  @retval #EDDSA_STATUS_KEYSTORE_ERROR            The keystore module returned an error.
  */
 int_fast16_t EDDSA_sign(EDDSA_Handle handle, EDDSA_OperationSign *operation);
 
@@ -919,6 +964,7 @@ int_fast16_t EDDSA_sign(EDDSA_Handle handle, EDDSA_OperationSign *operation);
  *  @retval #EDDSA_STATUS_KEYSTORE_GENERIC_FAILURE  The KeyStore entered some
  *                                                  error state when retrieving
  *                                                  the public or private key.
+ *  @retval #EDDSA_STATUS_KEYSTORE_ERROR             The keystore module returned an error.
  */
 int_fast16_t EDDSA_verify(EDDSA_Handle handle, EDDSA_OperationVerify *operation);
 

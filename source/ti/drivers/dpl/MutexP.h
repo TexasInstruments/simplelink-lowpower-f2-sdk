@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2022, Texas Instruments Incorporated
+ * Copyright (c) 2015-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@
  *
  *  @brief      Mutex module for the RTOS Porting Interface
  *
- *  The MutexP module allows task to maintain critical region segments. The
+ *  The MutexP module allows tasks to maintain critical region segments. The
  *  MutexP module has two main functions: ::MutexP_lock and ::MutexP_unlock.
  *
  *  The MutexP module supports recursive calls to the MutexP_lock API by a
@@ -45,8 +45,8 @@
  *  uintptr_t key1, key2;
  *  key1 = MutexP_lock();
  *  key2 = MutexP_lock();
- *  MutexP_lock(key2);
- *  MutexP_lock(key1);
+ *  MutexP_unlock(key2);
+ *  MutexP_unlock(key1);
  *  @endcode
  *
  *  ============================================================================
@@ -200,8 +200,8 @@ extern uintptr_t MutexP_lock(MutexP_Handle handle);
  *  uintptr_t key1, key2;
  *  key1 = MutexP_lock();
  *  key2 = MutexP_lock();
- *  MutexP_lock(key2);
- *  MutexP_lock(key1);
+ *  MutexP_unlock(key2);
+ *  MutexP_unlock(key1);
  *  @endcode
  *
  *  @param  handle  A MutexP_Handle returned from ::MutexP_create

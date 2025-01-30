@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2014-2024, Texas Instruments Incorporated
+ Copyright (c) 2014-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -71,7 +71,6 @@
 
 #include "bcomdef.h"
 #include "util.h"
-
 #ifdef FREERTOS
 #ifndef ICALL_TIMER_TASK_STACK_SIZE
 /**

@@ -11,6 +11,7 @@ cmake_policy(SET CMP0076 NEW)
 set(CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
 
 set(NRF_FOLDER_PATH ${NRF_PLATFORM_PATH}/common/core)
+set(NRF5340_FOLDER_PATH ${NRF_PLATFORM_PATH}/common/nrf5340)
 
 #========================= Platform dependencies ===============================#
 
@@ -24,6 +25,11 @@ target_add_scatter_file(tfm_s
     $<$<C_COMPILER_ID:GNU>:${PLATFORM_DIR}/ext/common/gcc/tfm_common_s.ld>
 )
 
+target_sources(tfm_s
+    PRIVATE
+    ${NRF_FOLDER_PATH}/startup.c
+)
+
 if(NS)
     target_add_scatter_file(tfm_ns
         $<$<C_COMPILER_ID:GNU>:${PLATFORM_DIR}/ext/common/gcc/tfm_common_ns.ld>
@@ -31,6 +37,10 @@ if(NS)
     target_link_libraries(CMSIS_5_tfm_ns
         INTERFACE
             CMSIS_5_RTX_V8MMN
+    )
+    target_sources(tfm_ns
+        PRIVATE
+            ${NRF_FOLDER_PATH}/startup.c
     )
 endif()
 
@@ -45,6 +55,7 @@ endif()
 target_include_directories(platform_s
     PUBLIC
         .
+        ${NRF5340_FOLDER_PATH}
         ${NRF_FOLDER_PATH}/native_drivers
         ${HAL_NORDIC_PATH}/nrfx
         ${HAL_NORDIC_PATH}/nrfx/mdk
@@ -104,6 +115,7 @@ target_compile_definitions(platform_s
 target_include_directories(platform_ns
     PUBLIC
         .
+        ${NRF5340_FOLDER_PATH}
         ${HAL_NORDIC_PATH}/nrfx
         ${HAL_NORDIC_PATH}/nrfx/mdk
         ${HAL_NORDIC_PATH}/nrfx/drivers/include
@@ -130,12 +142,17 @@ if(BL2)
     target_include_directories(platform_bl2
         PUBLIC
             .
+            ${NRF5340_FOLDER_PATH}
             ${HAL_NORDIC_PATH}/nrfx
             ${HAL_NORDIC_PATH}/nrfx/mdk
             ${HAL_NORDIC_PATH}/nrfx/drivers/include
             ${NRF_FOLDER_PATH}/common
         PRIVATE
             ${PLATFORM_DIR}/..
+    )
+    target_sources(bl2
+        PRIVATE
+            ${NRF_FOLDER_PATH}/startup.c
     )
 
     target_sources(platform_bl2
@@ -154,10 +171,10 @@ endif()
 
 if (TFM_PARTITION_PLATFORM)
 install(FILES       ${NRF_FOLDER_PATH}/services/include/tfm_ioctl_core_api.h
-        DESTINATION ${TFM_INSTALL_PATH}/interface/include)
+        DESTINATION ${INSTALL_INTERFACE_INC_DIR})
 
 install(FILES       ${NRF_FOLDER_PATH}/services/src/tfm_ioctl_core_ns_api.c
-        DESTINATION ${TFM_INSTALL_PATH}/interface/src)
+        DESTINATION ${INSTALL_INTERFACE_SRC_DIR})
 
 endif()
 
@@ -168,4 +185,5 @@ target_sources(tfm_spm
         ${NRF_FOLDER_PATH}/faults.c
         ${NRF_FOLDER_PATH}/tfm_hal_isolation.c
         ${NRF_FOLDER_PATH}/tfm_hal_platform_common.c
+        ${NRF_FOLDER_PATH}/target_cfg.c
 )

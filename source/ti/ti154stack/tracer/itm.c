@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2011-2024, Texas Instruments Incorporated
+ Copyright (c) 2011-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -79,6 +79,8 @@
 #include <string.h>
 
 #include <ioc.h>
+
+#ifdef DEBUG_SW_TRACE
 
 #define ITM_STIM_PORT_8(x)    (*(volatile uint8_t *) ITM_STIM_PORT((x)))
 #define ITM_STIM_PORT_32(x)   (*(volatile uint32_t *) ITM_STIM_PORT((x)))
@@ -273,3 +275,5 @@ void ITM_flushModule()
         asm (" NOP");
     }
 }
+
+#endif

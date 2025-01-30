@@ -19,19 +19,12 @@ from collections import defaultdict
 
 from tilogger.interface import LogOutputABC, LogPacket, LoggerCliCtx, TransportABC, LogFormatterABC, LogSubscriberABC
 from tilogger.tracedb import Opcode, TraceDB, ElfString
+from tilogger.helpers import build_value
 
+# Upper value of opcodes used/reserved by Log.h
+RESERVED_OPCODES = 10
 
 logger = logging.getLogger("TI Logger")
-
-
-def _build_value(buf):
-    """
-    Helper function: Turn an iterable into a little-endian integer
-    """
-    value = 0
-    for idx, val in enumerate(buf):
-        value += val << (idx * 8)
-    return value
 
 
 class Logger:
@@ -79,9 +72,10 @@ class Logger:
     def log(self, packet: LogPacket):
         logger.debug("Handling %s", packet)
 
-        # Special handling for Log.h opcodes; these all have elf strings
-        # and may need to be expanded before further handling
-        if packet.opcode < 10:
+        # Special handling for Log.h opcodes; all opcodes except
+        # REPLAY_FILE have elf strings and may need to be expanded
+        # before further handling
+        if packet.opcode < RESERVED_OPCODES and packet.opcode != Opcode.REPLAY_FILE.value:
             self.format_dobby_packet(packet)
 
         # Duplicate formatters for a module are not permitted
@@ -104,7 +98,8 @@ class Logger:
 
     def wait_threads(self):
         try:
-            while True:
+            while threading.active_count() > 1:
+                time.sleep(0.1)
                 pass
         finally:
             typer.echo("Exiting, hoping all threads exit too")
@@ -116,7 +111,7 @@ class Logger:
             logger.error("Packet with less than 4 bytes of data! \n%s", packet)
             return
 
-        address: int = _build_value(packet.data[:4])
+        address: int = build_value(packet.data[:4])
 
         if address not in packet.trace_db.traceDB:
             logger.error("Packet header points to %d but this address does not map to the .out file!", address)
@@ -124,19 +119,14 @@ class Logger:
 
         elf_str: ElfString = packet.trace_db.traceDB[address]
 
-        # We don't use EVENT elfstrings except to search for their relevant EVENT_CONSTRUCT entry
-        # Note that EVENT below is replaced with EVENT_CONSTRUCT
-        if elf_str.opcode == Opcode.EVENT:
-            elf_str = packet.trace_db.eventDB[elf_str.event]
-
         # We have used the first 32-bit word already, so strip it off
         data = packet.data[4:]
 
-        if elf_str.opcode in [Opcode.EVENT_CONSTRUCT, Opcode.FORMATTED_TEXT]:
+        if elf_str.opcode == Opcode.FORMATTED_TEXT:
             values = []
             while data:
                 # Build the first four bytes into an int32
-                values.append(_build_value(data[:4]))
+                values.append(build_value(data[:4]))
                 # Trim the first four bytes from data
                 data = data[4:]
 
@@ -169,13 +159,15 @@ def logger_cli_finalizer(streams, **kwargs):
 # Define CLI entry point
 logger_cli = typer.Typer(chain=True, result_callback=logger_cli_finalizer)
 
+
 # Use callback to collect common options
 @logger_cli.callback(invoke_without_command=False)
 def logger_cli_options(
     ctx: typer.Context,
     elf: List[Path] = typer.Option([], help="Symbol file path (elf/out file) shared by all input parsers"),
 ):
-    r"""Parse LogSinkITM and LogSinkUART log output.
+    r"""Parse LogSinkITM and LogSinkUART log output, or use replay file
+    functionality to store/replay log streams.
 
     This tool may be used to instantiate a serial port parser for the ITM
     and UART Log Sinks. The tool receives logs generated with the Log.h API and
@@ -200,6 +192,12 @@ def main():
     """
     # Plug in transports that are installed, add them as subcommands
     for entry_point in pkg_resources.iter_entry_points("tilogger.transport"):
+        subtyper = entry_point.load()
+        subtyper(logger_cli)
+        # logger_cli.add_typer(subtyper, name=entry_point.name)
+
+    # Plug in outputs that are installed, add them as subcommands
+    for entry_point in pkg_resources.iter_entry_points("tilogger.output"):
         subtyper = entry_point.load()
         subtyper(logger_cli)
         # logger_cli.add_typer(subtyper, name=entry_point.name)

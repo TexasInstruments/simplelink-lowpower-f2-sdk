@@ -14,26 +14,23 @@ MCUBoot Configuration and Build
 -------------------------------
 
 ### Build and Configure
-The CoAP OAD example requires two images to be flashed onto the device (MCUBoot and Wi-SUN application). MCUBoot can be built from the following project: `<SDK_INSTALL_DIR>/examples/nortos/<board_type>/mcuboot_app/mcuboot`. Configure MCUBoot for either onchip or offchip configuration (depending on whether the CoAP OAD onchip or offchip example is used).
+The CoAP OAD example requires two images to be flashed onto the device (MCUBoot and Wi-SUN application). MCUBoot can be built from the following project: `<SDK_INSTALL_DIR>/examples/nortos/<board_type>/mcuboot_app/mcuboot`. Configure MCUboot using the MCUBoot project sysconfig file as follows:
 
 * For both offchip and onchip OAD, verify the following configurations in the MCUBoot project:
-    * In the `<mcuboot_example_root>/mcuboot_config/mcuboot_config.h` file:
-        * Comment out `#define MCUBOOT_DIRECT_XIP` to undefine it
-        * Uncomment `#define MCUBOOT_OVERWRITE_ONLY` so it is defined
-    * In the `<mcuboot_example_root>/flash_map_backend/flash_map_backend.c` file:
-        * Find the definitions for `BOOT_PRIMARY_1_BASE_ADDRESS`, `BOOT_PRIMARY_1_SIZE`, `BOOT_SECONDARY_1_BASE_ADDRESS`, and `BOOT_SECONDARY_1_SIZE`. There should be several, but only one set defined for the platform you are currently using (CC13X2X7 or CC13X4).
+    * For the `Upgrade Mode` configurable, choose `Overwrite`
+    * In the `Image 1` module:
         * If using a CC13X2X7 platform, no changes are required.
-        * If using a CC13X4 platform, modify the values above to the following:
-            * `#define BOOT_PRIMARY_1_BASE_ADDRESS     0x00006000`
-            * `#define BOOT_PRIMARY_1_SIZE             0x00056000`
-            * `#define BOOT_SECONDARY_1_BASE_ADDRESS   0x0005C000`
-            * `#define BOOT_SECONDARY_1_SIZE           0x00056000`
+        * If using a CC13X4 platform, modify the following configurables:
+            * Primary image - Base address:     0x00006000
+            * Primary image - Image size:       0x00056000
+            * Secondary image - Base address:   0x0005C000 for on-chip OAD, 0x0 for off-chip OAD
+            * Secondary image - Image size:     0x00056000
 
-* For onchip OAD projects, in the `<mcuboot_example_root>/mcuboot_config/mcuboot_config.h` file:
-    * Make sure `#define TI_BOOT_USE_EXTERNAL_FLASH` is commented out and not defined
+* For onchip OAD projects:
+    * For the `Enable External Flash` configurable, choose false (unchecked)
 
-* For offchip OAD projects, in the `<mcuboot_example_root>/mcuboot_config/mcuboot_config.h` file:
-    * Uncomment `#define TI_BOOT_USE_EXTERNAL_FLASH` so it is defined
+* For offchip OAD projects:
+    * For the `Enable External Flash` configurable, choose true (checked)
 
 Application Configuration and Build
 -----------------------------------

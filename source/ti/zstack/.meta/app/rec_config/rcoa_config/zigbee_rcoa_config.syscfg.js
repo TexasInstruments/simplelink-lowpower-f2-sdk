@@ -71,6 +71,11 @@ for (let i in clusters) {
       }
     }
   }
+
+  if (tempServerAttributeOptions.length == 0) {
+    rcoaServerAlwaysHidden.push(cluster._id + "rcoaServer");
+    tempServerAttributeOptions.push({name: "dummy", displayName: "dummy"});
+  }
   rcoaModule.config.push({
     name: cluster._id + "rcoaServer",
     displayName: cluster._name + " Server Attributes",
@@ -83,7 +88,6 @@ for (let i in clusters) {
     onChange: bdbScript.bdbOnChange
   })
   rcoaServerDropDowns.push(cluster._id + "rcoaServer");
-  if (tempServerAttributeOptions.length == 0) { rcoaServerAlwaysHidden.push(cluster._id + "rcoaServer"); }
 
   let tempClientAttributeOptions = [];
   if (cluster.client && cluster.client.attribute) {
@@ -93,6 +97,11 @@ for (let i in clusters) {
         tempClientAttributeOptions.push({name: attribute._id, displayName: attribute._name});
       }
     }
+  }
+
+  if (tempClientAttributeOptions.length == 0) {
+    rcoaClientAlwaysHidden.push(cluster._id + "rcoaClient");
+    tempClientAttributeOptions.push({name: "dummy", displayName: "dummy"});
   }
   rcoaModule.config.push({
     name: cluster._id + "rcoaClient",
@@ -106,7 +115,6 @@ for (let i in clusters) {
     onChange: bdbScript.bdbOnChange
   })
   rcoaClientDropDowns.push(cluster._id + "rcoaClient");
-  if (tempClientAttributeOptions.length == 0) { rcoaClientAlwaysHidden.push(cluster._id + "rcoaClient"); }
 }
 
 /* Function to handle changes in the recommended server clusters */

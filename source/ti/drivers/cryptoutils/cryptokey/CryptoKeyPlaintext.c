@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2023, Texas Instruments Incorporated
+ * Copyright (c) 2017-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -112,3 +112,31 @@ int_fast16_t CryptoKeyPlaintext_setKeyLength(CryptoKey *keyHandle, size_t length
 
     return CryptoKey_STATUS_SUCCESS;
 }
+
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX) || (DeviceFamily_PARENT == DeviceFamily_PARENT_CC35XX)
+
+/*
+ *  ======== CryptoKeyPlaintext_initKey ========
+ */
+int_fast16_t CryptoKeyPlaintextHSM_initKey(CryptoKey *keyHandle, uint8_t *key, size_t keyLength)
+{
+    keyHandle->encoding                = CryptoKey_PLAINTEXT_HSM;
+    keyHandle->u.plaintext.keyMaterial = key;
+    keyHandle->u.plaintext.keyLength   = keyLength;
+
+    return CryptoKey_STATUS_SUCCESS;
+}
+
+/*
+ *  ======== CryptoKeyPlaintextHSM_initBlankKey ========
+ */
+int_fast16_t CryptoKeyPlaintextHSM_initBlankKey(CryptoKey *keyHandle, uint8_t *key, size_t keyLength)
+{
+    keyHandle->encoding                = CryptoKey_BLANK_PLAINTEXT_HSM;
+    keyHandle->u.plaintext.keyMaterial = key;
+    keyHandle->u.plaintext.keyLength   = keyLength;
+
+    return CryptoKey_STATUS_SUCCESS;
+}
+
+#endif

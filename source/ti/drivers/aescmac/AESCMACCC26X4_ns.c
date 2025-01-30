@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -188,10 +188,10 @@ AESCMAC_Handle AESCMAC_open(uint_least8_t index, const AESCMAC_Params *params)
         aescmacObject_ns[index].semaphoreTimeout = params->returnBehavior == AESCMAC_RETURN_BEHAVIOR_BLOCKING
                                                        ? params->timeout
                                                        : SemaphoreP_NO_WAIT;
-    }
 
-    /* Set power dependency */
-    (void)Power_setDependency(PowerCC26XX_PERIPH_CRYPTO);
+        /* Set power dependency */
+        (void)Power_setDependency(PowerCC26XX_PERIPH_CRYPTO);
+    }
 
     return handle;
 }
@@ -262,10 +262,10 @@ AESCMAC_Handle AESCMAC_construct(AESCMAC_Config *config, const AESCMAC_Params *p
         aescmacObject_ns[index].semaphoreTimeout = params->returnBehavior == AESCMAC_RETURN_BEHAVIOR_BLOCKING
                                                        ? params->timeout
                                                        : SemaphoreP_NO_WAIT;
-    }
 
-    /* Set power dependency */
-    (void)Power_setDependency(PowerCC26XX_PERIPH_CRYPTO);
+        /* Set power dependency */
+        (void)Power_setDependency(PowerCC26XX_PERIPH_CRYPTO);
+    }
 
     return handle;
 }

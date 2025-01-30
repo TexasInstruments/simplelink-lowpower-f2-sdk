@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2022, Texas Instruments Incorporated
+ * Copyright (c) 2017-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,6 +60,22 @@
 #include DeviceFamily_constructPath(driverlib/interrupt.h)
 #include DeviceFamily_constructPath(driverlib/sys_ctrl.h)
 
+#if (ENABLE_KEY_STORAGE == 1)
+    #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_helpers.h>
+    #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_init.h>
+    #if (TFM_ENABLED == 1)
+        #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_s.h>
+    #endif
+
+    /*
+     * Since ECDSA driver only supports NIST P-256 curves
+     * Max key sizes 256b private keys,
+     * (256b) * 2 + 1B for octet offset for public keys
+     */
+    #define ECDSA_MAX_KEYSTORE_PUBLIC_KEY_SIZE  65
+    #define ECDSA_MAX_KEYSTORE_PRIVATE_KEY_SIZE 32
+#endif
+
 /* Octet string format requires an extra byte at the start of the public key */
 #define OCTET_STRING_OFFSET 1
 
@@ -76,11 +92,12 @@
 
 /* Forward declarations */
 static void ECDSACC26X2_hwiFxn(uintptr_t arg0);
-static void ECDSACC26X2_enableIRQ(void);
+#if (TFM_ENABLED == 0)
 static void ECDSACC26X2_internalCallbackFxn(ECDSA_Handle handle,
                                             int_fast16_t returnStatus,
                                             ECDSA_Operation operation,
                                             ECDSA_OperationType operationType);
+#endif
 static int_fast16_t ECDSACC26X2_waitForAccess(ECDSA_Handle handle);
 static int_fast16_t ECDSACC26X2_waitForResult(ECDSA_Handle handle);
 static int_fast16_t ECDSACC26X2_runSignFSM(ECDSA_Handle handle);
@@ -95,13 +112,12 @@ static uint32_t resultAddress;
 static uint32_t scratchBuffer0Size = SCRATCH_BUFFER_SIZE;
 static uint32_t scratchBuffer1Size = SCRATCH_BUFFER_SIZE;
 
-static void ECDSACC26X2_enableIRQ(void)
-{
-#if (TFM_ENABLED == 0)
-    IntEnable(INT_PKA_IRQ);
-#endif
-}
+#if (ENABLE_KEY_STORAGE == 1)
+uint8_t ECDSACC26X2_keyStorePrivateKeyMaterial[ECDSA_MAX_KEYSTORE_PRIVATE_KEY_SIZE];
+uint8_t ECDSACC26X2_keyStorePublicKeyMaterial[ECDSA_MAX_KEYSTORE_PUBLIC_KEY_SIZE];
+#endif /* (ENABLE_KEY_STORAGE == 1) */
 
+#if (TFM_ENABLED == 0)
 /*
  *  ======== ECDSACC26X2_internalCallbackFxn ========
  */
@@ -124,6 +140,7 @@ static void ECDSACC26X2_internalCallbackFxn(ECDSA_Handle handle,
         PKAResourceCC26XX_pollingFlag = 1;
     }
 }
+#endif
 
 /*
  *  ======== ECDSACC26X2_hwiFxn ========
@@ -250,7 +267,7 @@ static void ECDSACC26X2_trngCallback(TRNG_Handle handle, int_fast16_t returnValu
             TRNG_close(object->trngHandle);
 
             /* Post hwi as if operation finished for cleanup */
-            ECDSACC26X2_enableIRQ();
+            IntEnable(INT_PKA_IRQ);
         }
     }
     else if (tmp == 0 || returnValue != TRNG_STATUS_SUCCESS)
@@ -260,7 +277,7 @@ static void ECDSACC26X2_trngCallback(TRNG_Handle handle, int_fast16_t returnValu
         TRNG_close(object->trngHandle);
 
         /* Post hwi as if operation finished for cleanup */
-        ECDSACC26X2_enableIRQ();
+        IntEnable(INT_PKA_IRQ);
     }
     else
     {
@@ -269,8 +286,126 @@ static void ECDSACC26X2_trngCallback(TRNG_Handle handle, int_fast16_t returnValu
         /* Run the FSM by triggering the PKA interrupt. It is level triggered
          * and the complement of the RUN bit.
          */
-        ECDSACC26X2_enableIRQ();
+        IntEnable(INT_PKA_IRQ);
     }
+}
+
+/*
+ *  ======== ECDSA_getPrivateKey ========
+ */
+static int_fast16_t ECDSA_getPrivateKey(const CryptoKey *privateKey,
+                                        uint8_t **privateKeyMaterial,
+                                        size_t *privateKeyLength)
+{
+    int_fast16_t status;
+
+#if (ENABLE_KEY_STORAGE == 1)
+    int_fast16_t keyStoreStatus;
+    KeyStore_PSA_KeyFileId keyID;
+#endif
+    if (privateKey->encoding == CryptoKey_PLAINTEXT)
+    {
+        *privateKeyMaterial = privateKey->u.plaintext.keyMaterial;
+        *privateKeyLength   = privateKey->u.plaintext.keyLength;
+        status              = ECDSA_STATUS_SUCCESS;
+    }
+#if (ENABLE_KEY_STORAGE == 1)
+    else if (privateKey->encoding == CryptoKey_KEYSTORE)
+    {
+        memset(ECDSACC26X2_keyStorePrivateKeyMaterial, 0, sizeof(ECDSACC26X2_keyStorePrivateKeyMaterial));
+
+        GET_KEY_ID(keyID, privateKey->u.keyStore.keyID);
+
+        /* Obtain the private key from keystore. Although the key is used by
+         * ECDSA to sign a hash, KEYSTORE_PSA_KEY_USAGE_SIGN_MESSAGE must be
+         * specified since ECDSA_sign() is used to support both psa_sign_hash()
+         * and psa_sign_message(). When a key with
+         * KEYSTORE_PSA_KEY_USAGE_SIGN_HASH flag is retrieved, it's usage
+         * flags are extended to include KEYSTORE_PSA_KEY_USAGE_SIGN_MESSAGE
+         * which allows it to be used for both use cases.
+         */
+        keyStoreStatus = KeyStore_PSA_getKey(keyID,
+                                             ECDSACC26X2_keyStorePrivateKeyMaterial,
+                                             sizeof(ECDSACC26X2_keyStorePrivateKeyMaterial),
+                                             privateKeyLength,
+                                             KEYSTORE_PSA_ALG_ECDSA,
+                                             KEYSTORE_PSA_KEY_USAGE_SIGN_MESSAGE);
+
+        if ((keyStoreStatus != KEYSTORE_PSA_STATUS_SUCCESS) || (*privateKeyLength != privateKey->u.keyStore.keyLength))
+        {
+            status = ECDSA_STATUS_KEYSTORE_ERROR;
+        }
+        else
+        {
+            *privateKeyMaterial = ECDSACC26X2_keyStorePrivateKeyMaterial;
+            status              = ECDSA_STATUS_SUCCESS;
+        }
+    }
+#endif
+    else
+    {
+        status = ECDSA_STATUS_ERROR;
+    }
+
+    return status;
+}
+
+/*
+ *  ======== ECDSA_getPublicKey ========
+ */
+static int_fast16_t ECDSA_getPublicKey(const CryptoKey *publicKey, uint8_t **publicKeyMaterial, size_t *publicKeyLength)
+{
+    int_fast16_t status;
+
+#if (ENABLE_KEY_STORAGE == 1)
+    int_fast16_t keyStoreStatus;
+    KeyStore_PSA_KeyFileId keyID;
+#endif
+    if (publicKey->encoding == CryptoKey_PLAINTEXT)
+    {
+        *publicKeyMaterial = publicKey->u.plaintext.keyMaterial;
+        *publicKeyLength   = publicKey->u.plaintext.keyLength;
+        status             = ECDSA_STATUS_SUCCESS;
+    }
+#if (ENABLE_KEY_STORAGE == 1)
+    else if (publicKey->encoding == CryptoKey_KEYSTORE)
+    {
+        memset(ECDSACC26X2_keyStorePublicKeyMaterial, 0, sizeof(ECDSACC26X2_keyStorePublicKeyMaterial));
+
+        GET_KEY_ID(keyID, publicKey->u.keyStore.keyID);
+
+        /* Obtain the public key from keystore. Although the key is used by
+         * ECDSA to verify a hash, KEYSTORE_PSA_KEY_USAGE_VERIFY_MESSAGE must be
+         * specified since ECDSA_verify() is used to support both
+         * psa_verify_hash() and psa_verify_message(). When a key with
+         * KEYSTORE_PSA_KEY_USAGE_VERIFY_HASH flag is retrieved, it's usage
+         * flags are extended to include KEYSTORE_PSA_KEY_USAGE_VERIFY_MESSAGE
+         * which allows it to be used for both use cases.
+         */
+        keyStoreStatus = KeyStore_PSA_getKey(keyID,
+                                             ECDSACC26X2_keyStorePublicKeyMaterial,
+                                             sizeof(ECDSACC26X2_keyStorePublicKeyMaterial),
+                                             publicKeyLength,
+                                             KEYSTORE_PSA_ALG_ECDSA,
+                                             KEYSTORE_PSA_KEY_USAGE_VERIFY_MESSAGE);
+
+        if (keyStoreStatus != KEYSTORE_PSA_STATUS_SUCCESS || (*publicKeyLength != publicKey->u.keyStore.keyLength))
+        {
+            status = ECDSA_STATUS_KEYSTORE_ERROR;
+        }
+        else
+        {
+            *publicKeyMaterial = ECDSACC26X2_keyStorePublicKeyMaterial;
+            status             = ECDSA_STATUS_SUCCESS;
+        }
+    }
+#endif
+    else
+    {
+        status = ECDSA_STATUS_ERROR;
+    }
+
+    return status;
 }
 
 /*
@@ -280,6 +415,10 @@ static int_fast16_t ECDSACC26X2_runSignFSM(ECDSA_Handle handle)
 {
     ECDSACC26X2_Object *object = handle->object;
     uint32_t pkaResult;
+
+    uint8_t *privateKeyMaterial;
+    size_t privateKeyLength;
+    int_fast16_t status;
 
     switch (object->fsmState)
     {
@@ -343,9 +482,14 @@ static int_fast16_t ECDSACC26X2_runSignFSM(ECDSA_Handle handle)
 
         case ECDSACC26X2_FSM_SIGN_COMPUTE_PRIVATE_KEY_X_R:
 
-            CryptoUtils_reverseCopyPad(object->operation.sign->myPrivateKey->u.plaintext.keyMaterial,
-                                       SCRATCH_PRIVATE_KEY,
-                                       object->operation.sign->curve->length);
+            status = ECDSA_getPrivateKey(object->operation.sign->myPrivateKey, &privateKeyMaterial, &privateKeyLength);
+
+            if (status != ECDSA_STATUS_SUCCESS)
+            {
+                return status;
+            }
+
+            CryptoUtils_reverseCopyPad(privateKeyMaterial, SCRATCH_PRIVATE_KEY, privateKeyLength);
 
             PKABigNumMultiplyStart((uint8_t *)SCRATCH_PRIVATE_KEY,
                                    object->operation.sign->curve->length,
@@ -441,7 +585,7 @@ static int_fast16_t ECDSACC26X2_runSignFSM(ECDSA_Handle handle)
 
     // If we get to this point, we want to perform another PKA operation
     IntPendClear(INT_PKA_IRQ);
-    ECDSACC26X2_enableIRQ();
+    IntEnable(INT_PKA_IRQ);
 
     return ECDSACC26X2_STATUS_FSM_RUN_PKA_OP;
 }
@@ -453,6 +597,10 @@ static int_fast16_t ECDSACC26X2_runVerifyFSM(ECDSA_Handle handle)
 {
     ECDSACC26X2_Object *object = handle->object;
     uint32_t pkaResult;
+
+    uint8_t *publicKeyMaterial;
+    size_t publicKeyLength;
+    int_fast16_t status;
 
     switch (object->fsmState)
     {
@@ -500,13 +648,26 @@ static int_fast16_t ECDSACC26X2_runVerifyFSM(ECDSA_Handle handle)
 
         case ECDSACC26X2_FSM_VERIFY_VALIDATE_PUBLIC_KEY:
 
-            CryptoUtils_reverseCopyPad(object->operation.verify->theirPublicKey->u.plaintext.keyMaterial +
-                                           OCTET_STRING_OFFSET,
+            status = ECDSA_getPublicKey(object->operation.verify->theirPublicKey, &publicKeyMaterial, &publicKeyLength);
+
+            if (status != ECDSA_STATUS_SUCCESS)
+            {
+                return status;
+            }
+
+            /* Validate key sizes to make sure octet string format is used */
+            if ((publicKeyLength != ((2 * object->operation.verify->curve->length) + OCTET_STRING_OFFSET)) ||
+                (publicKeyMaterial[0] != 0x04))
+            {
+                return ECDSA_STATUS_INVALID_KEY_SIZE;
+            }
+
+            CryptoUtils_reverseCopyPad(publicKeyMaterial + OCTET_STRING_OFFSET,
                                        SCRATCH_PUBLIC_X,
                                        object->operation.verify->curve->length);
 
-            CryptoUtils_reverseCopyPad(object->operation.verify->theirPublicKey->u.plaintext.keyMaterial +
-                                           OCTET_STRING_OFFSET + object->operation.verify->curve->length,
+            CryptoUtils_reverseCopyPad(publicKeyMaterial + OCTET_STRING_OFFSET +
+                                           object->operation.verify->curve->length,
                                        SCRATCH_PUBLIC_Y,
                                        object->operation.verify->curve->length);
 
@@ -654,13 +815,19 @@ static int_fast16_t ECDSACC26X2_runVerifyFSM(ECDSA_Handle handle)
 
         case ECDSACC26X2_FSM_VERIFY_MULT_PUB_KEY:
 
-            CryptoUtils_reverseCopyPad(object->operation.verify->theirPublicKey->u.plaintext.keyMaterial +
-                                           OCTET_STRING_OFFSET,
+            status = ECDSA_getPublicKey(object->operation.verify->theirPublicKey, &publicKeyMaterial, &publicKeyLength);
+
+            if (status != ECDSA_STATUS_SUCCESS)
+            {
+                return status;
+            }
+
+            CryptoUtils_reverseCopyPad(publicKeyMaterial + OCTET_STRING_OFFSET,
                                        SCRATCH_PUBLIC_X,
                                        object->operation.verify->curve->length);
 
-            CryptoUtils_reverseCopyPad(object->operation.verify->theirPublicKey->u.plaintext.keyMaterial +
-                                           OCTET_STRING_OFFSET + object->operation.verify->curve->length,
+            CryptoUtils_reverseCopyPad(publicKeyMaterial + OCTET_STRING_OFFSET +
+                                           object->operation.verify->curve->length,
                                        SCRATCH_PUBLIC_Y,
                                        object->operation.verify->curve->length);
 
@@ -750,7 +917,7 @@ static int_fast16_t ECDSACC26X2_runVerifyFSM(ECDSA_Handle handle)
 
     // If we get to this point, we want to perform another PKA operation
     IntPendClear(INT_PKA_IRQ);
-    ECDSACC26X2_enableIRQ();
+    IntEnable(INT_PKA_IRQ);
 
     return ECDSACC26X2_STATUS_FSM_RUN_PKA_OP;
 }
@@ -916,10 +1083,15 @@ ECDSA_Handle ECDSA_construct(ECDSA_Config *config, const ECDSA_Params *params)
 
     DebugP_assert((params->returnBehavior == ECDSA_RETURN_BEHAVIOR_CALLBACK) ? params->callbackFxn : true);
 
-    object->returnBehavior   = params->returnBehavior;
-    object->callbackFxn      = params->returnBehavior == ECDSA_RETURN_BEHAVIOR_CALLBACK ? params->callbackFxn
-                                                                                        : ECDSACC26X2_internalCallbackFxn;
+    object->returnBehavior = params->returnBehavior;
+#if (TFM_ENABLED == 1)
+    /* Always use the secure callback function */
+    object->callbackFxn = params->callbackFxn;
+#else
+    object->callbackFxn = params->returnBehavior == ECDSA_RETURN_BEHAVIOR_CALLBACK ? params->callbackFxn
+                                                                                   : ECDSACC26X2_internalCallbackFxn;
     object->semaphoreTimeout = params->timeout;
+#endif
 
     /* Set power dependency - i.e. power up and enable clock for PKA (PKAResourceCC26XX) module. */
     Power_setDependency(PowerCC26X2_PERIPH_PKA);
@@ -957,24 +1129,25 @@ int_fast16_t ECDSA_sign(ECDSA_Handle handle, ECDSA_OperationSign *operation)
      */
     CryptoKeyPlaintext_initBlankKey(&object->pmsnKey, (uint8_t *)SCRATCH_BUFFER_0, operation->curve->length);
 
+    /* When using TFM, TRNG is initialized when ECDSA_init is called because
+     * TRNG power can only be controlled from the NSPE.
+     */
+#if (TFM_ENABLED == 0)
     /* We are calling TRNG_init() here to limit references to TRNG_xyz to sign
      * operations.
      * That means that the linker can remove all TRNG related code if only
      * ECDSA_verify functionality is used.
      */
     TRNG_init();
+#endif
 
     object->trngHwAttrs.intPriority = hwAttrs->trngIntPriority;
     object->trngConfig.object       = &object->trngObject;
     object->trngConfig.hwAttrs      = &object->trngHwAttrs;
 
-#if (TFM_ENABLED == 1)
-    /* Only polling mode calls can be made on secure side */
-    trngParams.returnBehavior = TRNG_RETURN_BEHAVIOR_POLLING;
-#else
-    trngParams.returnBehavior = TRNG_RETURN_BEHAVIOR_CALLBACK;
+    trngParams.returnBehavior       = TRNG_RETURN_BEHAVIOR_CALLBACK;
     trngParams.cryptoKeyCallbackFxn = ECDSACC26X2_trngCallback;
-#endif
+
     object->trngHandle = TRNG_construct(&object->trngConfig, &trngParams);
 
     if (object->trngHandle == NULL)
@@ -1006,11 +1179,6 @@ int_fast16_t ECDSA_sign(ECDSA_Handle handle, ECDSA_OperationSign *operation)
         return ECDSA_STATUS_ERROR;
     }
 
-#if (TFM_ENABLED == 1)
-    /* TRNG was used in polling mode so callback must be manually called */
-    ECDSACC26X2_trngCallback(object->trngHandle, trngStatus, &object->pmsnKey);
-#endif
-
     Power_setConstraint(PowerCC26XX_DISALLOW_STANDBY);
 
     return ECDSACC26X2_waitForResult(handle);
@@ -1023,13 +1191,6 @@ int_fast16_t ECDSA_verify(ECDSA_Handle handle, ECDSA_OperationVerify *operation)
 {
     ECDSACC26X2_Object *object         = handle->object;
     ECDSACC26X2_HWAttrs const *hwAttrs = handle->hwAttrs;
-
-    /* Validate key sizes to make sure octet string format is used */
-    if (operation->theirPublicKey->u.plaintext.keyLength != 2 * operation->curve->length + OCTET_STRING_OFFSET ||
-        operation->theirPublicKey->u.plaintext.keyMaterial[0] != 0x04)
-    {
-        return ECDSA_STATUS_INVALID_KEY_SIZE;
-    }
 
     if (ECDSACC26X2_waitForAccess(handle) != SemaphoreP_OK)
     {
@@ -1059,7 +1220,7 @@ int_fast16_t ECDSA_verify(ECDSA_Handle handle, ECDSA_OperationVerify *operation)
     /* Run the FSM by triggering the interrupt. It is level triggered
      * and the complement of the RUN bit.
      */
-    ECDSACC26X2_enableIRQ();
+    IntEnable(INT_PKA_IRQ);
 
     return ECDSACC26X2_waitForResult(handle);
 }
@@ -1079,7 +1240,7 @@ int_fast16_t ECDSA_cancelOperation(ECDSA_Handle handle)
     object->operationCanceled = true;
 
     /* Post hwi as if operation finished for cleanup */
-    ECDSACC26X2_enableIRQ();
+    IntEnable(INT_PKA_IRQ);
     HwiP_post(INT_PKA_IRQ);
 
     return ECDSA_STATUS_SUCCESS;

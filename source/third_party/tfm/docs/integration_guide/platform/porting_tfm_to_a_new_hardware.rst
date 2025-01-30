@@ -7,10 +7,6 @@ with another hardware platform. This document will give general guidance on
 how to port a platform on the TF-M build system and which interfaces must
 exist on the platform for TF-M (S and NS) to run on this new platform.
 
-******************
-TF-M in a nutshell
-******************
-For an overview please refer to :doc:`Introduction </introduction/readme>`.
 
 *************
 Prerequisites
@@ -57,6 +53,10 @@ In a nutshell, this should be a 6 iterative steps process:
 
         - E.G. NV Counters, attestation, crypto keys....
 
+    #. Adding the optional platform SVC handling
+
+        Some platforms may have their own SVC requests in addition to the TF-M built-in ones.
+
     #. Running the regression tests
 
         - See :doc:`Running TF-M on Arm platforms </building/run_tfm_examples_on_arm_platforms>`
@@ -68,11 +68,9 @@ File architecture
 *****************
 The platform selection when building TF-M is set via the CMake
 variable TFM_PLATFORM. This variable holds part of the path to the platform.
-
 When using ``-DTFM_PLATFORM=arm/mps2/an521`` or ``-DTFM_PLATFORM=an521``
 TF-M build system will look for the platform in
 <TF-M ROOT>/platform/ext/target/arm/mps2/an521.
-
 Therefore all hardware dependent code for your platform should go to
 <TF-M ROOT>/platform/ext/target/.
 
@@ -126,6 +124,12 @@ Description
 Depending on the level of integration you want with TF-M some files or
 information will be mandatory for the build system to build working firmware.
 
+Please note that platform folder provides source for building both :term:`SPE`
+and :term:`NSPE` parts. The SPE builds directly from the source tree while files
+necessary for NSPE platform support are installed to ``<Artifact folder>``
+for building TF-M application as decribed in the
+:doc:`Build instructions </building/tfm_build_instruction>`.
+
 Questions to be answered:
     - Will the platform use MCUboot as the second stage bootloader?
 
@@ -135,26 +139,26 @@ Questions to be answered:
       This optional second stage bootloader is set-up via the bl2 target in
       the CMakelists.txt file (see below).
 
-
-    - Will the platform support the Non-Secure world?
+    - Will the platform support the Non-Secure world application?
 
       A platform can be designed to only support the secure world, in which
       case we would refer to it as a secure enclave. TF-M build system allows
       the developer to strip all Non-Secure world related code out of the
       final image. Most platforms, and especially the ones intended to be
       generic or to have a Non-Secure application will require Non-Secure world
-      support.
-
-      This optional Non-Secure world is set-up via the tfm_ns target in the
-      CMakelists.txt file (see below).
+      support. In that case a platform shall instruct build system on the file
+      set for exporting to Non-Secure world.
 
     - How does the non-secure world communicate with the secure world?
 
       TF-M supports running the non-secure world on the same CPU as the secure
       world, communicating via TrustZone or running the non-secure world on
-      a separate CPU, communicating via a mailbox.
+      a separate CPU, communicating via a mailbox. The platform is responsible
+      for configuring toolchains with correct CPU and architecture related
+      features for secure and non-secure worlds.
 
-      The architecture is configured in the config.cmake file (see below).
+      The architecture for secure world is configured in the cpuarch.cmake
+      file (see below).
 
     - How does the FLASH need to be split between worlds?
 
@@ -190,7 +194,8 @@ CMakeLists.txt :
 
     (MANDATORY)
 
-    This is the entry point for the build system to build your platform.
+    This is the entry point for the build system to build your platform on the secure side and
+    also export files to build Non-Secure side.
 
     it must:
 
@@ -198,37 +203,34 @@ CMakeLists.txt :
 
             This folder will contain two files flash_layout.h_ and region_defs.h_
 
-        - Add scatter files to the bl2, tfm_s, and/or tfm_ns target. [SCATTER_]
+        - Add scatter files to the bl2 and tfm_s targets. [SCATTER_]
 
-            Please note that TF-M provides a common scatter file, for the bl2, tfm_s, tfm_ns targets, which can be used in most cases. [SCATTER_COMMON_]
+            Please note that TF-M provides a common scatter file for the bl2, tfm_s and
+            tfm_ns targets, which can be used in most cases.
 
-        - Add startup files to the bl2, tfm_s, and/or tfm_ns target. [STARTUP_]
-        - Add required sources and includes for the bl2, tfm_s and tfm_ns target (if supported) [SOURCES_INCLUDES_]
-        - Link to the correct version of the CMSIS RTX libraries (from ``lib/ext/CMSIS_5/CMakeLists.txt``) [CMSIS_RTX_]
+        - Add startup files to the bl2 and tfm_s targets. [STARTUP_]
+        - Add required sources and includes for the bl2 and tfm_s targets [SOURCES_INCLUDES_]
+        - Install all files required for building the platform in the Non-secure application [INSTALL_]
 
-preload.cmake :
----------------
+    The installation section expands the common installation script with the platform specific files.
+    The following predefined variables are availble to address the respective subfolders
+    of the target ``<Artifact folder>``.
 
-    (MANDATORY)
-
-    This file tells the build system the main hardware information such as the
-    main processor (e.g. m0plus) and architecture (e.g. armv6-m).
-
-    This file should not contain any other CMake configuration variables.
-    [preload_cmake_]
-
-preload_ns.cmake:
------------------
-
-    If platform is a dual core then it may provide a preload_ns.cmake, which is
-    the equivalent of preload.cmake but for the second core.
-
-    If the platform is single core, this file should not be present.
-
-    If the platform is dual core but both cores have the same architecture,
-    this file is optional.
-
-    [preload_cmake_]
+    +-------------------------------------+------------------------------------------------------------+
+    |    name                             |        description                                         |
+    +=====================================+============================================================+
+    |INSTALL_INTERFACE_INC_DIR            | interface/include - interface header files                 |
+    +-------------------------------------+------------------------------------------------------------+
+    |INSTALL_INTERFACE_SRC_DIR            | interface/src - interface source files                     |
+    +-------------------------------------+------------------------------------------------------------+
+    |INSTALL_INTERFACE_LIB_DIR            | interface/lib - interface libraries                        |
+    +-------------------------------------+------------------------------------------------------------+
+    |INSTALL_IMAGE_SIGNING_DIR            | image_signing tools and files                              |
+    +-------------------------------------+------------------------------------------------------------+
+    |INSTALL_CMAKE_DIR                    | CMake modules for Non-secure app build                     |
+    +-------------------------------------+------------------------------------------------------------+
+    |INSTALL_PLATFORM_NS_DIR              | NS platform source files                                   |
+    +-------------------------------------+------------------------------------------------------------+
 
 config.cmake:
 -------------
@@ -262,23 +264,71 @@ config.cmake:
     +-------------------------------------+------------------------------------------------------------+
     |PLATFORM_HAS_FIRMWARE_UPDATE_SUPPORT | Wheter the platform has firmware update support            |
     +-------------------------------------+------------------------------------------------------------+
-    |PLATFORM_SLIH_IRQ_TEST_SUPPORT       | Wheter the platform has SLIH test support                  |
-    +-------------------------------------+------------------------------------------------------------+
-    |PLATFORM_FLIH_IRQ_TEST_SUPPORT       | Wheter the platform has FLIH test support                  |
-    +-------------------------------------+------------------------------------------------------------+
     |PSA_API_TEST_TARGET                  | The target platform name of PSA API test                   |
+    +-------------------------------------+------------------------------------------------------------+
+    |PLATFORM_SVC_HANDLERS                | Whether the platform has specific SVC handling             |
     +-------------------------------------+------------------------------------------------------------+
 
     For build configurations, please refer to ``config_base.cmake``.
 
     [config_cmake_]
 
-install.cmake:
+cpuarch.cmake:
 --------------
 
-    If there are platform-specific files that need to be installed, this file
-    can be provided to do that.
+    (MANDATORY)
 
+    This file contains hardware information such as the main processor and architecture of the SPE
+    CPU.
+    On single-core platforms, it should be installed to ``<Artifact folder>`` for NSPE build.
+    On multi-core platforms, two cpuarch.cmake files should be added.
+
+    - a SPE specific ``cpuarch.cmake`` used in SPE build
+    - an NSPE one which should be installed to ``<Artifact folder>`` with filename ``cpuarch.cmake``
+      for NSPE build. See `ns/cpuarch_ns.cmake`_.
+
+    +-------------------------+------------------------------------------------------------+
+    |    name                 |        description                                         |
+    +=========================+============================================================+
+    |TFM_SYSTEM_PROCESSOR     | The SPE Processor the platform is using                    |
+    +-------------------------+------------------------------------------------------------+
+    |TFM_SYSTEM_ARCHITECTURE  | The architecture of the processor                          |
+    +-------------------------+------------------------------------------------------------+
+    |CONFIG_TFM_FP_ARCH       | The Float Point architecture flag for toolchain            |
+    +-------------------------+------------------------------------------------------------+
+    |CONFIG_TFM_FP_ARCH_ASM   | The Float Point architecture flag for assembly code        |
+    +-------------------------+------------------------------------------------------------+
+
+tests/tfm_tests_config.cmake:
+-----------------------------
+
+    (OPTIONAL)
+
+    This file contains platform-specific config options for TF-M regression tests.
+    The ``tests`` folder should installed to <Artifact folder>/platform for NSPE build.
+    Here are some examples.
+
+    +--------------------------------+------------------------------------------------------------+
+    |    name                        |        description                                         |
+    +================================+============================================================+
+    |PLATFORM_SLIH_IRQ_TEST_SUPPORT  | Whether the platform has SLIH test support                 |
+    +-------------------------+-------------------------------------------------------------------+
+    |PLATFORM_FLIH_IRQ_TEST_SUPPORT  | Whether the platform has FLIH test support                 |
+    +--------------------------------+------------------------------------------------------------+
+
+tests/psa_arch_tests_config.cmake:
+----------------------------------
+
+    (OPTIONAL)
+
+    This file contains platform-specific config options for PSA API tests.
+    Here are some examples.
+
+    +--------------------------------+------------------------------------------------------------+
+    |    name                        |        description                                         |
+    +================================+============================================================+
+    |PSA_API_TEST_TARGET             | The target platform name of PSA API test                   |
+    +--------------------------------+------------------------------------------------------------+
 
 startup files:
 ---------------
@@ -378,7 +428,7 @@ region_defs.h:
     +----------------------------------+-------------------------------------------------------------------+-----------------------------------------------+
     |NS_STACK_SIZE                     | Size of the Non-Secure (NS) world stack                           | if tfm_ns is built                            |
     +----------------------------------+-------------------------------------------------------------------+-----------------------------------------------+
-    |PSA_INITIAL_ATTEST_TOKEN_MAX_SIZE | Size of the buffer that will store the initial attestation        | used by initial attestation partition         |
+    |PSA_INITIAL_ATTEST_MAX_TOKEN_SIZE | Size of the buffer that will store the initial attestation        | used by initial attestation partition         |
     +----------------------------------+-------------------------------------------------------------------+-----------------------------------------------+
     |TFM_ATTEST_BOOT_RECORDS_MAX_SIZE  | Size of buffer that can store the encoded list of boot records    | used by delegated attestation partition       |
     +----------------------------------+-------------------------------------------------------------------+-----------------------------------------------+
@@ -486,6 +536,13 @@ tfm_hal_isolation.c:
     Each platform is expected to implement all the functions declared in
     platform/include/tfm_hal_isolation.h.
 
+    A reference implementation for Armv8-M platforms is provided in
+    platform/ext/common/tfm_hal_isolation_v8m.c. Platforms using the common TF-M
+    linker scripts and scatter files can use it to implement standard TF-M
+    isolation with Armv8-M MPU regions. Platform-specific MPU regions can be
+    appended by defining PLATFORM_STATIC_MPU_REGIONS in the platform's
+    tfm_peripherals_def.h header.
+
     These functions will be called from TF-M.
 
 tfm_platform_system.c:
@@ -512,6 +569,51 @@ check_config.cmake:
     is located in <TF-M ROOT>/config/.
 
     [check_config.cmake_]
+
+platform_svc_numbers.h
+----------------------
+
+    (OPTIONAL)
+
+    If your platform has its own SVC handling, then you need to
+
+    - create the ``platform_svc_numbers.h`` which defines the platform SVC numbers.
+
+      The bit [7] of the number must be set to 1 to reflect that it is a platform SVC number.
+      The bit [6] indicates whether this SVC should be called from Handler mode or Thread mode.
+      For more details of the bit assignments, please check the ``svc_num.h``.
+      TF-M provides two Macros ``TFM_SVC_NUM_PLATFORM_THREAD(index)`` and
+      ``TFM_SVC_NUM_PLATFORM_HANDLER(index)`` to easily construct a valid number.
+
+    - implement the `platform_svc_handlers`_ function which handles SVC.
+    - enable ``PLATFORM_SVC_HANDLERS`` config option.
+
+ns/CMakeLists.txt
+-----------------
+
+    (MANDATORY)
+
+    This is CMake script for building the platform support on NSPE side. It's
+    copied to ``<Artifact folder>`` in the installation phase and instructs on
+    how to build **platform_ns** target. The default NSPE build script expects
+    this target definition and extends it with files, common for all TF-M platforms.
+
+    Note::
+        This file shall define and use paths of installed directories in ``<Artifact folder>``,
+        instead of paths in TF-M platform folder.
+
+    [NSCMakeLists.txt_]
+
+ns/cpuarch_ns.cmake
+-------------------
+
+    (MANDATORY for multi-core platforms)
+
+    This file contains the hardware information for the NSPE CPU.
+    It should be installed to ``<Artifact folder>/platform`` for NSPE build,
+    ranamed to ``cpuarch.cmake``.
+
+    [cpuarch.cmake_]
 
 .. _Functions:
 
@@ -604,26 +706,38 @@ tfm_hal_irq_disable:
 
     void tfm_hal_irq_disable(uint32_t irq_num);
 
+platform_svc_handlers
+---------------------
+
+    This function is the platform's SVC handler.
+    It should return the result for callers and the SPM will then return it to the caller.
+
+.. code-block:: c
+
+    int32_t platform_svc_handlers(uint8_t svc_num, uint32_t *svc_args, uint32_t exc_return);
+
 Annex
 =====
 
+CMake build system snippets examples
+
 .. _PLATFORM_REGION_DEFS:
 
-::
+CMakeLists.txt: Defining regions for Secure world platform and all linked to it.
 
-    [PLATFORM_REGION_DEFS]
+.. code-block:: CMake
+
     target_include_directories(platform_region_defs
         INTERFACE
         <folder name under the platform folder - usually named platform>
     )
 
-------------
-
 .. _SCATTER:
 
-::
+CMakeLists.txt: Scatter files for SPE platform and bootloader
 
-    [SCATTER]
+.. code-block:: CMake
+
     target_add_scatter_file(bl2
         $<$<C_COMPILER_ID:ARMClang>:${PLATFORM_DIR}/ext/common/armclang/tfm_common_bl2.sct>
         $<$<C_COMPILER_ID:GNU>:${PLATFORM_DIR}/ext/common/gcc/tfm_common_bl2.ld>
@@ -634,27 +748,13 @@ Annex
         $<$<C_COMPILER_ID:GNU>:${PLATFORM_DIR}/ext/common/gcc/tfm_common_s.ld>
         $<$<C_COMPILER_ID:IAR>:${PLATFORM_DIR}/ext/common/iar/tfm_common_s.icf>
     )
-    target_add_scatter_file(tfm_ns
-        $<$<C_COMPILER_ID:ARMClang>:${PLATFORM_DIR}/ext/common/armclang/tfm_common_ns.sct>
-        $<$<C_COMPILER_ID:GNU>:${PLATFORM_DIR}/ext/common/gcc/tfm_common_ns.ld>
-        $<$<C_COMPILER_ID:IAR>:${PLATFORM_DIR}/ext/common/iar/tfm_common_ns.icf>
-    )
-
-------------
-
-.. _SCATTER_COMMON:
-
-::
-
-   <TF-M ROOT>/platform/ext/common/<TOOLCHAIN>/
-
-------------
 
 .. _STARTUP:
 
-::
+CMakeLists.txt: Startup files for SPE platform and bootloader
 
-    [STARTUP]
+.. code-block:: CMake
+
     target_sources(bl2
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/platform/ext/target/<folder to platform>/device/source/startup_<platform name>.c
@@ -663,25 +763,17 @@ Annex
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/platform/ext/target/<folder to platform>/device/source/startup_<platform name>.c
     )
-    target_sources(tfm_ns
-        PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/platform/ext/target/<folder to platform>/device/source/startup_<platform name>.c
-    )
-
-------------
 
 .. _SOURCES_INCLUDES:
 
-::
+CMakeLists.txt: The Secure world platform sources
 
-    [SOURCES_INCLUDES]
+.. code-block:: CMake
+
     target_include_directories(platform_bl2
         PUBLIC
     )
     target_include_directories(platform_s
-        PUBLIC
-    )
-    target_include_directories(platform_ns
         PUBLIC
     )
 
@@ -691,9 +783,6 @@ Annex
     target_sources(platform_s
         PRIVATE
     )
-    target_sources(platform_ns
-        PRIVATE
-    )
     target_sources(tfm_spm
         PRIVATE
             target_cfg.c
@@ -701,47 +790,40 @@ Annex
             tfm_hal_platform.c
     )
 
-------------
+.. _INSTALL:
 
-.. _CMSIS_RTX:
+CMakeLists.txt: installation for the Non-Secure world platform build
 
-::
+.. code-block:: CMake
 
-    [CMSIS_RTX]
-    target_link_libraries(CMSIS_5_tfm_ns
-        INTERFACE
-            <CMSIS_5_RTX_CM0 | CMSIS_5_RTX_CM3 | CMSIS_5_RTX_V8MBN | CMSIS_5_RTX_V8MMN>
-    )
+    install(FILES ${PLATFORM_DIR}/ext/common/uart_stdout.c
+                  native_drivers/arm_uart_drv.c
+                  native_drivers/timer_cmsdk/timer_cmsdk.c
+                  cmsis_drivers/Driver_USART.c
+                  retarget/platform_retarget_dev.c
+                  cmsis_core/an521_ns_init.c
+            DESTINATION ${INSTALL_PLATFORM_NS_DIR})
 
-------------
-
-.. _preload_cmake:
-
-::
-
-    [preload_cmake]
-    set(TFM_SYSTEM_PROCESSOR <value>)    # The format is that same as the format used in the -mcpu= argument of GNUARM or ARMCLANG. The special +modifier syntax must not be used.
-    set(TFM_SYSTEM_ARCHITECTURE <value>) # The format is that same as the format used in the -march= argument of GNUARM or ARMCLANG. The special +modifier syntax must not be used.
-    set(TFM_SYSTEM_DSP <value>)
-    set(CRYPTO_HW_ACCELERATOR_TYPE <value>)
-
-------------
+    install(DIRECTORY ${PLATFORM_DIR}/ext/common
+                      ${PLATFORM_DIR}/ext/driver
+            DESTINATION ${INSTALL_PLATFORM_NS_DIR}/ext)
 
 .. _config_cmake:
 
-::
+config.cmake
 
-    [config_cmake]
+.. code-block:: CMake
+
     set(CONFIG_TFM_USE_TRUSTZONE            ON)
     set(TFM_MULTI_CORE_TOPOLOGY             OFF)
     set(BL2                                 OFF         CACHE BOOL      "Whether to build BL2")
     set(NS                                  FALSE       CACHE BOOL      "Whether to build NS app" FORCE)
 
-------------
-
 .. _check_config.cmake:
 
-::
+check_config.cmake
+
+.. code-block:: CMake
 
     function(tfm_invalid_config)
         if (${ARGV})
@@ -760,6 +842,39 @@ Annex
     # Requires armclang >= 6.10.1
     tfm_invalid_config((CMAKE_C_COMPILER_ID STREQUAL "ARMClang") AND (CMAKE_C_COMPILER_VERSION VERSION_LESS "6.10.1"))
 
+.. _NSCMakeLists.txt:
+
+/ns/CMakeLists.txt:
+
+.. code-block:: CMake
+
+    add_library(platform_ns)
+
+    target_sources(platform_ns
+        PRIVATE
+            arm_uart_drv.c
+            timer_cmsdk.c
+            uart_stdout.c
+            Driver_USART.c
+        PUBLIC
+            cmsis_core/startup_an521.c
+    )
+
+    target_include_directories(platform_ns
+        PUBLIC
+            include
+            cmsis
+            cmsis_core
+    )
+
+    target_compile_definitions(platform_ns
+        PUBLIC
+            $<$<BOOL:${PLATFORM_DEFAULT_CRYPTO_KEYS}>:PLATFORM_DEFAULT_CRYPTO_KEYS>
+    )
+
+.. _cpuarch.cmake:
+
 *Copyright (c) 2021-2023, Arm Limited. All rights reserved.*
+
 *Copyright (c) 2022 Cypress Semiconductor Corporation (an Infineon company)
 or an affiliate of Cypress Semiconductor Corporation. All rights reserved.*

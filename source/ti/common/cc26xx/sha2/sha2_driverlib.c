@@ -2,14 +2,11 @@
 
  @file  sha2_driverlib.c
 
- @brief This module ports the TI-Drivers implementation of SHA2 hashing using
-        only driverlib APIs. Only SHA256 is supported.
-
- Group: CMCU
- Target Device: cc13xx_cc26xx
+ @brief This module ports the TI-Drivers implementation of SHA2 using
+        driverlib APIs. SHA2 & HMAC.
 
  ******************************************************************************
- 
+
  Copyright (c) 2012-2024, Texas Instruments Incorporated
  All rights reserved.
 
@@ -41,8 +38,8 @@
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  ******************************************************************************
- 
- 
+
+
  *****************************************************************************/
 
 /*******************************************************************************
@@ -71,6 +68,10 @@
 /* Block size in bytes of the SHA256 hash */
 #define SHA2_BLOCK_SIZE_BYTES_256     64
 
+/* Outer and inner padding bytes used in HMAC */
+#define HMAC_OPAD_BYTE 0x5C
+#define HMAC_IPAD_BYTE 0x36
+
 /*******************************************************************************
  * TYPEDEFS
  */
@@ -92,8 +93,10 @@ typedef struct {
     uint32_t                        bytesProcessed;
     uint8_t                         buffer[SHA2_BLOCK_SIZE_BYTES_256];
     uint32_t                        digest[SHA2_DIGEST_LENGTH_BYTES_256 / 4];
+    uint32_t                        hmacDigest[SHA2_DIGEST_LENGTH_BYTES_256 / 4];
 } SHA2CC26X2_Object;
 
+extern bool periphRequired_g;
 /*******************************************************************************
  * LOCAL VARIABLES
  */
@@ -102,7 +105,6 @@ static const uint8_t *SHA2_data;
 static uint32_t SHA2_dataBytesRemaining;
 static SHA2_OperationType SHA2_operationType;
 
-static bool periphRequired;
 static uint32_t fpccrRestore;
 
 /*******************************************************************************
@@ -219,6 +221,23 @@ static int_fast16_t SHA2_waitForResult(){
     return SHA2_object.returnStatus;
 }
 
+/**
+ * @fn     SHA2_xorBufferWithByte
+ *
+ * @brief  xor buffer with byte.
+ *
+ * @return N/A.
+ */
+static void SHA2_xorBufferWithByte(uint8_t *buffer, size_t bufferLength, uint8_t byte)
+{
+    size_t i;
+
+    for (i = 0; i < bufferLength; i++)
+    {
+        buffer[i] = buffer[i] ^ byte;
+    }
+}
+
 /*******************************************************************************
  * EXTERNAL FUNCTIONS
  */
@@ -248,10 +267,10 @@ int_fast16_t SHA2_open()
 
     /* If peripheral power was on before, don't turn the power off in
      * SHA2_close() */
-    periphRequired = true;
+    periphRequired_g = true;
     if (PRCMPowerDomainsAllOn(PRCM_DOMAIN_PERIPH) != PRCM_DOMAIN_POWER_ON)
     {
-        periphRequired = false;
+        periphRequired_g = false;
 
         PRCMPowerDomainOn(PRCM_DOMAIN_PERIPH);
         while (PRCMPowerDomainsAllOn(PRCM_DOMAIN_PERIPH) != PRCM_DOMAIN_POWER_ON);
@@ -304,7 +323,7 @@ void SHA2_close()
 
     /* Only power off the peripheral domain if it was not on prior to calling
      * SHA2_open() */
-    if (!periphRequired) {
+    if (!periphRequired_g) {
         PRCMPowerDomainOff(PRCM_DOMAIN_PERIPH);
         while (PRCMPowerDomainsAllOn(PRCM_DOMAIN_PERIPH) != PRCM_DOMAIN_POWER_OFF);
     }
@@ -500,6 +519,102 @@ int_fast16_t SHA2_finalize(void *digest)
 
     IntMasterEnable();
     return SHA2_waitForResult();
+}
+
+
+/* Documented in sha2_driverlib.h */
+int_fast16_t SHA2_setupHmac(const uint8_t *key, size_t keyLength) {
+
+    uint8_t xorBuffer[SHA2_BLOCK_SIZE_BYTES_256];
+
+    /* If we are in SHA2_RETURN_BEHAVIOR_POLLING, we do not want an interrupt to trigger.
+     * We need to disable it before kicking off the operation.
+     */
+    IntDisable(INT_CRYPTO_RESULT_AVAIL_IRQ);
+
+    /* Reset segmented processing state to ensure we start a fresh
+     * transaction
+     */
+    SHA2_object.bytesInBuffer  = 0;
+    SHA2_object.bytesProcessed = 0;
+
+    /* Prepare the buffer of the derived key. We set the entire buffer to 0x00
+     * so we do not need to pad it to the block size after copying the keying
+     * material provided or the hash thereof there.
+     */
+    memset(xorBuffer, 0x00, SHA2_BLOCK_SIZE_BYTES_256);
+
+    /* The key material must be <= SHA2_BLOCK_SIZE_BYTES_256
+     * MCUboot uses key material of 32bytes
+     * We filled the entire buffer with 0x00, we do not need to pad to the block
+     * size.
+     */
+    memcpy(xorBuffer, key, keyLength);
+
+    /* Compute k0 ^ ipad */
+    SHA2_xorBufferWithByte(xorBuffer, SHA2_BLOCK_SIZE_BYTES_256, HMAC_IPAD_BYTE);
+
+    /* Start a hash of k0 ^ ipad.
+     * The intermediate result will be stored in the object for later
+     * use when the application calls SHA2_addData on its actual message.
+     */
+    SHA2_addData(xorBuffer, SHA2_BLOCK_SIZE_BYTES_256);
+
+    /* Undo k0 ^ ipad to reconstruct k0. Use the memory of k0 instead
+     * of allocating a new copy on the stack to save RAM.
+     */
+    SHA2_xorBufferWithByte(xorBuffer, SHA2_BLOCK_SIZE_BYTES_256, HMAC_IPAD_BYTE);
+
+    /* Compute k0 ^ opad. */
+    SHA2_xorBufferWithByte(xorBuffer, SHA2_BLOCK_SIZE_BYTES_256, HMAC_OPAD_BYTE);
+
+    /* Start a hash of k0 ^ opad.
+     * We are using driverlib here since using the interal SHA2 driver APIs
+     * would corrupt our previously stored intermediate results.
+     * This lets us save a second intermediate result.
+     */
+    SHA2ComputeInitialHash(xorBuffer,
+                           SHA2_object.hmacDigest,
+                           SHA2_MODE_SELECT_SHA256,
+                           SHA2_BLOCK_SIZE_BYTES_256);
+
+    SHA2WaitForIRQFlags(SHA2_RESULT_RDY | SHA2_DMA_BUS_ERR);
+
+    SHA2GetDigest(SHA2_object.hmacDigest, SHA2_DIGEST_LENGTH_BYTES_256);
+
+    IntPendClear(INT_CRYPTO_RESULT_AVAIL_IRQ);
+    IntEnable(INT_CRYPTO_RESULT_AVAIL_IRQ);
+
+    return SHA2_STATUS_SUCCESS;
+
+}
+
+/* Documented in sha2_driverlib.h */
+int_fast16_t SHA2_finalizeHmac(uint8_t* data) {
+
+    uint8_t tmpDigest[SHA2_DIGEST_LENGTH_BYTES_256];
+    /* If we are in SHA2_RETURN_BEHAVIOR_POLLING, we do not want an interrupt to trigger.
+     * We need to disable it before kicking off the operation.
+     */
+    IntDisable(INT_CRYPTO_RESULT_AVAIL_IRQ);
+
+    /* Finalize H((k0 ^ ipad) || data) */
+    SHA2_finalize(tmpDigest);
+
+    memcpy(SHA2_object.digest, SHA2_object.hmacDigest, SHA2_DIGEST_LENGTH_BYTES_256);
+
+    SHA2_object.bytesProcessed = SHA2_BLOCK_SIZE_BYTES_256;
+
+    SHA2_operationType = SHA2_OperationType_MultiStep;
+
+    /* Add the temporary digest computed earlier to the current digest */
+    SHA2_addData(tmpDigest, SHA2_DIGEST_LENGTH_BYTES_256);
+
+    //IntPendClear(INT_CRYPTO_RESULT_AVAIL_IRQ);
+    //IntEnable(INT_CRYPTO_RESULT_AVAIL_IRQ);
+
+    return SHA2_finalize(data);
+
 }
 
 /* Documented in sha2_driverlib.h */

@@ -70,12 +70,12 @@
 <p>To trigger various events, buttons can be used as well as the configurable user interface. The <a href="#ExampleUsage">Example Usage</a> section of this document explains how to use the user interface, although both the button presses and the UART perform the same actions.</p>
 </blockquote>
 <ul>
-<li><code>CONFIG_GPIO_RLED</code> - Turns on after the sensor connects to the collector.</li>
-<li><code>CONFIG_GPIO_BTN1</code> - Press to initialize the sensor application.</li>
-<li><code>CONFIG_GPIO_BTN2</code> - Press to disassociate the device from the network.</li>
+<li><code>CONFIG_LED_RED</code> - Turns on after the sensor connects to the collector.</li>
+<li><code>CONFIG_BTN_LEFT</code> - Press to initialize the sensor application.</li>
+<li><code>CONFIG_BTN_RIGHT</code> - Press to disassociate the device from the network.</li>
 </ul>
 <blockquote>
-<p>If <code>CONFIG_GPIO_BTN2</code> is held while power is applied to the Launchpad, NV Flash will be erased.</p>
+<p>To erase NV flash, Hold <code>CONFIG_BTN_RIGHT</code> down, then press and release the reset button. Wait a second then release BTN-2. You should see a CUI message indicating NV erase. If BTN-2 is not held down constantly during the boot process the NVS flash will not be erased.</p>
 </blockquote>
 <h2 id="resources-jumper-settings"><a name="Resources&amp;JumperSettings"></a>Resources &amp; Jumper Settings</h2>
 <p>The following hardware is required to run TI 15.4-Stack Out of Box (OOB) example applications:</p>
@@ -209,7 +209,7 @@ Status: Waiting...</code></pre>
 <p>If the <strong>AUTO_START</strong> symbol is defined in your application, then the application will automatically configure itself on startup, and the sensor will display <code>Starting..</code> instead of <code>Waiting...</code></p>
 </blockquote>
 <blockquote>
-<p>If the <strong>AUTO_START</strong> symbol is not defined pressing <code>CONFIG_GPIO_BTN1</code> will initialize the sensor application until the sensor has connected to a network. Alternatively, the sensor can also be started through the user interface, as shown below. Note that the sensor will not join a network unless it is started.</p>
+<p>If the <strong>AUTO_START</strong> symbol is not defined pressing <code>CONFIG_BTN_LEFT</code> will initialize the sensor application until the sensor has connected to a network. Alternatively, the sensor can also be started through the user interface, as shown below. Note that the sensor will not join a network unless it is started.</p>
 </blockquote>
 <p>To ASSOCIATE to a network and start the sensor:</p>
 <pre><code> TI Sensor
@@ -229,7 +229,7 @@ Status: Starting...</code></pre>
 <p>The joining device state variable information can be seen in the Joining Device Logical Link Controller’s header file (<code>jdllc.h</code>), within the <code>Jdllc_states_t</code> structure.</p>
 </blockquote>
 <ul>
-<li><p>Wait for the sensor device to associate with the coordinator, after which the output will be updated with the channel number and device Id of the sensor that was started. After association <code>CONFIG_GPIO_RLED</code> will be set.</p>
+<li><p>Wait for the sensor device to associate with the coordinator, after which the output will be updated with the channel number and device Id of the sensor that was started. After association <code>CONFIG_LED_RED</code> will be set.</p>
 <pre><code> TI Sensor
  Press Enter for Help
 &lt;      HELP      &gt;
@@ -249,7 +249,7 @@ Security Status: Commissioned: 0x01</code></pre></li>
 <p>If the passkey authentication method is chosen, the user will be guided with prompts to input a chosen 6 numerical digit passkey through UART.</p>
 </blockquote>
 <ul>
-<li><p>After the sensor node has successfully joined the network, it receives a configuration request message from the collector SM application. The node then configures the time interval on how often to report the sensor data to the collector SM application, and how often to poll for buffered messages in case of sleepy devices. After receiving the configuration request message, the green LED (<code>CONFIG_GPIO_GLED</code>) toggles whenever the device sends the message. In the event of a failure during the SM process, the sensor node will be disassociated by the coordinator.</p></li>
+<li><p>After the sensor node has successfully joined the network, it receives a configuration request message from the collector SM application. The node then configures the time interval on how often to report the sensor data to the collector SM application, and how often to poll for buffered messages in case of sleepy devices. After receiving the configuration request message, the green LED (<code>CONFIG_LED_GREEN</code>) toggles whenever the device sends the message. In the event of a failure during the SM process, the sensor node will be disassociated by the coordinator.</p></li>
 <li><p>Key refreshments will occur based on a timeout period set on the collector SM application, and the Security Status line will update accordingly.</p>
 <pre><code>Security Status: Key Refreshment Started: 0x01
 Security Status: Key Refreshed: 0x01</code></pre></li>
@@ -352,7 +352,7 @@ Security Status: Key Refreshed: 0x01</code></pre></li>
   with 100,000+ analog ICs and embedded processors, along with software, tools
   and the industry‘s largest sales/support staff.</p>
   <p>
-    <a href="https://www.ti.com/corp/docs/legal/copyright.shtml">© Copyright 1995-2024</a>, Texas Instruments Incorporated. All rights reserved. <br>
+    <a href="https://www.ti.com/corp/docs/legal/copyright.shtml">© Copyright 1995-2025</a>, Texas Instruments Incorporated. All rights reserved. <br>
     <a href="https://www.ti.com/corp/docs/legal/trademark/trademrk.htm">Trademarks</a> | <a href="https://www.ti.com/corp/docs/legal/privacy.shtml">Privacy policy</a> | <a href="https://www.ti.com/corp/docs/legal/termsofuse.shtml">Terms of use</a> | <a href="https://www.ti.com/lsds/ti/legal/termsofsale.page">Terms of sale</a>
   </p>
 </footer>

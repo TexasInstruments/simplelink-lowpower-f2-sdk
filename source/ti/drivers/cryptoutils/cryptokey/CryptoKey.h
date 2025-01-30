@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2023, Texas Instruments Incorporated
+ * Copyright (c) 2017-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -147,15 +147,30 @@ extern "C" {
 
 /** @}*/
 
+/*
+ * CRYPTOKEY_HSM is being used to mask bit 6 which determines which accelerator to use.
+ * Any encoding that is ORed with CRYPTOKEY_HSM indicates that the HSM is the engine of choice for the operation
+ */
+#define CRYPTOKEY_HSM 0x20U
+
+#define CRYPTOKEY_PLAINTEXT       0x02U
+#define CRYPTOKEY_BLANK_PLAINTEXT 0x04U
+#define CRYPTOKEY_KEYSTORE        0x08U
+#define CRYPTOKEY_BLANK_KEYSTORE  0x10U
+
 /*!
  *  @brief  List of the different types of CryptoKey.
- *
+ *  _HSM encodings are only available for select devices, CC27XX.
  */
 typedef uint8_t CryptoKey_Encoding;
-static const CryptoKey_Encoding CryptoKey_PLAINTEXT       = 0x02U;
-static const CryptoKey_Encoding CryptoKey_BLANK_PLAINTEXT = 0x04U;
-static const CryptoKey_Encoding CryptoKey_KEYSTORE        = 0x08U;
-static const CryptoKey_Encoding CryptoKey_BLANK_KEYSTORE  = 0x10U;
+static const CryptoKey_Encoding CryptoKey_PLAINTEXT           = CRYPTOKEY_PLAINTEXT;
+static const CryptoKey_Encoding CryptoKey_BLANK_PLAINTEXT     = CRYPTOKEY_BLANK_PLAINTEXT;
+static const CryptoKey_Encoding CryptoKey_KEYSTORE            = CRYPTOKEY_KEYSTORE;
+static const CryptoKey_Encoding CryptoKey_BLANK_KEYSTORE      = CRYPTOKEY_BLANK_KEYSTORE;
+static const CryptoKey_Encoding CryptoKey_PLAINTEXT_HSM       = CRYPTOKEY_PLAINTEXT | CRYPTOKEY_HSM;
+static const CryptoKey_Encoding CryptoKey_BLANK_PLAINTEXT_HSM = CRYPTOKEY_BLANK_PLAINTEXT | CRYPTOKEY_HSM;
+static const CryptoKey_Encoding CryptoKey_KEYSTORE_HSM        = CRYPTOKEY_KEYSTORE | CRYPTOKEY_HSM;
+static const CryptoKey_Encoding CryptoKey_BLANK_KEYSTORE_HSM  = CRYPTOKEY_BLANK_KEYSTORE | CRYPTOKEY_HSM;
 
 /*!
  *  @brief  Plaintext CryptoKey datastructure.
@@ -183,7 +198,7 @@ typedef struct
 {
     uint32_t keyLength;
     uint32_t keyID;
-    void *keyAttributes;
+    const void *keyAttributes;
 } CryptoKey_KeyStore;
 
 /*!
@@ -275,6 +290,44 @@ int_fast16_t CryptoKey_verifySecureInputKey(const CryptoKey *secureKey);
  *  @retval CryptoKey_STATUS_ERROR    Key fails any verification check
  */
 int_fast16_t CryptoKey_verifySecureOutputKey(const CryptoKey *secureKey);
+
+/*!
+ *  @brief Function to copy and verify a secure input CryptoKey
+ *
+ *  This will check that the source CryptoKey struct is located in non-secure
+ *  read-access memory, copy the CryptoKey struct from the src to dst, and check
+ *  that the key type is valid and verify plaintext key material is located in
+ *  non-secure read-access memory.
+ *
+ *  @note This function may not be available in all implementations
+ *
+ *  @param [out]    dst         Pointer to the destination CryptoKey struct located in secure memory
+ *  @param [in,out] src         Pointer to a source CryptoKey struct pointer located in secure memory
+ *                              which will be updated to point to the destination CryptoKey struct
+ *
+ *  @retval CryptoKey_STATUS_SUCCESS  Key passes all verification checks
+ *  @retval CryptoKey_STATUS_ERROR    Key fails any verification check
+ */
+int_fast16_t CryptoKey_copySecureInputKey(CryptoKey *dst, const CryptoKey **src);
+
+/*!
+ *  @brief Function to copy and verify a secure output CryptoKey
+ *
+ *  This will check that the source CryptoKey struct is located in non-secure
+ *  RW-access memory, copy the CryptoKey struct from the src to dst, and check
+ *  that the key type is valid and verify plaintext key material is located in
+ *  non-secure RW-access memory.
+ *
+ *  @note This function may not be available in all implementations
+ *
+ *  @param [out]    dst         Pointer to the destination CryptoKey struct located in secure memory
+ *  @param [in,out] src         Pointer to a source CryptoKey struct pointer located in secure memory
+ *                              which will be updated to point to the destination CryptoKey struct
+ *
+ *  @retval CryptoKey_STATUS_SUCCESS  Key passes all verification checks
+ *  @retval CryptoKey_STATUS_ERROR    Key fails any verification check
+ */
+int_fast16_t CryptoKey_copySecureOutputKey(CryptoKey *dst, CryptoKey **src);
 
 #ifdef __cplusplus
 }

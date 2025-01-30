@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2023, Texas Instruments Incorporated
+ * Copyright (c) 2020-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -97,7 +97,6 @@
 
  *  | Device Family | Debug Protocol | Muxing          | Configurable? |
  *  |---------------|----------------|-----------------|---------------|
- *  | CC32XX        | SWD            | Shared with TDO | N             |
  *  | CC13XX/CC26XX | JTAG/cJTAG     | Any pin         | Y             |
  *
  *  Device specific pin muxing is done by the device specific ITM backend
@@ -208,7 +207,8 @@ extern "C" {
  *          in ITM_WatchpointAction
  *
  */
-#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4 || \
+     DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX)
     #define ITM_FUNCTION_DISABLED                  (0x00)
     #define ITM_FUNCTION_EMIT_PC                   (0x30 | 0x4)
     #define ITM_FUNCTION_EMIT_DATA_ON_READ_WRITE   (0x800 | 0x20 | 0xc)

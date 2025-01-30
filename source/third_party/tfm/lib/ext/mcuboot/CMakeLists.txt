@@ -20,9 +20,6 @@ fetch_remote_library(
     FETCH_CONTENT_ARGS
         GIT_REPOSITORY      https://github.com/mcu-tools/mcuboot.git
         GIT_TAG             ${MCUBOOT_VERSION}
-        # ToDo: set GIT_SHALLOW to 'TRUE' when MCUBOOT_VERSION will be set to a tag
-        # (instead of a commit hash) with the new release.
-        GIT_SHALLOW         FALSE
         GIT_PROGRESS        TRUE
         GIT_SUBMODULES      "${MCUBOOT_SUBMODULES}"
 )

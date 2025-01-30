@@ -18,11 +18,22 @@
 #define __BOOT_RECORD_H__
 
 #include <stdint.h>
+#include <stddef.h>
 #include "bootutil/image.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/** Error codes for using the shared memory area. */
+enum shared_memory_status {
+    SHARED_MEMORY_OK           = 0,
+    SHARED_MEMORY_OVERFLOW,
+    SHARED_MEMORY_OVERWRITE,
+    SHARED_MEMORY_GEN_ERROR,
+    SHARED_MEMORY_WRITE_ERROR,
+    SHARED_MEMORY_READ_ERROR,
+};
 
 /**
  * @brief Add a data item to the shared data area between bootloader and
@@ -58,13 +69,17 @@ int boot_save_boot_status(uint8_t sw_module,
  * Add application specific data to the shared memory area between the
  * bootloader and runtime SW.
  *
- * @param[in]  hdr        Pointer to the image header stored in RAM.
- * @param[in]  fap        Pointer to the flash area where image is stored.
+ * @param[in]  hdr           Pointer to the image header stored in RAM.
+ * @param[in]  fap           Pointer to the flash area where image is stored.
+ * @param[in]  slot          The currently active slot being booted.
+ * @param[in]  max_app_size  The maximum size of an image that can be loaded.
  *
- * @return                0 on success; nonzero on failure.
+ * @return                    0 on success; nonzero on failure.
  */
 int boot_save_shared_data(const struct image_header *hdr,
-                          const struct flash_area *fap);
+                          const struct flash_area *fap,
+                          const uint8_t active_slot,
+                          const int max_app_size);
 
 #ifdef __cplusplus
 }

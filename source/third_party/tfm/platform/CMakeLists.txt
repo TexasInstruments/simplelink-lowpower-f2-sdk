@@ -10,8 +10,6 @@ cmake_minimum_required(VERSION 3.15)
 cmake_policy(SET CMP0076 NEW)
 cmake_policy(SET CMP0079 NEW)
 
-add_subdirectory(ns)
-
 add_library(platform_s STATIC)
 add_library(platform_region_defs INTERFACE)
 add_library(platform_common_interface INTERFACE)
@@ -21,15 +19,16 @@ if (BL2)
 endif()
 
 if (BL1 AND PLATFORM_DEFAULT_BL1)
-    add_library(platform_bl1 STATIC)
-    add_library(platform_bl1_interface INTERFACE)
+    add_library(platform_bl1_1 STATIC)
+    add_library(platform_bl1_2 STATIC)
+    add_library(platform_bl1_1_interface INTERFACE)
 endif()
 
 if (TFM_PARTITION_CRYPTO)
     add_library(platform_crypto_keys STATIC)
 endif()
 
-set(PLATFORM_DIR ${CMAKE_CURRENT_LIST_DIR})
+set(PLATFORM_DIR ${CMAKE_CURRENT_LIST_DIR} CACHE PATH "Path to platform directory")
 
 add_subdirectory(ext/target/${TFM_PLATFORM} target)
 
@@ -52,11 +51,11 @@ target_compile_options(cmsis_stack_override
 
 target_include_directories(platform_common_interface
     INTERFACE
-        ./ext
-        ./ext/cmsis
-        ./ext/common
-        ./ext/driver
-        ./include
+        ext
+        ext/cmsis
+        ext/common
+        ext/driver
+        include
 )
 
 #========================= Platform Secure ====================================#
@@ -78,7 +77,6 @@ target_sources(platform_s
         $<$<BOOL:${PLATFORM_DEFAULT_NV_COUNTERS}>:ext/common/template/nv_counters.c>
         $<$<BOOL:${PLATFORM_DEFAULT_ROTPK}>:ext/common/template/tfm_rotpk.c>
         $<$<BOOL:${PLATFORM_DEFAULT_NV_SEED}>:ext/common/template/crypto_nv_seed.c>
-        $<$<AND:$<NOT:$<BOOL:${SYMMETRIC_INITIAL_ATTESTATION}>>,$<BOOL:${TEST_S_ATTESTATION}>>:ext/common/template/tfm_initial_attest_pub_key.c>
         $<$<OR:$<AND:$<BOOL:${PLATFORM_DEFAULT_NV_COUNTERS}>,$<BOOL:${TFM_PARTITION_PROTECTED_STORAGE}>>,$<BOOL:${PLATFORM_DEFAULT_OTP}>>:ext/common/template/flash_otp_nv_counters_backend.c>
         $<$<BOOL:${PLATFORM_DEFAULT_OTP}>:ext/common/template/otp_flash.c>
         $<$<BOOL:${PLATFORM_DEFAULT_PROVISIONING}>:ext/common/provisioning.c>
@@ -101,7 +99,7 @@ target_link_libraries(platform_s
         cmsis_stack_override
     PRIVATE
         psa_interface
-        tfm_partition_defs
+        tfm_config
         tfm_spm_defs # For tfm_spm_log.h
         $<$<BOOL:${TFM_PARTITION_CRYPTO}>:platform_crypto_keys>
         $<$<BOOL:${PLATFORM_DEFAULT_ATTEST_HAL}>:tfm_sprt>
@@ -114,7 +112,7 @@ target_compile_definitions(platform_s
     PUBLIC
         TFM_SPM_LOG_LEVEL=${TFM_SPM_LOG_LEVEL}
         $<$<BOOL:${TFM_SPM_LOG_RAW_ENABLED}>:TFM_SPM_LOG_RAW_ENABLED>
-        $<$<BOOL:${OTP_NV_COUNTERS_RAM_EMULATION}>:OTP_NV_COUNTERS_RAM_EMULATION>
+        $<$<BOOL:${OTP_NV_COUNTERS_RAM_EMULATION}>:OTP_NV_COUNTERS_RAM_EMULATION=1>
         $<$<BOOL:${TFM_EXCEPTION_INFO_DUMP}>:TFM_EXCEPTION_INFO_DUMP>
         $<$<OR:$<VERSION_GREATER:${TFM_ISOLATION_LEVEL},1>,$<STREQUAL:"${TEST_PSA_API}","IPC">>:CONFIG_TFM_ENABLE_MEMORY_PROTECT>
         $<$<BOOL:${TFM_PXN_ENABLE}>:TFM_PXN_ENABLE>
@@ -124,10 +122,10 @@ target_compile_definitions(platform_s
         $<$<BOOL:${CONFIG_TFM_ENABLE_CP10CP11}>:CONFIG_TFM_ENABLE_CP10CP11>
         $<$<BOOL:${PLATFORM_DEFAULT_CRYPTO_KEYS}>:PLATFORM_DEFAULT_CRYPTO_KEYS>
         $<$<BOOL:${PLATFORM_DEFAULT_OTP}>:PLATFORM_DEFAULT_OTP>
+        $<$<BOOL:${PLATFORM_DEFAULT_NV_COUNTERS}>:PLATFORM_DEFAULT_NV_COUNTERS>
     PRIVATE
         $<$<BOOL:${SYMMETRIC_INITIAL_ATTESTATION}>:SYMMETRIC_INITIAL_ATTESTATION>
         $<$<BOOL:${TFM_DUMMY_PROVISIONING}>:TFM_DUMMY_PROVISIONING>
-        $<$<BOOL:${PLATFORM_DEFAULT_NV_COUNTERS}>:PLATFORM_DEFAULT_NV_COUNTERS>
         $<$<BOOL:${PLATFORM_DEFAULT_OTP_WRITEABLE}>:OTP_WRITEABLE>
 )
 
@@ -150,7 +148,7 @@ if(TFM_PARTITION_CRYPTO)
             crypto_service_mbedcrypto
             tfm_psa_rot_partition_crypto
             platform_region_defs
-            tfm_partition_defs
+            tfm_config
     )
 
     target_include_directories(platform_crypto_keys
@@ -190,7 +188,7 @@ if(BL2)
             $<$<BOOL:${PLATFORM_DEFAULT_UART_STDOUT}>:${CMAKE_CURRENT_SOURCE_DIR}/ext/common/uart_stdout.c>
             $<$<BOOL:${PLATFORM_DEFAULT_NV_COUNTERS}>:ext/common/template/nv_counters.c>
             $<$<BOOL:${PLATFORM_DEFAULT_ROTPK}>:ext/common/template/tfm_rotpk.c>
-            $<$<OR:$<AND:$<BOOL:${PLATFORM_DEFAULT_NV_COUNTERS}>,$<BOOL:${TFM_PARTITION_PROTECTED_STORAGE}>>,$<BOOL:${PLATFORM_DEFAULT_OTP}>>:ext/common/template/flash_otp_nv_counters_backend.c>
+            $<$<OR:$<BOOL:${PLATFORM_DEFAULT_NV_COUNTERS}>,$<BOOL:${PLATFORM_DEFAULT_OTP}>>:ext/common/template/flash_otp_nv_counters_backend.c>
             $<$<BOOL:${PLATFORM_DEFAULT_OTP}>:ext/common/template/otp_flash.c>
     )
 
@@ -202,6 +200,7 @@ if(BL2)
         PRIVATE
             bl2_hal
             mcuboot_config
+            $<$<AND:$<BOOL:${CONFIG_TFM_BOOT_STORE_MEASUREMENTS}>,$<NOT:$<BOOL:${CONFIG_TFM_BOOT_STORE_ENCODED_MEASUREMENTS}>>>:tfm_boot_status>
     )
 
     target_compile_definitions(platform_bl2
@@ -213,10 +212,11 @@ if(BL2)
             $<$<BOOL:${MCUBOOT_HW_KEY}>:MCUBOOT_HW_KEY>
             MCUBOOT_FIH_PROFILE_${MCUBOOT_FIH_PROFILE}
             $<$<BOOL:${PLATFORM_DEFAULT_OTP}>:PLATFORM_DEFAULT_OTP>
-            $<$<BOOL:${OTP_NV_COUNTERS_RAM_EMULATION}>:OTP_NV_COUNTERS_RAM_EMULATION>
+            $<$<BOOL:${OTP_NV_COUNTERS_RAM_EMULATION}>:OTP_NV_COUNTERS_RAM_EMULATION=1>
             $<$<BOOL:${TFM_DUMMY_PROVISIONING}>:TFM_DUMMY_PROVISIONING>
             $<$<BOOL:${PLATFORM_DEFAULT_NV_COUNTERS}>:PLATFORM_DEFAULT_NV_COUNTERS>
             $<$<BOOL:${PLATFORM_DEFAULT_OTP_WRITEABLE}>:OTP_WRITEABLE>
+            $<$<AND:$<BOOL:${CONFIG_TFM_BOOT_STORE_MEASUREMENTS}>,$<NOT:$<BOOL:${CONFIG_TFM_BOOT_STORE_ENCODED_MEASUREMENTS}>>>:TFM_MEASURED_BOOT_API>
     )
 
     target_compile_options(platform_bl2
@@ -228,52 +228,104 @@ endif()
 #========================= Platform BL1_1 =====================================#
 
 if(BL1 AND PLATFORM_DEFAULT_BL1)
-    target_include_directories(platform_bl1_interface
+    target_include_directories(platform_bl1_1_interface
         INTERFACE
             .
-            ./include
-            ./ext/cmsis
-            ./ext/driver
+            include
+            ext/cmsis
+            ext/driver
     )
 
-    target_link_libraries(platform_bl1_interface
+    target_link_libraries(platform_bl1_1_interface
         INTERFACE
             platform_region_defs
             platform_common_interface
             cmsis_stack_override
     )
 
-    target_compile_definitions(platform_bl1_interface
+    target_compile_definitions(platform_bl1_1_interface
         INTERFACE
             $<$<BOOL:${CRYPTO_HW_ACCELERATOR}>:CRYPTO_HW_ACCELERATOR>
             $<$<BOOL:${TFM_BL1_LOGGING}>:TFM_BL1_LOGGING>
             $<$<BOOL:${PLATFORM_DEFAULT_OTP}>:PLATFORM_DEFAULT_OTP>
-            $<$<BOOL:${OTP_NV_COUNTERS_RAM_EMULATION}>:OTP_NV_COUNTERS_RAM_EMULATION>
+            $<$<BOOL:${OTP_NV_COUNTERS_RAM_EMULATION}>:OTP_NV_COUNTERS_RAM_EMULATION=1>
             $<$<BOOL:${TFM_DUMMY_PROVISIONING}>:TFM_DUMMY_PROVISIONING>
             $<$<BOOL:${PLATFORM_DEFAULT_NV_COUNTERS}>:PLATFORM_DEFAULT_NV_COUNTERS>
             $<$<BOOL:${PLATFORM_DEFAULT_OTP_WRITEABLE}>:OTP_WRITEABLE>
             $<$<BOOL:${TFM_BL1_MEMORY_MAPPED_FLASH}>:TFM_BL1_MEMORY_MAPPED_FLASH>
+            $<$<BOOL:${TFM_BL1_2_IN_OTP}>:TFM_BL1_2_IN_OTP>
+            $<$<AND:$<BOOL:${CONFIG_TFM_BOOT_STORE_MEASUREMENTS}>,$<NOT:$<BOOL:${CONFIG_TFM_BOOT_STORE_ENCODED_MEASUREMENTS}>>>:TFM_MEASURED_BOOT_API>
     )
 
-    target_sources(platform_bl1
+    target_sources(platform_bl1_1
         PRIVATE
-            ./ext/common/boot_hal_bl1.c
-            ./ext/common/uart_stdout.c
-            $<$<BOOL:${PLATFORM_DEFAULT_NV_COUNTERS}>:ext/common/template/nv_counters.c>
-            $<$<OR:$<AND:$<BOOL:${PLATFORM_DEFAULT_NV_COUNTERS}>,$<BOOL:${TFM_PARTITION_PROTECTED_STORAGE}>>,$<BOOL:${PLATFORM_DEFAULT_OTP}>>:ext/common/template/flash_otp_nv_counters_backend.c>
+            ext/common/boot_hal_bl1_1.c
+            ext/common/uart_stdout.c
+            $<$<BOOL:${PLATFORM_DEFAULT_OTP}>:ext/common/template/flash_otp_nv_counters_backend.c>
             $<$<BOOL:${PLATFORM_DEFAULT_OTP}>:ext/common/template/otp_flash.c>
     )
 
-    target_link_libraries(platform_bl1
+    target_link_libraries(platform_bl1_1
         PUBLIC
-            platform_bl1_interface
+            platform_bl1_1_interface
+            platform_region_defs
         PRIVATE
             tfm_fih
             tfm_fih_headers
-            $<$<BOOL:${CRYPTO_HW_ACCELERATOR}>:bl1_crypto_hw>
             tfm_boot_status
     )
+endif()
 
+#========================= Platform BL1_2 =====================================#
+
+if(BL1 AND PLATFORM_DEFAULT_BL1)
+    target_include_directories(platform_bl1_2
+        PRIVATE
+            .
+            include
+            ext/cmsis
+            ext/driver
+    )
+
+    target_link_libraries(platform_bl1_2
+        INTERFACE
+            platform_region_defs
+            platform_common_interface
+            cmsis_stack_override
+    )
+
+    target_compile_definitions(platform_bl1_2
+        INTERFACE
+            $<$<BOOL:${CRYPTO_HW_ACCELERATOR}>:CRYPTO_HW_ACCELERATOR>
+            $<$<BOOL:${TFM_BL1_LOGGING}>:TFM_BL1_LOGGING>
+            $<$<BOOL:${PLATFORM_DEFAULT_OTP}>:PLATFORM_DEFAULT_OTP>
+            $<$<BOOL:${OTP_NV_COUNTERS_RAM_EMULATION}>:OTP_NV_COUNTERS_RAM_EMULATION=1>
+            $<$<BOOL:${TFM_DUMMY_PROVISIONING}>:TFM_DUMMY_PROVISIONING>
+            $<$<BOOL:${PLATFORM_DEFAULT_NV_COUNTERS}>:PLATFORM_DEFAULT_NV_COUNTERS>
+            $<$<BOOL:${PLATFORM_DEFAULT_OTP_WRITEABLE}>:OTP_WRITEABLE>
+            $<$<BOOL:${TFM_BL1_MEMORY_MAPPED_FLASH}>:TFM_BL1_MEMORY_MAPPED_FLASH>
+            $<$<BOOL:${TFM_BL1_2_IN_OTP}>:TFM_BL1_2_IN_OTP>
+            $<$<AND:$<BOOL:${CONFIG_TFM_BOOT_STORE_MEASUREMENTS}>,$<NOT:$<BOOL:${CONFIG_TFM_BOOT_STORE_ENCODED_MEASUREMENTS}>>>:TFM_MEASURED_BOOT_API>
+    )
+
+    target_sources(platform_bl1_2
+        PRIVATE
+            ext/common/boot_hal_bl1_2.c
+            $<$<BOOL:${PLATFORM_DEFAULT_NV_COUNTERS}>:ext/common/template/nv_counters.c>
+            $<$<OR:$<BOOL:${PLATFORM_DEFAULT_NV_COUNTERS}>,$<BOOL:${PLATFORM_DEFAULT_OTP}>>:ext/common/template/flash_otp_nv_counters_backend.c>
+            $<$<BOOL:${PLATFORM_DEFAULT_OTP}>:ext/common/template/otp_flash.c>
+    )
+
+    target_link_libraries(platform_bl1_2
+        PUBLIC
+            platform_bl1_1_interface
+        PRIVATE
+            tfm_fih
+            tfm_fih_headers
+            tfm_boot_status
+            platform_region_defs
+            bl1_1_shared_lib_interface
+    )
 endif()
 
 #========================= Platform region defs ===============================#
@@ -291,8 +343,8 @@ target_compile_definitions(platform_region_defs
         $<$<BOOL:${SECURE_UART1}>:SECURE_UART1>
         DAUTH_${DEBUG_AUTHENTICATION}
         $<$<BOOL:${MCUBOOT_IMAGE_NUMBER}>:MCUBOOT_IMAGE_NUMBER=${MCUBOOT_IMAGE_NUMBER}>
-        $<$<STREQUAL:${MCUBOOT_SIGNATURE_TYPE},RSA>:MCUBOOT_SIGN_RSA>
-        $<$<STREQUAL:${MCUBOOT_SIGNATURE_TYPE},RSA>:MCUBOOT_SIGN_RSA_LEN=${MCUBOOT_SIGNATURE_KEY_LEN}>
+        $<$<BOOL:${BL2}>:MCUBOOT_SIGNATURE_TYPE=${MCUBOOT_SIGNATURE_TYPE}>
+        $<$<STREQUAL:${SIG_TYPE},EC>:MCUBOOT_SIGN_EC${SIG_LEN}>
         $<$<STREQUAL:${MCUBOOT_EXECUTION_SLOT},2>:LINK_TO_SECONDARY_PARTITION>
         $<$<BOOL:${TEST_PSA_API}>:PSA_API_TEST_${TEST_PSA_API}>
         $<$<BOOL:${TFM_CODE_SHARING}>:CODE_SHARING>

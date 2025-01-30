@@ -1,0 +1,12 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../application/collector/advanced_config.h -> application/collector/advanced_config.h",
+            "+../../application/defines/collector.opt -> application/defines/collector.opt",
+            "+../collector.syscfg -> collector.syscfg",
+            "+cc13x4_cc26x4.cmd -> cc13x4_cc26x4.cmd"
+        ]
+    }
+]

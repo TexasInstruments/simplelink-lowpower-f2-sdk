@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2018-2021, Arm Limited. All rights reserved.
- * Copyright (c) 2020, Cypress Semiconductor Corporation. All rights reserved.
+ * Copyright (c) 2020-2023 Cypress Semiconductor Corporation (an Infineon company)
+ * or an affiliate of Cypress Semiconductor Corporation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -31,6 +32,9 @@ extern struct platform_data_t tfm_peripheral_timer0;
 
 #define TFM_PERIPHERAL_STD_UART     (&tfm_peripheral_std_uart)
 #define TFM_PERIPHERAL_TIMER0       (&tfm_peripheral_timer0)
+
+/* NSPE-to-SPE interrupt */
+#define MAILBOX_IRQ NvicMux7_IRQn
 
 #ifdef __cplusplus
 }

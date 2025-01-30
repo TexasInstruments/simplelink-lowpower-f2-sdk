@@ -11,7 +11,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2024, Texas Instruments Incorporated
+ Copyright (c) 2009-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -314,7 +314,6 @@ hciStatus_t hciExtEnablePTM                        ( uint8 *pBuf );
 hciStatus_t hciExtSetFreqTune                      ( uint8 *pBuf );
 hciStatus_t hciExtSaveFreqTune                     ( uint8 *pBuf );
 hciStatus_t hciExtSetMaxDtmTxPower                 ( uint8 *pBuf );
-hciStatus_t hciExtSetMaxDtmTxPowerDbm              ( uint8 *pBuf );
 hciStatus_t hciExtMapPmIoPort                      ( uint8 *pBuf );
 hciStatus_t hciExtBuildRevision                    ( uint8 *pBuf );
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & ADV_NCONN_CFG )
@@ -527,7 +526,6 @@ cmdPktTable_t hciCmdTable[] =
   {HCI_EXT_SET_SCA                          , hciExtSetSCA                     },
 #endif // ADV_CONN_CFG | INIT_CFG
   {HCI_EXT_SET_MAX_DTM_TX_POWER             , hciExtSetMaxDtmTxPower           },
-  {HCI_EXT_SET_MAX_DTM_TX_POWER_DBM         , hciExtSetMaxDtmTxPowerDbm        },
   {HCI_EXT_MAP_PM_IO_PORT                   , hciExtMapPmIoPort                },
   {HCI_EXT_SET_FREQ_TUNE                    , hciExtSetFreqTune                },
   {HCI_EXT_SAVE_FREQ_TUNE                   , hciExtSaveFreqTune               },
@@ -3132,28 +3130,6 @@ hciStatus_t hciExtSetTxPower( uint8 *pBuf )
 
 
 /*******************************************************************************
- * @fn          hciExtSetTxPowerDbm
- *
- * @brief       Serial interface translation function for HCI API.
- *
- * input parameters
- *
- * @param       pBuf - Pointer to command parameters and payload.
- *
- * output parameters
- *
- * @param       None.
- *
- * @return      hciStatus_t
- */
-hciStatus_t hciExtSetTxPowerDbm( uint8 *pBuf )
-{
-  return HCI_EXT_SetTxPowerDbmCmd( pBuf[0],
-                                   pBuf[1]);
-}
-
-
-/*******************************************************************************
  * @fn          hciExtExtendRfRange
  *
  * @brief       Serial interface translation function for HCI API.
@@ -3216,27 +3192,6 @@ hciStatus_t hciExtHaltDuringRf( uint8 *pBuf )
 hciStatus_t hciExtSetMaxDtmTxPower( uint8 *pBuf )
 {
   return HCI_EXT_SetMaxDtmTxPowerCmd( pBuf[0] );
-}
-
-
-/*******************************************************************************
- * @fn          hciExtSetMaxDtmTxPowerDbm
- *
- * @brief       Serial interface translation function for HCI API.
- *
- * input parameters
- *
- * @param       pBuf - Pointer to command parameters and payload.
- *
- * output parameters
- *
- * @param       None.
- *
- * @return      hciStatus_t
- */
-hciStatus_t hciExtSetMaxDtmTxPowerDbm( uint8 *pBuf )
-{
-  return HCI_EXT_SetMaxDtmTxPowerDbmCmd( pBuf[0], pBuf[1] );
 }
 
 

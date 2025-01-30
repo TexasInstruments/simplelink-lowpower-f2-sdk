@@ -20,7 +20,7 @@ struct platform_data_t
 {
     uint32_t periph_start;
     uint32_t periph_limit;
-    enum ppc_bank_e periph_ppc_bank;
+    ppc_bank_t periph_ppc_bank;
     int16_t periph_ppc_mask;
 };
 
@@ -71,24 +71,24 @@ enum tfm_plat_err_t ppc_init_cfg(void);
  *
  * \note The function does not configure privilege
  */
-void ppc_configure_to_secure(enum ppc_bank_e bank, uint32_t pos);
+void ppc_configure_to_secure(ppc_bank_t bank, uint32_t pos);
 
 /**
  * \brief Allow non-secure access to peripheral
  *
  * \note The function does not configure privilege
  */
-void ppc_configure_to_non_secure(enum ppc_bank_e bank, uint32_t pos);
+void ppc_configure_to_non_secure(ppc_bank_t bank, uint32_t pos);
 
 /**
  * \brief Enable secure unprivileged access to peripheral
  */
-void ppc_en_secure_unpriv(enum ppc_bank_e bank, uint32_t pos);
+void ppc_en_secure_unpriv(ppc_bank_t bank, uint32_t pos);
 
 /**
  * \brief Clear secure unprivileged access to peripheral
  */
-void ppc_clr_secure_unpriv(enum ppc_bank_e bank, uint32_t pos);
+void ppc_clr_secure_unpriv(ppc_bank_t bank, uint32_t pos);
 
 /**
  * \brief Enables the fault handlers BusFault, UsageFault,

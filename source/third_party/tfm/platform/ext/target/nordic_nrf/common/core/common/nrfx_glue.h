@@ -154,7 +154,7 @@ void nrfx_critical_section_exit(void);
 //------------------------------------------------------------------------------
 
 /** @brief Atomic 32-bit unsigned type. */
-#define nrfx_atomic_t
+#define nrfx_atomic_t  long
 
 /**
  * @brief Macro for storing a value to an atomic object and returning its previous value.
@@ -164,7 +164,7 @@ void nrfx_critical_section_exit(void);
  *
  * @return Previous value of the atomic object.
  */
-#define NRFX_ATOMIC_FETCH_STORE(p_data, value)
+#define NRFX_ATOMIC_FETCH_STORE(p_data, value)  __atomic_exchange_n(p_data, value, __ATOMIC_SEQ_CST)
 
 /**
  * @brief Macro for running a bitwise OR operation on an atomic object and returning its previous value.
@@ -174,7 +174,7 @@ void nrfx_critical_section_exit(void);
  *
  * @return Previous value of the atomic object.
  */
-#define NRFX_ATOMIC_FETCH_OR(p_data, value)
+#define NRFX_ATOMIC_FETCH_OR(p_data, value)  __atomic_fetch_or(p_data, value, __ATOMIC_SEQ_CST)
 
 /**
  * @brief Macro for running a bitwise AND operation on an atomic object
@@ -185,7 +185,7 @@ void nrfx_critical_section_exit(void);
  *
  * @return Previous value of the atomic object.
  */
-#define NRFX_ATOMIC_FETCH_AND(p_data, value)
+#define NRFX_ATOMIC_FETCH_AND(p_data, value)  __atomic_fetch_and(p_data, value, __ATOMIC_SEQ_CST)
 
 /**
  * @brief Macro for running a bitwise XOR operation on an atomic object
@@ -196,7 +196,7 @@ void nrfx_critical_section_exit(void);
  *
  * @return Previous value of the atomic object.
  */
-#define NRFX_ATOMIC_FETCH_XOR(p_data, value)
+#define NRFX_ATOMIC_FETCH_XOR(p_data, value)  __atomic_fetch_xor(p_data, value, __ATOMIC_SEQ_CST)
 
 /**
  * @brief Macro for running an addition operation on an atomic object
@@ -207,7 +207,7 @@ void nrfx_critical_section_exit(void);
  *
  * @return Previous value of the atomic object.
  */
-#define NRFX_ATOMIC_FETCH_ADD(p_data, value)
+#define NRFX_ATOMIC_FETCH_ADD(p_data, value)  __atomic_fetch_add(p_data, value, __ATOMIC_SEQ_CST)
 
 /**
  * @brief Macro for running a subtraction operation on an atomic object
@@ -218,7 +218,7 @@ void nrfx_critical_section_exit(void);
  *
  * @return Previous value of the atomic object.
  */
-#define NRFX_ATOMIC_FETCH_SUB(p_data, value)
+#define NRFX_ATOMIC_FETCH_SUB(p_data, value)  __atomic_fetch_sub(p_data, value, __ATOMIC_SEQ_CST)
 
 //------------------------------------------------------------------------------
 
@@ -238,6 +238,45 @@ void nrfx_critical_section_exit(void);
  *        otherwise could defer the actual register modification.
  */
 #define NRFX_EVENT_READBACK_ENABLED 1
+
+//------------------------------------------------------------------------------
+
+/**
+ * @brief Macro for writing back cache lines associated with the specified buffer.
+ *
+ * @param[in] p_buffer Pointer to the buffer.
+ * @param[in] size     Size of the buffer.
+ */
+#define NRFY_CACHE_WB(p_buffer, size) \
+    do {                              \
+        (void)p_buffer;               \
+        (void)size;                   \
+    } while (0)
+
+/**
+ * @brief Macro for invalidating cache lines associated with the specified buffer.
+ *
+ * @param[in] p_buffer Pointer to the buffer.
+ * @param[in] size     Size of the buffer.
+ */
+#define NRFY_CACHE_INV(p_buffer, size) \
+    do {                               \
+        (void)p_buffer;                \
+        (void)size;                    \
+    } while (0)
+
+/**
+ * @brief Macro for writing back and invalidating cache lines associated with
+ *        the specified buffer.
+ *
+ * @param[in] p_buffer Pointer to the buffer.
+ * @param[in] size     Size of the buffer.
+ */
+#define NRFY_CACHE_WBINV(p_buffer, size) \
+    do {                                 \
+        (void)p_buffer;                  \
+        (void)size;                      \
+    } while (0)
 
 //------------------------------------------------------------------------------
 

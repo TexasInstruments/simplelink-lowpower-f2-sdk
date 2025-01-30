@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021, Texas Instruments Incorporated
+ * Copyright (c) 2017-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -133,6 +133,13 @@
  *        dealing with payload data (plaintext or ciphertext). AESCCM_SegmentedFinalizeOperation
  *        must be initialized and set when finalizing the segmented operation.
  *
+ *  ## Device-Specific Requirements #
+ *
+ *  For CC27XX devices, CCM operations leveraging the HSM engine
+ *  (key encoding suffixed with _HSM) have the following requirements:
+ *      - Output buffer address must be 32-bit aligned.
+ *      - Input length must be a block-size (16-byte) multiple.
+ *
  *  ## Starting a CCM operation #
  *
  *  The AESCCM_oneStepEncrypt and AESCCM_oneStepDecrypt functions do a CCM operation in a single call.
@@ -231,6 +238,65 @@
  *      operation.nonceLength       = sizeof(nonce);
  *      operation.mac               = mac;
  *      operation.macLength         = sizeof(mac);
+ *
+ *  encryptionResult = AESCCM_oneStepEncrypt(handle, &operation);
+ *
+ *  if (encryptionResult != AESCCM_STATUS_SUCCESS) {
+ *      // handle error
+ *  }
+ *
+ *  AESCCM_close(handle);
+ *
+ *  @endcode
+ *  ### The following code snippet is for CC27XX devices only and leverages the HSM
+ *      which is a seperate Hardware Accelerator ###
+ *  ### Single call CCM encryption + authentication with plaintext HSM CryptoKey in Polling Mode ###
+ *
+ *  @code
+ *
+ *  #include <ti/drivers/AESCCM.h>
+ *  #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyPlaintext.h>
+ *
+ *  ...
+ *
+ *  AESCCM_Params params;
+ *  AESCCM_Handle handle;
+ *  CryptoKey cryptoKey;
+ *  int_fast16_t encryptionResult;
+ *  uint8_t nonce[] = "Thisisanonce";
+ *  uint8_t aad[] = "This string will be authenticated but not encrypted.";
+ *  uint8_t plaintext[] = "This string will be encrypted and authenticated.";
+ *  uint8_t mac[16];
+ *  uint8_t ciphertext[sizeof(plaintext)];
+ *  uint8_t keyingMaterial[32] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+ *                                0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+ *                                0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+ *                                0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F};
+ *
+ *  AESCCM_Params_init(&params)
+ *  params.returnBehavior = AESCCM_RETURN_BEHAVIOR_POLLING;
+ *
+ *  handle = AESCCM_open(0, &params);
+ *
+ *  if (handle == NULL) {
+ *      // handle error
+ *  }
+ *
+ *  CryptoKeyPlaintextHSM_initKey(&cryptoKey, keyingMaterial, sizeof(keyingMaterial));
+ *
+ *  AESCCM_OneStepOperation operation;
+ *  AESCCM_OneStepOperation_init(&operation);
+ *
+ *  operation.key           = &cryptoKey;
+ *  operation.aad           = aad;
+ *  operation.aadLength     = sizeof(aad);
+ *  operation.input         = plaintext;
+ *  operation.output        = ciphertext;
+ *  operation.inputLength   = sizeof(plaintext);
+ *  operation.nonce         = nonce;
+ *  operation.nonceLength   = sizeof(nonce);
+ *  operation.mac           = mac;
+ *  operation.macLength     = sizeof(mac);
  *
  *  encryptionResult = AESCCM_oneStepEncrypt(handle, &operation);
  *
@@ -365,6 +431,7 @@
  *
  *  CryptoKeyPlaintext_initKey(&cryptoKey, keyingMaterial, sizeof(keyingMaterial));
  *
+ *
  *  encryptionResult = AESCCM_setupEncrypt(handle, &cryptoKey, sizeof(aad), sizeof(plaintext), sizeof(mac));
  *  if (decryptionResult != AESCCM_STATUS_SUCCESS) {
  *      // handle error
@@ -374,6 +441,19 @@
  *  if (encryptionResult != AESCCM_STATUS_SUCCESS) {
  *      // handle error
  *  }
+ *
+ *  #if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX) // and the HSM is the engine of choice
+ *
+ *  CryptoKeyPlaintextHSM_initKey(&cryptoKey, keyingMaterial, sizeof(keyingMaterial));
+ *
+ *  // You will also need to populate the mac in handle->object->mac because HSM needs the mac to construct each
+ *  // segmented token.
+ *  encryptionResult = AESCCMLPF3HSM_setMac(handle, &mac[0], 8);
+ *  if (encryptionResult != AESCCM_STATUS_SUCCESS) {
+ *      // handle error
+ *  }
+ *
+ *  #endif
  *
  *  AESCCM_SegmentedAADOperation segmentedAADOperation;
  *  AESCCM_SegmentedAADOperation_init(&segmentedAADOperation);
@@ -409,7 +489,7 @@
  *  }
  *
  *  AESCCM_SegmentedFinalizeOperation segmentedFinalizeOperation;
- *  AESCCM_SegmentedFinalizeOperation_init(&egmentedFinalizeOperation);
+ *  AESCCM_SegmentedFinalizeOperation_init(&segmentedFinalizeOperation);
  *  segmentedFinalizeOperation.input = plaintext;
  *  segmentedFinalizeOperation.output = ciphertext;
  *
@@ -544,7 +624,7 @@
  *      }
  *
  *      AESCCM_SegmentedFinalizeOperation segmentedFinalizeOperation;
- *      AESCCM_SegmentedFinalizeOperation_init(&egmentedFinalizeOperation);
+ *      AESCCM_SegmentedFinalizeOperation_init(&segmentedFinalizeOperation);
  *      segmentedFinalizeOperation.input = ciphertext + AES_BLOCK_SIZE;
  *      segmentedFinalizeOperation.output = plaintext + AES_BLOCK_SIZE;
  *      segmentedFinalizeOperation.inputLength = sizeof(ciphertext) - AES_BLOCK_SIZE;
@@ -682,7 +762,7 @@
  *      }
  *
  *      AESCCM_SegmentedFinalizeOperation segmentedFinalizeOperation;
- *      AESCCM_SegmentedFinalizeOperation_init(&egmentedFinalizeOperation);
+ *      AESCCM_SegmentedFinalizeOperation_init(&segmentedFinalizeOperation);
  *      segmentedFinalizeOperation.input = ciphertext + AES_BLOCK_SIZE;
  *      segmentedFinalizeOperation.output = plaintext + AES_BLOCK_SIZE;
  *      segmentedFinalizeOperation.inputLength = sizeof(ciphertext) - AES_BLOCK_SIZE;
@@ -884,6 +964,10 @@ typedef struct
                                     *   is copied to.
                                     *   - Decryption: The plaintext derived from the decrypted and verified
                                     *   ciphertext is copied here.
+                                    *
+                                    *   For cc27XX devices, when key encoding is
+                                    *   _HSM suffixed, the output buffer needs to
+                                    *   be 32-bit aligned.
                                     */
     uint8_t *nonce;                /*!< A buffer containing a nonce. Nonces must be unique to
                                     *   each CCM operation and may not be reused. If
@@ -900,12 +984,18 @@ typedef struct
                                     *   \c inputLength must be non-zero. Unlike this field in
                                     *   AESCCM_SegmentedAADOperation, the length doesn't need to be
                                     *   block-aligned.
+                                    *
+                                    *   For CC27XX devices with _HSM-suffixed key encoding,
+                                    *   the aadLength must be block-size aligned.
                                     */
     size_t inputLength;            /*!< Length of the input/output data in bytes. Either \c aadLength or
                                     *   \c inputLength must be non-zero. Unlike this field in
                                     *   AESCCM_SegmentedDataOperation, the length doesn't need to be
                                     *   block-aligned.
                                     *   Max length supported may be limited depending on the return behavior.
+                                    *
+                                    *   For CC27XX devices with _HSM-suffixed key encoding,
+                                    *   the inputLength must be block-size aligned.
                                     */
     uint8_t nonceLength;           /*!< Length of \c nonce in bytes.
                                     *   Valid nonce lengths are [7, 8, ... 13].
@@ -936,6 +1026,9 @@ typedef struct
                        *   of the AES block size (16 bytes) unless the last chunk of
                        *   AAD is being passed in. In that case, this value doesn't
                        *   need to be an AES block-sized multiple.
+                       *
+                       *   For CC27XX devices with _HSM-suffixed key encoding,
+                       *   the aadLength must be block-size aligned.
                        */
 } AESCCM_SegmentedAADOperation;
 
@@ -956,11 +1049,18 @@ typedef struct
                          *   is copied to.
                          *   - Decryption: The plaintext derived from the decrypted and verified
                          *   ciphertext is copied here.
+                         *
+                         *   For cc27XX devices, when key encoding is
+                         *   _HSM suffixed, the output buffer needs to
+                         *   be 32-bit aligned.
                          */
     size_t inputLength; /*!< Length of the input/output data in bytes. Must be non-zero, multiple
                          *   of the AES block size (16 bytes) unless the last chunk of data is being
                          *   passed in. In that case, this value doesn't need to a block size multiple.
                          *   Max length supported may be limited depending on the return behavior.
+                         *
+                         *   For CC27XX devices with _HSM-suffixed key encoding,
+                         *   the inputLength must be block-size aligned.
                          */
 } AESCCM_SegmentedDataOperation;
 
@@ -981,6 +1081,10 @@ typedef struct
                          *   is copied to.
                          *   - Decryption: The plaintext derived from the decrypted and verified
                          *   ciphertext is copied here.
+                         *
+                         *   For cc27XX devices, when key encoding is
+                         *   _HSM suffixed, the output buffer needs to
+                         *   be 32-bit aligned.
                          */
     uint8_t *mac;       /*!<
                          *   - Encryption: The buffer where the message authentication
@@ -993,6 +1097,9 @@ typedef struct
                          *   AESCCM_SegmentedDataOperation, the length doesn't need to be
                          *   block-aligned.
                          *   Max length supported may be limited depending on the return behavior.
+                         *
+                         *   For CC27XX devices with _HSM-suffixed key encoding,
+                         *   the inputLength must be block-size aligned.
                          */
     uint8_t macLength;  /*!< Length of \c mac in bytes.
                          *   Valid MAC lengths are [0, 4, 6, 8, 10, 12, 14, 16].

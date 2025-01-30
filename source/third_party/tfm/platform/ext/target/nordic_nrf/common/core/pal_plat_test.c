@@ -20,7 +20,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <helpers/nrfx_reset_reason.h>
-#include <nrf_board.h>
 #include <region_defs.h>
 
 uint32_t pal_nvmem_get_addr(void)

@@ -344,21 +344,21 @@ struct ppc_sse200_dev_t APB_PPCEXP2_DEV_S = {
 /* CMSDK Timer driver structures */
 #ifdef CMSDK_TIMER0_S
 static const struct timer_cmsdk_dev_cfg_t CMSDK_TIMER0_DEV_CFG_S
-#ifdef TEST_NS_SLIH_IRQ
+#ifdef TFM_PARTITION_SLIH_TEST
     TFM_LINK_SET_RO_IN_PARTITION_SECTION("TFM_SP_SLIH_TEST", "APP-ROT")
 #endif
   = {
         .base = CMSDK_TIMER0_BASE_S
     };
 static struct timer_cmsdk_dev_data_t CMSDK_TIMER0_DEV_DATA_S
-#ifdef TEST_NS_SLIH_IRQ
+#ifdef TFM_PARTITION_SLIH_TEST
     TFM_LINK_SET_RW_IN_PARTITION_SECTION("TFM_SP_SLIH_TEST", "APP-ROT")
 #endif
   = {
         .is_initialized = 0
     };
 struct timer_cmsdk_dev_t CMSDK_TIMER0_DEV_S
-#ifdef TEST_NS_SLIH_IRQ
+#ifdef TFM_PARTITION_SLIH_TEST
     TFM_LINK_SET_RW_IN_PARTITION_SECTION("TFM_SP_SLIH_TEST", "APP-ROT")
 #endif
   = {

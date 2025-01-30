@@ -10,8 +10,9 @@
 #include "cmsis.h"
 #include "tfm_spm_log.h"
 #include "spu.h"
-#include "exception_info.h"
 #include "utilities.h"
+/* "exception_info.h" must be the last include because of the IAR pragma */
+#include "exception_info.h"
 
 static void spu_dump_context(void)
 {

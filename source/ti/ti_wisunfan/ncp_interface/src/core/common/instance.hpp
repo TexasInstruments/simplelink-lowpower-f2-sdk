@@ -151,7 +151,7 @@ public:
      * @returns A reference to the `Type` object of the instance.
      *
      */
-    template <typename Type> inline Type &Get(void);
+    template <typename Type> Type &Get(void);
 
      /* Making Messagepool public */
     /* TI_TBD make messagePool a  private variable*/

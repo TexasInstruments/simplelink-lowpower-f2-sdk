@@ -10,7 +10,7 @@ from typing import Optional, NoReturn, List, TYPE_CHECKING
 from abc import ABC, abstractmethod, abstractproperty
 
 from tilogger.tracedb import ElfString, Opcode, TraceDB
-from tilogger_itm_transport.itm_framer import build_value
+from tilogger.helpers import build_value
 
 if TYPE_CHECKING:
     from tilogger.logger import Logger
@@ -227,7 +227,7 @@ class LogFormatterABC(ABC):
     @abstractmethod
     def format_log(self, logged_str: str, packet: LogPacket) -> str:
         """
-        This method will be called for the following Log.h APIs: LogEvent, ************
+        This method will be called for the following Log.h APIs: Log_printf, ************
 
         Args:
             logged_str (str): This contains the fully resolved format string including provided arguments.
@@ -322,14 +322,14 @@ class LogOutputABC(ABC):
         """
 
     @abstractmethod
-    def start(self) -> NoReturn:
+    def start(self) -> None:
         """
-        start is called shortly after the 'logger' CLI is invoked. It should never return, unless
-        the program indicates completion or encounters an error.
+        start is called, in a separate thread, shortly after the 'logger' CLI is invoked.
+
+        This means that start is allowed to retain execution control and never return
+        unless the program exits. But start is allowed to return, terminating the thread,
+        if the output module does not require any work done in the separate thread.
 
         Args:
             none
-
-        Returns:
-            NoReturn: This function should retain execution control and never return unless the program exits.
         """

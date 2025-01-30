@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2023 Arm Limited. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -470,11 +470,13 @@ enum sic_error_t sic_decrypt_region_enable(struct sic_dev_t *dev,
     }
 
     /* The key is 4 words, plus another 4 if the 256-bit key bit is set in the
-     * CCR
+     * CCR. If it is NULL, assume it is set in another way (e.g. by KMU export)
      */
-    key_len = 4 + (((p_sic->ccr >> 3) & 0x1) * 4);
-    for (idx = 0; idx < key_len; idx++) {
-        p_sic->dr[region_idx].dkw[idx] = key[idx];
+    if (key != NULL) {
+        key_len = 4 + (((p_sic->ccr >> 3) & 0x1) * 4);
+        for (idx = 0; idx < key_len; idx++) {
+            p_sic->dr[region_idx].dkw[idx] = key[idx];
+        }
     }
 
     return SIC_ERROR_NONE;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -166,6 +166,7 @@ function moduleInstances(inst)
 
     let selectHardware = null;
     let selectName = "SD Chip Select";
+    let shortName = inst.$name.replace("CONFIG_", "");
 
     /* Speculatively get hardware and displayName */
     if (inst.$hardware && inst.$hardware.subComponents) {
@@ -183,6 +184,7 @@ function moduleInstances(inst)
         displayName: selectName,
         moduleName: "/ti/drivers/GPIO",
         args: {
+            $name: "CONFIG_GPIO_" + shortName + "_CS",
             mode: "Output",
             outputType: "Standard",
             initialOutputState:"High"
@@ -234,14 +236,14 @@ let base = {
     longDescription: `
 The [__SD driver__][1] provides a simple interface to perform basic
 operations on SD cards.
+
 * [Usage Synopsis][2]
 * [Examples][3]
 * [Configuration][4]
+
 [1]: /drivers/doxygen/html/_s_d_8h.html#details "C API reference"
-[2]:
-/drivers/doxygen/html/_s_d_8h.html#ti_drivers_SD_Synopsis "Synopsis"
-[3]: /drivers/doxygen/html/_s_d_8h.html#ti_drivers_SD_Examples
-"C usage examples"
+[2]: /drivers/doxygen/html/_s_d_8h.html#ti_drivers_SD_Synopsis "Synopsis"
+[3]: /drivers/doxygen/html/_s_d_8h.html#ti_drivers_SD_Examples "C usage examples"
 [4]: /drivers/syscfg/html/ConfigDoc.html#SD_Configuration_Options "Configuration options reference"
 `,
     defaultInstanceName: "CONFIG_SD_",

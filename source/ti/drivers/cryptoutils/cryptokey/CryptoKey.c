@@ -35,6 +35,7 @@
 #if defined(TFM_BUILD) /* TFM_BUILD indicates this is a TF-M build */
 
     #include <third_party/tfm/platform/ext/target/ti/cc26x4/cmse.h> /* TI CMSE helper functions */
+    #include <third_party/tfm/secure_fw/spm/include/utilities.h>
 
 /*
  *  ======== CryptoKey_verifySecureKey ========
@@ -85,6 +86,58 @@ int_fast16_t CryptoKey_verifySecureInputKey(const CryptoKey *secureKey)
 int_fast16_t CryptoKey_verifySecureOutputKey(const CryptoKey *secureKey)
 {
     return CryptoKey_verifySecureKey(secureKey, true);
+}
+
+/*
+ *  ======== CryptoKey_copySecureInputKey ========
+ */
+int_fast16_t CryptoKey_copySecureInputKey(CryptoKey *dst, const CryptoKey **src)
+{
+    /* Validate source key struct address range */
+    if (cmse_has_unpriv_nonsecure_read_access((void *)*src, sizeof(CryptoKey)) == NULL)
+    {
+        return CryptoKey_STATUS_ERROR;
+    }
+
+    /* Make a secure copy of the key */
+    (void)spm_memcpy(dst, *src, sizeof(CryptoKey));
+
+    /* Validate the key material address range */
+    if (CryptoKey_verifySecureInputKey(dst) != CryptoKey_STATUS_SUCCESS)
+    {
+        return CryptoKey_STATUS_ERROR;
+    }
+
+    /* Update the src pointer to point to secure key copy */
+    *src = dst;
+
+    return CryptoKey_STATUS_SUCCESS;
+}
+
+/*
+ *  ======== CryptoKey_copySecureOutputKey ========
+ */
+int_fast16_t CryptoKey_copySecureOutputKey(CryptoKey *dst, CryptoKey **src)
+{
+    /* Validate source key struct address range */
+    if (cmse_has_unpriv_nonsecure_rw_access(*src, sizeof(CryptoKey)) == NULL)
+    {
+        return CryptoKey_STATUS_ERROR;
+    }
+
+    /* Make a secure copy of the key */
+    (void)spm_memcpy(dst, *src, sizeof(CryptoKey));
+
+    /* Validate the key material address range */
+    if (CryptoKey_verifySecureOutputKey(dst) != CryptoKey_STATUS_SUCCESS)
+    {
+        return CryptoKey_STATUS_ERROR;
+    }
+
+    /* Update the src pointer to point to secure key copy */
+    *src = dst;
+
+    return CryptoKey_STATUS_SUCCESS;
 }
 
 #endif /* TFM_BUILD */

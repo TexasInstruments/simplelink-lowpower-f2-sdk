@@ -13,7 +13,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2024, Texas Instruments Incorporated
+ Copyright (c) 2009-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -95,6 +95,7 @@
 #include <urfi.h>
 #include <ull.h>
 
+
 #if defined(RTLS_CTE)
 #if !defined(DeviceFamily_CC26X1)
 #include <driverlib/rf_bt5_iq_autocopy.h>
@@ -164,14 +165,11 @@
 /*********************************************************************
  * GLOBAL VARIABLES
  */
-/* Micro Link Layer State */
-uint8 ulState = ULL_STATE_STANDBY;
-
 /*********************************************************************
  * EXTERNAL FUNCTIONS
  */
 extern bStatus_t uble_buildAndPostEvt(ubleEvtDst_t evtDst, ubleEvt_t evt,
-                                      ubleMsg_t *pMsg, uint16 len);
+                                      uint8 *pMsg, uint16 len);
 
 /*********************************************************************
  * EXTERNAL VARIABLES
@@ -238,11 +236,7 @@ bool Ull_advPktInuse = false;
 static pfnMonitorIndCB_t ull_notifyMonitorIndication;
 static pfnMonitorCompCB_t ull_notifyMonitorComplete;
 
-/* Monitor status */
-static uint8 monitorRxStatus = ULL_MONITOR_RX_SCHEDULED;
 
-/* Monitor Session ID */
-static uint8_t ull_sessionId;
 
 /* Static Data Entries */
 #if defined __TI_COMPILER_VERSION || defined __TI_COMPILER_VERSION__
@@ -257,7 +251,25 @@ struct
 /* Scan Data Queue */
 dataQ_t       ull_monitorDataQueue;
 
-uint8 monitorPkt[ ULL_PKT_HDR_LEN + ULL_MAX_BLE_PKT_SIZE + ULL_SUFFIX_MAX_SIZE - ULL_SUFFIX_CRC_SIZE ];
+/** @data structure for the thread entity */
+typedef struct
+{
+  /* Monitor Session ID */
+  uint8_t       sessionId;
+  /* Micro Link Layer State */
+  uint8         state;
+  /* Monitor status */
+  uint8         monitorRxStatus;
+  // number of the rx entry done in the current session
+  uint8         numRxSuccess;
+} ull_CmData_t;
+
+ull_CmData_t gull_CmData =
+{
+  .state            = ULL_STATE_STANDBY,
+  .monitorRxStatus  = ULL_MONITOR_RX_SCHEDULED,
+  .numRxSuccess     = 0,
+};
 
 #endif /* FEATURE_MONITOR */
 
@@ -400,8 +412,7 @@ dataEntry_t *ull_getNextDataEntry( dataEntryQ_t *pDataEntryQ )
 void ull_nextDataEntryDone( dataEntryQ_t *pDataEntryQ )
 {
   dataQ_t *pDataQueue;
-  port_key_t key;
-
+  volatile port_key_t key;
   key = port_enterCS_HW();
 
   /* point to data queue */
@@ -427,6 +438,52 @@ void ull_nextDataEntryDone( dataEntryQ_t *pDataEntryQ )
 
   /* return next data entry to may be processed by System software */
   return;
+}
+
+/*******************************************************************************
+ * @fn          ull_flushAllDataEntry
+ *
+ * @brief       This function is used to mark the all System data entry on a
+ *              data entry queue as Pending so that the radio can once again
+ *              use all available data entry queue. It should be called after
+ *              the user has processed after the Rx buffer full is reported.
+ *              NOTE: This function should not be used by the application.
+ *
+ * input parameters
+ *
+ * @param       dataEntryQ_t - Pointer to data entry queue.
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      None.
+ */
+static void ull_flushAllDataEntry( dataEntryQ_t *pDataEntryQ )
+{
+
+  dataQ_t *pDataQueue;
+  volatile port_key_t key;
+  volatile port_key_t key_s;
+  key = port_enterCS_HW();
+  key_s = port_enterCS_SW();
+
+  /* point to data queue */
+  pDataQueue = (dataQ_t *)pDataEntryQ;
+
+  while ( pDataQueue->pNextDataEntry != NULL &&
+          pDataQueue->pNextDataEntry->status != DATA_ENTRY_PENDING)
+  {
+    /* mark the next System data entry as Pending */
+    pDataQueue->pNextDataEntry->status = DATA_ENTRY_PENDING;
+
+    /* advance to the next data entry in the data entry queue */
+    pDataQueue->pNextDataEntry = pDataQueue->pNextDataEntry->pNextEntry;
+  }
+
+  port_exitCS_SW(key_s);
+  port_exitCS_HW(key);
+
 }
 
 #endif /* FEATURE_SCANNER || FEATURE_MONITOR */
@@ -456,7 +513,7 @@ void ull_clockHandler(UArg a0)
   /* Process advertise interval expiry */
   if (a0 == ULL_CLKEVT_ADV_INT_EXPIRED)
   {
-    port_key_t key;
+    volatile port_key_t key;
 
     key = port_enterCS_SW();
     uble_buildAndPostEvt(UBLE_EVTDST_LL, ULL_EVT_ADV_TX_TIMER_EXPIRED, NULL, 0);
@@ -483,9 +540,8 @@ void ull_clockHandler(UArg a0)
 void ull_advDoneCb(RF_Handle rfHandle, RF_CmdHandle cmdHandle,
                    RF_EventMask events)
 {
-  port_key_t key;
+  volatile port_key_t key;
   uint16_t status;
-
   key = port_enterCS_SW();
 
   status = urfiAdvCmd[0].status | urfiAdvCmd[1].status | urfiAdvCmd[2].status;
@@ -502,14 +558,13 @@ void ull_advDoneCb(RF_Handle rfHandle, RF_CmdHandle cmdHandle,
       uble_buildAndPostEvt(UBLE_EVTDST_LL, ULL_EVT_ADV_TX_FAILED, NULL, 0);
     }
   }
-
   port_exitCS_SW(key);
 }
 #else
 void ull_advDoneCb(RF_Handle rfHandle, RF_CmdHandle cmdHandle,
                    RF_EventMask events)
 {
-  port_key_t key;
+  volatile port_key_t key;
 
   key = port_enterCS_SW();
 
@@ -518,12 +573,12 @@ void ull_advDoneCb(RF_Handle rfHandle, RF_CmdHandle cmdHandle,
     /* Notify uGAP that the last ADV was done successfully. */
     ull_notifyAdvDone(SUCCESS);
 
-    if (ulState == ULL_STATE_ADVERTISING)
+    if (gull_CmData.state == ULL_STATE_ADVERTISING)
     {
       if (SUCCESS != ull_advSchedule(ULL_ADV_MODE_PERIODIC))
       {
         /* Switch to StadnBy state */
-        ulState = ULL_STATE_STANDBY;
+        gull_CmData.state = ULL_STATE_STANDBY;
 
         port_exitCS_SW(key);
 
@@ -544,7 +599,7 @@ void ull_advDoneCb(RF_Handle rfHandle, RF_CmdHandle cmdHandle,
            (RF_EventCmdAborted | RF_EventCmdStopped | RF_EventCmdCancelled))
   {
     /* Switch to StadnBy state */
-    ulState = ULL_STATE_STANDBY;
+    gull_CmData.state = ULL_STATE_STANDBY;
 
     port_exitCS_SW(key);
   }
@@ -572,7 +627,7 @@ void ull_advDoneCb(RF_Handle rfHandle, RF_CmdHandle cmdHandle,
 void ull_scanDoneCb(RF_Handle rfHandle, RF_CmdHandle cmdHandle,
                     RF_EventMask events)
 {
-  port_key_t key;
+  volatile port_key_t key;
 
   key = port_enterCS_SW();
 
@@ -609,7 +664,7 @@ void ull_scanDoneCb(RF_Handle rfHandle, RF_CmdHandle cmdHandle,
 
         default:
           /* Do not allow further scans */
-          ulState = ULL_STATE_STANDBY;
+          gull_CmData.state = ULL_STATE_STANDBY;
 
           /* Synth error or other fatal errors */
           uble_buildAndPostEvt(UBLE_EVTDST_LL, ULL_EVT_SCAN_RX_FAILED, NULL, 0);
@@ -620,7 +675,7 @@ void ull_scanDoneCb(RF_Handle rfHandle, RF_CmdHandle cmdHandle,
   else if (events & RF_EventInternalError)
   {
     /* Do not allow further scans */
-    ulState = ULL_STATE_STANDBY;
+    gull_CmData.state = ULL_STATE_STANDBY;
 
     /* Internal fatal errors */
     uble_buildAndPostEvt(UBLE_EVTDST_LL, ULL_EVT_SCAN_RX_FAILED, NULL, 0);
@@ -647,24 +702,25 @@ void ull_scanDoneCb(RF_Handle rfHandle, RF_CmdHandle cmdHandle,
 void ull_monitorDoneCb(RF_Handle rfHandle, RF_CmdHandle cmdHandle,
                        RF_EventMask events)
 {
-  port_key_t key;
-
+  volatile port_key_t key;
   key = port_enterCS_SW();
 
   if (events & RF_EventRxEntryDone)
   {
-    if (monitorRxStatus == ULL_MONITOR_RX_SCHEDULED)
+    if (gull_CmData.monitorRxStatus == ULL_MONITOR_RX_SCHEDULED)
     {
       /* Radio has received a packet */
       uble_buildAndPostEvt(UBLE_EVTDST_LL, ULL_EVT_MONITOR_RX_SUCCESS, NULL, 0);
+      gull_CmData.numRxSuccess++;
     }
   }
 
   /* RF_EventRxEntryDone and RF_EventLastCmdDone can be set at the same time */
   if (events & RF_EventLastCmdDone)
   {
-    if (monitorRxStatus == ULL_MONITOR_RX_SCHEDULED)
+    if (gull_CmData.monitorRxStatus == ULL_MONITOR_RX_SCHEDULED)
     {
+
       switch(urfiGenericRxCmd.status)
       {
         case BLE_DONE_OK:
@@ -686,7 +742,7 @@ void ull_monitorDoneCb(RF_Handle rfHandle, RF_CmdHandle cmdHandle,
 
         default:
           /* Do not allow further monitoring scans */
-          ulState = ULL_STATE_STANDBY;
+          gull_CmData.state = ULL_STATE_STANDBY;
 
           /* Synth error or other fatal errors */
           uble_buildAndPostEvt(UBLE_EVTDST_LL, ULL_EVT_MONITOR_RX_FAILED, NULL, 0);
@@ -697,19 +753,17 @@ void ull_monitorDoneCb(RF_Handle rfHandle, RF_CmdHandle cmdHandle,
   else if (events & RF_EventInternalError)
   {
     /* Do not allow further monitoring scans */
-    ulState = ULL_STATE_STANDBY;
+    gull_CmData.state = ULL_STATE_STANDBY;
 
     /* Internal fatal errors */
     uble_buildAndPostEvt(UBLE_EVTDST_LL, ULL_EVT_MONITOR_RX_FAILED, NULL, 0);
   }
-
 #if defined(RTLS_CTE)
   if (events & RF_EventSamplesEntryDone)
   {
     urtls_cteSamples.autoCopyCompleted ++;
   }
 #endif /* RTLS_CTE */
-
   port_exitCS_SW(key);
 }
 #endif /* FEATURE_MONITOR */
@@ -729,7 +783,7 @@ void ull_monitorDoneCb(RF_Handle rfHandle, RF_CmdHandle cmdHandle,
  */
 bStatus_t ull_init(void)
 {
-  if (ulState != ULL_STATE_STANDBY)
+  if (gull_CmData.state != ULL_STATE_STANDBY)
   {
     /* Cannot re-initialize if running */
     return FAILURE;
@@ -850,7 +904,7 @@ bStatus_t ull_advSchedule(uint8 mode)
     RF_PriorityCoexDefault
   };
   uint8  numChan; /* # of adv channels */
-  port_key_t key;
+  volatile port_key_t key;
 #endif /* RF_MULTIMODE */
 
 #if defined(FEATURE_SCAN_RESPONSE)
@@ -1014,12 +1068,12 @@ bStatus_t ull_advSchedule(uint8 mode)
  */
 bStatus_t ull_advStart(void)
 {
-  port_key_t key;
+  volatile port_key_t key;
   bStatus_t status = FAILURE;
 
   key = port_enterCS_SW();
   /* Possible to enter ULL_STATE_ADVERTISING from only ULL_STATE_STANDBY */
-  if (ulState != ULL_STATE_STANDBY)
+  if (gull_CmData.state != ULL_STATE_STANDBY)
   {
     port_exitCS_SW(key);
     return status;
@@ -1028,7 +1082,7 @@ bStatus_t ull_advStart(void)
 
   if (status == SUCCESS)
   {
-    ulState = ULL_STATE_ADVERTISING;
+    gull_CmData.state = ULL_STATE_ADVERTISING;
   }
   port_exitCS_SW(key);
   return status;
@@ -1045,11 +1099,11 @@ bStatus_t ull_advStart(void)
  */
 void ull_advStop(void)
 {
-  port_key_t key;
+  volatile port_key_t key;
 
   key = port_enterCS_SW();
 
-  if (ulState == ULL_STATE_ADVERTISING)
+  if (gull_CmData.state == ULL_STATE_ADVERTISING)
   {
     /* Cancel or stop ADV command */
     if (urfiAdvHandle > 0)
@@ -1066,7 +1120,7 @@ void ull_advStop(void)
     port_timerStop( cAdvInt );
 #endif /* RF_MULTIMODE */
 
-    ulState = ULL_STATE_STANDBY;
+    gull_CmData.state = ULL_STATE_STANDBY;
   }
 
   port_exitCS_SW(key);
@@ -1102,7 +1156,7 @@ bStatus_t ull_scanSchedule(uint8 mode)
     RF_PriorityCoexDefault
   };
   RF_EventMask bmEvent;
-  port_key_t key;
+  volatile port_key_t key;
 #endif /* RF_MULTIMODE */
 
   /* The ULL_SCAN_MODE_START and ULL_SCAN_MODE_RESCHEDULE
@@ -1165,12 +1219,12 @@ bStatus_t ull_scanSchedule(uint8 mode)
  */
 bStatus_t ull_scanStart(uint8_t scanChanIndex)
 {
-  port_key_t key;
+  volatile port_key_t key;
   bStatus_t status = FAILURE;
 
   key = port_enterCS_SW();
   /* Possible to enter ULL_STATE_SCANNING from only ULL_STATE_STANDBY */
-  if (ulState != ULL_STATE_STANDBY)
+  if (gull_CmData.state != ULL_STATE_STANDBY)
   {
     port_exitCS_SW(key);
     return status;
@@ -1186,7 +1240,7 @@ bStatus_t ull_scanStart(uint8_t scanChanIndex)
 
   if (status == SUCCESS)
   {
-    ulState = ULL_STATE_SCANNING;
+    gull_CmData.state = ULL_STATE_SCANNING;
   }
 
   port_exitCS_SW(key);
@@ -1204,13 +1258,13 @@ bStatus_t ull_scanStart(uint8_t scanChanIndex)
  */
 void ull_scanStop(void)
 {
-  port_key_t key;
+  volatile port_key_t key;
 
   key = port_enterCS_SW();
 
-  if (ulState == ULL_STATE_SCANNING)
+  if (gull_CmData.state == ULL_STATE_SCANNING)
   {
-    ulState = ULL_STATE_STANDBY;
+    gull_CmData.state = ULL_STATE_STANDBY;
 
     /* Cancel or stop Scan command */
     if (urfiScanHandle > 0)
@@ -1289,8 +1343,8 @@ void ull_getAdvChanPDU( uint8 *len, uint8 *payload )
 void ull_rxEntryDoneCback(void)
 {
   uint8 dataLen = 0;
-  port_key_t key;
-  port_key_t key_s;
+  volatile port_key_t key;
+  volatile port_key_t key_s;
 
   key = port_enterCS_HW();
   key_s = port_enterCS_SW();
@@ -1399,8 +1453,10 @@ bStatus_t ull_monitorSchedule(uint8 mode)
     RF_PriorityCoexDefault
   };
   RF_EventMask bmEvent;
-  port_key_t key;
+  volatile port_key_t key;
 #endif /* RF_MULTIMODE */
+  ull_flushAllDataEntry( (dataEntryQ_t *)urfiGenericRxCmd.pParams->pRxQ );
+  gull_CmData.numRxSuccess = 0;
 
   /* clear command status values */
   urfiGenericRxCmd.status = IDLE;
@@ -1421,7 +1477,7 @@ bStatus_t ull_monitorSchedule(uint8 mode)
   {
     urfiGenericRxCmd.startTrigger.triggerType = TRIG_ABSTIME;
     urfiGenericRxCmd.startTime = ubleParams.startTime;
-    urfiGenericRxCmd.startTrigger.pastTrig = 1;
+    urfiGenericRxCmd.startTrigger.pastTrig = 0;
 
     if (ubleParams.monitorDuration > 0)
     {
@@ -1499,22 +1555,23 @@ bStatus_t ull_monitorSchedule(uint8 mode)
   key = port_enterCS_HW();
 
   /* Save local session Id */
-  ull_sessionId = ubleParams.monitorHandle;
+  gull_CmData.sessionId = ubleParams.monitorHandle;
+
   urfiGenericRxHandle = RF_scheduleCmd(urfiHandle, (RF_Op*) &urfiGenericRxCmd,
                                        &cmdParams, ull_monitorDoneCb, bmEvent);
   port_exitCS_HW(key);
-
   if (urfiGenericRxHandle >= 0)
   {
-    monitorRxStatus = ULL_MONITOR_RX_SCHEDULED;
+
+    gull_CmData.monitorRxStatus = ULL_MONITOR_RX_SCHEDULED;
   }
   else
   {
     //ToDo: Once RF driver add the error status, use that instead
     //and one for failure case.
-    monitorRxStatus = ULL_MONITOR_RX_NO_RF_RESOURCE;
+    gull_CmData.monitorRxStatus = ULL_MONITOR_RX_NO_RF_RESOURCE;
+    uble_buildAndPostEvt(UBLE_EVTDST_LL, ULL_EVT_MONITOR_CONTINUE, NULL, 0);
   }
-
   return SUCCESS;
 #else /* RF Single Mode */
   urfiGenericRxHandle = RF_postCmd(urfiHandle, (RF_Op*) &urfiGenericRxParams,
@@ -1542,9 +1599,8 @@ bStatus_t ull_monitorSchedule(uint8 mode)
  */
 bStatus_t ull_monitorStart(uint8_t channel)
 {
-  port_key_t key;
-  port_key_t hwKey;
-
+  volatile port_key_t key;
+  volatile port_key_t hwKey;
   bStatus_t status = FAILURE;
 
   hwKey = port_enterCS_HW();
@@ -1553,14 +1609,13 @@ bStatus_t ull_monitorStart(uint8_t channel)
   /* Update scan parameters */
   urfiGenericRxCmd.channel = ubleParams.monitorChan = channel;
 
-  ulState = ULL_STATE_MONITORING;
+  gull_CmData.state = ULL_STATE_MONITORING;
 
   /* Post an ul event */
   status = uble_buildAndPostEvt(UBLE_EVTDST_LL, ULL_EVT_MONITOR_RX_STARTED, NULL, 0);
 
   port_exitCS_SW(key);
   port_exitCS_HW(hwKey);
-
   return (status);
 }
 
@@ -1576,15 +1631,13 @@ bStatus_t ull_monitorStart(uint8_t channel)
  * output parameters
  *
  * @param       len      - Pointer to payload length.
- * @param       payload  - Pointer to payload.
  *
- * @return      None.
+ * @return      pointer to the PDU data.
  */
-void ull_getPDU( uint8 *len, uint8 *payload )
+uint8_t* ull_getPDU( uint8 *len )
 {
   uint8       *pPdu;
   dataEntry_t *pDataEntry;
-
   /* get pointer to packet */
   pDataEntry = ull_getNextDataEntry( (dataEntryQ_t *)urfiGenericRxCmd.pParams->pRxQ );
 
@@ -1599,13 +1652,13 @@ void ull_getPDU( uint8 *len, uint8 *payload )
   {
       *len += 1;
 #if defined(RTLS_CTE)
-      if(urtls_cteInfo[ull_sessionId-1].requestEnable == TRUE)
+      if(urtls_cteInfo[gull_CmData.sessionId-1].requestEnable == TRUE)
       {
         uint8_t cteInfo = pPdu[2];
         //save the CTE info received from peer
-        urtls_cteInfo[ull_sessionId-1].recvCte = TRUE;
-        urtls_cteInfo[ull_sessionId-1].recvInfo.length = cteInfo & URTLS_CTE_INFO_TIME_MASK;
-        urtls_cteInfo[ull_sessionId-1].recvInfo.type = (cteInfo & URTLS_CTE_INFO_TYPE_MASK) >> URTLS_CTE_INFO_TYPE_OFFSET;
+        urtls_cteInfo[gull_CmData.sessionId-1].recvCte = TRUE;
+        urtls_cteInfo[gull_CmData.sessionId-1].recvInfo.length = cteInfo & URTLS_CTE_INFO_TIME_MASK;
+        urtls_cteInfo[gull_CmData.sessionId-1].recvInfo.type = (cteInfo & URTLS_CTE_INFO_TYPE_MASK) >> URTLS_CTE_INFO_TYPE_OFFSET;
       }
 #endif /* RTLS_CTE */
   }
@@ -1615,8 +1668,8 @@ void ull_getPDU( uint8 *len, uint8 *payload )
    * There is no need to do a length check here since it will always pass.
    */
 
-  /* copy PDU to payload */
-  memcpy(payload, pPdu, *len);
+  /* return PDU to payload */
+  return pPdu;
 }
 
 /*********************************************************************
@@ -1631,35 +1684,42 @@ void ull_getPDU( uint8 *len, uint8 *payload )
 void ull_rxEntryDoneCback(void)
 {
   uint8 dataLen;
-  port_key_t key;
-  port_key_t key_s;
-
+  volatile port_key_t key;
+  volatile port_key_t key_s;
   key = port_enterCS_HW();
   key_s = port_enterCS_SW();
 
   dataEntry_t *pDataEntry = ull_getNextDataEntry( (dataEntryQ_t *)urfiGenericRxCmd.pParams->pRxQ );
-
   /* get pointer to packet */
   if ( (pDataEntry == NULL) || (pDataEntry->status != DATA_ENTRY_FINISHED) )
   {
-    port_exitCS_HW(key);
     port_exitCS_SW(key_s);
+    port_exitCS_HW(key);
 
     /* nothing to do here */
     return;
   }
-
   /* process RX FIFO data */
-  ull_getPDU( &dataLen, monitorPkt );
+  uint8_t *pPdu = ull_getPDU( &dataLen );
+  uint8_t *pMonitorPkt = malloc( dataLen );
+
+  if (NULL == pMonitorPkt)
+  {
+    port_exitCS_SW(key_s);
+    port_exitCS_HW(key);
+    return;
+  }
+
+  // copy the data to the pointer which will hold the data
+  memcpy(pMonitorPkt, pPdu, dataLen);
 
   /* in all cases, mark the RX queue data entry as free
    * Note: Even if there isn't any heap to copy to, this packet is considered
    *       lost, and the queue entry is marked free for radio use.
    */
   ull_nextDataEntryDone( (dataEntryQ_t *)urfiGenericRxCmd.pParams->pRxQ );
-
-  port_exitCS_HW(key);
   port_exitCS_SW(key_s);
+  port_exitCS_HW(key);
 
   /* TBD: monitorPkt can be dynamically allocated and application freed */
 
@@ -1692,7 +1752,15 @@ void ull_rxEntryDoneCback(void)
    */
   if (dataLen != 0)
   {
-    ull_notifyMonitorIndication( SUCCESS, ull_sessionId, dataLen, monitorPkt );
+    ull_notifyMonitorIndication( SUCCESS, gull_CmData.sessionId, dataLen, pMonitorPkt );
+  }
+  else
+  {
+    key = port_enterCS_HW();
+    key_s = port_enterCS_SW();
+    free(pMonitorPkt);
+    port_exitCS_SW(key_s);
+    port_exitCS_HW(key);
   }
   return;
 }
@@ -1722,7 +1790,7 @@ void uble_processLLMsg(ubleEvtMsg_t *pEvtMsg)
 #endif /* RF_MULTIMODE */
 
     ull_notifyAdvDone(SUCCESS);
-    if (ulState == ULL_STATE_ADVERTISING)
+    if (gull_CmData.state == ULL_STATE_ADVERTISING)
     {
       /* set the next advertisement */
       if (RF_TIME_CRITICAL == rfTimeCrit)
@@ -1746,7 +1814,7 @@ void uble_processLLMsg(ubleEvtMsg_t *pEvtMsg)
     /* adv interval timer expired */
     advTxStatus = ULL_ADV_TX_FAILED;
     ull_notifyAdvDone(FAILURE);
-    if (ulState == ULL_STATE_ADVERTISING)
+    if (gull_CmData.state == ULL_STATE_ADVERTISING)
     {
       if (RF_TIME_CRITICAL == rfTimeCrit)
       {
@@ -1774,7 +1842,7 @@ void uble_processLLMsg(ubleEvtMsg_t *pEvtMsg)
       uint32_t currentTime = RF_getCurrentTime();
       if ((currentTime + 1 * MS_TO_RAT) < urfiAdvCmd[0].startTime)
       {
-        if (ulState == ULL_STATE_ADVERTISING)
+        if (gull_CmData.state == ULL_STATE_ADVERTISING)
         {
           /* reschedule the advertisement.*/
           ull_advSchedule(ULL_ADV_MODE_RESCHEDULE);
@@ -1789,7 +1857,7 @@ void uble_processLLMsg(ubleEvtMsg_t *pEvtMsg)
 #if defined(RF_MULTIMODE)
           port_timerStop( cAdvInt );
 #endif /* RF_MULTIMODE */
-          if (ulState == ULL_STATE_ADVERTISING)
+          if (gull_CmData.state == ULL_STATE_ADVERTISING)
           {
             ull_advSchedule(ULL_ADV_MODE_PERIODIC);
           }
@@ -1797,7 +1865,7 @@ void uble_processLLMsg(ubleEvtMsg_t *pEvtMsg)
         else /* relaxed operation */
         {
           /* past due, send it immediate */
-          if (ulState == ULL_STATE_ADVERTISING)
+          if (gull_CmData.state == ULL_STATE_ADVERTISING)
           {
             ull_advSchedule(ULL_ADV_MODE_IMMEDIATE);
           }
@@ -1807,7 +1875,7 @@ void uble_processLLMsg(ubleEvtMsg_t *pEvtMsg)
     break;
 
   case ULL_EVT_ADV_TX_STARTED:
-    if (ulState == ULL_STATE_ADVERTISING)
+    if (gull_CmData.state == ULL_STATE_ADVERTISING)
     {
       ull_advSchedule(ULL_ADV_MODE_START);
     }
@@ -1833,7 +1901,7 @@ void uble_processLLMsg(ubleEvtMsg_t *pEvtMsg)
     scanRxStatus = ULL_SCAN_RX_NO_RF_RESOURCE;
     ull_notifyScanIndication( MSG_BUFFER_NOT_AVAIL, 0, NULL );
 
-    if (ulState == ULL_STATE_SCANNING)
+    if (gull_CmData.state == ULL_STATE_SCANNING)
     {
       /* reschedule the scanning */
       ull_scanSchedule(ULL_SCAN_MODE_RESCHEDULE);
@@ -1843,7 +1911,7 @@ void uble_processLLMsg(ubleEvtMsg_t *pEvtMsg)
   case ULL_EVT_SCAN_RX_RADIO_AVAILABLE:
     /* Rf radio resource available. This is caused by PHY preemption.
      */
-    if (scanRxStatus == ULL_SCAN_RX_NO_RF_RESOURCE && ulState == ULL_STATE_SCANNING)
+    if (scanRxStatus == ULL_SCAN_RX_NO_RF_RESOURCE && gull_CmData.state == ULL_STATE_SCANNING)
     {
       /* reschedule the scanning */
       ull_scanSchedule(ULL_SCAN_MODE_RESCHEDULE);
@@ -1851,7 +1919,7 @@ void uble_processLLMsg(ubleEvtMsg_t *pEvtMsg)
     break;
 
   case ULL_EVT_SCAN_RX_STARTED:
-    if (ulState == ULL_STATE_SCANNING)
+    if (gull_CmData.state == ULL_STATE_SCANNING)
     {
       ull_scanSchedule(ULL_SCAN_MODE_START);
     }
@@ -1866,16 +1934,18 @@ void uble_processLLMsg(ubleEvtMsg_t *pEvtMsg)
 
   case ULL_EVT_MONITOR_RX_FAILED:
     /* Monitoring scan rx failure. This is caused by radio failures,
-     * not preemption eventhough the monitorRxStatus is the same.
+     * not preemption eventhough the gull_CmData.monitorRxStatus is the same.
      */
-    monitorRxStatus = ULL_MONITOR_RX_NO_RF_RESOURCE;
-    ull_notifyMonitorComplete(bleNoResources, ull_sessionId);
+    gull_CmData.monitorRxStatus = ULL_MONITOR_RX_NO_RF_RESOURCE;
+    ull_notifyMonitorComplete(bleNoResources, gull_CmData.sessionId);
     break;
 
   case ULL_EVT_MONITOR_RX_BUF_FULL:
     /* Monitoring scan Rx buffer full */
-    monitorRxStatus = ULL_MONITOR_RX_NO_RF_RESOURCE;
-    ull_notifyMonitorIndication(MSG_BUFFER_NOT_AVAIL, ull_sessionId, 0, NULL);
+    gull_CmData.monitorRxStatus = ULL_MONITOR_RX_NO_RF_RESOURCE;
+    ull_notifyMonitorIndication(MSG_BUFFER_NOT_AVAIL, gull_CmData.sessionId, 0, NULL);
+    /* flush RX queue data entries */
+    ull_flushAllDataEntry( (dataEntryQ_t *)urfiGenericRxCmd.pParams->pRxQ );
 
     /* reschedule the monitoring scan */
     ull_monitorSchedule(ULL_MONITOR_MODE_RESCHEDULE);
@@ -1888,8 +1958,8 @@ void uble_processLLMsg(ubleEvtMsg_t *pEvtMsg)
     if ((urtls_cteSamples.autoCopyCompleted > 0) && (urtls_cteSamples.pAutoCopyBuffers != NULL))
     {
       dataEntry_t *pDataEntry;
-      port_key_t key;
-      port_key_t key_s;
+      volatile port_key_t key;
+      volatile port_key_t key_s;
 
       key = port_enterCS_HW();
       key_s = port_enterCS_SW();
@@ -1897,21 +1967,31 @@ void uble_processLLMsg(ubleEvtMsg_t *pEvtMsg)
       // get the samples buffer
       pDataEntry = ull_getNextDataEntry((dataEntryQ_t *)urtls_cteSamples.autoCopy.pSamplesQueue);
 
-      urtls_getCteInfo(pDataEntry, ull_sessionId, (uint8_t)ubleParams.monitorChan);
+      urtls_getCteInfo(pDataEntry, gull_CmData.sessionId, (uint8_t)ubleParams.monitorChan);
 
       /* in all cases, mark the RX queue data entry as free
        * Note: Even if there isn't any heap to copy to, this packet is considered
        *       lost, and the queue entry is marked free for radio use.
        */
-      ull_nextDataEntryDone((dataEntryQ_t *)urtls_cteSamples.autoCopy.pSamplesQueue);
+      ull_flushAllDataEntry((dataEntryQ_t *)urtls_cteSamples.autoCopy.pSamplesQueue);
 
       port_exitCS_SW(key_s);
       port_exitCS_HW(key);
     }
 #endif /* RTLS_CTE */
+    /* Flush the data queue, we don't need whatever is there at this point
+     * since all packets should have been processed by now */
+    ull_flushAllDataEntry((dataEntryQ_t *)urfiGenericRxCmd.pParams->pRxQ);
 
-    /* Monitoring scan rx window complete. */
-      ull_notifyMonitorComplete(SUCCESS, ull_sessionId);
+    if (gull_CmData.numRxSuccess == 2)
+    {
+      /* Monitoring scan rx window complete. */
+      ull_notifyMonitorComplete(MONITOR_SUCCESS, gull_CmData.sessionId);
+    }
+    else
+    {
+      ull_notifyMonitorComplete(MONITOR_UNSTABLE, gull_CmData.sessionId);
+    }
   }
   break;
 
@@ -1925,6 +2005,14 @@ void uble_processLLMsg(ubleEvtMsg_t *pEvtMsg)
   case ULL_EVT_MONITOR_RX_STARTED:
       ull_monitorSchedule(ULL_MONITOR_MODE_START);
     break;
+
+  case ULL_EVT_MONITOR_CONTINUE:
+  {
+    if (ull_notifyMonitorComplete)
+    {
+      ull_notifyMonitorComplete(MONITOR_CONTINUE, gull_CmData.sessionId);
+    }
+  }
 #endif /* FEATURE_MONITOR */
 
   default:

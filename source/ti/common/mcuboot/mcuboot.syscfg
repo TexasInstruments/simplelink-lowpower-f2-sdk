@@ -43,8 +43,10 @@ var boardName = system.deviceData.board.name;
 /**
  * Import the modules used in this configuration.
  */
+const mcuboot = scripting.addModule("/ti/common/mcuboot");
 const CCFG = scripting.addModule("/ti/devices/CCFG");
 const ccfgSettings = system.getScript("/ti/common/lprf_ccfg_settings.js").ccfgSettings;
+
 for(var setting in ccfgSettings)
 {
     CCFG[setting] = ccfgSettings[setting];

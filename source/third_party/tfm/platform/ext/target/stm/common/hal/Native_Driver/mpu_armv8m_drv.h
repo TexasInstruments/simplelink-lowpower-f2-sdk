@@ -13,6 +13,7 @@
 #include "cmsis.h"
 
 #define PRIVILEGED_DEFAULT_ENABLE 1
+#define PRIVILEGED_DEFAULT_DISABLE 0
 #define HARDFAULT_NMI_ENABLE      1
 
 /* MAIR_ATTR */
@@ -185,4 +186,31 @@ enum mpu_armv8m_error_t mpu_armv8m_region_disable(
 enum mpu_armv8m_error_t mpu_armv8m_region_disable_check(
                                 struct mpu_armv8m_dev_t *dev,
                                 uint32_t region_nr);
+/**
+ * \brief Configure only MPU Region without enabling it
+ *
+ * \param[in] dev            MPU device \ref mpu_armv8m_dev_t
+ * \param[in] region_cfg     MPU region config \ref mpu_armv8m_region_cfg_t
+ *
+ * \return Error code \ref arm_mpu_error_t
+ *
+ * \note This function doesn't check if dev is NULL.
+ */
+enum mpu_armv8m_error_t mpu_armv8m_region_config_only(
+                                struct mpu_armv8m_dev_t *dev,
+                                struct mpu_armv8m_region_cfg_t *region_cfg);
+
+/**
+ * \brief Check configured only MPU Region
+ *
+ * \param[in] dev            MPU device \ref mpu_armv8m_dev_t
+ * \param[in] region_cfg     MPU region config \ref mpu_armv8m_region_cfg_t
+ *
+ * \return Error code \ref arm_mpu_error_t
+ *
+ * \note This function doesn't check if dev is NULL.
+ */
+ enum mpu_armv8m_error_t mpu_armv8m_region_config_only_check(
+                                struct mpu_armv8m_dev_t *dev,
+                                struct mpu_armv8m_region_cfg_t *region_cfg);
 #endif /* __MPU_ARMV8M_DRV_H__ */

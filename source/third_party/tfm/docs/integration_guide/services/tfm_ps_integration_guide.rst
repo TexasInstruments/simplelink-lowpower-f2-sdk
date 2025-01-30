@@ -144,12 +144,20 @@ Core Files
 
 Flash Filesystem and Flash Interfaces
 =====================================
-The PS service reuses the non-hierarchical filesystem and flash
-interfaces provided by the TF-M Internal Trusted Storage service. It
-stores encrypted, authenticated objects by making service calls to the
-ITS service. When the ITS service receives requests from the PS
-partition, it handles the request by using a separate filesystem
-context.
+
+The non-hierarchical filesystem and flash interfaces reside under
+Internal Trusted Storage service directory. The way PS service uses
+them depends on the config option ``TFM_PARTITION_INTERNAL_TRUSTED_STORAGE``.
+
+When TF-M Internal trusted storage service is active (i.e.
+``TFM_PARTITION_INTERNAL_TRUSTED_STORAGE`` = ON), all file system and storage interfaces
+are built as part of ITS service library. Thus, the PS service stores encrypted, authenticated
+objects by making service calls to the ITS service.
+
+When TF-M Internal trusted storage service is disabled (i.e.
+``TFM_PARTITION_INTERNAL_TRUSTED_STORAGE`` = OFF), all file system and storage interfaces
+are built as part of PS service library. Thus, the PS service stores encrypted, authenticated
+objects by making standard function calls to the file system within its own partition code.
 
 The ITS filesystem and flash interfaces and their implementation can be found in
 ``secure_fw/partitions/internal_trusted_storage/flash_fs`` and

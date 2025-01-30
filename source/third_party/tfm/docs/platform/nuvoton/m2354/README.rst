@@ -4,26 +4,27 @@ NuMaker-PFM-M2354
 Building TF-M
 -------------
 
-Build TF-M with M2354 by following commands:
+Build TF-M regression test with M2354 by following commands:
 
 .. code:: bash
 
-    $ mkdir build
-    $ cd build
-    $ cmake ../ \
+    $ cd tf-m-test/tests_reg
+    $ cmake -S spe -B build_spe \
             -G"Unix Makefiles" \
             -DTFM_PLATFORM=nuvoton/m2354 \
-            -DTFM_TOOLCHAIN_FILE=../toolchain_GNUARM.cmake \
-            -DMCUBOOT_FIH_PROFILE=MEDIUM \
-            -DTEST_S=ON \
-            -DTEST_NS=ON \
-            -DTFM_ISOLATION_LEVEL=2 \
+            -DTFM_TOOLCHAIN_FILE=[tf-m path]/toolchain_GNUARM.cmake \
             -DCMAKE_BUILD_TYPE=Release \
-    $ make install
+            -DTEST_S=ON -DTEST_NS=ON
+    $ cmake --build build --parallel -- install
+    $ cmake -S . -B build_test \
+            -G"Unix Makefiles" \
+            -DCONFIG_SPE_PATH=[tf-m-tests path]/tests_reg/build_spe/api_ns \
+            -DTFM_TOOLCHAIN_FILE=cmake/toolchain_ns_GNUARM.cmake \
+            -DCMAKE_BUILD_TYPE=Release \
+    $ cmake --build build_test --parallel -- install
 
 Define TEST_NS=ON or TEST_S=ON for non-secure or secure regression test.
-CMAKE_BUILD_TYPE could be "Release", "Debug", "RelWithDebInfo" or "Minsizerel"
-TFM_ISOLATION_LEVEL=2 can also be set.
+CMAKE_BUILD_TYPE could be "Release", "RelWithDebInfo" or "Minsizerel"
 Other cmake parameters should not be changed.
 
 Flashing Image with Nuvoton NuLink Tool
@@ -40,10 +41,13 @@ The commands are as follows:
 
     > NuLink_M2354 -C
     > NuLink_M2354 -E ALL
-    > NuLink_M2354 -W APROM ./build/bin/bl2.bin 0
-    > NuLink_M2354 -W APROM ./build/bin/tfm_s_ns_signed.bin 0 0x20000
-    > NuLink_M2354 -W NSCBA 0x70000
+    > NuLink_M2354 -W NSCBA 0x80000 0
+    > NuLink_M2354 -S
+    > NuLink_M2354 -C
+    > NuLink_M2354 -W APROM .\build_spe\bin\bl2.bin 0
+    > NuLink_M2354 -W APROM .\build_spe\bin\tfm_s_signed.bin 0 0x20000 0
+    > NuLink_M2354 -W APROMNS .\build_test\bin\tfm_ns_signed.bin 0
 
 --------------
 
-*Copyright (c) 2021-2022, Nuvoton Technology Corp. All rights reserved.*
+*Copyright (c) 2021-2023, Nuvoton Technology Corp. All rights reserved.*

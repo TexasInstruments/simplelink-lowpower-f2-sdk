@@ -853,16 +853,10 @@ In project: examples/nortos/LP_EM_CC1314R10/drivers/spiffsinternal/iar/spiffsint
 Unable to parse files
 In project: examples/nortos/LP_EM_CC1314R10/drivers/temperatureNotify/iar/temperatureNotify_LP_EM_CC1314R10_nortos_iar.ipcf
 
-Error: Forward-slash in opening tag not followed by >
-Line: 30
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/nortos/LP_EM_CC1314R10/drivers/tfm_aescbc/iar/tfm_aescbc_LP_EM_CC1314R10_nortos_iar.ipcf
 
-Error: Forward-slash in opening tag not followed by >
-Line: 30
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/nortos/LP_EM_CC1314R10/drivers/tfm_empty/iar/tfm_empty_LP_EM_CC1314R10_nortos_iar.ipcf
 
 Unable to parse files
@@ -910,16 +904,10 @@ In project: examples/nortos/LP_EM_CC1354P10_1/drivers/spiffsinternal/iar/spiffsi
 Unable to parse files
 In project: examples/nortos/LP_EM_CC1354P10_1/drivers/temperatureNotify/iar/temperatureNotify_LP_EM_CC1354P10_1_nortos_iar.ipcf
 
-Error: Forward-slash in opening tag not followed by >
-Line: 30
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/nortos/LP_EM_CC1354P10_1/drivers/tfm_aescbc/iar/tfm_aescbc_LP_EM_CC1354P10_1_nortos_iar.ipcf
 
-Error: Forward-slash in opening tag not followed by >
-Line: 30
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/nortos/LP_EM_CC1354P10_1/drivers/tfm_empty/iar/tfm_empty_LP_EM_CC1354P10_1_nortos_iar.ipcf
 
 Unable to parse files
@@ -967,16 +955,10 @@ In project: examples/nortos/LP_EM_CC1354P10_6/drivers/spiffsinternal/iar/spiffsi
 Unable to parse files
 In project: examples/nortos/LP_EM_CC1354P10_6/drivers/temperatureNotify/iar/temperatureNotify_LP_EM_CC1354P10_6_nortos_iar.ipcf
 
-Error: Forward-slash in opening tag not followed by >
-Line: 30
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/nortos/LP_EM_CC1354P10_6/drivers/tfm_aescbc/iar/tfm_aescbc_LP_EM_CC1354P10_6_nortos_iar.ipcf
 
-Error: Forward-slash in opening tag not followed by >
-Line: 30
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/nortos/LP_EM_CC1354P10_6/drivers/tfm_empty/iar/tfm_empty_LP_EM_CC1354P10_6_nortos_iar.ipcf
 
 Unable to parse files
@@ -984,6 +966,57 @@ In project: examples/nortos/LP_EM_CC1354P10_6/drivers/uart2echo/iar/uart2echo_LP
 
 Unable to parse files
 In project: examples/nortos/LP_EM_CC1354P10_6/drivers/watchdog/iar/watchdog_LP_EM_CC1354P10_6_nortos_iar.ipcf
+
+Unable to parse files
+In project: examples/nortos/LP_EM_CC2674P10/drivers/empty/iar/empty_LP_EM_CC2674P10_nortos_iar.ipcf
+
+Unable to parse files
+In project: examples/nortos/LP_EM_CC2674P10/drivers/fatsdraw/iar/fatsdraw_LP_EM_CC2674P10_nortos_iar.ipcf
+
+Unable to parse files
+In project: examples/nortos/LP_EM_CC2674P10/drivers/gpiointerrupt/iar/gpiointerrupt_LP_EM_CC2674P10_nortos_iar.ipcf
+
+Unable to parse files
+In project: examples/nortos/LP_EM_CC2674P10/drivers/gpioshutdown/iar/gpioshutdown_LP_EM_CC2674P10_nortos_iar.ipcf
+
+Unable to parse files
+In project: examples/nortos/LP_EM_CC2674P10/drivers/i2ctmp/iar/i2ctmp_LP_EM_CC2674P10_nortos_iar.ipcf
+
+Unable to parse files
+In project: examples/nortos/LP_EM_CC2674P10/drivers/nvsexternal/iar/nvsexternal_LP_EM_CC2674P10_nortos_iar.ipcf
+
+Unable to parse files
+In project: examples/nortos/LP_EM_CC2674P10/drivers/nvsinternal/iar/nvsinternal_LP_EM_CC2674P10_nortos_iar.ipcf
+
+Unable to parse files
+In project: examples/nortos/LP_EM_CC2674P10/drivers/pwmled2/iar/pwmled2_LP_EM_CC2674P10_nortos_iar.ipcf
+
+Unable to parse files
+In project: examples/nortos/LP_EM_CC2674P10/drivers/sdraw/iar/sdraw_LP_EM_CC2674P10_nortos_iar.ipcf
+
+Unable to parse files
+In project: examples/nortos/LP_EM_CC2674P10/drivers/sha2hash/iar/sha2hash_LP_EM_CC2674P10_nortos_iar.ipcf
+
+Unable to parse files
+In project: examples/nortos/LP_EM_CC2674P10/drivers/spiffsexternal/iar/spiffsexternal_LP_EM_CC2674P10_nortos_iar.ipcf
+
+Unable to parse files
+In project: examples/nortos/LP_EM_CC2674P10/drivers/spiffsinternal/iar/spiffsinternal_LP_EM_CC2674P10_nortos_iar.ipcf
+
+Unable to parse files
+In project: examples/nortos/LP_EM_CC2674P10/drivers/temperatureNotify/iar/temperatureNotify_LP_EM_CC2674P10_nortos_iar.ipcf
+
+Unable to parse files
+In project: examples/nortos/LP_EM_CC2674P10/drivers/tfm_aescbc/iar/tfm_aescbc_LP_EM_CC2674P10_nortos_iar.ipcf
+
+Unable to parse files
+In project: examples/nortos/LP_EM_CC2674P10/drivers/tfm_empty/iar/tfm_empty_LP_EM_CC2674P10_nortos_iar.ipcf
+
+Unable to parse files
+In project: examples/nortos/LP_EM_CC2674P10/drivers/uart2echo/iar/uart2echo_LP_EM_CC2674P10_nortos_iar.ipcf
+
+Unable to parse files
+In project: examples/nortos/LP_EM_CC2674P10/drivers/watchdog/iar/watchdog_LP_EM_CC2674P10_nortos_iar.ipcf
 
 Unable to parse files
 In project: examples/rtos/CC1312R1_LAUNCHXL/demos/portable/freertos/iar/portable_CC1312R1_LAUNCHXL_freertos_iar.ipcf
@@ -3961,28 +3994,16 @@ In project: examples/rtos/LP_EM_CC1314R10/drivers/temperatureNotify/freertos/iar
 Unable to parse files
 In project: examples/rtos/LP_EM_CC1314R10/drivers/temperatureNotify/tirtos7/iar/temperatureNotify_LP_EM_CC1314R10_tirtos7_iar.ipcf
 
-Error: Forward-slash in opening tag not followed by >
-Line: 32
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1314R10/drivers/tfm_aescbc/freertos/iar/tfm_aescbc_LP_EM_CC1314R10_freertos_iar.ipcf
 
-Error: Forward-slash in opening tag not followed by >
-Line: 30
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1314R10/drivers/tfm_aescbc/tirtos7/iar/tfm_aescbc_LP_EM_CC1314R10_tirtos7_iar.ipcf
 
-Error: Forward-slash in opening tag not followed by >
-Line: 32
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1314R10/drivers/tfm_empty/freertos/iar/tfm_empty_LP_EM_CC1314R10_freertos_iar.ipcf
 
-Error: Forward-slash in opening tag not followed by >
-Line: 30
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1314R10/drivers/tfm_empty/tirtos7/iar/tfm_empty_LP_EM_CC1314R10_tirtos7_iar.ipcf
 
 Unable to parse files
@@ -4144,28 +4165,16 @@ In project: examples/rtos/LP_EM_CC1354P10_1/drivers/temperatureNotify/freertos/i
 Unable to parse files
 In project: examples/rtos/LP_EM_CC1354P10_1/drivers/temperatureNotify/tirtos7/iar/temperatureNotify_LP_EM_CC1354P10_1_tirtos7_iar.ipcf
 
-Error: Forward-slash in opening tag not followed by >
-Line: 32
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1354P10_1/drivers/tfm_aescbc/freertos/iar/tfm_aescbc_LP_EM_CC1354P10_1_freertos_iar.ipcf
 
-Error: Forward-slash in opening tag not followed by >
-Line: 30
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1354P10_1/drivers/tfm_aescbc/tirtos7/iar/tfm_aescbc_LP_EM_CC1354P10_1_tirtos7_iar.ipcf
 
-Error: Forward-slash in opening tag not followed by >
-Line: 32
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1354P10_1/drivers/tfm_empty/freertos/iar/tfm_empty_LP_EM_CC1354P10_1_freertos_iar.ipcf
 
-Error: Forward-slash in opening tag not followed by >
-Line: 30
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1354P10_1/drivers/tfm_empty/tirtos7/iar/tfm_empty_LP_EM_CC1354P10_1_tirtos7_iar.ipcf
 
 Unable to parse files
@@ -4327,28 +4336,16 @@ In project: examples/rtos/LP_EM_CC1354P10_6/drivers/temperatureNotify/freertos/i
 Unable to parse files
 In project: examples/rtos/LP_EM_CC1354P10_6/drivers/temperatureNotify/tirtos7/iar/temperatureNotify_LP_EM_CC1354P10_6_tirtos7_iar.ipcf
 
-Error: Forward-slash in opening tag not followed by >
-Line: 32
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1354P10_6/drivers/tfm_aescbc/freertos/iar/tfm_aescbc_LP_EM_CC1354P10_6_freertos_iar.ipcf
 
-Error: Forward-slash in opening tag not followed by >
-Line: 30
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1354P10_6/drivers/tfm_aescbc/tirtos7/iar/tfm_aescbc_LP_EM_CC1354P10_6_tirtos7_iar.ipcf
 
-Error: Forward-slash in opening tag not followed by >
-Line: 32
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1354P10_6/drivers/tfm_empty/freertos/iar/tfm_empty_LP_EM_CC1354P10_6_freertos_iar.ipcf
 
-Error: Forward-slash in opening tag not followed by >
-Line: 30
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1354P10_6/drivers/tfm_empty/tirtos7/iar/tfm_empty_LP_EM_CC1354P10_6_tirtos7_iar.ipcf
 
 Unable to parse files
@@ -4380,4 +4377,175 @@ In project: examples/rtos/LP_EM_CC1354P10_6/tiutils/json/freertos/iar/json_LP_EM
 
 Unable to parse files
 In project: examples/rtos/LP_EM_CC1354P10_6/tiutils/json/tirtos7/iar/json_LP_EM_CC1354P10_6_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/demos/portable/freertos/iar/portable_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/demos/portable/tirtos7/iar/portable_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/adcbufcontinuous/freertos/iar/adcbufcontinuous_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/adcbufcontinuous/tirtos7/iar/adcbufcontinuous_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/adcsinglechannel/freertos/iar/adcsinglechannel_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/adcsinglechannel/tirtos7/iar/adcsinglechannel_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/aesKeyAgreement/tirtos7/iar/aesKeyAgreement_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/buttonled/freertos/iar/buttonled_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/buttonled/tirtos7/iar/buttonled_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/dacoutputbuffer/freertos/iar/dacoutputbuffer_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/dacoutputbuffer/tirtos7/iar/dacoutputbuffer_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/empty/freertos/iar/empty_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/empty/tirtos7/iar/empty_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/fatsdraw/freertos/iar/fatsdraw_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/fatsdraw/tirtos7/iar/fatsdraw_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/gpiointerrupt/freertos/iar/gpiointerrupt_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/gpiointerrupt/tirtos7/iar/gpiointerrupt_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/gpioshutdown/freertos/iar/gpioshutdown_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/gpioshutdown/tirtos7/iar/gpioshutdown_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/i2ctmp/freertos/iar/i2ctmp_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/i2ctmp/tirtos7/iar/i2ctmp_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/i2secho/freertos/iar/i2secho_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/i2secho/tirtos7/iar/i2secho_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/itmwrite/freertos/iar/itmwrite_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/itmwrite/tirtos7/iar/itmwrite_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/log/freertos/iar/log_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/log/tirtos7/iar/log_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/nvsexternal/freertos/iar/nvsexternal_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/nvsexternal/tirtos7/iar/nvsexternal_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/nvsinternal/freertos/iar/nvsinternal_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/nvsinternal/tirtos7/iar/nvsinternal_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/pwmled2/freertos/iar/pwmled2_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/pwmled2/tirtos7/iar/pwmled2_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/sdraw/freertos/iar/sdraw_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/sdraw/tirtos7/iar/sdraw_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/sha2hash/freertos/iar/sha2hash_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/sha2hash/tirtos7/iar/sha2hash_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/spicontroller/freertos/iar/spicontroller_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/spicontroller/tirtos7/iar/spicontroller_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/spiperipheral/freertos/iar/spiperipheral_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/spiperipheral/tirtos7/iar/spiperipheral_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/temperatureNotify/freertos/iar/temperatureNotify_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/temperatureNotify/tirtos7/iar/temperatureNotify_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/tfm_aescbc/freertos/iar/tfm_aescbc_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/tfm_aescbc/tirtos7/iar/tfm_aescbc_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/tfm_empty/freertos/iar/tfm_empty_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/tfm_empty/tirtos7/iar/tfm_empty_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/timerled/freertos/iar/timerled_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/timerled/tirtos7/iar/timerled_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/uart2callback/freertos/iar/uart2callback_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/uart2callback/tirtos7/iar/uart2callback_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/uart2echo/freertos/iar/uart2echo_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/uart2echo/tirtos7/iar/uart2echo_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/watchdog/freertos/iar/watchdog_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/drivers/watchdog/tirtos7/iar/watchdog_LP_EM_CC2674P10_tirtos7_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/tiutils/json/freertos/iar/json_LP_EM_CC2674P10_freertos_iar.ipcf
+
+Unable to parse files
+In project: examples/rtos/LP_EM_CC2674P10/tiutils/json/tirtos7/iar/json_LP_EM_CC2674P10_tirtos7_iar.ipcf
 

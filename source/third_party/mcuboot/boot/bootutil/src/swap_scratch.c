@@ -26,9 +26,9 @@
 #include "swap_priv.h"
 #include "bootutil/bootutil_log.h"
 
-#include "mcuboot_config/mcuboot_config.h"
+#include "mcuboot_config.h"
 
-MCUBOOT_LOG_MODULE_DECLARE(mcuboot);
+BOOT_LOG_MODULE_DECLARE(mcuboot);
 
 #if !defined(MCUBOOT_SWAP_USING_MOVE)
 
@@ -53,7 +53,7 @@ boot_read_image_header(struct boot_loader_state *state, int slot,
 {
     const struct flash_area *fap;
     int area_id;
-    int rc;
+    int rc = 0;
 
     (void)bs;
 
@@ -62,22 +62,17 @@ boot_read_image_header(struct boot_loader_state *state, int slot,
 #endif
 
     area_id = flash_area_id_from_multi_image_slot(BOOT_CURR_IMG(state), slot);
+
     rc = flash_area_open(area_id, &fap);
-    if (rc != 0) {
-        rc = BOOT_EFLASH;
-        goto done;
+    if (rc == 0) {
+        rc = flash_area_read(fap, 0, out_hdr, sizeof *out_hdr);
+        flash_area_close(fap);
     }
 
-    rc = flash_area_read(fap, 0, out_hdr, sizeof *out_hdr);
     if (rc != 0) {
         rc = BOOT_EFLASH;
-        goto done;
     }
 
-    rc = 0;
-
-done:
-    flash_area_close(fap);
     return rc;
 }
 
@@ -364,7 +359,9 @@ int
 swap_status_source(struct boot_loader_state *state)
 {
     const struct boot_status_table *table;
+#if MCUBOOT_SWAP_USING_SCRATCH
     struct boot_swap_state state_scratch;
+#endif
     struct boot_swap_state state_primary_slot;
     int rc;
     size_t i;
@@ -380,25 +377,30 @@ swap_status_source(struct boot_loader_state *state)
             &state_primary_slot);
     assert(rc == 0);
 
+#if MCUBOOT_SWAP_USING_SCRATCH
     rc = boot_read_swap_state_by_id(FLASH_AREA_IMAGE_SCRATCH, &state_scratch);
     assert(rc == 0);
+#endif
 
     BOOT_LOG_SWAP_STATE("Primary image", &state_primary_slot);
+#if MCUBOOT_SWAP_USING_SCRATCH
     BOOT_LOG_SWAP_STATE("Scratch", &state_scratch);
-
+#endif
     for (i = 0; i < BOOT_STATUS_TABLES_COUNT; i++) {
         table = &boot_status_tables[i];
 
         if (boot_magic_compatible_check(table->bst_magic_primary_slot,
                           state_primary_slot.magic) &&
+#if MCUBOOT_SWAP_USING_SCRATCH
             boot_magic_compatible_check(table->bst_magic_scratch,
                           state_scratch.magic) &&
+#endif
             (table->bst_copy_done_primary_slot == BOOT_FLAG_ANY ||
              table->bst_copy_done_primary_slot == state_primary_slot.copy_done))
         {
             source = table->bst_status_source;
 
-#if (BOOT_IMAGE_NUMBER > 1)
+#if (BOOT_IMAGE_NUMBER > 1) && MCUBOOT_SWAP_USING_SCRATCH
             /* In case of multi-image boot it can happen that if boot status
              * info is found on scratch area then it does not belong to the
              * currently examined image.
@@ -488,6 +490,7 @@ boot_swap_sectors(int idx, uint32_t sz, struct boot_loader_state *state,
     const struct flash_area *fap_scratch;
     uint32_t copy_sz;
     uint32_t trailer_sz;
+    uint32_t sector_sz;
     uint32_t img_off;
     uint32_t scratch_trailer_off;
     struct boot_swap_state swap_state;
@@ -512,6 +515,21 @@ boot_swap_sectors(int idx, uint32_t sz, struct boot_loader_state *state,
      * controls if special handling is needed (swapping last sector).
      */
     last_sector = boot_img_num_sectors(state, BOOT_PRIMARY_SLOT) - 1;
+    sector_sz = boot_img_sector_size(state, BOOT_PRIMARY_SLOT, last_sector);
+
+    if (sector_sz < trailer_sz) {
+        uint32_t trailer_sector_sz = sector_sz;
+
+        while (trailer_sector_sz < trailer_sz) {
+            /* Consider that the image trailer may span across sectors of
+             * different sizes.
+             */
+            sector_sz = boot_img_sector_size(state, BOOT_PRIMARY_SLOT, --last_sector);
+
+            trailer_sector_sz += sector_sz;
+        }
+    }
+
     if ((img_off + sz) >
         boot_img_sector_off(state, BOOT_PRIMARY_SLOT, last_sector)) {
         copy_sz -= trailer_sz;
@@ -557,7 +575,8 @@ boot_swap_sectors(int idx, uint32_t sz, struct boot_loader_state *state,
                 assert(rc == 0);
 
                 /* Erase the temporary trailer from the scratch area. */
-                rc = boot_erase_region(fap_scratch, 0, fap_scratch->fa_size);
+                rc = boot_erase_region(fap_scratch, 0,
+                        fap_scratch->fa_size);
                 assert(rc == 0);
             }
         }
@@ -612,8 +631,7 @@ boot_swap_sectors(int idx, uint32_t sz, struct boot_loader_state *state,
                         (BOOT_STATUS_STATE_COUNT - 1) * BOOT_WRITE_SZ(state));
             BOOT_STATUS_ASSERT(rc == 0);
 
-            rc = boot_read_swap_state_by_id(FLASH_AREA_IMAGE_SCRATCH,
-                                            &swap_state);
+            rc = boot_read_swap_state(fap_scratch, &swap_state);
             assert(rc == 0);
 
             if (swap_state.image_ok == BOOT_FLAG_SET) {
@@ -655,7 +673,7 @@ boot_swap_sectors(int idx, uint32_t sz, struct boot_loader_state *state,
         BOOT_STATUS_ASSERT(rc == 0);
 
         if (erase_scratch) {
-            rc = boot_erase_region(fap_scratch, 0, sz);
+            rc = boot_erase_region(fap_scratch, 0, fap_scratch->fa_size);
             assert(rc == 0);
         }
     }
@@ -680,6 +698,8 @@ swap_run(struct boot_loader_state *state, struct boot_status *bs,
     secondary_slot_size = 0;
     last_sector_idx = 0;
     last_idx_secondary_slot = 0;
+
+    BOOT_LOG_INF("Starting swap using scratch algorithm.");
 
     /*
      * Knowing the size of the largest image between both slots, here we
@@ -722,6 +742,118 @@ swap_run(struct boot_loader_state *state, struct boot_status *bs,
 
 }
 #endif /* !MCUBOOT_OVERWRITE_ONLY */
+
+int app_max_size(struct boot_loader_state *state)
+{
+    size_t num_sectors_primary;
+    size_t num_sectors_secondary;
+    size_t sz0, sz1;
+    size_t primary_slot_sz, secondary_slot_sz;
+#ifndef MCUBOOT_OVERWRITE_ONLY
+    size_t scratch_sz;
+#endif
+    size_t i, j;
+    int8_t smaller;
+
+    num_sectors_primary = boot_img_num_sectors(state, BOOT_PRIMARY_SLOT);
+    num_sectors_secondary = boot_img_num_sectors(state, BOOT_SECONDARY_SLOT);
+
+#ifndef MCUBOOT_OVERWRITE_ONLY
+    scratch_sz = boot_scratch_area_size(state);
+#endif
+
+    /*
+     * The following loop scans all sectors in a linear fashion, assuring that
+     * for each possible sector in each slot, it is able to fit in the other
+     * slot's sector or sectors. Slot's should be compatible as long as any
+     * number of a slot's sectors are able to fit into another, which only
+     * excludes cases where sector sizes are not a multiple of each other.
+     */
+    i = sz0 = primary_slot_sz = 0;
+    j = sz1 = secondary_slot_sz = 0;
+    smaller = 0;
+    while (i < num_sectors_primary || j < num_sectors_secondary) {
+        if (sz0 == sz1) {
+            sz0 += boot_img_sector_size(state, BOOT_PRIMARY_SLOT, i);
+            sz1 += boot_img_sector_size(state, BOOT_SECONDARY_SLOT, j);
+            i++;
+            j++;
+        } else if (sz0 < sz1) {
+            sz0 += boot_img_sector_size(state, BOOT_PRIMARY_SLOT, i);
+            /* Guarantee that multiple sectors of the secondary slot
+             * fit into the primary slot.
+             */
+            if (smaller == 2) {
+                BOOT_LOG_WRN("Cannot upgrade: slots have non-compatible sectors");
+                return 0;
+            }
+            smaller = 1;
+            i++;
+        } else {
+            sz1 += boot_img_sector_size(state, BOOT_SECONDARY_SLOT, j);
+            /* Guarantee that multiple sectors of the primary slot
+             * fit into the secondary slot.
+             */
+            if (smaller == 1) {
+                BOOT_LOG_WRN("Cannot upgrade: slots have non-compatible sectors");
+                return 0;
+            }
+            smaller = 2;
+            j++;
+        }
+#ifndef MCUBOOT_OVERWRITE_ONLY
+        if (sz0 == sz1) {
+            primary_slot_sz += sz0;
+            secondary_slot_sz += sz1;
+            /* Scratch has to fit each swap operation to the size of the larger
+             * sector among the primary slot and the secondary slot.
+             */
+            if (sz0 > scratch_sz || sz1 > scratch_sz) {
+                BOOT_LOG_WRN("Cannot upgrade: not all sectors fit inside scratch");
+                return 0;
+            }
+            smaller = sz0 = sz1 = 0;
+        }
+#endif
+    }
+
+#ifdef MCUBOOT_OVERWRITE_ONLY
+    return (sz1 < sz0 ? sz1 : sz0);
+#else
+    return (secondary_slot_sz < primary_slot_sz ? secondary_slot_sz : primary_slot_sz);
+#endif
+}
+#else
+int app_max_size(struct boot_loader_state *state)
+{
+    const struct flash_area *fap;
+    int fa_id;
+    int rc;
+    uint32_t active_slot;
+    int primary_sz, secondary_sz;
+
+    active_slot = state->slot_usage[BOOT_CURR_IMG(state)].active_slot;
+
+    fa_id = flash_area_id_from_multi_image_slot(BOOT_CURR_IMG(state), active_slot);
+    rc = flash_area_open(fa_id, &fap);
+    assert(rc == 0);
+    primary_sz = fap->fa_size;
+    flash_area_close(fap);
+
+    if (active_slot == BOOT_PRIMARY_SLOT) {
+        active_slot = BOOT_SECONDARY_SLOT;
+    } else {
+        active_slot = BOOT_PRIMARY_SLOT;
+    }
+
+    fa_id = flash_area_id_from_multi_image_slot(BOOT_CURR_IMG(state), active_slot);
+    rc = flash_area_open(fa_id, &fap);
+    assert(rc == 0);
+    secondary_sz = fap->fa_size;
+    flash_area_close(fap);
+
+    return (secondary_sz < primary_sz ? secondary_sz : primary_sz);
+}
 
 #endif /* !MCUBOOT_DIRECT_XIP && !MCUBOOT_RAM_LOAD */
 

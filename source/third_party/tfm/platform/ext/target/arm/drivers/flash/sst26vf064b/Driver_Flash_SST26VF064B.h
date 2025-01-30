@@ -71,7 +71,7 @@ do {                                                                     \
 
 #define RELEASE_QSPI(flash_dev)                                          \
 do {                                                                     \
-    if(flash_dev.setup_qspi != NULL) {                                   \
+    if(flash_dev.release_qspi != NULL) {                                 \
         if(flash_dev.release_qspi(&flash_dev) != 0) {                    \
             /* Should never get there */                                 \
             __ASM("B .");                                                \

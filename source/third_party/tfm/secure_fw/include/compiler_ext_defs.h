@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Arm Limited. All rights reserved.
+ * Copyright (c) 2021-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -27,5 +27,11 @@
 #endif
 
 #endif /* __ARMCC_VERSION __GNUC__ __ICCARM__*/
+
+#if !defined(__ICCARM__)
+#define SYNTAX_UNIFIED    ".syntax unified \n"
+#else
+#define SYNTAX_UNIFIED
+#endif /* SYNTAX_UNIFIED */
 
 #endif /* __COMPILER_EXT_DEFS_H__ */

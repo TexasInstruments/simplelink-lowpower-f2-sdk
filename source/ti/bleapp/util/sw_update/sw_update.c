@@ -9,7 +9,7 @@ Target Device: cc13xx_cc26xx
 
 ******************************************************************************
 
- Copyright (c) 2022-2024, Texas Instruments Incorporated
+ Copyright (c) 2022-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,6 @@ Target Device: cc13xx_cc26xx
 #include "icall.h"
 #include "ti/bleapp/util/sw_update/sw_update.h"
 #include "bootutil/image.h"
-#include "bootutil/bootutil.h"
 #include "flash_interface.h"
 
 /*********************************************************************

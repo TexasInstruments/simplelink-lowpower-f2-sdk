@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020, Texas Instruments Incorporated
+ * Copyright (c) 2016-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -647,6 +647,10 @@ typedef struct ADCBuf_Config_
  *
  *  @pre    In #ADCBuf_RECURRENCE_MODE_CONTINUOUS, the application must call
  *          ADCBuf_convertCancel() first.
+ *
+ *  @warning    This function must not be called while a conversion is being
+ *              started, meaning all calls to #ADC_convert() must have returned
+ *              before calling #ADCBuf_close()
  *
  *  @param[in]  handle    An #ADCBuf_Handle returned from ADCBuf_open()
  *

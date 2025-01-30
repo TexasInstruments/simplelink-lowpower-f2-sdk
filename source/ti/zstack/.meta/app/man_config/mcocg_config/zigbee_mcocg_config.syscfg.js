@@ -68,6 +68,11 @@ for (let i in clusters) {
       }
     }
   }
+
+  if (tempClientCommandOptions.length == 0) {
+    mcocgClientAlwaysHidden.push(cluster._id + "mcocgClient");
+    tempClientCommandOptions.push({name: "dummy", displayName: "dummy"});
+  }
   mcocgModule.config.push({
     name: cluster._id + "mcocgClient",
     displayName: cluster._name + " Client Commands Generated",
@@ -79,7 +84,6 @@ for (let i in clusters) {
     minSelections: 0
   })
   mcocgClientDropDowns.push(cluster._id + "mcocgClient");
-  if (tempClientCommandOptions.length == 0) { mcocgClientAlwaysHidden.push(cluster._id + "mcocgClient"); }
 
   let tempServerCommandOptions = [];
   if (cluster.client && cluster.client.command) {
@@ -89,6 +93,11 @@ for (let i in clusters) {
         tempServerCommandOptions.push({name: command._id, displayName: command._name});
       }
     }
+  }
+
+  if (tempServerCommandOptions.length == 0) {
+    mcocgServerAlwaysHidden.push(cluster._id + "mcocgServer");
+    tempServerCommandOptions.push({name: "dummy", displayName: "dummy"});
   }
   mcocgModule.config.push({
     name: cluster._id + "mcocgServer",
@@ -101,7 +110,6 @@ for (let i in clusters) {
     minSelections: 0
   })
   mcocgServerDropDowns.push(cluster._id + "mcocgServer");
-  if (tempServerCommandOptions.length == 0) { mcocgServerAlwaysHidden.push(cluster._id + "mcocgServer"); }
 }
 
 /* Function to handle changes in the mandatory server clusters */

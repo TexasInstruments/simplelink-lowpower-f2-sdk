@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../fatsdraw.c -> fatsdraw.c",
+            "+../main_freertos.c -> main_freertos.c",
+            "+../fatsdraw.syscfg -> fatsdraw.syscfg",
+            "+../../syscall_stubs.c -> syscall_stubs.c",
+            "+../../../../../../../source/ti/boards/LP_EM_CC2674P10/Board.html -> Board.html",
+            "+cc13x4_cc26x4_freertos.lds -> cc13x4_cc26x4_freertos.lds"
+        ]
+    }
+]

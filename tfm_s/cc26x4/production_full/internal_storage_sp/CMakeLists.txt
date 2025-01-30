@@ -14,10 +14,12 @@ cmake_policy(SET CMP0079 NEW)
 
 add_library(ti_tfm_app_rot_partition_internal_storage STATIC)
 
+add_dependencies(ti_tfm_app_rot_partition_internal_storage manifest_tool)
+
 target_sources(ti_tfm_app_rot_partition_internal_storage
     PRIVATE
-        ${SOURCE_REPO}/ti/drivers/nvs/flash/FlashCC26X4_s.c
-        ${KERNEL_REPO}/tfm/dpl/HwiP_tfm.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/nvs/flash/FlashCC26X4_s.c
+        ${TIDRIVERS_INSTALL_DIR}/kernel/tfm/dpl/HwiP_tfm.c
 )
 
 # The generated sources
@@ -52,9 +54,9 @@ target_link_libraries(ti_tfm_app_rot_partition_internal_storage
         platform_s
         tfm_config
         tfm_sprt
-        $<$<C_COMPILER_ID:ARMClang>:${SOURCE_REPO}/ti/devices/cc13x4_cc26x4/driverlib/bin/ticlang/driverlib.lib>
-        $<$<C_COMPILER_ID:GNU>:${SOURCE_REPO}/ti/devices/cc13x4_cc26x4/driverlib/bin/gcc/driverlib.lib>
-        $<$<C_COMPILER_ID:IAR>:${SOURCE_REPO}/ti/devices/cc13x4_cc26x4/driverlib/bin/iar/driverlib.lib>
+        $<$<C_COMPILER_ID:ARMClang>:${DRIVERLIB_SOURCE_DIR}/ti/devices/cc13x4_cc26x4/driverlib/bin/ticlang/driverlib.lib>
+        $<$<C_COMPILER_ID:GNU>:${DRIVERLIB_SOURCE_DIR}/ti/devices/cc13x4_cc26x4/driverlib/bin/gcc/driverlib.lib>
+        $<$<C_COMPILER_ID:IAR>:${DRIVERLIB_SOURCE_DIR}/ti/devices/cc13x4_cc26x4/driverlib/bin/iar/driverlib.lib>
 )
 
 ############################ Partition Defs ####################################

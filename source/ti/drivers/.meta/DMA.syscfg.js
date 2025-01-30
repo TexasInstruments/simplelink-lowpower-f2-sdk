@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,5 +67,10 @@ See [__Driver configurations reference__][1] for more information.
 };
 
 /* extend the base exports to include family-specific content */
-let devDMA = system.getScript("/ti/drivers/dma/UDMA" + family);
+let devDMA;
+if (family == "WFF3") {
+    devDMA = system.getScript("/ti/drivers/dma/DMA" + family);
+} else {
+    devDMA = system.getScript("/ti/drivers/dma/UDMA" + family);
+}
 exports = devDMA.extend(base);

@@ -116,7 +116,6 @@ dependencies.
 
         .. code-block:: bash
 
-            cd <base folder>
             git clone https://git.trustedfirmware.org/TF-M/trusted-firmware-m.git
 
         2. TF-M's ``tools/requirements.txt`` file declares additional Python
@@ -134,7 +133,6 @@ dependencies.
 
         .. code-block:: bash
 
-            cd <base folder>
             git clone https://git.trustedfirmware.org/TF-M/trusted-firmware-m.git
 
         2. TF-M's ``tools/requirements.txt`` file declares additional Python
@@ -217,9 +215,6 @@ versions are:
           support. The bug is reported in `here <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99157>`__.
           Select other GNU Arm compiler versions instead.
 
-          GNU Arm compiler version greater and equal than *11.3.Rel1* has a linker issue in syscall.
-          Select other GNU Arm compiler versions instead.
-
     - IAR Arm compiler v8.42.x, v8.50.x
 
       .. tabs::
@@ -253,53 +248,57 @@ as an example:
 
     .. group-tab:: Linux
 
-        .. code-block:: bash
-
-            cd trusted-firmware-m
-            cmake -S . -B cmake_build -DTFM_PLATFORM=arm/mps2/an521 -DTFM_TOOLCHAIN_FILE=toolchain_GNUARM.cmake -DCMAKE_BUILD_TYPE=Debug -DTEST_S=ON -DTEST_NS=ON
-            cmake --build cmake_build -- install
-
-        Alternately using traditional cmake syntax
+        Get the TF-M tests source code:
 
         .. code-block:: bash
 
-            cd trusted-firmware-m
-            mkdir cmake_build
-            cd cmake_build
-            cmake .. -DTFM_PLATFORM=arm/mps2/an521 -DTFM_TOOLCHAIN_FILE=../toolchain_GNUARM.cmake -DTEST_S=ON -DTEST_NS=ON
-            make install
+            git clone https://git.trustedfirmware.org/TF-M/tf-m-tests.git
+
+        Build SPE and NSPE.
+
+        .. code-block:: bash
+
+            cd </tf-m-tests/tests_reg>
+            cmake -S spe -B build_spe -DTFM_PLATFORM=arm/mps2/an521 -DCONFIG_TFM_SOURCE_PATH=<TF-M source dir> \
+                  -DCMAKE_BUILD_TYPE=Debug -DTFM_TOOLCHAIN_FILE=<Absolute path to>/toolchain_GNUARM.cmake \
+                  -DTEST_S=ON -DTEST_NS=ON \
+            cmake --build build_spe -- install
+
+            cmake -S . -B build_test -DCONFIG_SPE_PATH=<absolute path to>/build_spe/api_ns \
+                  -DCMAKE_BUILD_TYPE=Debug -DTFM_TOOLCHAIN_FILE=<Absolute path to>/toolchain_GNUARM.cmake
+            cmake --build build_test
 
     .. group-tab:: Windows
 
-        .. code-block:: bash
+        .. important::
+            Use "/" instead of "\\" when assigning Windows paths to CMAKE
+            variables, for example, use "c:/build" instead of "c:\\\\build".
 
-            cd trusted-firmware-m
-            cmake -G"Unix Makefiles" -S . -B cmake_build -DTFM_PLATFORM=arm/mps2/an521 -DTFM_TOOLCHAIN_FILE=toolchain_GNUARM.cmake -DCMAKE_BUILD_TYPE=Debug -DTEST_S=ON -DTEST_NS=ON
-            cmake --build cmake_build -- install
-
-        Alternately using traditional cmake syntax
+        Get the TF-M tests source code:
 
         .. code-block:: bash
 
-            cd trusted-firmware-m
-            mkdir cmake_build
-            cd cmake_build
-            cmake -G"Unix Makefiles" .. -DTFM_PLATFORM=arm/mps2/an521 -DTFM_TOOLCHAIN_FILE=../toolchain_GNUARM.cmake -DTEST_S=ON -DTEST_NS=ON
-            make install
+            git clone https://git.trustedfirmware.org/TF-M/tf-m-tests.git
 
+        Build SPE and NSPE.
+
+        .. code-block:: bash
+
+            cd </tf-m-tests/tests_reg>
+            cmake -G"Unix Makefiles" -S spe -B build_spe -DTFM_PLATFORM=arm/mps2/an521 -DCONFIG_TFM_SOURCE_PATH=<TF-M source dir> \
+                  -DCMAKE_BUILD_TYPE=Debug -DTFM_TOOLCHAIN_FILE=<Absolute path to>/toolchain_GNUARM.cmake \
+                  -DTEST_S=ON -DTEST_NS=ON \
+            cmake --build build_spe -- install
+
+            cmake -G"Unix Makefiles" -S . -B build_test -DCONFIG_SPE_PATH=<absolute path to>/build_spe/api_ns \
+                  -DCMAKE_BUILD_TYPE=Debug -DTFM_TOOLCHAIN_FILE=<Absolute path to>/toolchain_GNUARM.cmake
+            cmake --build build_test
 
         .. note::
            The latest Windows support long paths, but if you are less lucky
            then you can reduce paths by moving the build directory closer to
-           the root, using the 'out of tree' build.
-           For example to build in ``C:\build`` folder you can:
-
-           .. code-block:: bash
-
-               cd trusted-firmware-m
-               cmake -G"Unix Makefiles" -S . -B C:/build -DTFM_PLATFORM=arm/mps2/an521 -DTFM_TOOLCHAIN_FILE=toolchain_GNUARM.cmake -DCMAKE_BUILD_TYPE=Debug -DTEST_S=ON -DTEST_NS=ON
-               cmake --build C:/build -- install
-
+           the root by changing the ``-B`` option of the commands,  for example,
+           to ``C:\build_spe`` and ``C:\build_test`` folders.
 
 ###########################
 Run AN521 regression sample
@@ -338,8 +337,24 @@ Arm Development Studio.
             --parameter fvp_mps2.telnetterminal0.quiet=0 \
             --parameter fvp_mps2.telnetterminal1.quiet=1 \
             --parameter fvp_mps2.telnetterminal2.quiet=1 \
-            --application cpu0=<build_dir>/bin/bl2.axf \
-            --data cpu0=<build_dir>/bin/tfm_s_ns_signed.bin@0x10080000
+            --application cpu0=<build_spe>/api_ns/bin/bl2.axf \
+            --data cpu0=<build_test>/tfm_s_ns_signed.bin@0x10080000
+
+        .. note::
+
+           The log is output to telnet by default.
+           It can be also redirected to stdout by adding the following parameter.
+
+           .. code-block:: bash
+
+               --parameter fvp_mps2.UART0.out_file=/dev/stdout
+
+           To automatically terminate the fast-model when it finishes running,
+           you can add the following parameters:
+
+           .. code-block:: bash
+
+               --parameter fvp_mps2.UART0.shutdown_on_eot=1
 
     .. group-tab:: Windows
 
@@ -364,39 +379,36 @@ Arm Development Studio.
             --parameter fvp_mps2.telnetterminal0.quiet=0 \
             --parameter fvp_mps2.telnetterminal1.quiet=1 \
             --parameter fvp_mps2.telnetterminal2.quiet=1 \
-            --application cpu0=<build_dir>/bin/bl2.axf \
-            --data cpu0=<build_dir>/bin/tfm_s_ns_signed.bin@0x10080000
+            --application cpu0=<build_spe>/api_ns/bin/bl2.axf \
+            --data cpu0=<build_test>/tfm_s_ns_signed.bin@0x10080000
+
+        .. note::
+
+           To automatically terminate the fast-model when it finishes running,
+           you can add the following parameters:
+
+           .. code-block:: bash
+
+               --parameter fvp_mps2.UART0.shutdown_on_eot=1
 
 After completing the procedure you should see the following messages on the
 DAPLink UART (baud 115200 8n1)::
 
-    [INF] Starting bootloader
-    [INF] Image 0: magic=good, copy_done=0xff, image_ok=0xff
-    [INF] Scratch: magic=bad, copy_done=0x5, image_ok=0x9
-    [INF] Boot source: primary slot
-    [INF] Swap type: none
-    [INF] Bootloader chainload address offset: 0x20000
-    [INF] Jumping to the first image slot
-    [Sec Thread] Secure image initializing!
-
-    #### Execute test suites for the protected storage service ####
-    Running Test Suite PS secure interface tests (TFM_PS_TEST_2XXX)...
-    > Executing 'TFM_PS_TEST_2001'
-      Description: 'Create interface'
-      TEST PASSED!
-    > Executing 'TFM_PS_TEST_2002'
-      Description: 'Get handle interface (DEPRECATED)'
-    This test is DEPRECATED and the test execution was SKIPPED
-      TEST PASSED!
-    > Executing 'TFM_PS_TEST_2003'
-      Description: 'Get handle with null handle pointer (DEPRECATED)'
-    This test is DEPRECATED and the test execution was SKIPPED
-      TEST PASSED!
-    > Executing 'TFM_PS_TEST_2004'
-      Description: 'Get attributes interface'
-      TEST PASSED!
-    > Executing 'TFM_PS_TEST_2005'
-      Description: 'Get attributes with null attributes struct pointer'
+    ...
+    #### Execute test suites for the Secure area ####
+    Running Test Suite PSA protected storage S interface tests (TFM_S_PS_TEST_1XXX)...
+    > Executing 'TFM_S_PS_TEST_1001'
+    Description: 'Set interface'
+    TEST: TFM_S_PS_TEST_1001 - PASSED!
+    > Executing 'TFM_S_PS_TEST_1002'
+    Description: 'Set interface with create flags'
+    TEST: TFM_S_PS_TEST_1002 - PASSED!
+    > Executing 'TFM_S_PS_TEST_1003'
+    Description: 'Set interface with NULL data pointer'
+    TEST: TFM_S_PS_TEST_1003 - PASSED!
+    > Executing 'TFM_S_PS_TEST_1005'
+    Description: 'Set interface with write once UID'
+    TEST: TFM_S_PS_TEST_1005 - PASSED!
     ....
 
 ##########################

@@ -19,7 +19,7 @@
 
 #include <bootutil/sign_key.h>
 
-#include <mcuboot_config/mcuboot_config.h>
+#include "mcuboot_config.h"
 
 #if defined(MCUBOOT_SIGN_RSA)
 #if MCUBOOT_SIGN_RSA_LEN == 2048

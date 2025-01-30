@@ -26,7 +26,7 @@
  * \brief Defines the word offsets of Slave Peripheral Protection Controller
  *        Registers
  */
-enum ppc_bank_e {
+typedef enum {
     PPC_SP_DO_NOT_CONFIGURE = -1,
     PPC_SP_AHB_PPC0     = 0,
     PPC_SP_AHB_PPC_EXP0 = 4,
@@ -35,6 +35,6 @@ enum ppc_bank_e {
     PPC_SP_APB_PPC_EXP0 = 12,
     PPC_SP_APB_PPC_EXP1 = 13,
     PPC_SP_APB_PPC_EXP2 = 14,
-};
+} ppc_bank_t;
 
 #endif /* __TARGET_CFG_H__ */

@@ -5,7 +5,6 @@
 #
 #-------------------------------------------------------------------------------
 
-set(TFM_PROFILE                profile_small CACHE STRING "Configuration profile")
 set(PROJECT_CONFIG_HEADER_FILE "${CMAKE_SOURCE_DIR}/config/profile/config_profile_small.h" CACHE FILEPATH "User defined header file for TF-M config")
 
 ############################ SPM CONFIGURATION  ################################

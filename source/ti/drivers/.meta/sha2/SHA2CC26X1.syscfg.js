@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2024 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,9 +50,7 @@ let devSpecific = {
     templates : {
         boardc: "/ti/drivers/sha2/SHA2CC26X1.Board.c.xdt",
         boardh: "/ti/drivers/sha2/SHA2.Board.h.xdt"
-    },
-
-    modules: Common.autoForceModules(["Board"])
+    }
 };
 
 /*

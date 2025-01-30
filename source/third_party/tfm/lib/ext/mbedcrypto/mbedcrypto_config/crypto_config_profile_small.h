@@ -106,10 +106,14 @@
 //#define PSA_WANT_KEY_TYPE_CAMELLIA              1
 //#define PSA_WANT_KEY_TYPE_CHACHA20              1
 //#define PSA_WANT_KEY_TYPE_DES                   1
-//#define PSA_WANT_KEY_TYPE_ECC_KEY_PAIR          1
+//#define PSA_WANT_KEY_TYPE_ECC_KEY_PAIR          1 /* Deprecated */
 //#define PSA_WANT_KEY_TYPE_ECC_PUBLIC_KEY        1
 #define PSA_WANT_KEY_TYPE_RAW_DATA              1
-//#define PSA_WANT_KEY_TYPE_RSA_KEY_PAIR          1
+//#define PSA_WANT_KEY_TYPE_RSA_KEY_PAIR          1 /* Deprecated */
 //#define PSA_WANT_KEY_TYPE_RSA_PUBLIC_KEY        1
+
+#ifdef CRYPTO_HW_ACCELERATOR
+#include "crypto_accelerator_config.h"
+#endif
 
 #endif /* PROFILE_S_PSA_CRYPTO_CONFIG_H */

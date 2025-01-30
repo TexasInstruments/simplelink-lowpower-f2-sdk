@@ -47,6 +47,20 @@ if (typeof mode !== 'undefined' && mode === "wsms") {
     inst = system.modules["/ti/ti_wisunfan/ti_wisunfan"].$static;
 }
 
+let networkProfile = "CONFIG_NETWORK_SIZE_SMALL";
+if (inst.networkProfile == "Small")
+{
+    networkProfile = "CONFIG_NETWORK_SIZE_SMALL";
+}
+else if (inst.networkProfile == "Medium")
+{
+    networkProfile = "CONFIG_NETWORK_SIZE_MEDIUM";
+}
+else if (inst.networkProfile == "Large")
+{
+    networkProfile = "CONFIG_NETWORK_SIZE_LARGE";
+}
+
 function getModeFeatureMacro(mode) {
     switch(mode) {
         case "beacon":
@@ -75,6 +89,58 @@ function convertPresharedKeyToArray(keyStr) {
     arrayStr += "}";
     return arrayStr;
 }
+
+function ipv6_string_to_array(ip_string) {
+    // replace ipv4 address if any
+    var ipv4 = ip_string.match(/(.*:)([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$)/);
+    if (ipv4) {
+        var ip_string = ipv4[1];
+        ipv4 = ipv4[2].match(/[0-9]+/g);
+        for (var i = 0;i < 4;i ++) {
+            var byte = parseInt(ipv4[i],10);
+            ipv4[i] = ("0" + byte.toString(16)).substr(-2);
+        }
+        ip_string += ipv4[0] + ipv4[1] + ':' + ipv4[2] + ipv4[3];
+    }
+
+    // take care of leading and trailing ::
+    ip_string = ip_string.replace(/^:|:$/g, '');
+
+    var ipv6 = ip_string.split(':');
+
+    for (var i = 0; i < ipv6.length; i ++) {
+        var hex = ipv6[i];
+        if (hex != "") {
+            // normalize leading zeros
+            ipv6[i] = ("0000" + hex).substr(-4);
+        }
+        else {
+            // normalize grouped zeros ::
+            hex = [];
+            for (var j = ipv6.length; j <= 8; j ++) {
+                hex.push('0000');
+            }
+            ipv6[i] = hex.join(',');
+        }
+    }
+
+    // join strings together and split them into an array
+    ipv6 = ipv6.join(',').split(',');
+    // now split the 16-bit numbers into 8-bit numbers!
+    ipv6 = ipv6.map( (ip) =>
+        ip.match(/.{1,2}/g).map(i => 
+            '0x' + i
+        )
+    )
+
+    return ipv6;
+}
+
+function shared_secret_to_array(shared_secret) {
+    let utf8Encode = new TextEncoder();
+    return utf8Encode.encode(shared_secret);
+}
+
 %%}
 
 /******************************************************************************
@@ -129,6 +195,27 @@ extern "C"
 #define FEATURE_MPL_LOW_LATENCY_ENABLE (`inst.mplLowLatency ? "true" : "false"`)
 #define FEATURE_RAPID_DISCONNECT_DETECT_BR_SEC (`inst.rapidDisconnectDetectBr`)
 #define FEATURE_RAPID_DISCONNECT_DETECT_RN_SEC (`inst.rapidDisconnectDetectRn`)
+#define FEATURE_NETWORK_PROFILE (`networkProfile`)
+% if(inst.project.includes("borderrouter")) {
+#define FEATURE_EXTERNAL_DHCP_SERVER_ENABLE (`inst.UseExternalDhcpServer ? "true" : "false"`)
+% if(inst.UseExternalDhcpServer) {
+#define FEATURE_EXTERNAL_DHCP_SERVER_ADDR {`ipv6_string_to_array(inst.DhcpServerAddress)`}
+%}
+%else {
+#define FEATURE_EXTERNAL_DHCP_SERVER_ADDR {0}
+% }
+#define FEATURE_EXTERNAL_RADIUS_SERVER_ENABLE (`inst.UseExternalRadiusServer ? "true" : "false"`)
+% if(inst.UseExternalRadiusServer) {
+#define FEATURE_EXTERNAL_RADIUS_SERVER_ADDR {`ipv6_string_to_array(inst.RadiusServerAddress)`}
+#define FEATURE_EXTERNAL_RADIUS_SERVER_SHARED_SECRET {`shared_secret_to_array(inst.RadiusServerSharedSecret)`}
+#define FEATURE_EXTERNAL_RADIUS_SERVER_SHARED_SECRET_LENGTH `inst.RadiusServerSharedSecret.length`
+%}
+%else {
+#define FEATURE_EXTERNAL_RADIUS_SERVER_ADDR {0}
+#define FEATURE_EXTERNAL_RADIUS_SERVER_SHARED_SECRET {0}
+#define FEATURE_EXTERNAL_RADIUS_SERVER_SHARED_SECRET_LENGTH 0
+% }
+% }
 
 #ifdef __cplusplus
 }

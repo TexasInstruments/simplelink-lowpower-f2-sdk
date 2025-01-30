@@ -71,12 +71,12 @@
 <p>To trigger various events, buttons can be used as well as the configurable user interface. The <a href="#ExampleUsage">Example Usage</a> section of this document explains how to use the user interface, although both the button presses and the UART perform the same actions.</p>
 </blockquote>
 <ul>
-<li><code>CONFIG_GPIO_RLED</code> - Turns on after the sensor connects to the collector.</li>
-<li><code>CONFIG_GPIO_BTN1</code> - Press to initialize the sensor application.</li>
-<li><code>CONFIG_GPIO_BTN2</code> - Press to disassociate the device from the network.</li>
+<li><code>CONFIG_LED_RED</code> - Turns on after the sensor connects to the collector.</li>
+<li><code>CONFIG_BTN_LEFT</code> - Press to initialize the sensor application.</li>
+<li><code>CONFIG_BTN_RIGHT</code> - Press to disassociate the device from the network.</li>
 </ul>
 <blockquote>
-<p>If <code>CONFIG_GPIO_BTN2</code> is held while power is applied to the Launchpad, NV Flash will be erased.</p>
+<p>To erase NV flash, Hold <code>CONFIG_BTN_RIGHT</code> down, then press and release the reset button. Wait a second then release BTN-2. You should see a CUI message indicating NV erase. If BTN-2 is not held down constantly during the boot process the NVS flash will not be erased.</p>
 </blockquote>
 <h2 id="resources-jumper-settings"><a name="Resources&amp;JumperSettings"></a>Resources &amp; Jumper Settings</h2>
 <p>The following hardware is required to run TI 15.4-Stack Out of Box (OOB) example applications:</p>
@@ -200,7 +200,7 @@ Status: Waiting...</code></pre>
 <p>If the <strong>AUTO_START</strong> symbol is defined in your application, then the application will automatically configure itself on startup, and the sensor will display <code>Starting...</code> instead of <code>Waiting...</code></p>
 </blockquote>
 <blockquote>
-<p>If the <strong>AUTO_START</strong> symbol is not defined pressing <code>CONFIG_GPIO_BTN1</code> will initialize the sensor application until the sensor has connected to a network. Alternatively, the sensor can also be started through the user interface, as shown below. Note that the sensor will not join a network unless it is started.</p>
+<p>If the <strong>AUTO_START</strong> symbol is not defined pressing <code>CONFIG_BTN_LEFT</code> will initialize the sensor application until the sensor has connected to a network. Alternatively, the sensor can also be started through the user interface, as shown below. Note that the sensor will not join a network unless it is started.</p>
 </blockquote>
 <p>To ASSOCIATE to a network:</p>
 <pre><code> TI Sensor
@@ -215,7 +215,7 @@ Status: Starting...</code></pre>
 
 Status: Starting...</code></pre>
 <ul>
-<li>Start the application by pressing <code>CONFIG_GPIO_BTN1</code> or selecting ASSOCIATE under the NETWORK ACTIONS tab. After starting, sensor specific application information will be displayed, such as the device’s current state. ``` TI Sensor Press Enter for Help &lt; HELP &gt;</li>
+<li>Start the application by pressing <code>CONFIG_BTN_LEFT</code> or selecting ASSOCIATE under the NETWORK ACTIONS tab. After starting, sensor specific application information will be displayed, such as the device’s current state. ``` TI Sensor Press Enter for Help &lt; HELP &gt;</li>
 </ul>
 <p>Status: Starting…</p>
 <pre><code>
@@ -226,12 +226,12 @@ Once the network is started, and sensors begin to join, each of the status lines
 <pre><code>
 &gt; The joining device state variable information can be seen in the Joining Device Logical Link Controller's header file (`jdllc.h`), within the `Jdllc_states_t` structure.
 
-* Wait for the sensor device to join a network, after which the output will be updated with the channel number and device ID of the sensor that was started. After joining the network `CONFIG_GPIO_RLED` will be set.
+* Wait for the sensor device to join a network, after which the output will be updated with the channel number and device ID of the sensor that was started. After joining the network `CONFIG_LED_RED` will be set.
 The settings that you selected above in the waiting state will then take effect.</code></pre>
 <p>TI Sensor Press Enter for Help &lt; HELP &gt;</p>
 <p>Status: Joined–Mode=NBCN, Addr=0x0001, PanId=0x0001, Ch=0</p>
 <pre><code>
-* After the sensor node has successfully joined the network, it receives a configuration request message from the collector application. The node then configures the time interval on how often to report the sensor data to the collector application, and how often to poll for buffered messages in case of sleepy devices. After receiving the configuration request message, the green LED (`CONFIG_GPIO_GLED`) toggles whenever the device sends the message.
+* After the sensor node has successfully joined the network, it receives a configuration request message from the collector application. The node then configures the time interval on how often to report the sensor data to the collector application, and how often to poll for buffered messages in case of sleepy devices. After receiving the configuration request message, the green LED (`CONFIG_LED_GREEN`) toggles whenever the device sends the message.
 
 &gt; In order for the network device to join, it must have either the generic PAN Id (0xFFFF, default configuration) or the same PAN Id as the collector. These settings can be found in the application's SysConfig dashboard.
 
@@ -292,7 +292,7 @@ The common user interface (CUI) is a UART based interface that allows users to c
   with 100,000+ analog ICs and embedded processors, along with software, tools
   and the industry‘s largest sales/support staff.</p>
   <p>
-    <a href="https://www.ti.com/corp/docs/legal/copyright.shtml">© Copyright 1995-2024</a>, Texas Instruments Incorporated. All rights reserved. <br>
+    <a href="https://www.ti.com/corp/docs/legal/copyright.shtml">© Copyright 1995-2025</a>, Texas Instruments Incorporated. All rights reserved. <br>
     <a href="https://www.ti.com/corp/docs/legal/trademark/trademrk.htm">Trademarks</a> | <a href="https://www.ti.com/corp/docs/legal/privacy.shtml">Privacy policy</a> | <a href="https://www.ti.com/corp/docs/legal/termsofuse.shtml">Terms of use</a> | <a href="https://www.ti.com/lsds/ti/legal/termsofsale.page">Terms of sale</a>
   </p>
 </footer>

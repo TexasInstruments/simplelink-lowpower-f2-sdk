@@ -17,7 +17,7 @@
 #include "region_defs.h"
 #include "tfm_s_linker_alignments.h"
 
-#if TFM_LVL == 3
+#if TFM_ISOLATION_LEVEL == 3
 #define TFM_SP_IDLE_NASSETS     (1)
 #endif
 
@@ -31,7 +31,7 @@ struct partition_tfm_sp_idle_load_info_t {
     /* per-partition variable length load data */
     uintptr_t                       stack_addr;
     uintptr_t                       heap_addr;
-#if TFM_LVL == 3
+#if TFM_ISOLATION_LEVEL == 3
     struct asset_desc_t             assets[TFM_SP_IDLE_NASSETS];
 #endif
 } __attribute__((aligned(4)));
@@ -43,11 +43,12 @@ uint8_t idle_sp_stack[IDLE_SP_STACK_SIZE] __attribute__((aligned(TFM_LINKER_IDLE
 
 /* Partition load, deps, service load data. Put to a dedicated section. */
 #if defined(__ICCARM__)
-#pragma location = ".part_load_priority_lowest"
+/* Section priority: lowest */
+#pragma location = ".part_load_priority_00"
 __root
 #endif
 const struct partition_tfm_sp_idle_load_info_t
-    tfm_sp_idle_load __attribute__((used, section(".part_load_priority_lowest"))) = {
+    tfm_sp_idle_load __attribute__((used, section(".part_load_priority_00"))) = {
     .load_info = {
         .psa_ff_ver                 = 0x0101 | PARTITION_INFO_MAGIC,
         .pid                        = TFM_SP_IDLE_ID,
@@ -58,7 +59,7 @@ const struct partition_tfm_sp_idle_load_info_t
         .heap_size                  = 0,
         .ndeps                      = 0,
         .nservices                  = 0,
-#if TFM_LVL == 3
+#if TFM_ISOLATION_LEVEL == 3
         .nassets                    = TFM_SP_IDLE_NASSETS,
 #else
         .nassets                    = 0,
@@ -66,7 +67,7 @@ const struct partition_tfm_sp_idle_load_info_t
     },
     .stack_addr                     = (uintptr_t)idle_sp_stack,
     .heap_addr                      = 0,
-#if TFM_LVL == 3
+#if TFM_ISOLATION_LEVEL == 3
     .assets                         = {
         {
             .mem.start              = (uintptr_t)idle_sp_stack,
@@ -80,8 +81,9 @@ const struct partition_tfm_sp_idle_load_info_t
 
 /* Placeholder for partition runtime space. Do not reference it. */
 #if defined(__ICCARM__)
-#pragma location = ".bss.part_runtime_priority_lowest"
+/* Section priority: lowest */
+#pragma location = ".bss.part_runtime_priority_00"
 __root
 #endif
 static struct partition_t tfm_idle_partition_runtime_item
-    __attribute__((used, section(".bss.part_runtime_priority_lowest")));
+    __attribute__((used, section(".bss.part_runtime_priority_00")));

@@ -70,6 +70,11 @@ for (let i in clusters) {
       }
     }
   }
+
+  if (tempClientCommandOptions.length == 0) {
+    acmcgClientAlwaysHidden.push(cluster._id + "acmcgClient");
+    tempClientCommandOptions.push({name: "dummy", displayName: "dummy"});
+  }
   acmcgModule.config.push({
     name: cluster._id + "acmcgClient",
     displayName: cluster._name + " Client Commands Generated",
@@ -81,7 +86,6 @@ for (let i in clusters) {
     minSelections: 0
   })
   acmcgClientDropDowns.push(cluster._id + "acmcgClient");
-  if (tempClientCommandOptions.length == 0) { acmcgClientAlwaysHidden.push(cluster._id + "acmcgClient"); }
 
   let tempServerCommandDefault = [];
   let tempServerCommandOptions = [];
@@ -94,6 +98,11 @@ for (let i in clusters) {
       }
     }
   }
+
+  if (tempServerCommandOptions.length == 0) {
+    acmcgServerAlwaysHidden.push(cluster._id + "acmcgServer");
+    tempServerCommandOptions.push({name: "dummy", displayName: "dummy"});
+  }
   acmcgModule.config.push({
     name: cluster._id + "acmcgServer",
     displayName: cluster._name + " Server Commands Generated",
@@ -105,7 +114,6 @@ for (let i in clusters) {
     minSelections: 0
   })
   acmcgServerDropDowns.push(cluster._id + "acmcgServer");
-  if (tempServerCommandOptions.length == 0) { acmcgServerAlwaysHidden.push(cluster._id + "acmcgServer"); }
 }
 
 /* Function to handle changes in the additional server clusters */

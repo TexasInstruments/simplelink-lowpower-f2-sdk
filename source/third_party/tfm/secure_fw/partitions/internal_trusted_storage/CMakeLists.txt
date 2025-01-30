@@ -14,13 +14,15 @@ cmake_policy(SET CMP0079 NEW)
 
 add_library(tfm_psa_rot_partition_its STATIC)
 
+add_dependencies(tfm_psa_rot_partition_its manifest_tool)
+
 target_include_directories(tfm_psa_rot_partition_its
     PRIVATE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         ${CMAKE_BINARY_DIR}/generated/secure_fw/partitions/internal_trusted_storage
     PUBLIC
         # Required for ps_object_defs.h
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>/../protected_storage
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../protected_storage>
 )
 target_include_directories(tfm_partitions
     INTERFACE
@@ -32,6 +34,7 @@ target_sources(tfm_psa_rot_partition_its
         tfm_its_req_mngr.c
         tfm_internal_trusted_storage.c
         its_utils.c
+        $<$<BOOL:${ITS_ENCRYPTION}>:its_crypto_interface.c>
         flash/its_flash.c
         flash/its_flash_nand.c
         flash/its_flash_nor.c
@@ -79,7 +82,7 @@ target_link_libraries(tfm_partitions
         tfm_psa_rot_partition_its
 )
 
-target_compile_definitions(tfm_partition_defs
+target_compile_definitions(tfm_config
     INTERFACE
         TFM_PARTITION_INTERNAL_TRUSTED_STORAGE
 )

@@ -1,9 +1,9 @@
 [
     {
-        "metadataVersion": "3.0.0",
+        "metadataVersion": "3.1.0",
         "id": "com.ti.SIMPLELINK_CC13XX_CC26XX_SDK",
         "name": "SimpleLink CC13xx CC26xx SDK",
-        "version": "7.41.00.17",
+        "version": "8.30.01.01",
         "type": "software",
         "devices": [
             "CC13x1",
@@ -14,7 +14,7 @@
             "CC26x2",
             "CC26x2x7"
         ],
-        "image": "metadata/cc13xx_cc26xx-tirex.png",
+        "image": "cc13xx_cc26xx-tirex.png",
         "description": "Welcome to the CC13xx and CC26xx SDK",
         "dependencies": [
             {
@@ -24,17 +24,12 @@
             },
             {
                 "packageId": "sysconfig",
-                "version": "1.18.1",
-                "require": "optional"
+                "version": "1.21.1",
+                "require": "mandatory"
             },
             {
                 "packageId": "ti_cgt_tiarmclang",
-                "version": "3.2.0",
-                "require": "optional"
-            },
-            {
-                "packageId": "arm.gnu",
-                "version": "9.2",
+                "version": "3.2.2",
                 "require": "optional"
             }
         ]

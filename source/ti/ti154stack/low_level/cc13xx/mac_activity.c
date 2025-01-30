@@ -12,7 +12,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2019-2024, Texas Instruments Incorporated
+ Copyright (c) 2019-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -748,38 +748,38 @@ static void printActivityInfo(uint32_t activity, uint32_t priority, uint8_t fram
     {
         case MAC_ACTIVITY_LINK_EST:
         {
-            DBG_PRINT3(DBGSYS, "ACTIVITY PROFILE: Activity | MAC_ACTIVITY_LINK_EST | Priority (%x) | TxFrameType(%x) | DST Address(%x)",  priority,  frameType,  concatAddr);
+            Log_printf(LogModule_154_Low_Level_MAC, Log_INFO, "ACTIVITY PROFILE: Activity | MAC_ACTIVITY_LINK_EST | Priority (%x) | TxFrameType(%x) | DST Address(%x)",  priority,  frameType,  concatAddr);
         }
         break;
         case MAC_ACTIVITY_TX_BEACON:
         {
-            DBG_PRINT3(DBGSYS, "ACTIVITY PROFILE: Activity | MAC_ACTIVITY_TX_BEACON | Priority (%x) | TxFrameType(%x) | DST Address(%x)",  priority,  frameType,  concatAddr);
+            Log_printf(LogModule_154_Low_Level_MAC, Log_INFO, "ACTIVITY PROFILE: Activity | MAC_ACTIVITY_TX_BEACON | Priority (%x) | TxFrameType(%x) | DST Address(%x)",  priority,  frameType,  concatAddr);
         }
         break;
         case MAC_ACTIVITY_RX_BEACON:
         {
-            DBG_PRINT3(DBGSYS, "ACTIVITY PROFILE: Activity | MAC_ACTIVITY_RX_BEACON | Priority (%x) | TxFrameType(%x) | DST Address(%x)",  priority,  frameType,  concatAddr);
+            Log_printf(LogModule_154_Low_Level_MAC, Log_INFO, "ACTIVITY PROFILE: Activity | MAC_ACTIVITY_RX_BEACON | Priority (%x) | TxFrameType(%x) | DST Address(%x)",  priority,  frameType,  concatAddr);
         }
         break;
 
         case MAC_ACTIVITY_FH:
         {
-            DBG_PRINT3(DBGSYS, "ACTIVITY PROFILE: Activity | MAC_ACTIVITY_FH | Priority (%x) | TxFrameType(%x) | DST Address(%x)",  priority,  frameType,  concatAddr);
+            Log_printf(LogModule_154_Low_Level_MAC, Log_INFO, "ACTIVITY PROFILE: Activity | MAC_ACTIVITY_FH | Priority (%x) | TxFrameType(%x) | DST Address(%x)",  priority,  frameType,  concatAddr);
         }
         break;
         case MAC_ACTIVITY_SCAN:
         {
-            DBG_PRINT3(DBGSYS, "ACTIVITY PROFILE: Activity | MAC_ACTIVITY_SCAN | Priority (%x) | TxFrameType(%x) | DST Address(%x)",  priority,  frameType,  concatAddr);
+            Log_printf(LogModule_154_Low_Level_MAC, Log_INFO, "ACTIVITY PROFILE: Activity | MAC_ACTIVITY_SCAN | Priority (%x) | TxFrameType(%x) | DST Address(%x)",  priority,  frameType,  concatAddr);
         }
         break;
         case MAC_ACTIVITY_DATA:
         {
-            DBG_PRINT3(DBGSYS, "ACTIVITY PROFILE: Activity | MAC_ACTIVITY_DATA | Priority (%x) | TxFrameType(%x) | DST Address(%x)",  priority,  frameType,  concatAddr);
+            Log_printf(LogModule_154_Low_Level_MAC, Log_INFO, "ACTIVITY PROFILE: Activity | MAC_ACTIVITY_DATA | Priority (%x) | TxFrameType(%x) | DST Address(%x)",  priority,  frameType,  concatAddr);
         }
         break;
         case MAC_ACTIVITY_RX_ALWAYS_ON:
         {
-            DBG_PRINT3(DBGSYS, "ACTIVITY PROFILE: Activity | MAC_ACTIVITY_RX_ALWAYS_ON | Priority (%x) | TxFrameType(%x) | DST Address(%x)",  priority,  frameType,  concatAddr);
+            Log_printf(LogModule_154_Low_Level_MAC, Log_INFO, "ACTIVITY PROFILE: Activity | MAC_ACTIVITY_RX_ALWAYS_ON | Priority (%x) | TxFrameType(%x) | DST Address(%x)",  priority,  frameType,  concatAddr);
         }
         break;
     }

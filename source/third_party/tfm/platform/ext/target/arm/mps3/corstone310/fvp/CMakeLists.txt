@@ -10,6 +10,8 @@ cmake_policy(SET CMP0076 NEW)
 include(${CORSTONE310_COMMON_DIR}/common.cmake)
 
 add_library(platform_fvp)
+add_library(flash_drivers_s STATIC)
+add_library(flash_drivers_bl2 STATIC)
 
 target_sources(platform_fvp
     PRIVATE
@@ -73,10 +75,10 @@ target_include_directories(device_definition
         native_drivers
 )
 
-add_library(flash_drivers STATIC)
+add_library(flash_drivers INTERFACE)
 
 target_include_directories(flash_drivers
-    PRIVATE
+    INTERFACE
         ${PLATFORM_DIR}/ext/driver
         ${CORSTONE310_COMMON_DIR}/partition
         ${PLATFORM_DIR}/ext/target/arm/drivers/flash/common
@@ -84,30 +86,12 @@ target_include_directories(flash_drivers
 )
 
 target_sources(flash_drivers
-    PRIVATE
+    INTERFACE
         cmsis_drivers/Driver_Flash.c
         ${PLATFORM_DIR}/ext/target/arm/drivers/flash/emulated/emulated_flash_drv.c
 )
 
-target_link_libraries(flash_drivers
-    PRIVATE
-        cmsis_includes_s
-)
-
-target_link_libraries(platform_bl2
-    PRIVATE
-        flash_drivers
-)
-
-target_link_libraries(platform_s
-    PRIVATE
-        flash_drivers
-)
-
-target_link_libraries(platform_ns
-    PRIVATE
-        flash_drivers
-)
+include(${CORSTONE310_COMMON_DIR}/libflash_drivers.cmake)
 
 target_sources(platform_s
     PRIVATE
@@ -123,3 +107,25 @@ target_sources(tfm_spm
     PRIVATE
         $<$<OR:$<BOOL:${CONFIG_TFM_FLIH_API}>,$<BOOL:${CONFIG_TFM_SLIH_API}>>:${CMAKE_CURRENT_SOURCE_DIR}/tfm_interrupts.c>
 )
+
+#========================= Files for building NS side platform ================#
+
+install(DIRECTORY   ${TARGET_PLATFORM_PATH}/device
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+install(DIRECTORY   ${TARGET_PLATFORM_PATH}/native_drivers
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+install(DIRECTORY   ${TARGET_PLATFORM_PATH}/libraries
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+install(FILES       ${TARGET_PLATFORM_PATH}/ns/cpuarch_ns.cmake
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}
+        RENAME      cpuarch.cmake)
+
+install(FILES       ${TARGET_PLATFORM_PATH}/ns/CMakeLists.txt
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+install(FILES       ${TARGET_PLATFORM_PATH}/config.cmake
+                    ${TARGET_PLATFORM_PATH}/check_config.cmake
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})

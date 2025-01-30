@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Texas Instruments Incorporated
+ * Copyright (c) 2023-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -78,11 +78,10 @@ extern "C" {
  *   SRAM usage can be limited by setting the buffer size to (msgCount * msgSize)
  *   instead of using this macro.
  */
-#if ((DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X0_CC26X0) ||        \
-     (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2) ||        \
-     (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X1_CC26X1) ||        \
-     (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4) || \
-     (DeviceFamily_PARENT == DeviceFamily_PARENT_CC32XX))
+#if ((DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X0_CC26X0) || \
+     (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2) || \
+     (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X1_CC26X1) || \
+     (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4))
     #define MessageQueueP_BUFFER_SIZE(msgSize, msgCount) ((msgCount) * ((msgSize) + 8))
 #else
     #define MessageQueueP_BUFFER_SIZE(msgSize, msgCount) ((msgCount) * (msgSize))

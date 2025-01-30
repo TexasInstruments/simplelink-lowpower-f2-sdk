@@ -87,10 +87,10 @@ If ``CONFIG_TFM_SPM_BACKEND`` is not set, then ``IPC`` is the default value.
 References
 **********
 
-.. [1] `FF-M v1.0 Specification <https://developer.arm.com/-/media/Files/pdf/PlatformSecurityArchitecture/Architect/DEN0063-PSA_Firmware_Framework-1.0.0-2.pdf?revision=2d1429fa-4b5b-461a-a60e-4ef3d8f7f4b4>`__
+.. [1] `FF-M v1.0 Specification <https://developer.arm.com/documentation/den0063/latest/>`__
 
-.. [2] `FF-M v1.1 Extention <https://documentation-service.arm.com/static/600067c09b9c2d1bb22cd1c5?token=>`__
+.. [2] `FF-M v1.1 Extension <https://developer.arm.com/documentation/aes0039/latest/>`__
 
 --------------
 
-*Copyright (c) 2022, Arm Limited. All rights reserved.*
+*Copyright (c) 2022-2023, Arm Limited. All rights reserved.*

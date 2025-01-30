@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -184,7 +184,7 @@
 #define MAP_FHIE_getPie                     ((uint16_t  (*)(uint8_t *,FHIE_ie_t * ))            ROM_FH_JT_OFFSET(FH_API_BASE_INDEX+51))
 #define MAP_FHIE_getSubPie                  ((uint16_t  (*)(uint8_t *,FHIE_ie_t * ))            ROM_FH_JT_OFFSET(FH_API_BASE_INDEX+52))
 #define MAP_FHIE_getHie                     ((uint16_t  (*)(uint8_t *,FHIE_ie_t * ))            ROM_FH_JT_OFFSET(FH_API_BASE_INDEX+53))
-#ifndef FEATURE_WISUN_EDFE_SUPPORT
+#if !defined(FEATURE_WISUN_EDFE_SUPPORT) && !defined(FEATURE_WISUN_MIN_EDFE)
 #define MAP_FHIE_gen                        ((uint16_t  (*)(uint8_t *,uint32_t,macTx_t *,FHIE_ieInfo_t * ))         ROM_FH_JT_OFFSET(FH_API_BASE_INDEX+54))
 #else
 #define MAP_FHIE_gen                        ((uint16_t  (*)(uint8_t *,uint32_t,macTx_t *,FHIE_ieInfo_new_t * ))         ROM_FH_JT_OFFSET(FH_API_BASE_INDEX+54))

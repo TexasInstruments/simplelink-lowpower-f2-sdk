@@ -33,11 +33,6 @@
 #define NS_HEAP_SIZE            (0x0001000)
 #define NS_STACK_SIZE           (0x0001000)
 
-/* This size of buffer is big enough to store an attestation
- * token produced by initial attestation service
- */
-#define PSA_INITIAL_ATTEST_TOKEN_MAX_SIZE   (0x250)
-
 /* MPC granularity is 128 KB on AN519 MPS2 FPGA image. Alignment
  * of partitions is defined in accordance with this constraint.
  */
@@ -54,7 +49,7 @@
 #endif /* BL2 */
 
 #ifndef LINK_TO_SECONDARY_PARTITION
-#define NS_IMAGE_PRIMARY_PARTITION_OFFSET (FLASH_AREA_0_OFFSET + FLASH_S_PARTITION_SIZE)
+#define NS_IMAGE_PRIMARY_PARTITION_OFFSET (0x60000)
 #else
 #error "No secondary partition supported!"
 #endif /* !LINK_TO_SECONDARY_PARTITION */
@@ -88,9 +83,8 @@
 #define S_CODE_LIMIT    (S_CODE_START + S_CODE_SIZE - 1)
 
 #define S_DATA_START    (S_RAM_ALIAS(0x0))
-#define S_DATA_SIZE     (64 * 1024)
+#define S_DATA_SIZE     (80 * 1024)
 #define S_DATA_LIMIT    (S_DATA_START + S_DATA_SIZE - 1)
-
 
 /* Size of vector table: 117 interrupt handlers + 4 bytes MPS initial value */
 #define S_CODE_VECTOR_TABLE_SIZE    (0x1D8)

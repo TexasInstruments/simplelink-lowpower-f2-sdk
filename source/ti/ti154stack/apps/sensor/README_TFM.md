@@ -44,11 +44,11 @@ The example applications in TI 15.4-Stack are developed for the CC13x2 Launchpad
 > The [Example Usage](#ExampleUsage) section of this document explains how to use the user interface, although both the button presses and the UART perform the
 > same actions.
 
-* `CONFIG_GPIO_RLED` - Turns on after the sensor connects to the collector.
-* `CONFIG_GPIO_BTN1` - Press to initialize the sensor application.
-* `CONFIG_GPIO_BTN2` - Press to disassociate the device from the network.
+* `CONFIG_LED_RED` - Turns on after the sensor connects to the collector.
+* `CONFIG_BTN_LEFT` - Press to initialize the sensor application.
+* `CONFIG_BTN_RIGHT` - Press to disassociate the device from the network.
 
-> If `CONFIG_GPIO_BTN2` is held while power is applied to the Launchpad, NV Flash will be erased.
+> To erase NV flash, Hold `CONFIG_BTN_RIGHT` down, then press and release the reset button. Wait a second then release BTN-2. You should see a CUI message indicating NV erase. If BTN-2 is not held down constantly during the boot process the NVS flash will not be erased.
 
 ## <a name="Resources&JumperSettings"></a>Resources & Jumper Settings
 
@@ -203,7 +203,7 @@ AUTO_START can be defined by removing the x in the .opt file under the defines f
 > If the **AUTO_START** symbol is defined in your application, then the application will automatically configure itself on startup,
 and the sensor will display `Starting...` instead of `Waiting...`
 
-> If the **AUTO_START** symbol is not defined pressing `CONFIG_GPIO_BTN1` will initialize the sensor application until the sensor has connected to a network.  Alternatively, the sensor can also be started through the user interface, as shown below.
+> If the **AUTO_START** symbol is not defined pressing `CONFIG_BTN_LEFT` will initialize the sensor application until the sensor has connected to a network.  Alternatively, the sensor can also be started through the user interface, as shown below.
 Note that the sensor will not join a network unless it is started.
 
 To ASSOCIATE to a network:
@@ -224,7 +224,7 @@ To DISASSOCIATE from a network:
 Status: Starting...
 ```
 
-* Start the application by pressing `CONFIG_GPIO_BTN1` or selecting ASSOCIATE under the NETWORK ACTIONS tab.
+* Start the application by pressing `CONFIG_BTN_LEFT` or selecting ASSOCIATE under the NETWORK ACTIONS tab.
 After starting, sensor specific application information will be displayed, such as the device's current state.
 ```
  TI Sensor
@@ -245,7 +245,7 @@ Status: Joined--Mode=NBCN, Addr=0x0001, PanId=0x0001, Ch=0
 
 > The joining device state variable information can be seen in the Joining Device Logical Link Controller's header file (`jdllc.h`), within the `Jdllc_states_t` structure.
 
-* Wait for the sensor device to join a network, after which the output will be updated with the channel number and device ID of the sensor that was started. After joining the network `CONFIG_GPIO_RLED` will be set.
+* Wait for the sensor device to join a network, after which the output will be updated with the channel number and device ID of the sensor that was started. After joining the network `CONFIG_LED_RED` will be set.
 The settings that you selected above in the waiting state will then take effect.
 ```
   TI Sensor
@@ -255,7 +255,7 @@ The settings that you selected above in the waiting state will then take effect.
 Status: Joined--Mode=NBCN, Addr=0x0001, PanId=0x0001, Ch=0
 ```
 
-* After the sensor node has successfully joined the network, it receives a configuration request message from the collector application. The node then configures the time interval on how often to report the sensor data to the collector application, and how often to poll for buffered messages in case of sleepy devices. After receiving the configuration request message, the green LED (`CONFIG_GPIO_GLED`) toggles whenever the device sends the message.
+* After the sensor node has successfully joined the network, it receives a configuration request message from the collector application. The node then configures the time interval on how often to report the sensor data to the collector application, and how often to poll for buffered messages in case of sleepy devices. After receiving the configuration request message, the green LED (`CONFIG_LED_GREEN`) toggles whenever the device sends the message.
 
 > In order for the network device to join, it must have either the generic PAN Id (0xFFFF, default configuration) or the same PAN Id as the collector. These settings can be found in the application's SysConfig dashboard.
 

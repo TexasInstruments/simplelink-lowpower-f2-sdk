@@ -30,6 +30,7 @@
                     "..\/..\/cc1354p10\/targets\/target_lp_cc1354p10_1_rgz_highPA.json"
                 ]
             }
-        ]
+        ],
+        "Target": "..\/..\/cc1354p10\/targets\/target_cc1354p10_rgz_id24.json"
     }
 }

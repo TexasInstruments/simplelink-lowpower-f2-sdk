@@ -13,13 +13,6 @@ target_link_libraries(tfm_partitions
         tfm_spm_defs
 )
 
-# Lots of seperate things need to know which partitions are enabled, so this
-# meta-target is provided so the related compile definitions can be collected in
-# such a way that they don't cause issues with linking to the full spm (which is
-# the other place these could be collected) Actual definitions are placed in the
-# directories of the partitions
-add_library(tfm_partition_defs INTERFACE)
-
 add_subdirectory(lib/runtime)
 add_subdirectory(crypto)
 add_subdirectory(initial_attestation)
@@ -57,7 +50,7 @@ if (TEMP_TFM_EXTRA_PARTITION_PATHS)
     endforeach()
 endif()
 
-target_compile_definitions(tfm_partition_defs
+target_compile_definitions(tfm_config
     INTERFACE
         $<$<STREQUAL:${TEST_PSA_API},IPC>:PSA_API_TEST_IPC>
 )

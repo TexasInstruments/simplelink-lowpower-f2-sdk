@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2011-2024, Texas Instruments Incorporated
+ Copyright (c) 2011-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -106,7 +106,7 @@ extern ubleParams_t ubleParams;
  * EXTERNAL FUNCTIONS
  */
 extern bStatus_t uble_buildAndPostEvt(ubleEvtDst_t evtDst, ubleEvt_t evt,
-                                      ubleMsg_t *pMsg, uint16 len);
+                                      uint8 *pMsg, uint16 len);
 
 /*********************************************************************
  * LOCAL VARIABLES
@@ -195,7 +195,7 @@ static ugapMonitorCBs_t ugmAppCBs;
  */
 static bStatus_t ugap_bcastChangeState(ugapBcastState_t state)
 {
-  port_key_t key;
+  volatile port_key_t key;
   bStatus_t status = SUCCESS;
 
   key = port_enterCS_SW();
@@ -279,7 +279,7 @@ static bStatus_t ugap_bcastChangeState(ugapBcastState_t state)
 
     msgStateChange.state = ugbState;
     status = uble_buildAndPostEvt(UBLE_EVTDST_GAP, UGB_EVT_STATE_CHANGE,
-                                  (ubleMsg_t*) &msgStateChange, sizeof(msgStateChange));
+                                  (char *) &msgStateChange, sizeof(msgStateChange));
   }
 
   port_exitCS_SW(key);
@@ -338,7 +338,7 @@ static uint8_t ugap_observerChanMapToIndex(uint8_t *pChanMap)
  */
 static bStatus_t ugap_observerChangeState(ugapObserverScan_State_t state)
 {
-  port_key_t key;
+  volatile port_key_t key;
   bStatus_t status = SUCCESS;
 
   key = port_enterCS_SW();
@@ -416,7 +416,7 @@ static bStatus_t ugap_observerChangeState(ugapObserverScan_State_t state)
 
     msgStateChange.state = ugoState;
     status = uble_buildAndPostEvt(UBLE_EVTDST_GAP, UGAP_OBSERVER_EVT_STATE_CHANGE,
-                                  (ubleMsg_t*) &msgStateChange, sizeof(msgStateChange));
+                                  (char *) &msgStateChange, sizeof(msgStateChange));
   }
 
   port_exitCS_SW(key);
@@ -439,7 +439,7 @@ static bStatus_t ugap_observerChangeState(ugapObserverScan_State_t state)
  */
 static bStatus_t ugap_monitorChangeState(ugapMonitorState_t state)
 {
-  port_key_t key;
+  volatile port_key_t key;
 
   bStatus_t status = SUCCESS;
 
@@ -476,7 +476,7 @@ static bStatus_t ugap_monitorChangeState(ugapMonitorState_t state)
 
     msgStateChange.state = ugmState;
     status = uble_buildAndPostEvt(UBLE_EVTDST_GAP, UGAP_MONITOR_EVT_STATE_CHANGE,
-                                  (ubleMsg_t*) &msgStateChange, sizeof(msgStateChange));
+                                  (uint8 *) &msgStateChange, sizeof(msgStateChange));
   }
 
   port_exitCS_SW(key);
@@ -565,7 +565,7 @@ void ugap_clockHandler(uint32_t a0)
  */
 void ugb_advPrepareCB(void)
 {
-  port_key_t key;
+  volatile port_key_t key;
 
   key = port_enterCS_SW();
   if (ubleParams.timeToAdv > 0)
@@ -589,7 +589,7 @@ void ugb_advPrepareCB(void)
 void ugb_advPostprocessCB(bStatus_t status)
 {
   ugapBcastMsgAdvPostprocess_t msg;
-  port_key_t key;
+  volatile port_key_t key;
 
   key = port_enterCS_SW();
 #ifndef RF_MULTIMODE
@@ -605,7 +605,7 @@ void ugb_advPostprocessCB(bStatus_t status)
     /* Post UGB_EVT_ADV_POSTPROCESS to itself so that it is processed
        in the application task's context */
     uble_buildAndPostEvt(UBLE_EVTDST_GAP, UGB_EVT_ADV_POSTPROCESS,
-                         (ubleMsg_t*) &msg, sizeof(ugapBcastMsgAdvPostprocess_t));
+                         (char *) &msg, sizeof(ugapBcastMsgAdvPostprocess_t));
 
     if (ugbNumAdvEvent > 0)
     {
@@ -634,7 +634,7 @@ void ugb_advPostprocessCB(bStatus_t status)
 void ugap_observerScanIndicationCB(bStatus_t status, uint8_t len, uint8_t *pPayload)
 {
   ugapObserverMsgScanIndication_t msg;
-  port_key_t key;
+  volatile port_key_t key;
 
   key = port_enterCS_SW();
   msg.status = status;
@@ -644,7 +644,7 @@ void ugap_observerScanIndicationCB(bStatus_t status, uint8_t len, uint8_t *pPayl
   /* Post UGAP_OBSERVER_EVT_SCAN_INDICATION to itself so that it is processed
      in the application task's context */
   uble_buildAndPostEvt(UBLE_EVTDST_GAP, UGAP_OBSERVER_EVT_SCAN_INDICATION,
-                       (ubleMsg_t*) &msg, sizeof(ugapObserverMsgScanIndication_t));
+                       (char *) &msg, sizeof(ugapObserverMsgScanIndication_t));
   port_exitCS_SW(key);
 }
 
@@ -667,7 +667,7 @@ static void ugap_observerScanWindowCompleteCB(bStatus_t status)
   /* Post UGB_EVT_SCAN_WINDOW_COMPLETE to itself so that it is processed
      in the application task's context */
   uble_buildAndPostEvt(UBLE_EVTDST_GAP, UGAP_OBSERVER_EVT_SCAN_WINDOW_COMPLETE,
-                       (ubleMsg_t*) &msg, sizeof(ugapObserverMsgScanWindowComplete_t));
+                       (char *) &msg, sizeof(ugapObserverMsgScanWindowComplete_t));
   port_exitCS_SW(key);
 }
 #endif /* FEATURE_OBSERVER */
@@ -688,8 +688,7 @@ static void ugap_observerScanWindowCompleteCB(bStatus_t status)
 static void upag_monitorIndicationCB(bStatus_t status, uint8_t sessionId, uint8_t len, uint8_t *pPayload)
 {
   ugapMsgMonitorIndication_t msg;
-  port_key_t key;
-
+  volatile port_key_t key;
   key = port_enterCS_SW();
   msg.status = status;
   msg.sessionId = sessionId;
@@ -699,7 +698,7 @@ static void upag_monitorIndicationCB(bStatus_t status, uint8_t sessionId, uint8_
   /* Post UGAP_MONITOR_EVT_MONITOR_INDICATION to itself so that it is processed
      in the application task's context */
   uble_buildAndPostEvt(UBLE_EVTDST_GAP, UGAP_MONITOR_EVT_MONITOR_INDICATION,
-                       (ubleMsg_t*) &msg, sizeof(ugapMsgMonitorIndication_t));
+                       (uint8 *) &msg, sizeof(ugapMsgMonitorIndication_t));
   port_exitCS_SW(key);
 }
 
@@ -715,7 +714,7 @@ static void upag_monitorIndicationCB(bStatus_t status, uint8_t sessionId, uint8_
 static void ugap_monitorCompleteCB(bStatus_t status, uint8_t sessionId)
 {
   ugapMsgMonitorComplete_t msg;
-  port_key_t key;
+  volatile port_key_t key;
 
   key = port_enterCS_SW();
   msg.status = status;
@@ -723,7 +722,7 @@ static void ugap_monitorCompleteCB(bStatus_t status, uint8_t sessionId)
   /* Post UGAP_MONITOR_EVT_MONITOR_COMPLETE to itself so that it is processed
      in the application task's context */
   uble_buildAndPostEvt(UBLE_EVTDST_GAP, UGAP_MONITOR_EVT_MONITOR_COMPLETE,
-                       (ubleMsg_t*) &msg, sizeof(ugapMsgMonitorComplete_t));
+                       (uint8 *) &msg, sizeof(ugapMsgMonitorComplete_t));
   port_exitCS_SW(key);
 }
 #endif /* FEATURE_MONITOR */
@@ -1234,26 +1233,27 @@ void uble_processGAPMsg(ubleEvtMsg_t *pEvtMsg)
 
 #if defined(FEATURE_MONITOR)
   case UGAP_MONITOR_EVT_MONITOR_INDICATION:
-    if (ugmAppCBs.pfnMonitorIndicationCB != NULL)
+    if ((ugmAppCBs.pfnMonitorIndicationCB != NULL) && (pEvtMsg->msg))
     {
-      ugapMsgMonitorIndication_t *pMsg = (ugapMsgMonitorIndication_t*) &(pEvtMsg->msg);
-      ugmAppCBs.pfnMonitorIndicationCB(pMsg->status, pMsg->sessionId, pMsg->len, pMsg->pPayload);
+      ugapMsgMonitorIndication_t Msg;
+      memcpy(&Msg, (uint8_t *)(pEvtMsg->msg), sizeof(ugapMsgMonitorIndication_t));
+      ugmAppCBs.pfnMonitorIndicationCB(Msg.status, Msg.sessionId, Msg.len, Msg.pPayload);
     }
     break;
 
   case UGAP_MONITOR_EVT_MONITOR_COMPLETE:
     /* The App monitor complete is called at the end of monitor duration */
-    if (ugmAppCBs.pfnMonitorCompleteCB != NULL)
+    if ((ugmAppCBs.pfnMonitorCompleteCB != NULL) && (pEvtMsg->msg))
     {
-      ugapMsgMonitorComplete_t *pMsg = (ugapMsgMonitorComplete_t*) &(pEvtMsg->msg);
+      ugapMsgMonitorComplete_t *pMsg = (ugapMsgMonitorComplete_t*) (pEvtMsg->msg);
       ugmAppCBs.pfnMonitorCompleteCB(pMsg->status, pMsg->sessionId);
     }
     break;
 
   case UGAP_MONITOR_EVT_STATE_CHANGE:
-    if (ugmAppCBs.pfnStateChangeCB != NULL)
+    if ((ugmAppCBs.pfnStateChangeCB != NULL) && (pEvtMsg->msg))
     {
-      ugapMsgStateChange_t *pMsg = (ugapMsgStateChange_t*) &(pEvtMsg->msg);
+      ugapMsgStateChange_t *pMsg = (ugapMsgStateChange_t*) (pEvtMsg->msg);
       ugmAppCBs.pfnStateChangeCB(pMsg->state);
     }
     break;

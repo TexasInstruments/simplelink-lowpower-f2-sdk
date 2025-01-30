@@ -1,6 +1,6 @@
 # README for TI Mbed TLS
 
-TI provides hardware accelerated cryptographic primitives using Mbed TLS v3.4.0 for several cryptographic algorithms, including AES-ECB, AES-CBC, AES-CMAC, AES-CBC-MAC, AES-CCM, AES-GCM, TRNG (entropy), ECDH, ECDSA, ECJPAKE, SHA-2-256, and SHA-2-512. 
+TI provides hardware accelerated cryptographic primitives using Mbed TLS v3.5.0 for several cryptographic algorithms, including AES-ECB, AES-CBC, AES-CMAC, AES-CBC-MAC, AES-CCM, AES-GCM, TRNG (entropy), ECDH, ECDSA, ECJPAKE, SHA-2-256, and SHA-2-512. 
 
 ## Using pre-built libraries
 TI provides pre-built libraries for CC13X4_CC26X4 devices using GCC, IAR and TICLANG compilers tools. With the following steps, the user can use TI Mbed TLS library in their project:

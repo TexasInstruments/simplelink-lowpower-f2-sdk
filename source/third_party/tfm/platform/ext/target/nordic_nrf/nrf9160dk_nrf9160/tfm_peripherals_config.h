@@ -16,7 +16,7 @@ extern "C" {
 #define TFM_PERIPHERAL_UARTE1_SECURE 1
 #endif
 
-#if TEST_NS_SLIH_IRQ || TEST_NS_FLIH_IRQ
+#if TFM_PARTITION_SLIH_TEST || TFM_PARTITION_FLIH_TEST
 #define TFM_PERIPHERAL_TIMER0_SECURE 1
 #endif
 
@@ -26,10 +26,8 @@ extern "C" {
 #define TFM_PERIPHERAL_WDT_SECURE 1
 #endif
 
-#if defined(NRF5340_XXAA_APPLICATION)
-    #include <tfm_peripherals_config_nrf5340_application.h>
-#elif defined(NRF9160_XXAA)
-    #include <tfm_peripherals_config_nrf9160.h>
+#if defined(NRF91_SERIES)
+    #include <tfm_peripherals_config_nrf91.h>
 #else
     #error "Unknown device."
 #endif

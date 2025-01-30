@@ -24,4 +24,13 @@ config CONFIG_TFM_DOORBELL_API
 config CONFIG_TFM_SCHEDULE_WHEN_NS_INTERRUPTED
     bool "Run the scheduler after a secure interrupt pre-empts the NSPE"
     default n
+
+config OTP_NV_COUNTERS_RAM_EMULATION
+    bool "Enable OTP/NV_COUNTERS emulation in RAM"
+    default n
+    depends on PLATFORM_DEFAULT_OTP || PLATFORM_DEFAULT_NV_COUNTERS
+    help
+      Enable OTP/NV_COUNTERS emulation in RAM. Has no effect on non-default
+      implementations of the OTP and NV_COUNTERS
+
 endmenu

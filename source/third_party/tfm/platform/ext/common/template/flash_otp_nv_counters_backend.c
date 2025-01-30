@@ -21,13 +21,13 @@
 
 static enum tfm_plat_err_t create_or_restore_layout(void);
 
-#ifdef OTP_NV_COUNTERS_RAM_EMULATION
+#if OTP_NV_COUNTERS_RAM_EMULATION
 
 static struct flash_otp_nv_counters_region_t otp_nv_ram_buf = {0};
 
 enum tfm_plat_err_t read_otp_nv_counters_flash(uint32_t offset, void *data, uint32_t cnt)
 {
-    memcpy(data, ((void*)&otp_nv_ram_buf) + offset, cnt);
+    memcpy(data, ((uint8_t *)&otp_nv_ram_buf) + offset, cnt);
 
     return TFM_PLAT_ERR_SUCCESS;
 }
@@ -56,7 +56,7 @@ static enum tfm_plat_err_t create_or_restore_layout(void)
 
 enum tfm_plat_err_t write_otp_nv_counters_flash(uint32_t offset, const void *data, uint32_t cnt)
 {
-    memcpy(((void*)&otp_nv_ram_buf) + offset, data, cnt);
+    memcpy(((uint8_t *)&otp_nv_ram_buf) + offset, data, cnt);
 
     return TFM_PLAT_ERR_SUCCESS;
 }

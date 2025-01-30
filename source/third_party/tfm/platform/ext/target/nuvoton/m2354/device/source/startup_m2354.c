@@ -296,3 +296,9 @@ void Reset_Handler(void)
     SystemInit();                             /* CMSIS System Initialization */
     __PROGRAM_START();                        /* Enter PreMain (C library entry point) */
 }
+
+/* Dummy function for m2354 bsp */
+uint32_t __PC()
+{
+    return 0;
+}

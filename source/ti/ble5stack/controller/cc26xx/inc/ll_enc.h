@@ -13,7 +13,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2024, Texas Instruments Incorporated
+ Copyright (c) 2009-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -153,13 +153,17 @@ extern uint8 LL_ENC_GenerateTRNGRandNum( uint8 *buf, uint8 len );
 
 // CCM Encryption
 extern void  LL_ENC_AES128_Encrypt( uint8 *key, uint8 *plaintext,  uint8 *ciphertext );
+extern void  LL_ENC_AES128_Encrypt_sPatch( uint8 *key, uint8 *plaintext,  uint8 *ciphertext );
 extern void  LL_ENC_AES128_Decrypt( uint8 *key, uint8 *ciphertext, uint8 *plaintext );
+extern void  LL_ENC_AES128_Decrypt_sPatch( uint8 *key, uint8 *ciphertext, uint8 *plaintext );
 extern void  LL_ENC_ReverseBytes( uint8 *buf, uint8 len );
 extern void  LL_ENC_GenDeviceSKD( uint8 *SKD );
 extern void  LL_ENC_GenDeviceIV( uint8 *IV );
 extern void  LL_ENC_GenerateNonce( uint32 pktCnt, uint8 direction, uint8 *nonce );
 extern void  LL_ENC_Encrypt( llConnState_t *connPtr, uint8 pktHdr, uint8 pktLen, uint8 *pBuf );
+extern void  LL_ENC_Encrypt_sPatch( llConnState_t *connPtr, uint8 pktHdr, uint8 pktLen, uint8 *pBuf );
 extern uint8 LL_ENC_Decrypt( llConnState_t *connPtr, uint8 pktHdr, uint8 pktLen, uint8 *pBuf );
+extern uint8 LL_ENC_Decrypt_sPatch( llConnState_t *connPtr, uint8 pktHdr, uint8 pktLen, uint8 *pBuf );
 
 #ifdef __cplusplus
 }

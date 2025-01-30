@@ -8,6 +8,8 @@
 #include "crypto.h"
 #include "otp.h"
 #include "boot_hal.h"
+#include "boot_measurement.h"
+#include "psa/crypto.h"
 #include "uart_stdout.h"
 #include "fih.h"
 #include "util.h"
@@ -15,35 +17,76 @@
 #include "image.h"
 #include "region_defs.h"
 #include "pq_crypto.h"
+#include "tfm_plat_nv_counters.h"
+#include "tfm_plat_otp.h"
+#include <string.h>
 
 /* Disable both semihosting code and argv usage for main */
 #if defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
 __asm("  .global __ARM_use_no_argv\n");
 #endif
 
-extern uint32_t platform_code_is_bl1_2;
+#if defined(TFM_MEASURED_BOOT_API) || !defined(TFM_BL1_PQ_CRYPTO)
+static uint8_t computed_bl2_hash[BL2_HASH_SIZE];
+#endif
+
+#ifdef TFM_MEASURED_BOOT_API
+#if (BL2_HASH_SIZE == 32)
+#define BL2_HASH_ALG  PSA_ALG_SHA_256
+#elif (BL2_HASH_SIZE == 64)
+#define BL2_HASH_ALG  PSA_ALG_SHA_512
+#else
+#error "The specified BL2_HASH_SIZE is not supported with measured boot."
+#endif /* BL2_HASH_SIZE */
+
+static void collect_boot_measurement(const struct bl1_2_image_t *image)
+{
+    struct boot_measurement_metadata bl2_metadata = {
+        .measurement_type = BL2_HASH_ALG,
+        .signer_id = { 0 },
+        .signer_id_size = BL2_HASH_SIZE,
+        .sw_type = "BL2",
+        .sw_version = {
+            image->protected_values.version.major,
+            image->protected_values.version.minor,
+            image->protected_values.version.revision,
+            image->protected_values.version.build_num,
+        },
+    };
+
+#ifdef TFM_BL1_PQ_CRYPTO
+    /* Get the public key hash as the signer ID */
+    if (pq_crypto_get_pub_key_hash(TFM_BL1_KEY_ROTPK_0, bl2_metadata.signer_id,
+                                   sizeof(bl2_metadata.signer_id),
+                                   &bl2_metadata.signer_id_size)) {
+        BL1_LOG("[WRN] Signer ID missing in measurement of BL2\r\n");
+    }
+#endif
+
+    /* Save the boot measurement of the BL2 image. */
+    if (boot_store_measurement(BOOT_MEASUREMENT_SLOT_BL2, computed_bl2_hash,
+                               BL2_HASH_SIZE, &bl2_metadata, true)) {
+        BL1_LOG("[WRN] Failed to store boot measurement of BL2\r\n");
+    }
+}
+#endif /* TFM_MEASURED_BOOT_API */
 
 #ifndef TFM_BL1_PQ_CRYPTO
 static fih_int image_hash_check(struct bl1_2_image_t *img)
 {
-    uint8_t computed_bl2_hash[BL2_HASH_SIZE];
+    enum tfm_plat_err_t plat_err;
     uint8_t stored_bl2_hash[BL2_HASH_SIZE];
     fih_int fih_rc = FIH_FAILURE;
 
-    FIH_CALL(bl1_sha256_compute, fih_rc, (uint8_t *)&img->protected_values,
-                                         sizeof(img->protected_values),
-                                         computed_bl2_hash);
+    plat_err = tfm_plat_otp_read(PLAT_OTP_ID_BL2_IMAGE_HASH, BL2_HASH_SIZE,
+                                 stored_bl2_hash);
+    fih_rc = fih_int_encode_zero_equality(plat_err);
     if (fih_not_eq(fih_rc, FIH_SUCCESS)) {
-        FIH_RET(fih_rc);
+        FIH_RET(FIH_FAILURE);
     }
 
-    FIH_CALL(bl1_otp_read_bl2_image_hash, fih_rc, stored_bl2_hash);
-    if (fih_not_eq(fih_rc, FIH_SUCCESS)) {
-        FIH_RET(fih_rc);
-    }
-
-    FIH_CALL(bl_secure_memeql, fih_rc, computed_bl2_hash, stored_bl2_hash,
-                                       BL2_HASH_SIZE);
+    FIH_CALL(bl_fih_memeql, fih_rc, computed_bl2_hash, stored_bl2_hash,
+                                    BL2_HASH_SIZE);
     FIH_RET(fih_rc);
 }
 #endif /* !TFM_BL1_PQ_CRYPTO */
@@ -52,9 +95,12 @@ static fih_int is_image_security_counter_valid(struct bl1_2_image_t *img)
 {
     uint32_t security_counter;
     fih_int fih_rc;
+    enum tfm_plat_err_t plat_err;
 
-    FIH_CALL(bl1_otp_read_nv_counter, fih_rc, BL1_NV_COUNTER_ID_BL2_IMAGE,
-                                          &security_counter);
+    plat_err = tfm_plat_read_nv_counter(PLAT_NV_COUNTER_BL1_0,
+                                        sizeof(security_counter),
+                                        (uint8_t *)&security_counter);
+    fih_rc = fih_int_encode_zero_equality(plat_err);
     if (fih_not_eq(fih_rc, FIH_SUCCESS)) {
         FIH_RET(FIH_FAILURE);
     }
@@ -69,11 +115,17 @@ static fih_int is_image_signature_valid(struct bl1_2_image_t *img)
 {
     fih_int fih_rc = FIH_FAILURE;
 
+    /* Calculate the image hash for measured boot and/or a hash-locked image */
+#if defined(TFM_MEASURED_BOOT_API) || !defined(TFM_BL1_PQ_CRYPTO)
+    FIH_CALL(bl1_sha256_compute, fih_rc, (uint8_t *)&img->protected_values,
+                                         sizeof(img->protected_values),
+                                         computed_bl2_hash);
+    if (fih_not_eq(fih_rc, FIH_SUCCESS)) {
+        FIH_RET(fih_rc);
+    }
+#endif
+
 #ifdef TFM_BL1_PQ_CRYPTO
-    #warning PQ crypto is experimental, and should not be used in production
-    BL1_LOG("\033[1;31m[WRN] ");
-    BL1_LOG("PQ crypto is experimental, and should not be used in production");
-    BL1_LOG("\033[0m\r\n");
     FIH_CALL(pq_crypto_verify, fih_rc, TFM_BL1_KEY_ROTPK_0,
                                        (uint8_t *)&img->protected_values,
                                        sizeof(img->protected_values),
@@ -89,9 +141,10 @@ static fih_int is_image_signature_valid(struct bl1_2_image_t *img)
     FIH_RET(fih_rc);
 }
 
-fih_int validate_image_at_addr(struct bl1_2_image_t *image)
+static fih_int validate_image_at_addr(struct bl1_2_image_t *image)
 {
     fih_int fih_rc = FIH_FAILURE;
+    enum tfm_plat_err_t plat_err;
 
     FIH_CALL(is_image_signature_valid, fih_rc, image);
     if (fih_not_eq(fih_rc, FIH_SUCCESS)) {
@@ -105,8 +158,9 @@ fih_int validate_image_at_addr(struct bl1_2_image_t *image)
     }
 
     /* TODO work out if the image actually boots before updating the counter */
-    FIH_CALL(bl1_otp_write_nv_counter, fih_rc, BL1_NV_COUNTER_ID_BL2_IMAGE,
-                                               image->protected_values.security_counter);
+    plat_err = tfm_plat_set_nv_counter(PLAT_NV_COUNTER_BL1_0,
+                                       image->protected_values.security_counter);
+    fih_rc = fih_int_encode_zero_equality(plat_err);
     if (fih_not_eq(fih_rc, FIH_SUCCESS)) {
         BL1_LOG("[ERR] NV counter update failed\r\n");
         FIH_RET(FIH_FAILURE);
@@ -115,12 +169,9 @@ fih_int validate_image_at_addr(struct bl1_2_image_t *image)
     FIH_RET(FIH_SUCCESS);
 }
 
-fih_int copy_and_decrypt_image(uint32_t image_id)
+static fih_int copy_and_decrypt_image(uint32_t image_id)
 {
     int rc;
-#ifdef TFM_BL1_MEMORY_MAPPED_FLASH
-    fih_int fih_rc;
-#endif /* TFM_BL1_MEMORY_MAPPED_FLASH */
     struct bl1_2_image_t *image_to_decrypt;
     struct bl1_2_image_t *image_after_decrypt =
         (struct bl1_2_image_t *)BL2_IMAGE_START;
@@ -139,10 +190,9 @@ fih_int copy_and_decrypt_image(uint32_t image_id)
     /* Copy everything that isn't encrypted, to prevent TOCTOU attacks and
      * simplify logic.
      */
-    FIH_CALL(bl_secure_memcpy, fih_rc, image_after_decrypt,
-                        image_to_decrypt,
-                        sizeof(struct bl1_2_image_t) -
-                        sizeof(image_after_decrypt->protected_values.encrypted_data));
+    memcpy(image_after_decrypt, image_to_decrypt,
+           sizeof(struct bl1_2_image_t) -
+           sizeof(image_after_decrypt->protected_values.encrypted_data));
 #else
     /* If the flash isn't memory-mapped, defer to the flash driver to copy the
      * entire block in to SRAM. We'll then do the decrypt in-place.
@@ -212,7 +262,6 @@ static fih_int validate_image(uint32_t image_id)
 
 int main(void)
 {
-    platform_code_is_bl1_2 = 1;
     fih_int fih_rc = FIH_FAILURE;
 
     fih_rc = fih_int_encode_zero_equality(boot_platform_init());
@@ -230,6 +279,11 @@ int main(void)
     run_bl1_2_testsuite();
 #endif /* TEST_BL1_2 */
 
+    fih_rc = fih_int_encode_zero_equality(boot_platform_pre_load(0));
+    if (fih_not_eq(fih_rc, FIH_SUCCESS)) {
+        FIH_PANIC;
+    }
+
     BL1_LOG("[INF] Attempting to boot image 0\r\n");
     FIH_CALL(validate_image, fih_rc, 0);
     if (fih_not_eq(fih_rc, FIH_SUCCESS)) {
@@ -239,6 +293,18 @@ int main(void)
             FIH_PANIC;
         }
     }
+
+    fih_rc = fih_int_encode_zero_equality(boot_platform_post_load(0));
+    if (fih_not_eq(fih_rc, FIH_SUCCESS)) {
+        FIH_PANIC;
+    }
+
+#ifdef TFM_MEASURED_BOOT_API
+    /* At this point there is a valid and decrypted BL2 image in the RAM at
+     * address BL2_IMAGE_START.
+     */
+    collect_boot_measurement((const struct bl1_2_image_t *)BL2_IMAGE_START);
+#endif /* TFM_MEASURED_BOOT_API */
 
     BL1_LOG("[INF] Jumping to BL2\r\n");
     boot_platform_quit((struct boot_arm_vector_table *)BL2_CODE_START);

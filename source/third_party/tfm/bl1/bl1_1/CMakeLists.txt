@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Copyright (c) 2021-2022, Arm Limited. All rights reserved.
+# Copyright (c) 2021-2023, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -29,22 +29,24 @@ target_link_options(bl1_1
 target_sources(bl1_1
     PRIVATE
         main.c
+        $<$<BOOL:${CONFIG_GNU_SYSCALL_STUB_ENABLED}>:${CMAKE_SOURCE_DIR}/platform/ext/common/syscalls_stub.c>
 )
 
 target_link_libraries(bl1_1
     PRIVATE
         bl1_1_lib
         bl1_1_shared_lib
-        platform_bl1
+        platform_bl1_1
         $<$<BOOL:${TEST_BL1_1}>:bl1_1_tests>
 )
 
 target_compile_definitions(bl1_1
     PRIVATE
         $<$<BOOL:${TEST_BL1_1}>:TEST_BL1_1>
+        $<$<AND:$<BOOL:${CONFIG_TFM_BOOT_STORE_MEASUREMENTS}>,$<NOT:$<BOOL:${CONFIG_TFM_BOOT_STORE_ENCODED_MEASUREMENTS}>>>:TFM_MEASURED_BOOT_API>
 )
 
-target_share_symbols(bl1_1 ${CMAKE_CURRENT_SOURCE_DIR}/bl1_1_shared_symbols.txt)
+target_share_symbols(bl1_1 ${BL1_SHARED_SYMBOLS_PATH})
 
 ################################################################################
 
@@ -84,26 +86,28 @@ add_custom_command(OUTPUT bl1_2_padded.bin bl1_2_padded_hash.bin
 
 ################################################################################
 
-add_custom_target(bl1_provisioning_bundle
-    ALL
-    SOURCES bl1_provisioning_bundle.bin
-)
+if (TFM_BL1_DEFAULT_PROVISIONING)
+    add_custom_target(bl1_provisioning_bundle
+        ALL
+        SOURCES bl1_provisioning_bundle.bin
+    )
 
-add_custom_command(OUTPUT bl1_provisioning_bundle.bin
-    DEPENDS ${TFM_BL2_ENCRYPTION_KEY_PATH}
-    DEPENDS ${TFM_GUK_PATH}
-    DEPENDS $<TARGET_FILE_DIR:bl1_2>/bl1_2_padded_hash.bin
-    DEPENDS $<TARGET_FILE_DIR:bl2>/bl2_signed_hash.bin
-    DEPENDS $<TARGET_FILE_DIR:bl1_2>/bl1_2_padded.bin
-    bl1_2_padded_bin bl2_signed_bin
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/create_provisioning_bundle.py
-    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/create_provisioning_bundle.py
-                    --bl2_encryption_key_input_file ${TFM_BL2_ENCRYPTION_KEY_PATH}
-                    --bl2_signing_key_input_file ${TFM_BL2_SIGNING_KEY_PATH}
-                    --guk_input_file ${TFM_GUK_PATH}
-                    --bl1_2_padded_hash_input_file $<TARGET_FILE_DIR:bl1_2>/bl1_2_padded_hash.bin
-                    --bl2_signed_hash_input_file $<TARGET_FILE_DIR:bl2>/bl2_signed_hash.bin
-                    --bl1_2_input_file $<TARGET_FILE_DIR:bl1_2>/bl1_2_padded.bin
-                    --bundle_output_file bl1_provisioning_bundle.bin
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/bl1_provisioning_bundle.bin $<TARGET_FILE_DIR:bl1_1>
-)
+    add_custom_command(OUTPUT bl1_provisioning_bundle.bin
+        DEPENDS ${TFM_BL2_ENCRYPTION_KEY_PATH}
+        DEPENDS ${TFM_GUK_PATH}
+        DEPENDS $<TARGET_FILE_DIR:bl1_2>/bl1_2_padded_hash.bin
+        DEPENDS $<TARGET_FILE_DIR:bl2>/bl2_signed_hash.bin
+        DEPENDS $<TARGET_FILE_DIR:bl1_2>/bl1_2_padded.bin
+        bl1_2_padded_bin bl2_signed_bin
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/create_provisioning_bundle.py
+        COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/create_provisioning_bundle.py
+                        --bl2_encryption_key_input_file ${TFM_BL2_ENCRYPTION_KEY_PATH}
+                        --bl2_signing_key_input_file ${TFM_BL2_SIGNING_KEY_PATH}
+                        --guk_input_file ${TFM_GUK_PATH}
+                        --bl1_2_padded_hash_input_file $<TARGET_FILE_DIR:bl1_2>/bl1_2_padded_hash.bin
+                        --bl2_signed_hash_input_file $<TARGET_FILE_DIR:bl2>/bl2_signed_hash.bin
+                        --bl1_2_input_file $<TARGET_FILE_DIR:bl1_2>/bl1_2_padded.bin
+                        --bundle_output_file bl1_provisioning_bundle.bin
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/bl1_provisioning_bundle.bin $<TARGET_FILE_DIR:bl1_1>
+    )
+endif()

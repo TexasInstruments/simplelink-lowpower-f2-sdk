@@ -39,11 +39,11 @@ The external flash also contains a factory backup image to revert to in case of 
 > The [Example Usage](#ExampleUsage) section of this document explains how to use the user interface, although both the button presses and the UART perform the
 > same actions.
 
-* `CONFIG_GPIO_RLED` - Turns on after the sensor connects to the collector.
-* `CONFIG_GPIO_BTN1` - Press to initialize the sensor application.
-* `CONFIG_GPIO_BTN2` - Press to disassociate from the network.
+* `CONFIG_LED_RED` - Turns on after the sensor connects to the collector.
+* `CONFIG_BTN_LEFT` - Press to initialize the sensor application.
+* `CONFIG_BTN_RIGHT` - Press to disassociate from the network.
 
-> If `CONFIG_GPIO_BTN2` is held while power is applied to the Launchpad, NV Flash will be erased.
+> To erase NV flash, Hold `CONFIG_BTN_RIGHT` down, then press and release the reset button. Wait a second then release BTN-2. You should see a CUI message indicating NV erase. If BTN-2 is not held down constantly during the boot process the NVS flash will not be erased.
 
 ## <a name="Resources&JumperSettings"></a>Resources & Jumper Settings
 
@@ -393,7 +393,7 @@ The OAD protocol supports multiple OAD images by using an Image ID that is sent 
 
 ## <a name="RevertingtoFactoryImage"></a>Reverting to Factory Image
 
-When the LEFT Button (`CONFIG_GPIO_BTN1`) is held down and a reset occurs (RESET Button or cord unplug/plug in), the user application will enter into the `OAD_markSwitch` function. This invalidates the currently running application image itself as a bootable image and performs a soft reset of the device. This will cause the BIM to boot up like normal. However, the BIM will detect that the user application image is no longer valid. This will cause the BIM to copy the current Factory Image that is stored in External Flash to Internal Flash and perform a soft reset. Now when the BIM boots up again, the current running image (Factory Image) will be valid and the BIM will let the current image to start execution.
+When the LEFT Button (`CONFIG_BTN_LEFT`) is held down and a reset occurs (RESET Button or cord unplug/plug in), the user application will enter into the `OAD_markSwitch` function. This invalidates the currently running application image itself as a bootable image and performs a soft reset of the device. This will cause the BIM to boot up like normal. However, the BIM will detect that the user application image is no longer valid. This will cause the BIM to copy the current Factory Image that is stored in External Flash to Internal Flash and perform a soft reset. Now when the BIM boots up again, the current running image (Factory Image) will be valid and the BIM will let the current image to start execution.
 
 In order for this functionality to be useful however, one first needs to have a Factory Image saved into External Flash. Luckily, when the BIM boots up and there is no current Factory Image and the current internal image is valid, a copy of the current internal image will be made effectively creating a backup of the current image. This is useful, but will not provide any special functionality other than redundancy. Instead you can first flash the LP with a BLE Simple Peripheral OAD application and BIM so that it creates a backup of that image. Then using BLE OAD send the Sensor 15.4 Image to the LP. Now, whenever you want, you can switch to the Factory Image and upgrade to any image you want.
 

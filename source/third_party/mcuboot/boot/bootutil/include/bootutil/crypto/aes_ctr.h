@@ -12,20 +12,25 @@
 
 #include <string.h>
 
-#include "mcuboot_config/mcuboot_config.h"
+#include "mcuboot_config.h"
 
 #if (defined(MCUBOOT_USE_MBED_TLS) + \
-     defined(MCUBOOT_USE_TINYCRYPT)) != 1
-    #error "One crypto backend must be defined: either MBED_TLS or TINYCRYPT"
+     defined(MCUBOOT_USE_TINYCRYPT) + \
+     defined(MCUBOOT_USE_TI_CRYPTO)) != 1
+    #error "One crypto backend must be defined: either MBED_TLS, TI_CRYPTO, or TINYCRYPT"
 #endif
 
 #if defined(MCUBOOT_USE_MBED_TLS)
     #include <mbedtls/aes.h>
-    #define BOOTUTIL_CRYPTO_AES_CTR_KEY_SIZE (16)
+    #include "bootutil/enc_key_public.h"
+    #define BOOTUTIL_CRYPTO_AES_CTR_KEY_SIZE BOOT_ENC_KEY_SIZE
     #define BOOTUTIL_CRYPTO_AES_CTR_BLOCK_SIZE (16)
 #endif /* MCUBOOT_USE_MBED_TLS */
 
 #if defined(MCUBOOT_USE_TINYCRYPT)
+    #if defined(MCUBOOT_AES_256)
+        #error "Cannot use AES-256 for encryption with Tinycrypt library."
+    #endif
     #include <string.h>
     #include <tinycrypt/aes.h>
     #include <tinycrypt/ctr_mode.h>
@@ -33,6 +38,7 @@
     #define BOOTUTIL_CRYPTO_AES_CTR_KEY_SIZE TC_AES_KEY_SIZE
     #define BOOTUTIL_CRYPTO_AES_CTR_BLOCK_SIZE TC_AES_BLOCK_SIZE
 #endif /* MCUBOOT_USE_TINYCRYPT */
+
 
 #include <stdint.h>
 
@@ -114,6 +120,43 @@ static inline int bootutil_aes_ctr_decrypt(bootutil_aes_ctr_context *ctx, uint8_
     return _bootutil_aes_ctr_crypt(ctx, counter, c, clen, blk_off, m);
 }
 #endif /* MCUBOOT_USE_TINYCRYPT */
+
+#if defined(MCUBOOT_USE_TI_CRYPTO)
+#include "ti-crypto/sl_crypto.h"
+typedef void* bootutil_aes_ctr_context;
+#define BOOTUTIL_CRYPTO_AES_CTR_KEY_SIZE (16)
+#define BOOTUTIL_CRYPTO_AES_CTR_BLOCK_SIZE (16)
+static inline void bootutil_aes_ctr_init(bootutil_aes_ctr_context *ctx)
+{
+    SlCrypto_aesctr_init();
+}
+
+static inline void bootutil_aes_ctr_drop(bootutil_aes_ctr_context *ctx)
+{
+    SlCrypto_aesctr_drop();
+}
+
+static inline int bootutil_aes_ctr_set_key(bootutil_aes_ctr_context *ctx, const uint8_t *k)
+{
+    return SlCrypto_aesctr_setKey(k);
+}
+
+static inline int bootutil_aes_ctr_encrypt(bootutil_aes_ctr_context *ctx, uint8_t *counter, const uint8_t *m, uint32_t mlen, size_t blk_off, uint8_t *c)
+{
+    return SlCrypto_aesctr_encrypt(counter, m, mlen, blk_off, c);
+    //uint8_t stream_block[BOOTUTIL_CRYPTO_AES_CTR_BLOCK_SIZE];
+    //return mbedtls_aes_crypt_ctr(ctx, mlen, &blk_off, counter, stream_block, m, c);
+
+}
+
+static inline int bootutil_aes_ctr_decrypt(bootutil_aes_ctr_context *ctx, uint8_t *counter, const uint8_t *c, uint32_t clen, size_t blk_off, uint8_t *m)
+{
+    return SlCrypto_aesctr_decrypt(counter, c, clen, blk_off, m);
+    //uint8_t stream_block[BOOTUTIL_CRYPTO_AES_CTR_BLOCK_SIZE];
+    //return mbedtls_aes_crypt_ctr(ctx, clen, &blk_off, counter, stream_block, c, m);
+}
+
+#endif /* MCUBOOT_USE_TI_CRYPTO */
 
 #ifdef __cplusplus
 }

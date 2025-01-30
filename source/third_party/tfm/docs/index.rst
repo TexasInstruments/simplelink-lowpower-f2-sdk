@@ -106,6 +106,9 @@ Trusted Firmware-M Documentation
     :hidden:
     :caption: Links
 
+    TF-M Tests <https://trustedfirmware-m.readthedocs.io/projects/tf-m-tests/en/latest/>
+    TF-M Tools <https://trustedfirmware-m.readthedocs.io/projects/tf-m-tools/en/latest/>
+    TF-M Extras <https://trustedfirmware-m.readthedocs.io/projects/tf-m-extras/en/latest/>
     API Reference <https://ci.trustedfirmware.org/job/tf-m-build-docs-nightly/lastSuccessfulBuild/artifact/trusted-firmware-m/build/docs/reference_manual/html/index.html>
     Security Center <https://developer.trustedfirmware.org/w/collaboration/security_center>
     PSA <https://www.arm.com/architecture/security-features/platform-security>

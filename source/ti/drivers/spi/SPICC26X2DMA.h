@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2023, Texas Instruments Incorporated
+ * Copyright (c) 2015-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -215,9 +215,7 @@
  *  9-16 bits | uint16_t            |
  *
  *  ## Bit Rate ##
- *  When the SPI is configured as SPI peripheral, the maximum bit rate is 4MHz.
- *
- *  When the SPI is configured as SPI controller, the maximum bit rate is 12MHz.
+ *  Maximum bit rate is 4MHz for both peripheral and controller modes.
  *
  *
  *  ## UDMA #

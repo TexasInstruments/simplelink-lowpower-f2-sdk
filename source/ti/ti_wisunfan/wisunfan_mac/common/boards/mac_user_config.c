@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -345,7 +345,7 @@ void rfSelect(uint16_t phyId)
 
 /* CC1312R1 Configuration */
 #if defined(LAUNCHXL_CC1312R1) || defined(LP_CC1312R7) \
-    || defined (LP_EM_CC1314R10) || defined(LP_EM_CC1312PSIP)
+    || defined (LP_EM_CC1314R10) || defined (LP_CC1314R10_RGZ) || defined(LP_EM_CC1312PSIP)
 #if defined(COPROCESSOR)
 void rfSelect(uint16_t phyId)
 {

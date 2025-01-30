@@ -552,21 +552,35 @@ static int32_t Flash_EraseSector(uint32_t addr)
 #if defined (__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U)
   if (is_range_secure(&ARM_FLASH0_DEV, addr, 4))
   {
+#if defined(STM32H573xx)
+    EraseInit.TypeErase = FLASH_TYPEERASE_SECTORS;
+#else
     EraseInit.TypeErase = FLASH_TYPEERASE_PAGES;
+#endif
   }
   else
-    EraseInit.TypeErase = FLASH_TYPEERASE_PAGES_NS;
+#if defined(STM32H573xx)
+    EraseInit.TypeErase = FLASH_TYPEERASE_SECTORS_NS;
 #else
-  EraseInit.TypeErase = FLASH_TYPEERASE_PAGES;
+    EraseInit.TypeErase = FLASH_TYPEERASE_PAGES_NS;
+#endif
+#else
+    EraseInit.TypeErase = FLASH_TYPEERASE_PAGES;
 #endif /* defined (__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U) */
   /*  fix me assume dual bank, reading DBANK in OPTR in Flash init is better */
   /*  flash size in  DB256K in OPTR */
   EraseInit.Banks = bank_number(&ARM_FLASH0_DEV, addr);
 
-  EraseInit.NbPages = FLASH0_SECTOR_SIZE / FLASH_PAGE_SIZE;
-
-  EraseInit.Page = page_number(&ARM_FLASH0_DEV, addr);
-
+#if defined(STM32H573xx)
+    EraseInit.NbSectors = FLASH0_SECTOR_SIZE / FLASH_SECTOR_SIZE;
+#else
+    EraseInit.NbPages = FLASH0_SECTOR_SIZE / FLASH_PAGE_SIZE;
+#endif
+#if defined(STM32H573xx)
+    EraseInit.Sector = page_number(&ARM_FLASH0_DEV, addr);
+#else
+    EraseInit.Page = page_number(&ARM_FLASH0_DEV, addr);
+#endif
   ARM_FLASH0_STATUS.error = DRIVER_STATUS_NO_ERROR;
   HAL_FLASH_Unlock();
   ARM_FLASH0_STATUS.busy = DRIVER_STATUS_BUSY;
@@ -678,6 +692,22 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t __get_LR(void)
 /**/
 #endif /*__ARMCC_VERSION */
 
+#if defined (STM32H573xx)
+void NMI_Handler(void)
+{
+  if (__HAL_FLASH_GET_FLAG(FLASH_FLAG_ECCD))
+  {
+    __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ECCD);
+    /* Memorize error to ignore the read value */
+    DoubleECC_Error_Counter++;
+  }
+  else
+  {
+    /* This exception occurs for another reason than flash double ECC errors */
+    while (1U);
+  }
+}
+#else
 void NMI_Handler(void)
 {
   uint32_t *p_sp;
@@ -736,4 +766,4 @@ void NMI_Handler(void)
     while (1U);
   }
 }
-
+#endif /*STM32H573xx*/

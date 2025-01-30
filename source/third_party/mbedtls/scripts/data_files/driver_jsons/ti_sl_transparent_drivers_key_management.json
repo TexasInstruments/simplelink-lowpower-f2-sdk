@@ -1,0 +1,15 @@
+{
+    "prefix":       "ti_sl",
+    "type":         "transparent",
+    "mbedtls/h_condition":   "defined(ENABLE_TI_SL_MBEDTLS_PSA_DRIVER)",
+    "headers":      ["ti_sl_transparent_driver_entrypoints.h",
+                     "ti_sl_transparent_builtin_key_support.h"],
+    "capabilities": [
+        {
+            "mbedtls/c_condition": "defined(ENABLE_TI_SL_MBEDTLS_PSA_DRIVER)",
+            "_comment": "This is not the complete list of entry points supported by this driver, only those that are currently supported in JSON. See docs/psa-driver-example-and-guide.md",
+            "entry_points": ["import_key", "export_public_key", "get_builtin_key"],
+            "fallback": false
+        }
+    ]
+}

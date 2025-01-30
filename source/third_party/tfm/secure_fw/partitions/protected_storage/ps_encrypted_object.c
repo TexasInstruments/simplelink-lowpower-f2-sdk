@@ -32,21 +32,13 @@
                              PS_TAG_LEN_BYTES : PS_IV_LEN_BYTES)
 #define PS_CRYPTO_BUF_LEN (PS_MAX_ENCRYPTED_OBJ_SIZE + PS_TAG_IV_LEN_MAX)
 
-static uint8_t ps_crypto_buf[PS_CRYPTO_BUF_LEN];
-
-static psa_status_t fill_key_label(struct ps_object_t *obj, size_t *length)
+static psa_status_t fill_key_label(struct ps_object_t *obj, uint8_t *label)
 {
     psa_storage_uid_t uid = obj->header.crypto.ref.uid;
     int32_t client_id = obj->header.crypto.ref.client_id;
 
-    if (PS_CRYPTO_BUF_LEN < (sizeof(client_id) + sizeof(uid))) {
-        return PSA_ERROR_BUFFER_TOO_SMALL;
-    }
-
-    memcpy(ps_crypto_buf, &client_id, sizeof(client_id));
-    memcpy(ps_crypto_buf + sizeof(client_id), &uid, sizeof(uid));
-
-    *length = sizeof(client_id) + sizeof(uid);
+    memcpy(label, &client_id, sizeof(client_id));
+    memcpy(label + sizeof(client_id), &uid, sizeof(uid));
 
     return PSA_SUCCESS;
 }
@@ -70,19 +62,18 @@ static psa_status_t ps_object_auth_decrypt(uint32_t fid,
 {
     psa_status_t err;
     uint8_t *p_obj_data = (uint8_t *)&obj->header.info;
-    size_t out_len, label_length;
+    size_t out_len;
+    uint8_t label[sizeof(int32_t) + sizeof(psa_storage_uid_t)];
 
-    err = fill_key_label(obj, &label_length);
+    err = fill_key_label(obj, label);
     if (err != PSA_SUCCESS) {
         return err;
     }
 
-    err = ps_crypto_setkey(ps_crypto_buf, label_length);
+    err = ps_crypto_setkey(label, sizeof(label));
     if (err != PSA_SUCCESS) {
         return err;
     }
-
-    (void)memcpy(ps_crypto_buf, p_obj_data, cur_size);
 
     /* Use File ID as a part of the associated data to authenticate
      * the object in the FS. The tag will be stored in the object table and
@@ -92,7 +83,7 @@ static psa_status_t ps_object_auth_decrypt(uint32_t fid,
     err = ps_crypto_auth_and_decrypt(&obj->header.crypto,
                                      (const uint8_t *)&fid,
                                      sizeof(fid),
-                                     ps_crypto_buf,
+                                     p_obj_data,
                                      cur_size,
                                      p_obj_data,
                                      sizeof(*obj) - sizeof(obj->header.crypto),
@@ -122,14 +113,15 @@ static psa_status_t ps_object_auth_encrypt(uint32_t fid,
 {
     psa_status_t err;
     uint8_t *p_obj_data = (uint8_t *)&obj->header.info;
-    size_t out_len, label_length;
+    size_t out_len;
+    uint8_t label[sizeof(int32_t) + sizeof(psa_storage_uid_t)];
 
-    err = fill_key_label(obj, &label_length);
+    err = fill_key_label(obj, label);
     if (err != PSA_SUCCESS) {
         return err;
     }
 
-    err = ps_crypto_setkey(ps_crypto_buf, label_length);
+    err = ps_crypto_setkey(label, sizeof(label));
     if (err != PSA_SUCCESS) {
         return err;
     }
@@ -150,15 +142,13 @@ static psa_status_t ps_object_auth_encrypt(uint32_t fid,
                                     sizeof(fid),
                                     p_obj_data,
                                     cur_size,
-                                    ps_crypto_buf,
-                                    sizeof(ps_crypto_buf),
+                                    (uint8_t *)&obj->header.info,
+                                    PS_CRYPTO_BUF_LEN,
                                     &out_len);
     if (err != PSA_SUCCESS || out_len != cur_size) {
         (void)ps_crypto_destroykey();
         return PSA_ERROR_GENERIC_ERROR;
     }
-
-    (void)memcpy(p_obj_data, ps_crypto_buf, cur_size);
 
     return ps_crypto_destroykey();
 }
@@ -175,12 +165,9 @@ psa_status_t ps_encrypted_object_read(uint32_t fid, struct ps_object_t *obj)
      * In the psa_its_get, the buffer size is not checked. Check the buffer size
      * here.
      */
-    if (sizeof(ps_crypto_buf) < PS_MAX_ENCRYPTED_OBJ_SIZE + PS_IV_LEN_BYTES) {
-        return PSA_ERROR_GENERIC_ERROR;
-    }
     err = psa_its_get(fid, PS_OBJECT_START_POSITION,
                       PS_MAX_ENCRYPTED_OBJ_SIZE + PS_IV_LEN_BYTES,
-                      (void *)ps_crypto_buf,
+                      (void *)obj->header.crypto.ref.iv,
                       &data_length);
     if (err != PSA_SUCCESS) {
         return err;
@@ -192,10 +179,6 @@ psa_status_t ps_encrypted_object_read(uint32_t fid, struct ps_object_t *obj)
      * skip the padding byte.
      */
     decrypt_size = data_length - sizeof(obj->header.crypto.ref.iv);
-    memcpy(&obj->header.info, ps_crypto_buf, decrypt_size);
-    memcpy(obj->header.crypto.ref.iv,
-           ps_crypto_buf + decrypt_size,
-           sizeof(obj->header.crypto.ref.iv));
 
     /* Decrypt the object data */
     err = ps_object_auth_decrypt(fid, decrypt_size, obj);
@@ -224,14 +207,11 @@ psa_status_t ps_encrypted_object_write(uint32_t fid, struct ps_object_t *obj)
      * Toolchains may add padding byte after iv array in crypto.ref structure.
      * The padding byte shall not be written into the storage area.
      */
-    (void)memcpy(ps_crypto_buf + wrt_size,
-                     obj->header.crypto.ref.iv,
-                     sizeof(obj->header.crypto.ref.iv));
     wrt_size += sizeof(obj->header.crypto.ref.iv);
 
     /* Write the encrypted object to the persistent area. The tag values is not
      * copied as it is stored in the object table.
      */
-    return psa_its_set(fid, wrt_size, (const void *)ps_crypto_buf,
+    return psa_its_set(fid, wrt_size, (const void *)obj->header.crypto.ref.iv,
                        PSA_STORAGE_FLAG_NONE);
 }

@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -555,10 +555,12 @@ void Ssf_init(void *sem)
     gRightButtonHandle = Button_open(CONFIG_BTN_RIGHT, &bparams);
 
     // Read button state
+    bool nvErased = false;
     if (!GPIO_read(((Button_HWAttrs*)gRightButtonHandle->hwAttrs)->gpioIndex))
     {
         /* Right key is pressed on power up, clear all NV */
         Ssf_clearAllNVItems();
+        nvErased = true;
     }
     // Set button callback
     Button_setCallback(gRightButtonHandle, processKeyChangeCallback);
@@ -642,6 +644,9 @@ void Ssf_init(void *sem)
 #else
     CUI_statusLinePrintf(ssfCuiHndl, sensorStatusLine, "Starting");
 #endif
+    if (nvErased) {
+        CUI_statusLinePrintf(ssfCuiHndl, sensorStatusLine, "NV cleared");
+    }
 #endif /* CUI_DISABLE */
 
 #if defined(USE_DMM) && defined(BLOCK_MODE_TEST) && !defined(CUI_DISABLE)

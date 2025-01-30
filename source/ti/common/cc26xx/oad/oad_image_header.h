@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2017-2024, Texas Instruments Incorporated
+ Copyright (c) 2017-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -319,7 +319,7 @@ extern uint32_t _sign_fnPtr;     //!< Variable for Pointer to BIM Function
 
 
 /** @} End OAD_WIRELESS_TECH */
-
+#ifndef OAD_IMG_ID_VAL
 #if defined(DeviceFamily_CC26X2) || defined (DeviceFamily_CC26X2_V2) || \
     defined(DeviceFamily_CC26X2X7) || defined(DeviceFamily_CC26X1)
   #define OAD_IMG_ID_VAL                    {'C', 'C', '2', '6', 'x', '2', 'R', '1'}
@@ -353,7 +353,8 @@ extern uint32_t _sign_fnPtr;     //!< Variable for Pointer to BIM Function
   #define OAD_IMG_ID_VAL
 #else
   #error "Unknown Device Family"
-#endif //DeviceFamily_CC26X2
+#endif // DeviceFamily_CC26X2
+#endif // OAD_IMG_ID_VAL
 
 /*!
  * Magic number used by entries in the image header table at the beginning of

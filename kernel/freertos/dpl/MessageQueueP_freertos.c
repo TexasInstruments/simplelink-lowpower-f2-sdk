@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Texas Instruments Incorporated
+ * Copyright (c) 2023-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -127,8 +127,6 @@ MessageQueueP_Status MessageQueueP_pend(MessageQueueP_Handle handle, void *messa
             status = xQueueReceive((QueueHandle_t)handle, message, ticks);
         }
     }
-
-    configASSERT(status == pdPASS);
 
     return status == pdPASS ? MessageQueueP_OK : MessageQueueP_TIMEOUT;
 }

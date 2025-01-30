@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2024, Texas Instruments Incorporated
+ Copyright (c) 2013-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -684,11 +684,6 @@ static uint8 processICallLL(uint16 opCode, ICall_CmdMsg *msg_ptr,
       stat = HCI_EXT_SetTxPowerCmd(msg_ptr->hciParams.param1);
       break;
 
-    case HCI_EXT_SET_TX_POWER_DBM:
-      stat = HCI_EXT_SetTxPowerDbmCmd(msg_ptr->hciParams.param1,
-                                      msg_ptr->hciParams.param2);
-      break;
-
 #if defined(CTRL_CONFIG) && ((CTRL_CONFIG & ADV_CONN_CFG) || (CTRL_CONFIG & INIT_CFG))
     case HCI_EXT_ONE_PKT_PER_EVT:
       //stat = HCI_EXT_OnePktPerEvtCmd(msg_ptr->hciExtOnePktPerEvt.control);
@@ -748,11 +743,6 @@ static uint8 processICallLL(uint16 opCode, ICall_CmdMsg *msg_ptr,
 
     case HCI_EXT_SET_MAX_DTM_TX_POWER:
       stat = HCI_EXT_SetMaxDtmTxPowerCmd(msg_ptr->hciParams.param1);
-      break;
-
-    case HCI_EXT_SET_MAX_DTM_TX_POWER_DBM:
-      stat = HCI_EXT_SetMaxDtmTxPowerDbmCmd(msg_ptr->hciParams.param1,
-                                            msg_ptr->hciParams.param2);
       break;
 
 #if defined(CTRL_CONFIG) && ((CTRL_CONFIG & ADV_CONN_CFG) || (CTRL_CONFIG & INIT_CFG))

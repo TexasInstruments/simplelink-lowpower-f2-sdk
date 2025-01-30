@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2021 Nordic Semiconductor ASA
  *
- * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+ * SPDX-License-Identifier: BSD-3-Clause
  */
 
 /** @file
@@ -20,7 +20,6 @@
 
 #include <limits.h>
 #include <stdint.h>
-#include <tfm_api.h>
 #include <tfm_platform_api.h>
 
 /* Include core IOCTL services */

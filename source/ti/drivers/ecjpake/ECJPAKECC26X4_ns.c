@@ -228,10 +228,10 @@ ECJPAKE_Handle ECJPAKE_open(uint_least8_t index, const ECJPAKE_Params *params)
         ecjpakeObject_ns[index].semaphoreTimeout = (params->returnBehavior == ECJPAKE_RETURN_BEHAVIOR_BLOCKING)
                                                        ? params->timeout
                                                        : SemaphoreP_NO_WAIT;
-    }
 
-    /* Set power dependency - i.e. power up and enable clock for PKA */
-    (void)Power_setDependency(PowerCC26X2_PERIPH_PKA);
+        /* Set power dependency - i.e. power up and enable clock for PKA */
+        (void)Power_setDependency(PowerCC26X2_PERIPH_PKA);
+    }
 
     return handle;
 }
@@ -303,10 +303,10 @@ ECJPAKE_Handle ECJPAKE_construct(ECJPAKE_Config *config, const ECJPAKE_Params *p
         ecjpakeObject_ns[index].semaphoreTimeout = (params->returnBehavior == ECJPAKE_RETURN_BEHAVIOR_BLOCKING)
                                                        ? params->timeout
                                                        : SemaphoreP_NO_WAIT;
-    }
 
-    /* Set power dependency - i.e. power up and enable clock for PKA */
-    (void)Power_setDependency(PowerCC26X2_PERIPH_PKA);
+        /* Set power dependency - i.e. power up and enable clock for PKA */
+        (void)Power_setDependency(PowerCC26X2_PERIPH_PKA);
+    }
 
     return handle;
 }

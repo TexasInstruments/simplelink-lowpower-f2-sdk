@@ -1,6 +1,6 @@
 %%{
 /*
- * Copyright (c) 2018-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -81,17 +81,20 @@ SPI`driver`DMA_Object spi`driver`DMAObjects[`countDef`];
 /*
  * ======== spi`driver`DMA uDMA Table Entries  ========
  */
+% const peripheralNames = [];
 % for (let i = 0; i < instances.length; i++) {
     % let inst = instances[i];
     % let spi = inst.spi;
     % let name = spi.$solution.peripheralName;
     % /* Get the index of the SPI instance by extracting the last character */
     % let spiIndex = name.slice(name.length - 1);
-ALLOCATE_CONTROL_TABLE_ENTRY(dmaSpi`spiIndex`TxControlTableEntry, UDMA_CHAN_`name`_TX);
-ALLOCATE_CONTROL_TABLE_ENTRY(dmaSpi`spiIndex`RxControlTableEntry, UDMA_CHAN_`name`_RX);
-ALLOCATE_CONTROL_TABLE_ENTRY(dmaSpi`spiIndex`TxAltControlTableEntry, (UDMA_CHAN_`name`_TX | UDMA_ALT_SELECT));
-ALLOCATE_CONTROL_TABLE_ENTRY(dmaSpi`spiIndex`RxAltControlTableEntry, (UDMA_CHAN_`name`_RX | UDMA_ALT_SELECT));
-
+    % if (!peripheralNames.includes(name)) {
+        % peripheralNames.push(name);
+        ALLOCATE_CONTROL_TABLE_ENTRY(dmaSpi`spiIndex`TxControlTableEntry, UDMA_CHAN_`name`_TX);
+        ALLOCATE_CONTROL_TABLE_ENTRY(dmaSpi`spiIndex`RxControlTableEntry, UDMA_CHAN_`name`_RX);
+        ALLOCATE_CONTROL_TABLE_ENTRY(dmaSpi`spiIndex`TxAltControlTableEntry, (UDMA_CHAN_`name`_TX | UDMA_ALT_SELECT));
+        ALLOCATE_CONTROL_TABLE_ENTRY(dmaSpi`spiIndex`RxAltControlTableEntry, (UDMA_CHAN_`name`_RX | UDMA_ALT_SELECT));
+    %}
 %}
 
 /*

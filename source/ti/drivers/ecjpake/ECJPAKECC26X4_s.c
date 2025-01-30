@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,9 +42,7 @@
 
 #include <ti/drivers/tfm/SecureCallback.h>
 
-#include <psa_manifest/crypto_sp.h> /* Auto-generated header */
-
-#include <third_party/tfm/interface/include/tfm_api.h>
+#include <third_party/tfm/secure_fw/spm/core/spm.h>
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
 #include <third_party/tfm/secure_fw/spm/include/utilities.h>
@@ -465,34 +463,6 @@ static inline void ECJPAKE_s_releaseConfig(ECJPAKE_Handle nsHandle)
 }
 
 /*
- *  ======== ECJPAKE_s_copyCryptoKey ========
- *  secureKey: secure destination to copy non-secure key
- *  secureOpKey: pointer to key in secure operational struct (source to copy
- *               non-secure key from)
- */
-static psa_status_t ECJPAKE_s_copyCryptoKey(CryptoKey *secureKey, CryptoKey **secureOpKey)
-{
-    /* Validate key struct address range */
-    if (cmse_has_unpriv_nonsecure_read_access(*secureOpKey, sizeof(CryptoKey)) == NULL)
-    {
-        return PSA_ERROR_PROGRAMMER_ERROR;
-    }
-
-    /* Make a secure copy of the key */
-    (void)spm_memcpy(secureKey, *secureOpKey, sizeof(CryptoKey));
-
-    if (CryptoKey_verifySecureInputKey(secureKey) != CryptoKey_STATUS_SUCCESS)
-    {
-        return PSA_ERROR_PROGRAMMER_ERROR;
-    }
-
-    /* Update the secure operational struct to point to secure key copy */
-    *secureOpKey = secureKey;
-
-    return PSA_SUCCESS;
-}
-
-/*
  *  ======== ECJPAKE_s_copyRoundOneGenKeyOp ========
  */
 static inline psa_status_t ECJPAKE_s_copyRoundOneGenKeyOp(ECJPAKE_OperationRoundOneGenerateKeys *secureOperation,
@@ -500,7 +470,7 @@ static inline psa_status_t ECJPAKE_s_copyRoundOneGenKeyOp(ECJPAKE_OperationRound
                                                           const ECJPAKE_OperationRoundOneGenerateKeys *operation)
 {
     const ECCParams_CurveParams *curveParams_s;
-    psa_status_t status;
+    int_fast16_t status;
 
     /* Validate operation struct address range */
     if (cmse_has_unpriv_nonsecure_read_access((void *)operation, sizeof(ECJPAKE_OperationRoundOneGenerateKeys)) == NULL)
@@ -524,52 +494,52 @@ static inline psa_status_t ECJPAKE_s_copyRoundOneGenKeyOp(ECJPAKE_OperationRound
     /* Make a secure copy of all key structs and update the operation struct to
      * point to the secure key copy.
      */
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->myPrivateKey1, &secureOperation->myPrivateKey1);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureInputKey(&secureKeys->myPrivateKey1, &secureOperation->myPrivateKey1);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->myPrivateKey2, &secureOperation->myPrivateKey2);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureInputKey(&secureKeys->myPrivateKey2, &secureOperation->myPrivateKey2);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->myPublicKey1, &secureOperation->myPublicKey1);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureOutputKey(&secureKeys->myPublicKey1, &secureOperation->myPublicKey1);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->myPublicKey2, &secureOperation->myPublicKey2);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureOutputKey(&secureKeys->myPublicKey2, &secureOperation->myPublicKey2);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->myPrivateV1, &secureOperation->myPrivateV1);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureInputKey(&secureKeys->myPrivateV1, &secureOperation->myPrivateV1);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->myPrivateV2, &secureOperation->myPrivateV2);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureInputKey(&secureKeys->myPrivateV2, &secureOperation->myPrivateV2);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->myPublicV1, &secureOperation->myPublicV1);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureOutputKey(&secureKeys->myPublicV1, &secureOperation->myPublicV1);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->myPublicV2, &secureOperation->myPublicV2);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureOutputKey(&secureKeys->myPublicV2, &secureOperation->myPublicV2);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
     return PSA_SUCCESS;
@@ -583,7 +553,7 @@ static inline psa_status_t ECJPAKE_s_copyGenerateZKPOperation(ECJPAKE_OperationG
                                                               const ECJPAKE_OperationGenerateZKP *operation)
 {
     const ECCParams_CurveParams *curveParams_s;
-    psa_status_t status;
+    int_fast16_t status;
 
     /* Validate operation struct address range */
     if (cmse_has_unpriv_nonsecure_read_access((void *)operation, sizeof(ECJPAKE_OperationGenerateZKP)) == NULL)
@@ -617,18 +587,18 @@ static inline psa_status_t ECJPAKE_s_copyGenerateZKPOperation(ECJPAKE_OperationG
     }
 
     /* Make a secure copy of all key structs and update the operation struct to
-     * point to the secure key copy. Casts required since keys are const data.
+     * point to the secure key copy.
      */
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->myPrivateKey, (CryptoKey **)&secureOperation->myPrivateKey);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureInputKey(&secureKeys->myPrivateKey, &secureOperation->myPrivateKey);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->myPrivateV, (CryptoKey **)&secureOperation->myPrivateV);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureInputKey(&secureKeys->myPrivateV, &secureOperation->myPrivateV);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
     return PSA_SUCCESS;
@@ -642,7 +612,7 @@ static inline psa_status_t ECJPAKE_s_copyVerifyZKPOperation(ECJPAKE_OperationVer
                                                             const ECJPAKE_OperationVerifyZKP *operation)
 {
     const ECCParams_CurveParams *curveParams_s;
-    psa_status_t status;
+    int_fast16_t status;
 
     /* Validate operation struct address range */
     if (cmse_has_unpriv_nonsecure_read_access((void *)operation, sizeof(ECJPAKE_OperationVerifyZKP)) == NULL)
@@ -680,28 +650,27 @@ static inline psa_status_t ECJPAKE_s_copyVerifyZKPOperation(ECJPAKE_OperationVer
      */
 
     /* theirGenerator may be NULL in which case default generator point from
-     * the curve is used and there is no crypto key to copy. Casts required
-     * since keys are const data.
+     * the curve is used and there is no crypto key to copy.
      */
     if (secureOperation->theirGenerator != NULL)
     {
-        status = ECJPAKE_s_copyCryptoKey(&secureKeys->theirGenerator, (CryptoKey **)&secureOperation->theirGenerator);
+        status = CryptoKey_copySecureInputKey(&secureKeys->theirGenerator, &secureOperation->theirGenerator);
         if (status != PSA_SUCCESS)
         {
             return status;
         }
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->theirPublicKey, (CryptoKey **)&secureOperation->theirPublicKey);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureInputKey(&secureKeys->theirPublicKey, &secureOperation->theirPublicKey);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->theirPublicV, (CryptoKey **)&secureOperation->theirPublicV);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureInputKey(&secureKeys->theirPublicV, &secureOperation->theirPublicV);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
     return PSA_SUCCESS;
@@ -715,7 +684,7 @@ static inline psa_status_t ECJPAKE_s_copyRoundTwoGenKeyOp(ECJPAKE_OperationRound
                                                           const ECJPAKE_OperationRoundTwoGenerateKeys *operation)
 {
     const ECCParams_CurveParams *curveParams_s;
-    psa_status_t status;
+    int_fast16_t status;
 
     /* Validate operation struct address range */
     if (cmse_has_unpriv_nonsecure_read_access((void *)operation, sizeof(ECJPAKE_OperationRoundTwoGenerateKeys)) == NULL)
@@ -737,79 +706,78 @@ static inline psa_status_t ECJPAKE_s_copyRoundTwoGenKeyOp(ECJPAKE_OperationRound
     secureOperation->curve = curveParams_s;
 
     /* Make a secure copy of all key structs and update the operation struct to
-     * point to the secure key copy. Casts required for input keys since they
-     * are const data.
+     * point to the secure key copy.
      */
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->myPrivateKey2, (CryptoKey **)&secureOperation->myPrivateKey2);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureInputKey(&secureKeys->myPrivateKey2, &secureOperation->myPrivateKey2);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->myPublicKey1, (CryptoKey **)&secureOperation->myPublicKey1);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureInputKey(&secureKeys->myPublicKey1, &secureOperation->myPublicKey1);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->myPublicKey2, (CryptoKey **)&secureOperation->myPublicKey2);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureInputKey(&secureKeys->myPublicKey2, &secureOperation->myPublicKey2);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->theirPublicKey1, (CryptoKey **)&secureOperation->theirPublicKey1);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureInputKey(&secureKeys->theirPublicKey1, &secureOperation->theirPublicKey1);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->theirPublicKey2, (CryptoKey **)&secureOperation->theirPublicKey2);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureInputKey(&secureKeys->theirPublicKey2, &secureOperation->theirPublicKey2);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->preSharedSecret, (CryptoKey **)&secureOperation->preSharedSecret);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureInputKey(&secureKeys->preSharedSecret, &secureOperation->preSharedSecret);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->theirNewGenerator, &secureOperation->theirNewGenerator);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureOutputKey(&secureKeys->theirNewGenerator, &secureOperation->theirNewGenerator);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->myNewGenerator, &secureOperation->myNewGenerator);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureOutputKey(&secureKeys->myNewGenerator, &secureOperation->myNewGenerator);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->myCombinedPrivateKey, &secureOperation->myCombinedPrivateKey);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureOutputKey(&secureKeys->myCombinedPrivateKey, &secureOperation->myCombinedPrivateKey);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->myCombinedPublicKey, &secureOperation->myCombinedPublicKey);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureOutputKey(&secureKeys->myCombinedPublicKey, &secureOperation->myCombinedPublicKey);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->myPrivateV, &secureOperation->myPrivateV);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureInputKey(&secureKeys->myPrivateV, &secureOperation->myPrivateV);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->myPublicV, &secureOperation->myPublicV);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureOutputKey(&secureKeys->myPublicV, &secureOperation->myPublicV);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
     return PSA_SUCCESS;
@@ -823,7 +791,7 @@ static inline psa_status_t ECJPAKE_s_copyComputeSharedSecretOp(ECJPAKE_Operation
                                                                const ECJPAKE_OperationComputeSharedSecret *operation)
 {
     const ECCParams_CurveParams *curveParams_s;
-    psa_status_t status;
+    int_fast16_t status;
 
     /* Validate operation struct address range */
     if (cmse_has_unpriv_nonsecure_read_access((void *)operation, sizeof(ECJPAKE_OperationComputeSharedSecret)) == NULL)
@@ -845,39 +813,37 @@ static inline psa_status_t ECJPAKE_s_copyComputeSharedSecretOp(ECJPAKE_Operation
     secureOperation->curve = curveParams_s;
 
     /* Make a secure copy of all key structs and update the operation struct to
-     * point to the secure key copy. Casts required for input keys since they
-     * are const data.
+     * point to the secure key copy.
      */
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->myCombinedPrivateKey,
-                                     (CryptoKey **)&secureOperation->myCombinedPrivateKey);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureInputKey(&secureKeys->myCombinedPrivateKey, &secureOperation->myCombinedPrivateKey);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->theirCombinedPublicKey,
-                                     (CryptoKey **)&secureOperation->theirCombinedPublicKey);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureInputKey(&secureKeys->theirCombinedPublicKey,
+                                          &secureOperation->theirCombinedPublicKey);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->theirPublicKey2, (CryptoKey **)&secureOperation->theirPublicKey2);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureInputKey(&secureKeys->theirPublicKey2, &secureOperation->theirPublicKey2);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->myPrivateKey2, (CryptoKey **)&secureOperation->myPrivateKey2);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureInputKey(&secureKeys->myPrivateKey2, &secureOperation->myPrivateKey2);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    status = ECJPAKE_s_copyCryptoKey(&secureKeys->sharedSecret, &secureOperation->sharedSecret);
-    if (status != PSA_SUCCESS)
+    status = CryptoKey_copySecureOutputKey(&secureKeys->sharedSecret, &secureOperation->sharedSecret);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
-        return status;
+        return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
     return PSA_SUCCESS;
@@ -1058,7 +1024,7 @@ static inline psa_status_t ECJPAKE_s_construct(psa_msg_t *msg)
             configPtr_s->object = NULL;
         }
     }
-    else if (TFM_CLIENT_ID_IS_S(msg->client_id))
+    else if (!TFM_CLIENT_ID_IS_NS(msg->client_id))
     {
         /* Return the pointer to the secure config struct provided by the
          * secure caller.
@@ -1467,7 +1433,7 @@ static inline psa_status_t ECJPAKE_s_cancelOperation(psa_msg_t *msg)
     int_fast16_t ret;
 
     /* Cancellation is only supported for non-secure clients */
-    if (TFM_CLIENT_ID_IS_S(msg->client_id))
+    if (!TFM_CLIENT_ID_IS_NS(msg->client_id))
     {
         return PSA_ERROR_PROGRAMMER_ERROR;
     }

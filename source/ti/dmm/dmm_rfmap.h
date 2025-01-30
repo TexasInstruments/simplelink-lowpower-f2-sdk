@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -65,6 +65,7 @@ extern "C" {
 #include <dmm/dmm_scheduler.h>
 
 #define RF_open             DMMSch_rfOpen
+#define RF_close            DMMSch_rfClose
 #define RF_postCmd          DMMSch_rfPostCmd
 #define RF_runCmd           DMMSch_rfRunCmd
 #define RF_scheduleCmd      DMMSch_rfScheduleCmd

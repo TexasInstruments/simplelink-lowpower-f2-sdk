@@ -22,12 +22,6 @@
 #error "No backend selected, check configurations."
 #endif
 
-/**
- * The signal number for the Secure Partition thread message and reply in IPC
- * mode.
- */
-#define TFM_IPC_REPLY_SIGNAL     (0x00000002u)
-
 /*
  * Runtime model-specific component initialization routine. This
  * is an `assuredly` function, would panic if any error occurred.
@@ -43,8 +37,7 @@ void backend_init_comp_assuredly(struct partition_t *p_pt,
 uint32_t backend_system_run(void);
 
 /* Runtime model-specific message handling mechanism. */
-psa_status_t backend_messaging(struct service_t *p_serv,
-                               struct connection_t *handle);
+psa_status_t backend_messaging(struct connection_t *p_connection);
 
 /*
  * Runtime model-specific message replying.
@@ -60,7 +53,7 @@ psa_signal_t backend_wait_signals(struct partition_t *p_pt, psa_signal_t signals
 /**
  * \brief Set the asserted signal pattern in current partition.
  */
-uint32_t backend_assert_signal(struct partition_t *p_pt, psa_signal_t signal);
+psa_status_t backend_assert_signal(struct partition_t *p_pt, psa_signal_t signal);
 
 /* The component list, and a MACRO indicate this is not a common global. */
 extern struct partition_head_t partition_listhead;

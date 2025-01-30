@@ -98,7 +98,7 @@ CCFGRead_DIS_GPRAM( void )
 //! \return Value of CCFG field CCFG_EXT_LF_CLK_DIO
 //
 //*****************************************************************************
-__STATIC_INLINE bool
+__STATIC_INLINE uint32_t
 CCFGRead_EXT_LF_CLK_DIO( void )
 {
     return (( HWREG( CCFG_BASE + CCFG_O_EXT_LF_CLK ) &

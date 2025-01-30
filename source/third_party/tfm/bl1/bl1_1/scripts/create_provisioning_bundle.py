@@ -52,6 +52,7 @@ if args.bl2_signing_key_input_file:
 else:
     bl1_rotpk_0 = bytes(56)
 
+bl1_2_image_len = len(bl1_2).to_bytes(4, byteorder='little')
 
 bundle = struct_pack([
     int("0xC0DEFEED", 16).to_bytes(4, 'little'),
@@ -60,6 +61,7 @@ bundle = struct_pack([
     bl1_2_padded_hash,
     bl2_signed_hash,
     bl1_2,
+    bl1_2_image_len,
     bl1_rotpk_0
 ])
 

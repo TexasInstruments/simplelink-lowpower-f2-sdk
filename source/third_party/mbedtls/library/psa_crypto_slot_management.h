@@ -222,10 +222,6 @@ psa_status_t psa_validate_key_persistence(psa_key_lifetime_t lifetime);
  */
 int psa_is_valid_key_id(mbedtls_svc_key_id_t key, int vendor_ok);
 
-/* TI-MBEDTLS: Exposed this function to help get plaintext keys on the secure side 
- *             This function was also added to this header to avoid build warnings
- *             related to no previous prototype. 
- */
 /** Get the description of a key given its identifier and policy constraints
  *  and lock it.
  *
@@ -239,7 +235,8 @@ int psa_is_valid_key_id(mbedtls_svc_key_id_t key, int vendor_ok);
  * On success, the returned key slot is locked. It is the responsibility of
  * the caller to unlock the key slot when it does not access it anymore.
  */
- psa_status_t psa_get_and_lock_key_slot_with_policy(
+/* TI-MBEDTLS: Exposed this function to help get plaintext keys on the secure side */
+psa_status_t psa_get_and_lock_key_slot_with_policy(
     mbedtls_svc_key_id_t key,
     psa_key_slot_t **p_slot,
     psa_key_usage_t usage,

@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2024, Texas Instruments Incorporated
+ Copyright (c) 2009-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -214,11 +214,11 @@ typedef struct
   ugapBcastAdvDoneCb_t      pfnAdvDoneCB;     //!< Notification of Adv event done
 } ugapBcastCBs_t;
 
-PACKED_TYPEDEF_STRUCT {
+typedef struct {
   ugapBcastState_t state; //!< new state
 } ugapBcastMsgStateChange_t; //!< Message payload for the event @ref UGB_EVT_STATE_CHANGE
 
-PACKED_TYPEDEF_STRUCT {
+typedef struct {
   bStatus_t      status; //!< advertising post process status
 } ugapBcastMsgAdvPostprocess_t; //!< Message payload for the event @ref UGB_EVT_ADV_POSTPROCESS
 
@@ -272,17 +272,17 @@ typedef struct
   ugapObserverScanWindowCompleteCb_t  pfnScanWindowCompleteCB; //!< Notification of scan window complete
 } ugapObserverScanCBs_t;
 
-PACKED_TYPEDEF_STRUCT {
+typedef struct {
   ugapObserverScan_State_t state; //!< new state
 } ugapObserverMsgStateChange_t; //!< Message payload for the event @ref UGAP_OBSERVER_EVT_STATE_CHANGE
 
-PACKED_TYPEDEF_STRUCT {
+typedef struct {
   bStatus_t status; //!< scan indication process status
   uint8_t len; //!< Rx payload length
   uint8_t *pPayload; //!< pointer to Rx payload
 } ugapObserverMsgScanIndication_t; //!< Message payload for the event @ref UGAP_OBSERVER_EVT_SCAN_INDICATION
 
-PACKED_TYPEDEF_STRUCT {
+typedef struct {
   bStatus_t status; //!< scan complete process status
 } ugapObserverMsgScanWindowComplete_t; //!< Message payload for the event @ref UGAP_OBSERVER_EVT_SCAN_WINDOW_COMPLETE
 
@@ -338,18 +338,18 @@ typedef struct
   ugapMonitorCompleteCb_t     pfnMonitorCompleteCB; //!< Notification of monitoring scan complete
 } ugapMonitorCBs_t;
 
-PACKED_TYPEDEF_STRUCT {
+typedef struct {
   ugapMonitorState_t state; //!< new state
 } ugapMsgStateChange_t; //!< Message payload for the event @ref UGAP_MONITOR_EVT_STATE_CHANGE
 
-PACKED_TYPEDEF_STRUCT {
+typedef struct {
   bStatus_t status; //!< monitor indication process status
   uint8_t sessionId; //!< monitor session ID
   uint8_t len; //!< Rx payload length
   uint8_t *pPayload; //!< pointer to Rx payload
 } ugapMsgMonitorIndication_t; //!< Message payload for the event @ref UGAP_MONITOR_EVT_MONITOR_INDICATION
 
-PACKED_TYPEDEF_STRUCT {
+typedef struct {
   bStatus_t status; //!< monitoring scan complete process status
   uint8_t sessionId; //!< monitor session ID
 } ugapMsgMonitorComplete_t; //!< Message payload for the event @ref UGAP_MONITOR_EVT_MONITOR_COMPLETE

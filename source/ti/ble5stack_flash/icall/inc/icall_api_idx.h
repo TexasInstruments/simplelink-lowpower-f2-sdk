@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -218,7 +218,6 @@
 /* HCI Extended API */
 /********************/
 #define IDX_HCI_EXT_SetTxPowerCmd                        HCI_EXT_SetTxPowerCmd
-#define IDX_HCI_EXT_SetTxPowerDbmCmd                     HCI_EXT_SetTxPowerDbmCmd
 #define IDX_HCI_EXT_OnePktPerEvtCmd                      HCI_EXT_OnePktPerEvtCmd
 #define IDX_HCI_EXT_DecryptCmd                           HCI_EXT_DecryptCmd
 #define IDX_HCI_EXT_SetLocalSupportedFeaturesCmd         HCI_EXT_SetLocalSupportedFeaturesCmd
@@ -235,7 +234,6 @@
 #define IDX_HCI_EXT_SetSCACmd                            HCI_EXT_SetSCACmd
 #define IDX_HCI_EXT_EnablePTMCmd                         HCI_EXT_EnablePTMCmd
 #define IDX_HCI_EXT_SetMaxDtmTxPowerCmd                  HCI_EXT_SetMaxDtmTxPowerCmd
-#define IDX_HCI_EXT_SetMaxDtmTxPowerDbmCmd               HCI_EXT_SetMaxDtmTxPowerDbmCmd
 #define IDX_HCI_EXT_DisconnectImmedCmd                   HCI_EXT_DisconnectImmedCmd
 #define IDX_HCI_EXT_PacketErrorRateCmd                   HCI_EXT_PacketErrorRateCmd
 #define IDX_HCI_EXT_PERbyChanCmd                         HCI_EXT_PERbyChanCmd

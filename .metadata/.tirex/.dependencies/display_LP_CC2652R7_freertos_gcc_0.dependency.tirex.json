@@ -8,6 +8,7 @@
             "+../../README.html -> README.html",
             "+../main_freertos.c -> main_freertos.c",
             "+../display.syscfg -> display.syscfg",
+            "+../../syscall_stubs.c -> syscall_stubs.c",
             "+../../../../../../../source/ti/boards/LP_CC2652R7/Board.html -> Board.html",
             "+cc13x2x7_cc26x2x7_freertos.lds -> cc13x2x7_cc26x2x7_freertos.lds"
         ]

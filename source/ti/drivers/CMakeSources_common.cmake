@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.21.3)
 
 set(SOURCES_COMMON
-    apps/LED.c
     apps/Button.c
+    apps/LED.c
     utils/List.c
     utils/Math.c
-    utils/RingBuf.c
     utils/Random.c
+    utils/RingBuf.c
     utils/StructRingBuf.c
 )

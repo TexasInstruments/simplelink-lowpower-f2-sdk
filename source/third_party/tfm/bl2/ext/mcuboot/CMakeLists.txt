@@ -1,5 +1,5 @@
 #------------------------------------------------------------------------------
-# Copyright (c) 2020-2022, Arm Limited. All rights reserved.
+# Copyright (c) 2020-2023, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -85,6 +85,59 @@ configure_file(include/mcuboot_config/mcuboot_config.h.in
 
 if (PLATFORM_DEFAULT_IMAGE_SIGNING)
     find_package(Python3)
+    if(MCUBOOT_GENERATE_SIGNING_KEYPAIR)
+        string(REGEX MATCH "[0-9]*$" SIG_LEN ${MCUBOOT_SIGNATURE_TYPE})
+        add_custom_target(generated_private_key
+            SOURCES
+                generated_private_key_s.pem
+                generated_private_key_ns.pem
+        )
+
+        add_custom_command(OUTPUT generated_private_key_s.pem
+            COMMAND ${Python3_EXECUTABLE} ${MCUBOOT_PATH}/scripts/imgtool.py
+                keygen
+                -k generated_private_key_s.pem
+                -t rsa-${SIG_LEN}
+            COMMAND ${CMAKE_COMMAND} -E copy generated_private_key_s.pem $<TARGET_FILE_DIR:bl2>
+        )
+        add_custom_command(OUTPUT generated_private_key_ns.pem
+            COMMAND ${Python3_EXECUTABLE} ${MCUBOOT_PATH}/scripts/imgtool.py
+                keygen
+                -k generated_private_key_ns.pem
+                -t rsa-${SIG_LEN}
+            COMMAND ${CMAKE_COMMAND} -E copy generated_private_key_ns.pem $<TARGET_FILE_DIR:bl2>
+        )
+        set(MCUBOOT_KEY_S $<TARGET_FILE_DIR:bl2>/generated_private_key_s.pem CACHE FILEPATH "" FORCE)
+        set(MCUBOOT_KEY_NS $<TARGET_FILE_DIR:bl2>/generated_private_key_ns.pem CACHE FILEPATH "" FORCE)
+    endif()
+
+    add_custom_target(public_key ALL
+        SOURCES
+            image_s_signing_public_key.pem
+            image_ns_signing_public_key.pem
+    )
+    add_custom_command(OUTPUT image_s_signing_public_key.pem
+        # If MCUBOOT_GENERATE_SIGNING_KEYPAIR=ON then the command should depend on that
+        # to make sure that the key is generated and copied to the MCUBOOT_KEY_S path.
+        DEPENDS $<IF:$<BOOL:${MCUBOOT_GENERATE_SIGNING_KEYPAIR}>,generated_private_key,>
+        COMMAND ${Python3_EXECUTABLE} ${MCUBOOT_PATH}/scripts/imgtool.py
+            getpub
+            -k ${MCUBOOT_KEY_S}
+            -e pem
+            -o image_s_signing_public_key.pem
+        COMMAND ${CMAKE_COMMAND} -E copy image_s_signing_public_key.pem $<TARGET_FILE_DIR:bl2>
+    )
+    add_custom_command(OUTPUT image_ns_signing_public_key.pem
+        # If MCUBOOT_GENERATE_SIGNING_KEYPAIR=ON then the command should depend on that
+        # to make sure that the key is generated and copied to the MCUBOOT_KEY_NS path.
+        DEPENDS $<IF:$<BOOL:${MCUBOOT_GENERATE_SIGNING_KEYPAIR}>,generated_private_key,>
+        COMMAND ${Python3_EXECUTABLE} ${MCUBOOT_PATH}/scripts/imgtool.py
+            getpub
+            -k ${MCUBOOT_KEY_NS}
+            -e pem
+            -o image_ns_signing_public_key.pem
+        COMMAND ${CMAKE_COMMAND} -E copy image_ns_signing_public_key.pem $<TARGET_FILE_DIR:bl2>
+    )
 
     set(IMAGE_TYPE "S_IMAGE")
     set(FLASH_AREA_NUM ${MCUBOOT_S_IMAGE_FLASH_AREA_NUM})
@@ -115,31 +168,13 @@ if (PLATFORM_DEFAULT_IMAGE_SIGNING)
             platform_bl2
     )
 
-    if(NS)
-        add_custom_target(tfm_s_ns_bin
-            SOURCES tfm_s_ns.bin
-        )
-        add_custom_command(OUTPUT tfm_s_ns.bin
-            DEPENDS $<TARGET_FILE_DIR:tfm_s>/tfm_s.bin
-            DEPENDS $<TARGET_FILE_DIR:tfm_ns>/tfm_ns.bin
-            DEPENDS tfm_s_bin tfm_ns_bin
-            DEPENDS signing_layout_s
-
-            COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/assemble.py
-                --layout $<TARGET_OBJECTS:signing_layout_s>
-                -s $<TARGET_FILE_DIR:tfm_s>/tfm_s.bin
-                -n $<TARGET_FILE_DIR:tfm_ns>/tfm_ns.bin
-                -o tfm_s_ns.bin
-            COMMAND ${CMAKE_COMMAND} -E copy tfm_s_ns.bin $<TARGET_FILE_DIR:bl2>
-        )
-    endif()
-
     add_custom_target(tfm_s_signed_bin
         SOURCES tfm_s_signed.bin
     )
     add_custom_command(OUTPUT tfm_s_signed.bin
         DEPENDS $<TARGET_FILE_DIR:tfm_s>/tfm_s.bin
         DEPENDS tfm_s_bin signing_layout_s
+        DEPENDS $<IF:$<BOOL:${MCUBOOT_GENERATE_SIGNING_KEYPAIR}>,generated_private_key,>
         WORKING_DIRECTORY ${MCUBOOT_PATH}/scripts
 
         #Sign secure binary image with provided secret key
@@ -186,89 +221,9 @@ if (PLATFORM_DEFAULT_IMAGE_SIGNING)
             platform_bl2
     )
 
-    if(NS)
-        add_custom_target(tfm_ns_signed_bin
-            SOURCES tfm_ns_signed.bin
-        )
-        add_custom_command(OUTPUT tfm_ns_signed.bin
-            DEPENDS $<TARGET_FILE_DIR:tfm_ns>/tfm_ns.bin
-            DEPENDS tfm_ns_bin signing_layout_ns
-            WORKING_DIRECTORY ${MCUBOOT_PATH}/scripts
-
-            #Sign non-secure binary image with provided secret key
-            COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/wrapper/wrapper.py
-                -v ${MCUBOOT_IMAGE_VERSION_NS}
-                --layout $<TARGET_OBJECTS:signing_layout_ns>
-                -k ${MCUBOOT_KEY_NS}
-                --public-key-format $<IF:$<BOOL:${MCUBOOT_HW_KEY}>,full,hash>
-                --align ${MCUBOOT_ALIGN_VAL}
-                --pad
-                --pad-header
-                -H ${BL2_HEADER_SIZE}
-                -s ${MCUBOOT_SECURITY_COUNTER_NS}
-                -L ${MCUBOOT_ENC_KEY_LEN}
-                -d \"\(0, ${MCUBOOT_S_IMAGE_MIN_VER}\)\"
-                $<TARGET_FILE_DIR:tfm_ns>/tfm_ns.bin
-                $<$<STREQUAL:${MCUBOOT_UPGRADE_STRATEGY},OVERWRITE_ONLY>:--overwrite-only>
-                $<$<BOOL:${MCUBOOT_CONFIRM_IMAGE}>:--confirm>
-                $<$<BOOL:${MCUBOOT_ENC_IMAGES}>:-E${MCUBOOT_KEY_ENC}>
-                $<$<BOOL:${MCUBOOT_MEASURED_BOOT}>:--measured-boot-record>
-                ${CMAKE_CURRENT_BINARY_DIR}/tfm_ns_signed.bin
-            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/tfm_ns_signed.bin $<TARGET_FILE_DIR:bl2>
-        )
-    endif()
-
-    if(NS)
-        add_custom_target(tfm_s_ns_signed_bin
-            SOURCES tfm_s_ns_signed.bin
-        )
-        if (MCUBOOT_IMAGE_NUMBER GREATER 1)
-            add_custom_command(OUTPUT tfm_s_ns_signed.bin
-                DEPENDS tfm_s_signed_bin $<TARGET_FILE_DIR:tfm_s>/tfm_s.bin
-                DEPENDS tfm_ns_signed_bin $<TARGET_FILE_DIR:tfm_ns>/tfm_ns.bin
-                DEPENDS signing_layout_s
-
-                # Create concatenated binary image from the two independently signed
-                # binary file. This only uses the local assemble.py script (not from
-                # upstream mcuboot) because that script is geared towards zephyr
-                # support
-                COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/assemble.py
-                    --layout $<TARGET_OBJECTS:signing_layout_s>
-                    -s $<TARGET_FILE_DIR:bl2>/tfm_s_signed.bin
-                    -n $<TARGET_FILE_DIR:bl2>/tfm_ns_signed.bin
-                    -o tfm_s_ns_signed.bin
-                COMMAND ${CMAKE_COMMAND} -E copy tfm_s_ns_signed.bin $<TARGET_FILE_DIR:bl2>
-            )
-        else()
-            add_custom_command(OUTPUT tfm_s_ns_signed.bin
-                WORKING_DIRECTORY ${MCUBOOT_PATH}/scripts
-                DEPENDS tfm_s_ns_bin tfm_s_ns.bin
-                DEPENDS signing_layout_s
-
-            COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/wrapper/wrapper.py
-                -v ${MCUBOOT_IMAGE_VERSION_S}
-                --layout $<TARGET_OBJECTS:signing_layout_s>
-                -k ${MCUBOOT_KEY_S}
-                --public-key-format $<IF:$<BOOL:${MCUBOOT_HW_KEY}>,full,hash>
-                --align ${MCUBOOT_ALIGN_VAL}
-                --pad
-                --pad-header
-                -H ${BL2_HEADER_SIZE}
-                -s ${MCUBOOT_SECURITY_COUNTER_S}
-                -L ${MCUBOOT_ENC_KEY_LEN}
-                $<$<STREQUAL:${MCUBOOT_UPGRADE_STRATEGY},OVERWRITE_ONLY>:--overwrite-only>
-                $<$<BOOL:${MCUBOOT_CONFIRM_IMAGE}>:--confirm>
-                $<$<BOOL:${MCUBOOT_ENC_IMAGES}>:-E${MCUBOOT_KEY_ENC}>
-                $<$<BOOL:${MCUBOOT_MEASURED_BOOT}>:--measured-boot-record>
-                ${CMAKE_CURRENT_BINARY_DIR}/tfm_s_ns.bin
-                ${CMAKE_CURRENT_BINARY_DIR}/tfm_s_ns_signed.bin
-            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/tfm_s_ns_signed.bin $<TARGET_FILE_DIR:bl2>
-            )
-        endif()
-    endif()
-
     add_custom_target(signed_images
         ALL
-        DEPENDS $<IF:$<BOOL:${NS}>,tfm_s_ns_signed_bin,tfm_s_signed_bin>
+        DEPENDS tfm_s_signed_bin
     )
+
 endif()

@@ -68,6 +68,10 @@ for (let i in clusters) {
       }
     }
   }
+  if (tempServerCommandOptions.length == 0) {
+    rcocrServerAlwaysHidden.push(cluster._id + "rcocrServer");
+    tempServerCommandOptions.push({name: "dummy", displayName: "dummy"});
+  }
   rcocrModule.config.push({
     name: cluster._id + "rcocrServer",
     displayName: cluster._name + " Server Commands Received",
@@ -79,7 +83,6 @@ for (let i in clusters) {
     minSelections: 0
   })
   rcocrServerDropDowns.push(cluster._id + "rcocrServer");
-  if (tempServerCommandOptions.length == 0) { rcocrServerAlwaysHidden.push(cluster._id + "rcocrServer"); }
 
   let tempClientCommandOptions = [];
   if (cluster.client && cluster.client.command) {
@@ -89,6 +92,10 @@ for (let i in clusters) {
         tempClientCommandOptions.push({name: command._id, displayName: command._name});
       }
     }
+  }
+  if (tempClientCommandOptions.length == 0) {
+    rcocrClientAlwaysHidden.push(cluster._id + "rcocrClient");
+    tempClientCommandOptions.push({name: "dummy", displayName: "dummy"});
   }
   rcocrModule.config.push({
     name: cluster._id + "rcocrClient",
@@ -101,7 +108,6 @@ for (let i in clusters) {
     minSelections: 0
   })
   rcocrClientDropDowns.push(cluster._id + "rcocrClient");
-  if (tempClientCommandOptions.length == 0) { rcocrClientAlwaysHidden.push(cluster._id + "rcocrClient"); }
 }
 
 /* Function to handle changes in the recommended server clusters */

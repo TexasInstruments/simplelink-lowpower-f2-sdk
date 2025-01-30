@@ -155,6 +155,7 @@ ti_sysbios_knl_TaskSupport_glueUnpriv:
 @ function address on the stack so the attacker's code is
 @ executed in privileged mode
         svc     #0              @ Enter priv mode
+        .align 2
         ldr     r0, ti_sysbios_knl_Task_exit
         bx      r0
 ti_sysbios_knl_Task_exit:

@@ -16,6 +16,8 @@ if (NOT DEFINED MTB_PDL_CAT1_LIB_S_TARGET)
     set(MTB_PDL_CAT1_LIB_S_TARGET mtb-pdl-cat1_lib_s)
 endif()
 
+include(${CMAKE_CURRENT_LIST_DIR}/../fetch_lib.cmake)
+
 ########################## MTB_PDL_CAT1_LIB_S ######################################
 
 add_library(${MTB_PDL_CAT1_LIB_S_TARGET} STATIC)

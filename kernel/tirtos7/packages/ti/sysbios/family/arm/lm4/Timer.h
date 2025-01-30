@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2020-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -217,7 +217,7 @@ struct Timer_Struct {
      * milliseconds, etc.
      */
     Types_FreqHz extFreq;
-    Hwi_Handle hwi;    
+    Hwi_Handle hwi;
     /*!
      * @brief Previous threshold count value.
      */
@@ -343,14 +343,14 @@ extern void Timer_Params_init(Timer_Params *);
 
 /*!
  * @brief Returns number of timer peripherals on the platform.
- * 
+ *
  *@retval Number of timer peripherals.
  */
 extern unsigned int Timer_getNumTimers(void);
 
 /*!
  * @brief Returns timer status (free or in use).
- * 
+ *
  *@retval timer status
  */
 extern Timer_Status Timer_getStatus(unsigned int id);
@@ -519,14 +519,14 @@ extern bool Timer_setPeriodMicroSecs(Timer_Handle instp, uint32_t microsecs);
 
 /*!
  * @brief Get timer period in timer counts
- * 
+ *
  *@retval period in timer counts
  */
 extern uint32_t Timer_getPeriod(Timer_Handle instp);
 
 /*!
  * @brief Read timer counter register
- * 
+ *
  *@retval timer counter value
  */
 extern uint32_t Timer_getCount(Timer_Handle instp);
@@ -546,7 +546,7 @@ extern void Timer_getFreq(Timer_Handle instp, Types_FreqHz *freq);
  * @brief Get Timer function and arg
  *
  * @param arg pointer for returning Timer's function argument
- * 
+ *
  *@retval Timer's function
  */
 extern Timer_FuncPtr Timer_getFunc(Timer_Handle instp, uintptr_t *arg);
@@ -586,7 +586,7 @@ extern void Timer_trigger(Timer_Handle instp, uint32_t cycles);
  * exclusively by TimestampProvider.
  *
  * Must be called with interrupts disabled.
- * 
+ *
  *@retval expired counts.
  */
 extern uint32_t Timer_getExpiredCounts(Timer_Handle instp);
@@ -600,7 +600,7 @@ extern uint32_t Timer_getExpiredCounts(Timer_Handle instp);
  * only by the Clock module, when using TickMode_DYNAMIC.
  *
  * Must be called with interrupts disabled.
- * 
+ *
  *@retval expired ticks.
  */
 extern uint32_t Timer_getExpiredTicks(Timer_Handle instp, uint32_t tickPeriod);
@@ -615,7 +615,7 @@ extern uint32_t Timer_getExpiredTicks(Timer_Handle instp, uint32_t tickPeriod);
  * for later use by setNextTick();
  *
  * @param save true = save internal representation of currentTick
- * 
+ *
  *@retval tick number.
  */
 extern uint32_t Timer_getCurrentTick(Timer_Handle instp, bool save);
@@ -627,7 +627,7 @@ extern uint32_t Timer_getCurrentTick(Timer_Handle instp, bool save);
  * exclusively by TimestampProvider.
  *
  * Must be called with interrupts disabled.
- * 
+ *
  *@retval expired counts.
  */
 extern uint64_t Timer_getExpiredCounts64(Timer_Object *timer);
@@ -636,7 +636,7 @@ extern uint64_t Timer_getExpiredCounts64(Timer_Object *timer);
  * @brief Get Handle associated with a timer id.
  *
  * @param id timer Id.
- * 
+ *
  *@retval timer Handle
  */
 extern Timer_Handle Timer_getHandle(unsigned int id);
@@ -654,8 +654,6 @@ extern bool Timer_masterDisable(void);
 extern void Timer_masterEnable(void);
 extern void Timer_enableTiva(int id);
 extern void Timer_disableTiva(int id);
-extern void Timer_enableCC3200(int id);
-extern void Timer_disableCC3200(int id);
 extern void Timer_enableCC26xx(int id);
 extern void Timer_disableCC26xx(int id);
 extern void Timer_init(void);

@@ -18,7 +18,7 @@
 #include <stdint.h>
 #include "bootutil_priv.h"
 #include "bootutil/security_cnt.h"
-#include "flash_map_backend/flash_map_backend.h"
+#include "flash_map_backend.h"
 
 #ifdef MCUBOOT_HW_ROLLBACK_PROT
 

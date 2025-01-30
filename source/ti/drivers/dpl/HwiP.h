@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2022, Texas Instruments Incorporated
+ * Copyright (c) 2015-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,8 +34,8 @@
  *
  *  @brief      Hardware Interrupt module for the RTOS Porting Interface
  *
- *  The ::HwiP_disable/::HwiP_restore APIs can be called recursively. The order
- *  of the HwiP_restore calls, must be in reversed order. For example:
+ *  The #HwiP_disable()/#HwiP_restore() APIs can be called recursively. The
+ *  order of the #HwiP_restore() calls, must be in reversed order. For example:
  *  @code
  *  uintptr_t key1, key2;
  *  key1 = HwiP_disable();
@@ -43,6 +43,94 @@
  *  HwiP_restore(key2);
  *  HwiP_restore(key1);
  *  @endcode
+ *
+ *  @anchor ti_drivers_HwiP_Cross_Platform_Considerations
+ *  ## Cross-platform Considerations ##
+ *  The following sections highlight some important items to consider when
+ *  using the HwiP DPL. Due to the nature and intention of different operating
+ *  systems, the HwiP DPL implementation may differ depending on the underlying
+ *  platform and operating system.
+ *
+ *  ### Arm Cortex-M Interrupt Priorities ###
+ *  On Arm Cortex-M platforms, the highest logical interrupt priority has the
+ *  lowest numerical value. That is, 0 is the highest interrupt priority
+ *  (interrupt level 0 has the highest urgency). The number of interrupt
+ *  priorities is given by the number of interrupt priority bits implemented,
+ *  which is vendor-specific.
+ *
+ *  For example:
+ *
+ *  | Device Family | Architecture | Priority Bits | Priority Levels |
+ *  |---------------|--------------|---------------|-----------------|
+ *  | CC23X0        | Armv6-m      | 2             | 4 (0-3)         |
+ *  | CC13X2_CC26X2 | Armv7-m      | 3             | 8 (0-7)         |
+ *  | CC13X4_CC26X4 | Armv8-m      | 3             | 8 (0-7)         |
+ *  | CC27XX        | Armv8-m      | 4             | 16 (0-15)       |
+ *
+ *  On Arm Cortex-M platforms, interrupt priority values are stored in the most
+ *  significant bits of the 8-bit interrupt priority registers. For example,
+ *  with 3 interrupt priority bits implemented, interrupt priority level 2
+ *  (0b010) is represented in the interrupt priority registers as
+ *  0b010 << (8-3) = 0x40.
+ *  This is automatically handled by SysConfig, but may cause some confusion,
+ *  for example, when inspecting the raw value of the #HwiP_Params.priority
+ *  field or the Cortex-M interrupt priority registers.
+ *
+ *  See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html for more details.
+ *
+ *  Arm Cortex-M devices may support 2 methods for masking interrupts
+ *  - \c PRIMASK disables all interrupt levels indiscriminately (with the
+ *    exception of non-maskable interrupts).
+ *  - \c BASEPRI disables interrupts with priority equal to or lower than a
+ *    certain level. Software can set \c BASEPRI to a priority level between 1
+ *    (second highest priority) and the maximum supported priority level
+ *    (lowest priority). This means that interrupt priority level 0 cannot be
+ *    masked using \c BASEPRI.
+ *
+ *  The table gives an overview of what interrupt masking controls the different
+ *  Arm platforms support:
+ *
+ *  | Architecture | PRIMASK | BASEPRI |
+ *  |--------------|:-------:|:-------:|
+ *  | Armv6-m      |  Yes    |  No     |
+ *  | Armv7-m      |  Yes    |  Yes    |
+ *  | Armv8-m      |  Yes    |  Yes    |
+ *
+ *  ### FreeRTOS ###
+ *  On Cortex-M platforms that support \c BASEPRI, the FreeRTOS kernel does not
+ *  completely disable interrupts even inside critical sections. This is
+ *  achieved by these FreeRTOS configurations:
+ *
+ *  - \c configMAX_SYSCALL_INTERRUPT_PRIORITY defines the highest logical
+      priority at which FreeRTOS kernel API calls can be made.
+ *  - \c configKERNEL_INTERRUPT_PRIORITY sets the priority of the FreeRTOS
+      kernel itself, usually the lowest logical priority possible.
+ *
+ *  This permits a fully nested model where higher-priority interrupts can
+ *  preempt lower-priority ones. However, interrupts that require FreeRTOS API
+ *  calls must adhere to the \c configMAX_SYSCALL_INTERRUPT_PRIORITY limit to
+ *  avoid corrupting kernel data.
+ *
+ *  See https://www.freertos.org/a00110.html#kernel_priority for more details.
+ *
+ *  - #HwiP_disable(): sets \c BASEPRI to \c
+ *    configMAX_SYSCALL_INTERRUPT_PRIORITY. Returns original \c BASEPRI.
+ *  - #HwiP_restore() sets \c BASEPRI to 0 (no interrupts are masked).
+ *
+ *  ### TI-RTOS ###
+ *  TI-RTOS behaves similar to FreeRTOS, meaning that on Cortex-M platforms that
+ *  support \c BASEPRI, the TI-RTOS kernel does not completely disable
+ *  interrupts even inside critical sections.
+ *
+ *  - #HwiP_disable() sets \c BASEPRI to \c Hwi_disablePriority. Returns
+ *    original \c BASEPRI.
+ *  - #HwiP_restore() sets \c BASEPRI to the provided argument value.
+ *
+ *  See TI-RTOS Hwi documentation for more details.
+ *
+ *  ### NoRTOS ###
+ *  - #HwiP_disable() disables all interrupt levels indiscriminately.
+ *  - #HwiP_restore() globally enables all interrupts.
  *
  *  ============================================================================
  */
@@ -84,7 +172,7 @@ typedef union HwiP_Struct
 /*!
  *  @brief    Opaque client reference to an instance of a HwiP
  *
- *  A HwiP_Handle returned from the ::HwiP_create represents that instance.
+ *  A HwiP_Handle returned from the #HwiP_create() represents that instance.
  */
 typedef void *HwiP_Handle;
 
@@ -105,11 +193,11 @@ typedef void (*HwiP_Fxn)(uintptr_t arg);
 /*!
  *  @brief    Basic HwiP Parameters
  *
- *  Structure that contains the parameters passed into ::HwiP_create
- *  when creating a HwiP instance. The ::HwiP_Params_init function should
+ *  Structure that contains the parameters passed into #HwiP_create()
+ *  when creating a HwiP instance. The #HwiP_Params_init() function should
  *  be used to initialize the fields to default values before the application sets
  *  the fields manually. The HwiP default parameters are noted in
- *  HwiP_Params_init.
+ *  #HwiP_Params_init().
  *
  *  Parameter enableInt specifies if the interrupt should be enabled
  *  upon creation of the HwiP object.  The default is true.
@@ -117,7 +205,10 @@ typedef void (*HwiP_Fxn)(uintptr_t arg);
 typedef struct
 {
     uintptr_t arg;     /*!< Argument passed into the Hwi function. */
-    uint32_t priority; /*!< Device specific priority. */
+    uint32_t priority; /*!< Device specific priority encoded using the device
+                        *   platform's internal priority representation.
+                        *   See @ref ti_drivers_HwiP_Cross_Platform_Considerations
+                        */
     bool enableInt;    /*!< Enable interrupt on creation. */
 } HwiP_Params;
 
@@ -147,7 +238,7 @@ extern int HwiP_swiPIntNum;
  *
  *  @param  params    Pointer to the instance configuration parameters. NULL
  *                    denotes to use the default parameters. The HwiP default
- *                    parameters are noted in ::HwiP_Params_init.
+ *                    parameters are noted in #HwiP_Params_init().
  *
  *  @return A HwiP_Handle on success or a NULL on an error
  */
@@ -157,7 +248,7 @@ extern HwiP_Handle HwiP_construct(HwiP_Struct *hwiP, int interruptNum, HwiP_Fxn 
  *  @brief  Function to destruct a hardware interrupt object
  *
  *  @param  hwiP  Pointer to a HwiP_Struct object that was passed to
- *                HwiP_construct().
+ *                #HwiP_construct().
  *
  *  @return
  */
@@ -181,7 +272,7 @@ extern void HwiP_clearInterrupt(int interruptNum);
  *
  *  @param  params    Pointer to the instance configuration parameters. NULL
  *                    denotes to use the default parameters. The HwiP default
- *                    parameters are noted in ::HwiP_Params_init.
+ *                    parameters are noted in #HwiP_Params_init().
  *
  *  @return A HwiP_Handle on success or a NULL on an error
  */
@@ -211,7 +302,7 @@ extern void HwiP_delete(HwiP_Handle handle);
  *  HwiP_restore(key1);
  *  @endcode
  *
- *  @return A key that must be passed to HwiP_restore to re-enable interrupts.
+ *  @return A key that must be passed to #HwiP_restore() to re-enable interrupts.
  */
 extern uintptr_t HwiP_disable(void);
 
@@ -304,7 +395,7 @@ extern void HwiP_setFunc(HwiP_Handle hwiP, HwiP_Fxn fxn, uintptr_t arg);
 extern void HwiP_setPriority(int interruptNum, uint32_t priority);
 
 /*!
- *  @brief  Function to call the HW ISR function registered by ::HwiP_construct
+ *  @brief  Function to call the HW ISR function registered by #HwiP_construct()
  *
  *  @note   This function may not be available on all implementations
  *

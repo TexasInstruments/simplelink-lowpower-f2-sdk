@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2022 Arm Limited
+ * Copyright (c) 2017-2023 Arm Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -141,9 +141,9 @@ struct platform_data_t
 #define FF_TEST_NVMEM_REGION_START            0x102FFC00
 #define FF_TEST_NVMEM_REGION_END              0x102FFFFF
 #define FF_TEST_SERVER_PARTITION_MMIO_START   0x3801FC00
-#define FF_TEST_SERVER_PARTITION_MMIO_END     0x3801FD00
+#define FF_TEST_SERVER_PARTITION_MMIO_END     0x3801FCFF
 #define FF_TEST_DRIVER_PARTITION_MMIO_START   0x3801FE00
-#define FF_TEST_DRIVER_PARTITION_MMIO_END     0x3801FF00
+#define FF_TEST_DRIVER_PARTITION_MMIO_END     0x3801FEFF
 
 struct platform_data_t
     tfm_peripheral_FF_TEST_NVMEM_REGION = {

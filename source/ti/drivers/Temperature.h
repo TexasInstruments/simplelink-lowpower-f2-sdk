@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Texas Instruments Incorporated
+ * Copyright (c) 2020-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,8 @@
  *  Unlike most drivers, there is only a single instance of the temperature
  *  driver that is always available once #Temperature_init() is called.
  *  #Temperature_init() should be called once before using other Temperature
- *  driver APIs. Subsequent #Temperature_init() calls will have no effect.
+ *  driver APIs. It is not called automatically via SysConfig generated code.
+ *  Subsequent #Temperature_init() calls will have no effect.
  *
  *  ## Getting the Current Temperature #
  *  The most basic function of the driver is to provide the current temperature
@@ -96,7 +97,7 @@
  *  the list of registered notifications and thus are no longer registered.
  *  Their callback function is then invoked.
  *
- *  If an application wishes to reregister a notification that just triggered
+ *  If an application wishes to re-register a notification that just triggered
  *  and was unregistered, it may register it again from within the notification
  *  callback or another context.
  *
@@ -191,7 +192,7 @@
  *
  *  @endcode
  *
- *  ## Register a Range Threshold Notification and Reregister in Callback #
+ *  ## Register a Range Threshold Notification and Re-register in Callback #
  *
  *  @code
  *
@@ -333,6 +334,9 @@ struct Temperature_NotifyObj
  *  This function initializes the internal state of the Temperature driver.
  *  It must be called before calling any other Temperature functions. Calling
  *  this function multiple times will only have an effect the first time.
+ *
+ *  @note This function should be called manually before using the temperature API.
+ *  It will not be called automatically via SysConfig generated code.
  */
 void Temperature_init(void);
 

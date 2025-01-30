@@ -37,7 +37,7 @@
 #ifdef CORSTONE310_FVP
 #define DMA_350_BASE_NS                  0x40002000 /* DMA350 register block Non-Secure base address */
 #endif
-#define ETHOS_U55_APB_BASE_NS            0x40004000 /* Ethos-U55 APB Non-Secure base address */
+#define NPU0_APB_BASE_NS                 0x40004000 /* NPU0 APB Non-Secure base address */
 #define CPU0_PWRCTRL_BASE_NS             0x40012000 /* CPU 0 Power Control Block Non-Secure base address */
 #define CPU0_IDENTITY_BASE_NS            0x4001F000 /* CPU 0 Identity Block Non-Secure base address */
 #define CORSTONE310_NSACFG_BASE_NS       0x40080000 /* Corstone-310 Non-Secure Access Configuration Register Block Non-Secure base address */
@@ -75,8 +75,6 @@
 #define SYSWDOG_ARMV8_M_REFRESH_BASE_NS  0x48041000 /* Non-Secure Watchdog Timer refresh frame Non-Secure base address */
 #define SYSCNTR_READ_BASE_NS             0x48101000 /* System Counter Read Secure base address */
 /* Non-Secure MSTEXPPIHL Peripheral region */
-#define U55_TIMING_ADAPTER_0_BASE_NS     0x48103000 /* Ethos-U55 Timing Adapter 0 APB registers Non-Secure base address */
-#define U55_TIMING_ADAPTER_1_BASE_NS     0x48103200 /* Ethos-U55 Timing Adapter 1 APB registers Non-Secure base address */
 #define FPGA_SBCon_I2C_TOUCH_BASE_NS     0x49200000 /* FPGA - SBCon I2C (Touch) Non-Secure base address */
 #define FPGA_SBCon_I2C_AUDIO_BASE_NS     0x49201000 /* FPGA - SBCon I2C (Audio Conf) Non-Secure base address */
 #define FPGA_SPI_ADC_BASE_NS             0x49202000 /* FPGA - PL022 (SPI ADC) Non-Secure base address */
@@ -130,7 +128,7 @@
 #ifdef CORSTONE310_FVP
 #define DMA_350_BASE_S                   0x50002000 /* DMA350 register block Secure base address */
 #endif
-#define ETHOS_U55_APB_BASE_S             0x50004000 /* Ethos-U55 APB Secure base address */
+#define NPU0_APB_BASE_S                  0x50004000 /* NPU0 APB Secure base address */
 #define CPU0_SECCTRL_BASE_S              0x50011000 /* CPU 0 Local Security Control Block Secure base address */
 #define CPU0_PWRCTRL_BASE_S              0x50012000 /* CPU 0 Power Control Block Secure base address */
 #define CPU0_IDENTITY_BASE_S             0x5001F000 /* CPU 0 Identity Block Secure base address */
@@ -182,8 +180,6 @@
 #define SYSCNTR_CNTRL_BASE_S             0x58100000 /* System Counter Control Secure base address */
 #define SYSCNTR_READ_BASE_S              0x58101000 /* System Counter Read Secure base address */
 /* Secure MSTEXPPIHL Peripheral region */
-#define U55_TIMING_ADAPTER_0_BASE_S      0x58103000 /* Ethos-U55 Timing Adapter 0 APB registers Secure base address */
-#define U55_TIMING_ADAPTER_1_BASE_S      0x58103200 /* Ethos-U55 Timing Adapter 1 APB registers Secure base address */
 #define FPGA_SBCon_I2C_TOUCH_BASE_S      0x59200000 /* FPGA - SBCon I2C (Touch) Secure base address */
 #define FPGA_SBCon_I2C_AUDIO_BASE_S      0x59201000 /* FPGA - SBCon I2C (Audio Conf) Secure base address */
 #define FPGA_SPI_ADC_BASE_S              0x59202000 /* FPGA - PL022 (SPI ADC) Secure base address */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,6 +47,11 @@
 #define LogSinkBuf_FULL     -1
 #define LogSinkBuf_MAX_ARGS (LogSinkBuf_WORDS_PER_RECORD - 1)
 
+/* Global LogSinkBuf instance reference for use with singleton implementations
+ * of printf.
+ */
+Log_SINK_BUF_USE(CONFIG_ti_log_LogSinkBuf_0);
+
 static void findNextRecord(LogSinkBuf_Handle inst, LogSinkBuf_Rec **rec)
 {
     /* compute next available record */
@@ -71,28 +76,12 @@ static void findNextRecord(LogSinkBuf_Handle inst, LogSinkBuf_Rec **rec)
 /*
  *  ======== LogSinkBuf_printf ========
  */
-void ti_log_LogSinkBuf_printf(const Log_Module *handle, uint32_t header, uint32_t index, uint32_t numArgs, ...)
+void LogSinkBuf_printf(LogSinkBuf_Handle inst, uint32_t header, uint32_t index, uint32_t numArgs, va_list argptr)
 {
     uintptr_t key;
     uint32_t serial;
     LogSinkBuf_Rec *rec;
-    va_list argptr;
     uint32_t argsToCopy = numArgs;
-
-    if (handle == NULL)
-    {
-        return;
-    }
-
-    LogSinkBuf_Handle inst = (LogSinkBuf_Handle)handle->sinkConfig;
-
-    /* Guard against more arguments being passed in than supported */
-    if (numArgs > LogSinkBuf_MAX_ARGS)
-    {
-        argsToCopy = LogSinkBuf_MAX_ARGS;
-    }
-
-    va_start(argptr, numArgs);
 
     /* disable interrupts */
     key = HwiP_disable();
@@ -126,15 +115,176 @@ void ti_log_LogSinkBuf_printf(const Log_Module *handle, uint32_t header, uint32_
         rec->data[1 + i] = va_arg(argptr, uintptr_t);
     }
 
-    va_end(argptr);
-
     return;
+}
+
+/*
+ *  ======== LogSinkBuf_printfDepInjection ========
+ *
+ *  This printf implementation is for use when multiple LogSinkBuf_Instance
+ *  instances should be supported within an application.
+ *
+ *  The implementation will read out the LogSinkBuf_Instance address at runtime
+ *  from the handle argument.
+ */
+void LogSinkBuf_printfDepInjection(const Log_Module *handle, uint32_t header, uint32_t index, uint32_t numArgs, ...)
+{
+    va_list argptr;
+
+    /* Guard against more arguments being passed in than supported */
+    if (numArgs > LogSinkBuf_MAX_ARGS)
+    {
+        numArgs = LogSinkBuf_MAX_ARGS;
+    }
+
+    LogSinkBuf_Handle inst = (LogSinkBuf_Handle)handle->sinkConfig;
+
+    /* Get the VA args pointer in the initial wrapper since you cannot pass VA
+     * args to further functions using elipses (...) syntax.
+     *
+     * All va_start() does is get us the pointer to the first VA arg on the
+     * stack. That value will still be valid when passed on further.
+     */
+    va_start(argptr, numArgs);
+
+    LogSinkBuf_printf(inst, header, index, numArgs, argptr);
+
+    va_end(argptr);
+}
+
+/*
+ *  ======== LogSinkBuf_printfDepInjection0 ========
+ */
+void LogSinkBuf_printfDepInjection0(const Log_Module *handle, uint32_t header, uint32_t index, ...)
+{
+    va_list argptr;
+
+    va_start(argptr, index);
+    LogSinkBuf_printf((LogSinkBuf_Handle)handle->sinkConfig, header, index, 0, argptr);
+    va_end(argptr);
+}
+
+/*
+ *  ======== LogSinkBuf_printfDepInjection1 ========
+ */
+void LogSinkBuf_printfDepInjection1(const Log_Module *handle, uint32_t header, uint32_t index, ...)
+{
+    va_list argptr;
+
+    va_start(argptr, index);
+    LogSinkBuf_printf((LogSinkBuf_Handle)handle->sinkConfig, header, index, 1, argptr);
+    va_end(argptr);
+}
+
+/*
+ *  ======== LogSinkBuf_printfDepInjection2 ========
+ */
+void LogSinkBuf_printfDepInjection2(const Log_Module *handle, uint32_t header, uint32_t index, ...)
+{
+    va_list argptr;
+
+    va_start(argptr, index);
+    LogSinkBuf_printf((LogSinkBuf_Handle)handle->sinkConfig, header, index, 2, argptr);
+    va_end(argptr);
+}
+
+/*
+ *  ======== LogSinkBuf_printfDepInjection3 ========
+ */
+void LogSinkBuf_printfDepInjection3(const Log_Module *handle, uint32_t header, uint32_t index, ...)
+{
+    va_list argptr;
+
+    va_start(argptr, index);
+    LogSinkBuf_printf((LogSinkBuf_Handle)handle->sinkConfig, header, index, 3, argptr);
+    va_end(argptr);
+}
+
+/*
+ *  ======== LogSinkBuf_printfSingleton ========
+ *
+ *  This implementation purposefully does not use the handle argument but
+ *  instead references a single, global LogSinkBuf_Instance structure. When LTO
+ *  is enabled, this allows the compiler to avoid loading the handle at the
+ *  call site, saving on flash.
+ *
+ *  Use of this printf implementation has the limitation that only one
+ *  LogSinkBuf instance may be used and it will be assigned the
+ *  LogsinkBuf_Instance name LogSinkBuf_CONFIG_ti_log_LogSinkBuf_0_config
+ */
+void LogSinkBuf_printfSingleton(const Log_Module *handle, uint32_t header, uint32_t index, uint32_t numArgs, ...)
+{
+    va_list argptr;
+
+    /* Guard against more arguments being passed in than supported */
+    if (numArgs > LogSinkBuf_MAX_ARGS)
+    {
+        numArgs = LogSinkBuf_MAX_ARGS;
+    }
+
+    /* Get the VA args pointer in the initial wrapper since you cannot pass VA
+     * args to further functions using elipses (...) syntax.
+     *
+     * All va_start() does is get us the pointer to the first VA arg on the
+     * stack. That value will still be valid when passed on further.
+     */
+    va_start(argptr, numArgs);
+    LogSinkBuf_printf(&LogSinkBuf_CONFIG_ti_log_LogSinkBuf_0_config, header, index, numArgs, argptr);
+    va_end(argptr);
+}
+
+/*
+ *  ======== LogSinkBuf_printfSingleton0 ========
+ */
+void LogSinkBuf_printfSingleton0(const Log_Module *handle, uint32_t header, uint32_t index, ...)
+{
+    va_list argptr;
+
+    va_start(argptr, index);
+    LogSinkBuf_printf(&LogSinkBuf_CONFIG_ti_log_LogSinkBuf_0_config, header, index, 0, argptr);
+    va_end(argptr);
+}
+
+/*
+ *  ======== LogSinkBuf_printfSingleton1 ========
+ */
+void LogSinkBuf_printfSingleton1(const Log_Module *handle, uint32_t header, uint32_t index, ...)
+{
+    va_list argptr;
+
+    va_start(argptr, index);
+    LogSinkBuf_printf(&LogSinkBuf_CONFIG_ti_log_LogSinkBuf_0_config, header, index, 1, argptr);
+    va_end(argptr);
+}
+
+/*
+ *  ======== LogSinkBuf_printfSingleton2 ========
+ */
+void LogSinkBuf_printfSingleton2(const Log_Module *handle, uint32_t header, uint32_t index, ...)
+{
+    va_list argptr;
+
+    va_start(argptr, index);
+    LogSinkBuf_printf(&LogSinkBuf_CONFIG_ti_log_LogSinkBuf_0_config, header, index, 2, argptr);
+    va_end(argptr);
+}
+
+/*
+ *  ======== LogSinkBuf_printfSingleton3 ========
+ */
+void LogSinkBuf_printfSingleton3(const Log_Module *handle, uint32_t header, uint32_t index, ...)
+{
+    va_list argptr;
+
+    va_start(argptr, index);
+    LogSinkBuf_printf(&LogSinkBuf_CONFIG_ti_log_LogSinkBuf_0_config, header, index, 3, argptr);
+    va_end(argptr);
 }
 
 /*
  *  ======== LogSinkBuf_buf ========
  */
-void ti_log_LogSinkBuf_buf(const Log_Module *handle, uint32_t header, uint32_t index, uint8_t *data, size_t size)
+void LogSinkBuf_bufDepInjection(const Log_Module *handle, uint32_t header, uint32_t index, uint8_t *data, size_t size)
 {
     uintptr_t key;
     uint32_t serial;
@@ -153,7 +303,7 @@ void ti_log_LogSinkBuf_buf(const Log_Module *handle, uint32_t header, uint32_t i
     /* disable interrupts */
     key = HwiP_disable();
 
-    /* Here we aquire records as contiguous memory.
+    /* Here we acquire records as contiguous memory.
      * This approach leads to long critical sections for large buffers
      * and can be improved in the future once all hosts support fragmentation
      * of packets

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2021-2022, Arm Limited. All rights reserved.
- * Copyright (c) 2021-2022 Cypress Semiconductor Corporation (an Infineon
+ * Copyright (c) 2021-2023 Cypress Semiconductor Corporation (an Infineon
  * company) or an affiliate of Cypress Semiconductor Corporation. All rights
  * reserved.
  *
@@ -31,7 +31,7 @@
 {% set counter.service_counter = manifest.services|count %}
 #define {{"%-55s"|format(manifest.name|upper + "_NSERVS")}} ({{"%d"|format(counter.service_counter)}})
 {% set counter.asset_counter = manifest.mmio_regions|count %}
-#if TFM_LVL == 3
+#if TFM_ISOLATION_LEVEL == 3
 #define {{"%-55s"|format(manifest.name|upper + "_NASSETS")}} ({{"%d"|format(counter.asset_counter)}} + 1)
 #else
 #define {{"%-55s"|format(manifest.name|upper + "_NASSETS")}} ({{"%d"|format(counter.asset_counter)}})
@@ -40,7 +40,7 @@
 #define {{"%-55s"|format(manifest.name|upper + "_NIRQS")}} ({{"%d"|format(counter.irq_counter)}})
 
 /* Memory region declaration */
-#if TFM_LVL == 3
+#if TFM_ISOLATION_LEVEL == 3
 REGION_DECLARE(Image$$, PT_{{manifest.name}}_PRIVATE, _DATA_START$$Base);
 REGION_DECLARE(Image$$, PT_{{manifest.name}}_PRIVATE, _DATA_END$$Base);
 #endif
@@ -82,7 +82,7 @@ struct partition_{{manifest.name|lower}}_load_info_t {
 {% if counter.service_counter > 0 %}
     struct service_load_info_t      services[{{(manifest.name|upper + "_NSERVS")}}];
 {% endif %}
-#if TFM_LVL == 3
+#if TFM_ISOLATION_LEVEL == 3
     struct asset_desc_t             assets[{{(manifest.name|upper + "_NASSETS")}}];
 #else
 {% if counter.asset_counter > 0 %}
@@ -96,11 +96,11 @@ struct partition_{{manifest.name|lower}}_load_info_t {
 
 /* Partition load, deps, service load data. Put to a dedicated section. */
 #if defined(__ICCARM__)
-#pragma location = ".part_load_priority_{{manifest.priority|lower}}"
+#pragma location = ".part_load_priority_{{numbered_priority}}"
 __root
 #endif /* __ICCARM__ */
 const struct partition_{{manifest.name|lower}}_load_info_t {{manifest.name|lower}}_load
-    __attribute__((used, section(".part_load_priority_{{manifest.priority|lower}}"))) = {
+    __attribute__((used, section(".part_load_priority_{{numbered_priority}}"))) = {
     .load_info = {
 {% if manifest.psa_framework_version == 1.0 %}
         .psa_ff_ver                 = 0x0100 | PARTITION_INFO_MAGIC,
@@ -116,7 +116,7 @@ const struct partition_{{manifest.name|lower}}_load_info_t {{manifest.name|lower
                                     | PARTITION_MODEL_PSA_ROT
 {% endif %}
 {% if manifest.ns_agent is sameas true %}
-                                    | PARTITION_NS_AGENT
+                                    | PARTITION_NS_AGENT_MB
 {% endif %}
                                     | PARTITION_PRI_{{manifest.priority}},
         .entry                      = ENTRY_TO_POSITION({{manifest.entry}}),
@@ -184,7 +184,7 @@ const struct partition_{{manifest.name|lower}}_load_info_t {{manifest.name|lower
     {% endfor %}
     },
 {% endif %}
-#if TFM_LVL == 3
+#if TFM_ISOLATION_LEVEL == 3
     .assets                         = {
         {
             .mem.start              = (uintptr_t)&REGION_NAME(Image$$, PT_{{manifest.name}}_PRIVATE, _DATA_START$$Base),
@@ -282,16 +282,16 @@ const struct partition_{{manifest.name|lower}}_load_info_t {{manifest.name|lower
 
 /* Placeholder for partition and service runtime space. Do not reference it. */
 #if defined(__ICCARM__)
-#pragma location=".bss.part_runtime_priority_{{manifest.priority|lower}}"
+#pragma location=".bss.part_runtime_priority_{{numbered_priority}}"
 __root
 #endif /* __ICCARM__ */
 static struct partition_t {{manifest.name|lower}}_partition_runtime_item
-    __attribute__((used, section(".bss.part_runtime_priority_{{manifest.priority|lower}}")));
+    __attribute__((used, section(".bss.part_runtime_priority_{{numbered_priority}}")));
 {% if counter.service_counter > 0 %}
 #if defined(__ICCARM__)
-#pragma location = ".bss.serv_runtime_priority_{{manifest.priority|lower}}"
+#pragma location = ".bss.serv_runtime_priority_{{numbered_priority}}"
 __root
 #endif /* __ICCARM__ */
 static struct service_t {{manifest.name|lower}}_service_runtime_item[{{(manifest.name|upper + "_NSERVS")}}]
-    __attribute__((used, section(".bss.serv_runtime_priority_{{manifest.priority|lower}}")));
+    __attribute__((used, section(".bss.serv_runtime_priority_{{numbered_priority}}")));
 {% endif %}

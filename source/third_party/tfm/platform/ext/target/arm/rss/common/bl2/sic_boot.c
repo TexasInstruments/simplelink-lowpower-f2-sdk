@@ -13,6 +13,7 @@
 #include "tfm_plat_otp.h"
 #include "host_flash_atu.h"
 #include "plat_def_fip_uuid.h"
+#include "rss_kmu_slot_ids.h"
 
 #include <string.h>
 
@@ -39,9 +40,17 @@ int sic_boot_init(void)
 {
     enum sic_error_t sic_err;
 
+    /* The regions must be contiguous. This check is static, so will be compiled
+     * out if it succeeds.
+     */
+    if (RSS_RUNTIME_NS_XIP_BASE_S != RSS_RUNTIME_S_XIP_BASE_S + FLASH_S_PARTITION_SIZE) {
+        return 1;
+    }
+
     sic_err = sic_auth_init(&SIC_DEV_S, SIC_DIGEST_SIZE_256,
                             SIC_DIGEST_COMPARE_FIRST_QWORD,
-                            RSS_RUNTIME_S_XIP_BASE_S, FLASH_S_PARTITION_SIZE);
+                            RSS_RUNTIME_S_XIP_BASE_S,
+                            FLASH_S_PARTITION_SIZE + FLASH_NS_PARTITION_SIZE);
     if (sic_err != SIC_ERROR_NONE) {
         return 1;
     }
@@ -57,14 +66,15 @@ int sic_boot_init(void)
 int sic_boot_post_load(uint32_t image_id, uint32_t image_load_offset)
 {
     enum sic_error_t sic_err;
+    enum kmu_error_t kmu_err;
     struct rss_xip_htr_table *table;
-    uint32_t key[8];
     enum tfm_plat_err_t plat_err;
     size_t sic_page_size;
-    enum tfm_otp_element_id_t decrypt_key_otp_id;
+    enum rss_kmu_slot_id_t decrypt_key_slot;
     uint32_t decrypt_region;
     uint32_t xip_region_base_addr;
-    uint32_t xip_region_size;
+    size_t xip_region_size;
+    size_t max_region_size;
     uint64_t fip_offsets[2];
     bool fip_found[2];
     uint64_t fip_offset;
@@ -105,11 +115,11 @@ int sic_boot_post_load(uint32_t image_id, uint32_t image_load_offset)
             return 1;
         }
 
-        decrypt_key_otp_id = PLAT_OTP_ID_KEY_NON_SECURE_ENCRYPTION;
+        decrypt_key_slot = RSS_KMU_SLOT_NON_SECURE_ENCRYPTION_KEY;
         atu_region = RSS_ATU_NS_IMAGE_XIP_REGION;
         decrypt_region = RSS_SIC_NS_IMAGE_DECRYPT_REGION;
         xip_region_base_addr = RSS_RUNTIME_NS_XIP_BASE_S;
-        xip_region_size      = NS_CODE_SIZE;
+        max_region_size = NS_CODE_SIZE;
         image_uuid = UUID_RSS_FIRMWARE_NS;
         image_offset = &ns_image_offset;
 
@@ -127,11 +137,11 @@ int sic_boot_post_load(uint32_t image_id, uint32_t image_load_offset)
             return 1;
         }
 
-        decrypt_key_otp_id = PLAT_OTP_ID_KEY_SECURE_ENCRYPTION;
+        decrypt_key_slot = RSS_KMU_SLOT_SECURE_ENCRYPTION_KEY;
         atu_region = RSS_ATU_S_IMAGE_XIP_REGION;
         decrypt_region = RSS_SIC_S_IMAGE_DECRYPT_REGION;
         xip_region_base_addr = RSS_RUNTIME_S_XIP_BASE_S;
-        xip_region_size      = S_CODE_SIZE;
+        max_region_size = S_CODE_SIZE;
         image_uuid = UUID_RSS_FIRMWARE_S;
         image_offset = &s_image_offset;
 
@@ -148,7 +158,8 @@ int sic_boot_post_load(uint32_t image_id, uint32_t image_load_offset)
                                                          atu_region,
                                                          xip_region_base_addr,
                                                          image_uuid,
-                                                         image_offset);
+                                                         image_offset,
+                                                         &xip_region_size);
     if (rc) {
         return rc;
     }
@@ -162,6 +173,9 @@ int sic_boot_post_load(uint32_t image_id, uint32_t image_load_offset)
         return 1;
     }
 
+    if (xip_region_size > max_region_size) {
+        return 1;
+    }
 
     sic_err = sic_auth_table_set(&SIC_DEV_S, (uint32_t*)(table->htr),
                                  table->htr_size, (xip_region_base_addr
@@ -171,23 +185,20 @@ int sic_boot_post_load(uint32_t image_id, uint32_t image_load_offset)
         return 1;
     }
 
-    plat_err = tfm_plat_otp_read(decrypt_key_otp_id, sizeof(key), (uint8_t*)key);
-    if (plat_err != TFM_PLAT_ERR_SUCCESS) {
-        return 1;
-    }
-
     sic_err = sic_decrypt_region_enable(&SIC_DEV_S,
                                         decrypt_region, xip_region_base_addr,
                                         xip_region_size,
-                                        image_load_offset, table->nonce,
-                                        key);
+                                        table->fw_revision, table->nonce,
+                                        NULL);
     if (sic_err != SIC_ERROR_NONE) {
-        memset(key, 0, sizeof(key));
         return 1;
     }
 
-
-    memset(key, 0, sizeof(key));
+    kmu_err = kmu_export_key(&KMU_DEV_S, decrypt_key_slot);
+    if (kmu_err != KMU_ERROR_NONE) {
+        while(1){}
+        return 1;
+    }
 
     return 0;
 }

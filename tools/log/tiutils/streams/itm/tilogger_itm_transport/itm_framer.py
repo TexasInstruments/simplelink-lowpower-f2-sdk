@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 
 from typing import Optional
+from tilogger.helpers import build_value
 
 logger = logging.getLogger("ITM Framer")
 
@@ -81,16 +82,6 @@ ACCESS_DICT = {
 
 ################################################################################
 ################################################################################
-
-
-def build_value(buf):
-    """
-    Helper function: Turn an iterable into a little-endian integer
-    """
-    value = 0
-    for idx, val in enumerate(buf):
-        value += val << (idx * 8)
-    return value
 
 
 @dataclass

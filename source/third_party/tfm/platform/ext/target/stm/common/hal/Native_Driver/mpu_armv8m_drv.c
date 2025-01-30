@@ -242,6 +242,102 @@ enum mpu_armv8m_error_t mpu_armv8m_region_disable_check(
   return ret_val;
 }
 
+enum mpu_armv8m_error_t mpu_armv8m_region_config_only(
+  struct mpu_armv8m_dev_t *dev,
+  struct mpu_armv8m_region_cfg_t *region_cfg)
+{
+  MPU_Type *mpu = (MPU_Type *)dev->base;
+
+  enum mpu_armv8m_error_t ret_val = MPU_ARMV8M_OK;
+  uint32_t base_cfg;
+  uint32_t limit_cfg;
+
+  /*FIXME : Add complete error checking*/
+  if ((region_cfg->region_base & ~MPU_RBAR_BASE_Msk) != 0)
+  {
+    return MPU_ARMV8M_ERROR;
+  }
+  if (((region_cfg->region_limit+1) & ~MPU_RLAR_LIMIT_Msk) !=0)
+  {
+    return MPU_ARMV8M_ERROR;
+  }
+  /* region_limit needs to be setup to ensure that partitions do not overlap.
+   */
+  /* don't disable MPU */
+
+  mpu->RNR  = region_cfg->region_nr & MPU_RNR_REGION_Msk;
+
+  /* This 0s the lower bits of the base address */
+  base_cfg = region_cfg->region_base & MPU_RBAR_BASE_Msk;
+  base_cfg |= (region_cfg->attr_sh << MPU_RBAR_SH_Pos) & MPU_RBAR_SH_Msk;
+  base_cfg |= (region_cfg->attr_access << MPU_RBAR_AP_Pos) & MPU_RBAR_AP_Msk;
+  base_cfg |= (region_cfg->attr_exec << MPU_RBAR_XN_Pos) & MPU_RBAR_XN_Msk;
+
+  mpu->RBAR = base_cfg;
+
+  /*This 0s the lower bits of base address but they are treated as 1 */
+  limit_cfg = (region_cfg->region_limit) & MPU_RLAR_LIMIT_Msk;
+
+  limit_cfg |= (region_cfg->region_attridx << MPU_RLAR_AttrIndx_Pos) &
+               MPU_RLAR_AttrIndx_Msk;
+
+  /* Do not enable region */
+  /* limit_cfg |= MPU_RLAR_EN_Msk; */
+
+  mpu->RLAR = limit_cfg;
+
+  /* Enable MPU before the next instruction */
+  __DSB();
+  __ISB();
+
+  return ret_val;
+}
+
+enum mpu_armv8m_error_t mpu_armv8m_region_config_only_check(
+  struct mpu_armv8m_dev_t *dev,
+  struct mpu_armv8m_region_cfg_t *region_cfg)
+{
+  MPU_Type *mpu = (MPU_Type *)dev->base;
+
+  enum mpu_armv8m_error_t ret_val = MPU_ARMV8M_ERROR;
+  uint32_t base_cfg;
+  uint32_t limit_cfg;
+
+  /*FIXME : Add complete error checking*/
+  if ((region_cfg->region_base & ~MPU_RBAR_BASE_Msk) != 0)
+  {
+    return MPU_ARMV8M_ERROR;
+  }
+  /* region_limit doesn't need to be aligned but the scatter
+   * file needs to be setup to ensure that partitions do not overlap.
+   */
+  /* don't disable MPU */
+
+  mpu->RNR  = region_cfg->region_nr & MPU_RNR_REGION_Msk;
+
+  /* This 0s the lower bits of the base address */
+  base_cfg = region_cfg->region_base & MPU_RBAR_BASE_Msk;
+  base_cfg |= (region_cfg->attr_sh << MPU_RBAR_SH_Pos) & MPU_RBAR_SH_Msk;
+  base_cfg |= (region_cfg->attr_access << MPU_RBAR_AP_Pos) & MPU_RBAR_AP_Msk;
+  base_cfg |= (region_cfg->attr_exec << MPU_RBAR_XN_Pos) & MPU_RBAR_XN_Msk;
+
+  /*This 0s the lower bits of base address but they are treated as 1 */
+  limit_cfg = (region_cfg->region_limit) & MPU_RLAR_LIMIT_Msk;
+
+  limit_cfg |= (region_cfg->region_attridx << MPU_RLAR_AttrIndx_Pos) &
+               MPU_RLAR_AttrIndx_Msk;
+
+  /* Region is not enabled */
+  /* limit_cfg |= MPU_RLAR_EN_Msk; */
+
+  if ((mpu->RBAR == base_cfg) && (mpu->RLAR == limit_cfg))
+  {
+    ret_val = MPU_ARMV8M_OK;
+  }
+
+  return ret_val;
+}
+
 enum mpu_armv8m_error_t mpu_armv8m_clean(struct mpu_armv8m_dev_t *dev)
 {
   MPU_Type *mpu = (MPU_Type *)dev->base;

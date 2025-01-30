@@ -110,6 +110,11 @@ for (let i in devices) {
       tempServerClusterOptions.push({name: cluster._id, displayName: cluster._name})
     }
   }
+
+  if (tempServerClusterOptions.length == 0) {
+    addAlwaysHidden.push(device._id + "addServer");
+    tempServerClusterOptions.push({name: "dummy", displayName: "dummy"});
+  }
   addModule.config.push({
     name: device._id + "addServer",
     displayName: "Server Clusters",
@@ -122,7 +127,6 @@ for (let i in devices) {
     minSelections: 0
   })
   addDropDowns.push(device._id + "addServer");
-  if (tempServerClusterOptions.length == 0) { addAlwaysHidden.push(device._id + "addServer"); }
 
   let notTempClientClusterOptions = [];
   if (device.client && device.client.cluster) {
@@ -140,6 +144,11 @@ for (let i in devices) {
       tempClientClusterOptions.push({name: cluster._id, displayName: cluster._name})
     }
   }
+
+  if (tempClientClusterOptions.length == 0) {
+    addAlwaysHidden.push(device._id + "addClient");
+    tempClientClusterOptions.push({name: "dummy", displayName: "dummy"});
+  }
   addModule.config.push({
     name: device._id + "addClient",
     displayName: "Client Clusters",
@@ -152,7 +161,6 @@ for (let i in devices) {
     minSelections: 0
   })
   addDropDowns.push(device._id + "addClient");
-  if (tempClientClusterOptions.length == 0) { addAlwaysHidden.push(device._id + "addClient"); }
 }
 
 /* Add Attribute Groups */

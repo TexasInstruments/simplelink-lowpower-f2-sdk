@@ -78,11 +78,97 @@ SECTIONS
     /* GCC always places veneers at the end of .gnu.sgstubs section, so the only
      * way to align the end of .gnu.sgstubs section is to align start of the
      * next section */
-    .copy.table : ALIGN(TFM_LINKER_VENEERS_ALIGNMENT)
+
+    /**** Section for holding partition RO load data */
+    /*
+     * Sort the partition info by priority to guarantee the initing order.
+     * The first loaded partition will be inited at last in SFN model.
+     */
+    .TFM_SP_LOAD_LIST ALIGN(TFM_LINKER_VENEERS_ALIGNMENT) :
 #else
-    .copy.table : ALIGN(4)
+    .TFM_SP_LOAD_LIST ALIGN(4) :
 #endif
     {
+       KEEP(*(.part_load_priority_00))
+       KEEP(*(.part_load_priority_01))
+       KEEP(*(.part_load_priority_02))
+       KEEP(*(.part_load_priority_03))
+    } > FLASH
+    Image$$TFM_SP_LOAD_LIST$$RO$$Base = ADDR(.TFM_SP_LOAD_LIST);
+    Image$$TFM_SP_LOAD_LIST$$RO$$Limit = ADDR(.TFM_SP_LOAD_LIST) + SIZEOF(.TFM_SP_LOAD_LIST);
+
+    /**** PSA RoT RO CODE + RO-data starts here */
+    . = ALIGN(TFM_LINKER_PSA_ROT_LINKER_CODE_ALIGNMENT);
+{% for partition in partitions %}
+    {% if partition.manifest.type == 'PSA-ROT' %}
+    .{{partition.manifest.name}}_RO ALIGN(TFM_LINKER_PSA_ROT_LINKER_CODE_ALIGNMENT) :
+    {
+    {% if partition.attr.linker_pattern.library_list %}
+        {% for pattern in partition.attr.linker_pattern.library_list %}
+        {{pattern}}:(SORT_BY_ALIGNMENT(.text*))
+        {{pattern}}:(SORT_BY_ALIGNMENT(.rodata*))
+        {% endfor %}
+    {% endif %}
+    {% if partition.attr.linker_pattern.object_list %}
+        {% for pattern in partition.attr.linker_pattern.object_list %}
+        {{pattern}}(SORT_BY_ALIGNMENT(.text*))
+        {{pattern}}:(SORT_BY_ALIGNMENT(.rodata*))
+        {% endfor %}
+    {% endif %}
+        *({{partition.manifest.name}}_PSA-ROT_ATTR_FN)
+        . = ALIGN(TFM_LINKER_PSA_ROT_LINKER_CODE_ALIGNMENT);
+    } > FLASH
+    Image$${{partition.manifest.name}}_RO$$Base = ADDR(.{{partition.manifest.name}}_RO);
+    Image$${{partition.manifest.name}}_RO$$Limit = ADDR(.{{partition.manifest.name}}_RO) + SIZEOF(.{{partition.manifest.name}}_RO);
+
+    {% endif %}
+{% endfor %}
+    /**** PSA RoT RO CODE + data ends here */
+
+    /**** APPLICATION RoT RO CODE + data starts here */
+{% for partition in partitions %}
+    {% if partition.manifest.type == 'APPLICATION-ROT' %}
+    .{{partition.manifest.name}}_RO ALIGN(TFM_LINKER_APP_ROT_LINKER_CODE_ALIGNMENT) :
+    {
+    {% if partition.attr.linker_pattern.library_list %}
+        {% for pattern in partition.attr.linker_pattern.library_list %}
+        {{pattern}}:(SORT_BY_ALIGNMENT(.text*))
+        {{pattern}}:(SORT_BY_ALIGNMENT(.rodata*))
+        {% endfor %}
+    {% endif %}
+    {% if partition.attr.linker_pattern.object_list %}
+        {% for pattern in partition.attr.linker_pattern.object_list %}
+        {{pattern}}(SORT_BY_ALIGNMENT(.text*))
+        {{pattern}}:(SORT_BY_ALIGNMENT(.rodata*))
+        {% endfor %}
+    {% endif %}
+        *({{partition.manifest.name}}_APP-ROT_ATTR_FN)
+        . = ALIGN(TFM_LINKER_APP_ROT_LINKER_CODE_ALIGNMENT);
+    } > FLASH
+    Image$${{partition.manifest.name}}_CODE$$Base = ADDR(.{{partition.manifest.name}}_RO);
+    Image$${{partition.manifest.name}}_CODE$$Limit = ADDR(.{{partition.manifest.name}}_RO) + SIZEOF(.{{partition.manifest.name}}_RO);
+
+    {% endif %}
+{% endfor %}
+    /**** APPLICATION RoT RO CODE + data ends here */
+
+#if defined(S_RAM_CODE_START)
+    /* Flash drivers code that gets copied from Flash */
+    .ER_CODE_SRAM ALIGN(S_RAM_CODE_START, 4) :
+    {
+        *libflash_drivers*:(SORT_BY_ALIGNMENT(.text*))
+        *libflash_drivers*:(SORT_BY_ALIGNMENT(.rodata*))
+        KEEP(*(.ramfunc))
+        . = ALIGN(4); /* This alignment is needed to make the section size 4 bytes aligned */
+    } > CODE_RAM AT > FLASH
+    Image$$ER_CODE_SRAM$$Base = ADDR(.ER_CODE_SRAM);
+    Image$$ER_CODE_SRAM$$Limit = ADDR(.ER_CODE_SRAM) + SIZEOF(.ER_CODE_SRAM);
+#endif
+
+    .ER_TFM_CODE : ALIGN(4)
+    {
+        /* .copy.table */
+        . = ALIGN(4);
         __copy_table_start__ = .;
 #ifdef RAM_VECTORS_SUPPORT
         /* Copy interrupt vectors from flash to RAM */
@@ -106,12 +192,10 @@ SECTIONS
         LONG (ADDR(.ER_CODE_SRAM))
         LONG (SIZEOF(.ER_CODE_SRAM) / 4)
 #endif
-
         __copy_table_end__ = .;
-    } > FLASH
 
-    .zero.table : ALIGN(4)
-    {
+        /* .zero.table */
+        . = ALIGN(4);
         __zero_table_start__ = .;
         LONG (ADDR(.spm_bss))
         LONG (SIZEOF(.spm_bss) / 4)
@@ -126,106 +210,20 @@ SECTIONS
         LONG (SIZEOF(.{{partition.manifest.name}}_RWZI_BSS) / 4)
 {% endfor %}
         __zero_table_end__ = .;
-    } > FLASH
 
-    /**** Section for holding partition RO load data */
-    /*
-     * Sort the partition info by priority to guarantee the initing order.
-     * The first loaded partition will be inited at last in SFN model.
-     */
-    .TFM_SP_LOAD_LIST : ALIGN(4)
-    {
-       KEEP(*(.part_load_priority_lowest))
-       KEEP(*(.part_load_priority_low))
-       KEEP(*(.part_load_priority_normal))
-       KEEP(*(.part_load_priority_high))
-    } > FLASH
-    Image$$TFM_SP_LOAD_LIST$$RO$$Base = ADDR(.TFM_SP_LOAD_LIST);
-    Image$$TFM_SP_LOAD_LIST$$RO$$Limit = ADDR(.TFM_SP_LOAD_LIST) + SIZEOF(.TFM_SP_LOAD_LIST);
-
-    /**** PSA RoT RO CODE + RO-data starts here */
-    . = ALIGN(TFM_LINKER_PSA_ROT_LINKER_CODE_ALIGNMENT);
-{% for partition in partitions %}
-    {% if partition.manifest.type == 'PSA-ROT' %}
-    .{{partition.manifest.name}}_RO : ALIGN(TFM_LINKER_PSA_ROT_LINKER_CODE_ALIGNMENT)
-    {
-    {% if partition.attr.linker_pattern.library_list %}
-        {% for pattern in partition.attr.linker_pattern.library_list %}
-        {{pattern}}:*(.text*)
-        {{pattern}}:*(.rodata*)
-        {% endfor %}
-    {% endif %}
-    {% if partition.attr.linker_pattern.object_list %}
-        {% for pattern in partition.attr.linker_pattern.object_list %}
-        {{pattern}}(.text*)
-        {{pattern}}:*(.rodata*)
-        {% endfor %}
-    {% endif %}
-        *({{partition.manifest.name}}_PSA-ROT_ATTR_FN)
-        . = ALIGN(TFM_LINKER_PSA_ROT_LINKER_CODE_ALIGNMENT);
-    } > FLASH
-    Image$${{partition.manifest.name}}_RO$$Base = ADDR(.{{partition.manifest.name}}_RO);
-    Image$${{partition.manifest.name}}_RO$$Limit = ADDR(.{{partition.manifest.name}}_RO) + SIZEOF(.{{partition.manifest.name}}_RO);
-
-    {% endif %}
-{% endfor %}
-    /**** PSA RoT RO CODE + data ends here */
-
-    /**** APPLICATION RoT RO CODE + data starts here */
-{% for partition in partitions %}
-    {% if partition.manifest.type == 'APPLICATION-ROT' %}
-    .{{partition.manifest.name}}_RO : ALIGN(TFM_LINKER_APP_ROT_LINKER_CODE_ALIGNMENT)
-    {
-    {% if partition.attr.linker_pattern.library_list %}
-        {% for pattern in partition.attr.linker_pattern.library_list %}
-        {{pattern}}:*(.text*)
-        {{pattern}}:*(.rodata*)
-        {% endfor %}
-    {% endif %}
-    {% if partition.attr.linker_pattern.object_list %}
-        {% for pattern in partition.attr.linker_pattern.object_list %}
-        {{pattern}}(.text*)
-        {{pattern}}:*(.rodata*)
-        {% endfor %}
-    {% endif %}
-        *({{partition.manifest.name}}_APP-ROT_ATTR_FN)
-        . = ALIGN(TFM_LINKER_APP_ROT_LINKER_CODE_ALIGNMENT);
-    } > FLASH
-    Image$${{partition.manifest.name}}_CODE$$Base = ADDR(.{{partition.manifest.name}}_RO);
-    Image$${{partition.manifest.name}}_CODE$$Limit = ADDR(.{{partition.manifest.name}}_RO) + SIZEOF(.{{partition.manifest.name}}_RO);
-
-    {% endif %}
-{% endfor %}
-    /**** APPLICATION RoT RO CODE + data ends here */
-
-#if defined(S_RAM_CODE_START)
-    /* Flash drivers code that gets copied from Flash */
-    .ER_CODE_SRAM : ALIGN(4)
-    {
-        *libflash_drivers*:*(.text*)
-        *libflash_drivers*:*(.rodata*)
-        KEEP(*(.ramfunc))
-        . = ALIGN(4); /* This alignment is needed to make the section size 4 bytes aligned */
-    } > CODE_RAM AT > FLASH
-    Image$$ER_CODE_SRAM$$Base = ADDR(.ER_CODE_SRAM);
-    Image$$ER_CODE_SRAM$$Limit = ADDR(.ER_CODE_SRAM) + SIZEOF(.ER_CODE_SRAM);
-#endif
-
-    .ER_TFM_CODE : ALIGN(4)
-    {
         *startup*(.text*)
-        *libplatform_s*:*(.text*)
-        *libtfm_spm*:*(.text*)
+        *libplatform_s*:(SORT_BY_ALIGNMENT(.text*))
+        *libtfm_spm*:(SORT_BY_ALIGNMENT(.text*))
 
-        *libplatform_s*:*(.rodata*)
-        *libtfm_spm*:*(.rodata*)
+        *libplatform_s*:(SORT_BY_ALIGNMENT(.rodata*))
+        *libtfm_spm*:(SORT_BY_ALIGNMENT(.rodata*))
     } > FLASH
 
     /**** Unprivileged Secure code starts here */
-    .ER_UNPRIV_CODE : ALIGN(TFM_LINKER_UNPRIV_CODE_ALIGNMENT)
+    .ER_UNPRIV_CODE ALIGN(TFM_LINKER_UNPRIV_CODE_ALIGNMENT) :
     {
         *(SFN)
-        *(.text*)
+        *(SORT_BY_ALIGNMENT(.text*))
 
         KEEP(*(.init))
         KEEP(*(.fini))
@@ -244,14 +242,14 @@ SECTIONS
          *(SORT(.dtors.*))
          *(.dtors)
 
-        *(.rodata*)
+        *(SORT_BY_ALIGNMENT(.rodata*))
 
         KEEP(*(.eh_frame*))
 
         . = ALIGN(TFM_LINKER_UNPRIV_CODE_ALIGNMENT);
     } > FLASH
-    Image$$TFM_UNPRIV_CODE$$RO$$Base = ADDR(.ER_UNPRIV_CODE);
-    Image$$TFM_UNPRIV_CODE$$RO$$Limit = ADDR(.ER_UNPRIV_CODE) + SIZEOF(.ER_UNPRIV_CODE);
+    Image$$TFM_UNPRIV_CODE_START$$RO$$Base = ADDR(.ER_UNPRIV_CODE);
+    Image$$TFM_UNPRIV_CODE_END$$RO$$Limit = ADDR(.ER_UNPRIV_CODE) + SIZEOF(.ER_UNPRIV_CODE);
 
     /* Position tag */
     . = ALIGN(TFM_LINKER_PT_RO_ALIGNMENT);
@@ -272,10 +270,11 @@ SECTIONS
     /**** Base address of secure data area */
     .tfm_secure_data_start :
     {
-        . = ABSOLUTE(S_DATA_START) ;
+        /* Relocate current position to RAM */
+        . = ALIGN(4);
     } > RAM
 
-   /* Position tag */
+    /* Position tag */
     . = ALIGN(TFM_LINKER_PT_PRIV_RWZI_ALIGNMENT);
     Image$$PT_PRIV_RWZI_START$$Base = .;
 
@@ -283,12 +282,12 @@ SECTIONS
      * msp_stack is extended until the beginning of RAM, when shared_date
      * was read out by partitions
      */
-    .tfm_bl2_shared_data : ALIGN(TFM_LINKER_BL2_SHARED_DATA_ALIGNMENT)
+    .tfm_bl2_shared_data ALIGN(TFM_LINKER_BL2_SHARED_DATA_ALIGNMENT) :
     {
         . += BOOT_TFM_SHARED_DATA_SIZE;
     } > RAM
 
-    .msp_stack : ALIGN(TFM_LINKER_MSP_STACK_ALIGNMENT)
+    .msp_stack ALIGN(TFM_LINKER_MSP_STACK_ALIGNMENT) :
     {
         . += __msp_stack_size__ - 0x8;
     } > RAM
@@ -303,7 +302,7 @@ SECTIONS
 
 #if defined(ENABLE_HEAP)
     __heap_size__ = S_HEAP_SIZE;
-    .heap : ALIGN(8)
+    .heap ALIGN(8) :
     {
         __end__ = .;
         PROVIDE(end = .);
@@ -318,9 +317,9 @@ SECTIONS
     {
         *libtfm_spm*:*(.data*);
     } > RAM AT> FLASH
-    .spm_bss :
+    .spm_bss (NOLOAD):
     {
-        *libtfm_spm*:*(.bss*);
+        *libtfm_spm*:(SORT_BY_ALIGNMENT(.bss*));
     } > RAM AT> RAM
 
     /**** PSA RoT DATA start here */
@@ -331,16 +330,16 @@ SECTIONS
     . = ALIGN(TFM_LINKER_PSA_ROT_LINKER_DATA_ALIGNMENT);
     Image$$PT_{{partition.manifest.name}}_PRIVATE_DATA_START$$Base = .;
 
-    .ER_{{partition.manifest.name}}_RWZI : ALIGN(TFM_LINKER_PSA_ROT_LINKER_DATA_ALIGNMENT)
+    .ER_{{partition.manifest.name}}_RWZI ALIGN(TFM_LINKER_PSA_ROT_LINKER_DATA_ALIGNMENT) :
     {
     {% if partition.attr.linker_pattern.library_list %}
         {% for pattern in partition.attr.linker_pattern.library_list %}
-        {{pattern}}:*(.data*)
+        {{pattern}}:(SORT_BY_ALIGNMENT(.data*))
         {% endfor %}
     {% endif %}
     {% if partition.attr.linker_pattern.object_list %}
         {% for pattern in partition.attr.linker_pattern.object_list %}
-        {{pattern}}(.data*)
+        {{pattern}}(SORT_BY_ALIGNMENT(.data*))
         {% endfor %}
     {% endif %}
         *({{partition.manifest.name}}_PSA-ROT_ATTR_RW)
@@ -349,12 +348,12 @@ SECTIONS
     Image$$ER_{{partition.manifest.name}}_RWZI$$RW$$Base = ADDR(.ER_{{partition.manifest.name}}_RWZI);
     Image$$ER_{{partition.manifest.name}}_RWZI$$RW$$Limit = ADDR(.ER_{{partition.manifest.name}}_RWZI) + SIZEOF(.ER_{{partition.manifest.name}}_RWZI);
 
-    .{{partition.manifest.name}}_RWZI_BSS : ALIGN(4)
+    .{{partition.manifest.name}}_RWZI_BSS ALIGN(4) (NOLOAD):
     {
         start_of_{{partition.manifest.name}}_RWZI = .;
     {% if partition.attr.linker_pattern.library_list %}
         {% for pattern in partition.attr.linker_pattern.library_list %}
-        {{pattern}}:*(.bss*)
+        {{pattern}}:(SORT_BY_ALIGNMENT(.bss*))
         {{pattern}}:*(COMMON)
         {% endfor %}
     {% endif %}
@@ -390,7 +389,7 @@ SECTIONS
     . = ALIGN(TFM_LINKER_APP_ROT_LINKER_DATA_ALIGNMENT);
     Image$$PT_{{partition.manifest.name}}_PRIVATE_DATA_START$$Base = .;
 
-    .ER_{{partition.manifest.name}}_RWZI : ALIGN(TFM_LINKER_APP_ROT_LINKER_DATA_ALIGNMENT)
+    .ER_{{partition.manifest.name}}_RWZI ALIGN(TFM_LINKER_APP_ROT_LINKER_DATA_ALIGNMENT) :
     {
     {% if partition.attr.linker_pattern.library_list %}
         {% for pattern in partition.attr.linker_pattern.library_list %}
@@ -399,7 +398,7 @@ SECTIONS
     {% endif %}
     {% if partition.attr.linker_pattern.object_list %}
         {% for pattern in partition.attr.linker_pattern.object_list %}
-        {{pattern}}(.data*)
+        {{pattern}}(SORT_BY_ALIGNMENT(.data*))
         {% endfor %}
     {% endif %}
         *({{partition.manifest.name}}_APP-ROT_ATTR_RW)
@@ -408,18 +407,18 @@ SECTIONS
     Image$$.ER_{{partition.manifest.name}}_RWZI$$RW$$Base = ADDR(.ER_{{partition.manifest.name}}_RWZI);
     Image$$.ER_{{partition.manifest.name}}_RWZI$$RW$$Limit = ADDR(.ER_{{partition.manifest.name}}_RWZI) + SIZEOF(.ER_{{partition.manifest.name}}_RWZI);
 
-    .{{partition.manifest.name}}_RWZI_BSS : ALIGN(4)
+    .{{partition.manifest.name}}_RWZI_BSS ALIGN(4) (NOLOAD):
     {
         start_of_{{partition.manifest.name}}_RWZI = .;
     {% if partition.attr.linker_pattern.library_list %}
         {% for pattern in partition.attr.linker_pattern.library_list %}
-        {{pattern}}:*(.bss*)
+        {{pattern}}:(SORT_BY_ALIGNMENT(.bss*))
         {{pattern}}:*(COMMON)
         {% endfor %}
     {% endif %}
     {% if partition.attr.linker_pattern.object_list %}
         {% for pattern in partition.attr.linker_pattern.object_list %}
-        {{pattern}}(.bss*)
+        {{pattern}}(SORT_BY_ALIGNMENT(.bss*))
         {{pattern}}(COMMON)
         {% endfor %}
     {% endif %}
@@ -443,19 +442,19 @@ SECTIONS
     Image$$PT_APP_RWZI_END$$Base = .;
 
 #ifdef RAM_VECTORS_SUPPORT
-    .ramVectors (NOLOAD) : ALIGN(TFM_LINKER_RAM_VECTORS_ALIGNMENT)
+    .ramVectors ALIGN(TFM_LINKER_RAM_VECTORS_ALIGNMENT) (NOLOAD) :
     {
         __ram_vectors_start__ = .;
         KEEP(*(.ram_vectors))
         __ram_vectors_end__   = .;
     } > RAM
-    .TFM_DATA __ram_vectors_end__ : ALIGN(4)
+    .TFM_DATA __ram_vectors_end__ :
 #else
 
-    .TFM_DATA : ALIGN(4)
+    .TFM_DATA ALIGN(4) :
 #endif
     {
-        *(.data*)
+        *(SORT_BY_ALIGNMENT(.data*))
 
         . = ALIGN(4);
         /* preinit data */
@@ -485,36 +484,38 @@ SECTIONS
     Image$$ER_TFM_DATA$$RW$$Limit = ADDR(.TFM_DATA) + SIZEOF(.TFM_DATA);
 
 #if defined(CONFIG_TFM_PARTITION_META)
-    .TFM_SP_META_PTR : ALIGN(TFM_LINKER_SP_META_PTR_ALIGNMENT)
+    .TFM_SP_META_PTR ALIGN(TFM_LINKER_SP_META_PTR_ALIGNMENT) :
     {
         *(.bss.SP_META_PTR_SPRTL_INST)
         . = ALIGN(TFM_LINKER_SP_META_PTR_ALIGNMENT);
     } > RAM AT> RAM
     Image$$TFM_SP_META_PTR$$ZI$$Base = ADDR(.TFM_SP_META_PTR);
     Image$$TFM_SP_META_PTR$$ZI$$Limit = ADDR(.TFM_SP_META_PTR) + SIZEOF(.TFM_SP_META_PTR);
+    /* This is needed for the uniform configuration of MPU region. */
+    Image$$TFM_SP_META_PTR_END$$ZI$$Limit = Image$$TFM_SP_META_PTR$$ZI$$Limit;
 #endif
 
-    .TFM_BSS : ALIGN(4)
+    .TFM_BSS ALIGN(4) (NOLOAD):
     {
         __bss_start__ = .;
 
         /* The runtime partition placed order is same as load partition */
         __partition_runtime_start__ = .;
-        KEEP(*(.bss.part_runtime_priority_lowest))
-        KEEP(*(.bss.part_runtime_priority_low))
-        KEEP(*(.bss.part_runtime_priority_normal))
-        KEEP(*(.bss.part_runtime_priority_high))
+        KEEP(*(.bss.part_runtime_priority_00))
+        KEEP(*(.bss.part_runtime_priority_01))
+        KEEP(*(.bss.part_runtime_priority_02))
+        KEEP(*(.bss.part_runtime_priority_03))
         __partition_runtime_end__ = .;
         . = ALIGN(4);
 
         /* The runtime service placed order is same as load partition */
         __service_runtime_start__ = .;
-        KEEP(*(.bss.serv_runtime_priority_lowest))
-        KEEP(*(.bss.serv_runtime_priority_low))
-        KEEP(*(.bss.serv_runtime_priority_normal))
-        KEEP(*(.bss.serv_runtime_priority_high))
+        KEEP(*(.bss.serv_runtime_priority_00))
+        KEEP(*(.bss.serv_runtime_priority_01))
+        KEEP(*(.bss.serv_runtime_priority_02))
+        KEEP(*(.bss.serv_runtime_priority_03))
         __service_runtime_end__ = .;
-        *(.bss*)
+        *(SORT_BY_ALIGNMENT(.bss*))
         *(COMMON)
         . = ALIGN(4);
         __bss_end__ = .;

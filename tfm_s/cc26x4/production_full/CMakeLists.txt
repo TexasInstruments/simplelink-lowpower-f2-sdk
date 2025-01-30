@@ -7,8 +7,6 @@
 
 cmake_minimum_required(VERSION 3.15)
 
-project($(PROJECT_NAME) LANGUAGES ASM C)
-
 add_subdirectory(crypto_sp)
 add_subdirectory(internal_storage_sp)
 add_subdirectory(tdc)

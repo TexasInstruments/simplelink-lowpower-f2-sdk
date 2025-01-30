@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2023, Texas Instruments Incorporated
+ * Copyright (c) 2017-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -65,7 +65,7 @@
 
     /*
      * Max key sizes 521b private keys,
-     * (521b) * 2 + 2B for octet offset for public keys
+     * (521b) * 2 + 1B for octet offset for public keys
      */
     #define ECJPAKE_MAX_KEYSTORE_PUBLIC_KEY_SIZE  133
     #define ECJPAKE_MAX_KEYSTORE_PRIVATE_KEY_SIZE 66
@@ -119,10 +119,10 @@ static bool isInitialized = false;
 static uint32_t scratchBufferSize = SCRATCH_BUFFER_0_SIZE;
 
 #if (ENABLE_KEY_STORAGE == 1)
-uint8_t KeyStore_privateKeyMaterial[ECJPAKE_MAX_KEYSTORE_PRIVATE_KEY_SIZE];
-uint8_t KeyStore_preSharedSecretMaterial[ECJPAKE_MAX_KEYSTORE_PRIVATE_KEY_SIZE];
-uint8_t KeyStore_publicKeyMaterial[ECJPAKE_MAX_KEYSTORE_PUBLIC_KEY_SIZE];
-uint8_t KeyStore_sharedSecretMaterial[ECJPAKE_MAX_KEYSTORE_PUBLIC_KEY_SIZE];
+uint8_t ECJPAKECC26X2_keyStorePrivateKeyMaterial[ECJPAKE_MAX_KEYSTORE_PRIVATE_KEY_SIZE];
+uint8_t ECJPAKECC26X2_keyStorePreSharedSecretMaterial[ECJPAKE_MAX_KEYSTORE_PRIVATE_KEY_SIZE];
+uint8_t ECJPAKECC26X2_keyStorePublicKeyMaterial[ECJPAKE_MAX_KEYSTORE_PUBLIC_KEY_SIZE];
+uint8_t ECJPAKECC26X2_keyStoreSharedSecretMaterial[ECJPAKE_MAX_KEYSTORE_PUBLIC_KEY_SIZE];
 
 /*
  *  ======== ECJPAKE_isPersistentLifetime ========
@@ -174,13 +174,13 @@ int_fast16_t ECJPAKE_getPreSharedSecret(const CryptoKey *preSharedSecret,
 #if (ENABLE_KEY_STORAGE == 1)
     else if (preSharedSecret->encoding == CryptoKey_KEYSTORE)
     {
-        memset(KeyStore_preSharedSecretMaterial, 0, sizeof(KeyStore_preSharedSecretMaterial));
+        memset(ECJPAKECC26X2_keyStorePreSharedSecretMaterial, 0, sizeof(ECJPAKECC26X2_keyStorePreSharedSecretMaterial));
         /* Obtain the private key from keystore */
         GET_KEY_ID(keyID, preSharedSecret->u.keyStore.keyID);
 
         keyStoreStatus = KeyStore_PSA_getKey(keyID,
-                                             KeyStore_preSharedSecretMaterial,
-                                             sizeof(KeyStore_preSharedSecretMaterial),
+                                             ECJPAKECC26X2_keyStorePreSharedSecretMaterial,
+                                             sizeof(ECJPAKECC26X2_keyStorePreSharedSecretMaterial),
                                              preSharedSecretLength,
                                              KEYSTORE_PSA_ALG_PAKE,
                                              KEYSTORE_PSA_KEY_USAGE_DERIVE);
@@ -191,7 +191,7 @@ int_fast16_t ECJPAKE_getPreSharedSecret(const CryptoKey *preSharedSecret,
         }
         else
         {
-            *preSharedSecretMaterial = KeyStore_preSharedSecretMaterial;
+            *preSharedSecretMaterial = ECJPAKECC26X2_keyStorePreSharedSecretMaterial;
             status                   = ECJPAKE_STATUS_SUCCESS;
         }
     }
@@ -224,13 +224,13 @@ int_fast16_t ECJPAKE_getPrivateKey(const CryptoKey *privateKey, uint8_t **privat
 #if (ENABLE_KEY_STORAGE == 1)
     else if (privateKey->encoding == CryptoKey_KEYSTORE)
     {
-        memset(KeyStore_privateKeyMaterial, 0, sizeof(KeyStore_privateKeyMaterial));
+        memset(ECJPAKECC26X2_keyStorePrivateKeyMaterial, 0, sizeof(ECJPAKECC26X2_keyStorePrivateKeyMaterial));
         /* Obtain the private key from keystore */
         GET_KEY_ID(keyID, privateKey->u.keyStore.keyID);
 
         keyStoreStatus = KeyStore_PSA_getKey(keyID,
-                                             KeyStore_privateKeyMaterial,
-                                             sizeof(KeyStore_privateKeyMaterial),
+                                             ECJPAKECC26X2_keyStorePrivateKeyMaterial,
+                                             sizeof(ECJPAKECC26X2_keyStorePrivateKeyMaterial),
                                              privateKeyLength,
                                              KEYSTORE_PSA_ALG_PAKE,
                                              KEYSTORE_PSA_KEY_USAGE_DERIVE);
@@ -240,7 +240,7 @@ int_fast16_t ECJPAKE_getPrivateKey(const CryptoKey *privateKey, uint8_t **privat
         }
         else
         {
-            *privateKeyMaterial = KeyStore_privateKeyMaterial;
+            *privateKeyMaterial = ECJPAKECC26X2_keyStorePrivateKeyMaterial;
             status              = ECJPAKE_STATUS_SUCCESS;
         }
     }
@@ -273,13 +273,13 @@ int_fast16_t ECJPAKE_getPublicKey(const CryptoKey *publicKey, uint8_t **publicKe
 #if (ENABLE_KEY_STORAGE == 1)
     else if (publicKey->encoding == CryptoKey_KEYSTORE)
     {
-        memset(KeyStore_publicKeyMaterial, 0, sizeof(KeyStore_publicKeyMaterial));
+        memset(ECJPAKECC26X2_keyStorePublicKeyMaterial, 0, sizeof(ECJPAKECC26X2_keyStorePublicKeyMaterial));
         /* Obtain the public key from keystore */
         GET_KEY_ID(keyID, publicKey->u.keyStore.keyID);
 
         keyStoreStatus = KeyStore_PSA_getKey(keyID,
-                                             KeyStore_publicKeyMaterial,
-                                             sizeof(KeyStore_publicKeyMaterial),
+                                             ECJPAKECC26X2_keyStorePublicKeyMaterial,
+                                             sizeof(ECJPAKECC26X2_keyStorePublicKeyMaterial),
                                              publicKeyLength,
                                              KEYSTORE_PSA_ALG_PAKE,
                                              KEYSTORE_PSA_KEY_USAGE_DERIVE);
@@ -289,7 +289,7 @@ int_fast16_t ECJPAKE_getPublicKey(const CryptoKey *publicKey, uint8_t **publicKe
         }
         else
         {
-            *publicKeyMaterial = KeyStore_publicKeyMaterial;
+            *publicKeyMaterial = ECJPAKECC26X2_keyStorePublicKeyMaterial;
             status             = ECJPAKE_STATUS_SUCCESS;
         }
     }
@@ -316,35 +316,8 @@ int_fast16_t ECJPAKE_getSharedSecretBuffer(const CryptoKey *sharedSecret, uint8_
 #if (ENABLE_KEY_STORAGE == 1)
     else if (sharedSecret->encoding == CryptoKey_BLANK_KEYSTORE)
     {
-        *sharedSecretMaterial = KeyStore_sharedSecretMaterial;
+        *sharedSecretMaterial = ECJPAKECC26X2_keyStoreSharedSecretMaterial;
         status                = ECJPAKE_STATUS_SUCCESS;
-    }
-#endif
-    else
-    {
-        status = ECJPAKE_STATUS_ERROR;
-    }
-
-    return status;
-}
-
-/*
- *  ======== ECJPAKE_getPublicKeyBuffer ========
- */
-int_fast16_t ECJPAKE_getPublicKeyBuffer(const CryptoKey *publicKey, uint8_t **publicKeyMaterial)
-{
-    int_fast16_t status;
-    if (publicKey->encoding == CryptoKey_BLANK_PLAINTEXT)
-    {
-        *publicKeyMaterial = publicKey->u.plaintext.keyMaterial;
-        status             = ECJPAKE_STATUS_SUCCESS;
-    }
-#if (ENABLE_KEY_STORAGE == 1)
-    else if (publicKey->encoding == CryptoKey_BLANK_KEYSTORE)
-    {
-        memset(KeyStore_publicKeyMaterial, 0, sizeof(KeyStore_publicKeyMaterial));
-        *publicKeyMaterial = KeyStore_publicKeyMaterial;
-        status             = ECJPAKE_STATUS_SUCCESS;
     }
 #endif
     else
@@ -1148,8 +1121,8 @@ static int_fast16_t ECJPAKECC26X2_runFSM(ECJPAKE_Handle handle)
 #if (ENABLE_KEY_STORAGE == 1)
             else if (object->operation.generateRoundTwoKeys->myCombinedPrivateKey->encoding == CryptoKey_BLANK_KEYSTORE)
             {
-                memset(KeyStore_privateKeyMaterial, 0, sizeof(KeyStore_privateKeyMaterial));
-                privateKeyMaterial = KeyStore_privateKeyMaterial;
+                memset(ECJPAKECC26X2_keyStorePrivateKeyMaterial, 0, sizeof(ECJPAKECC26X2_keyStorePrivateKeyMaterial));
+                privateKeyMaterial = ECJPAKECC26X2_keyStorePrivateKeyMaterial;
             }
 #endif
             else
@@ -1878,27 +1851,7 @@ int_fast16_t ECJPAKE_roundOneGenerateKeys(ECJPAKE_Handle handle, ECJPAKE_Operati
     {
         return ECJPAKE_STATUS_RESOURCE_UNAVAILABLE;
     }
-#if (ENABLE_KEY_STORAGE == 1)
-    if (ECJPAKE_isPersistentLifetime(operation->myPublicKey1))
-    {
-        return ECJPAKE_STATUS_NOT_SUPPORTED;
-    }
 
-    if (ECJPAKE_isPersistentLifetime(operation->myPublicKey2))
-    {
-        return ECJPAKE_STATUS_NOT_SUPPORTED;
-    }
-
-    if (ECJPAKE_isPersistentLifetime(operation->myPublicV1))
-    {
-        return ECJPAKE_STATUS_NOT_SUPPORTED;
-    }
-
-    if (ECJPAKE_isPersistentLifetime(operation->myPublicV2))
-    {
-        return ECJPAKE_STATUS_NOT_SUPPORTED;
-    }
-#endif
     /* Copy over all parameters we will need access to in the FSM.
      * The FSM runs in SWI context and thus needs to keep track of
      * all of them somehow.
@@ -2054,32 +2007,7 @@ int_fast16_t ECJPAKE_roundTwoGenerateKeys(ECJPAKE_Handle handle, ECJPAKE_Operati
     {
         return ECJPAKE_STATUS_OUTPUT_KEY_NOT_BLANK;
     }
-#if (ENABLE_KEY_STORAGE == 1)
-    if (ECJPAKE_isPersistentLifetime(operation->theirNewGenerator))
-    {
-        return ECJPAKE_STATUS_NOT_SUPPORTED;
-    }
 
-    if (ECJPAKE_isPersistentLifetime(operation->myNewGenerator))
-    {
-        return ECJPAKE_STATUS_NOT_SUPPORTED;
-    }
-
-    if (ECJPAKE_isPersistentLifetime(operation->myCombinedPrivateKey))
-    {
-        return ECJPAKE_STATUS_NOT_SUPPORTED;
-    }
-
-    if (ECJPAKE_isPersistentLifetime(operation->myCombinedPublicKey))
-    {
-        return ECJPAKE_STATUS_NOT_SUPPORTED;
-    }
-
-    if (ECJPAKE_isPersistentLifetime(operation->myPublicV))
-    {
-        return ECJPAKE_STATUS_NOT_SUPPORTED;
-    }
-#endif
     if (ECJPAKECC26X2_waitForAccess(handle) != SemaphoreP_OK)
     {
         return ECJPAKE_STATUS_RESOURCE_UNAVAILABLE;
@@ -2130,12 +2058,7 @@ int_fast16_t ECJPAKE_computeSharedSecret(ECJPAKE_Handle handle, ECJPAKE_Operatio
     {
         return ECJPAKE_STATUS_OUTPUT_KEY_NOT_BLANK;
     }
-#if (ENABLE_KEY_STORAGE == 1)
-    if (ECJPAKE_isPersistentLifetime(operation->sharedSecret))
-    {
-        return ECJPAKE_STATUS_NOT_SUPPORTED;
-    }
-#endif
+
     if (ECJPAKECC26X2_waitForAccess(handle) != SemaphoreP_OK)
     {
         return ECJPAKE_STATUS_RESOURCE_UNAVAILABLE;

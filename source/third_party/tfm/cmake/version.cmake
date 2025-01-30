@@ -7,7 +7,7 @@
 #-------------------------------------------------------------------------------
 
 # The 'TFM_VERSION_MANUAL' is used for fallback when Git tags are not available
-set(TFM_VERSION_MANUAL "1.8.0")
+set(TFM_VERSION_MANUAL "2.0.0")
 
 execute_process(COMMAND git describe --tags --always
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}

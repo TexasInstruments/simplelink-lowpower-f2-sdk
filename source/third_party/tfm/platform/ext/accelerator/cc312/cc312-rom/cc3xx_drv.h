@@ -15,5 +15,6 @@
 #include "cc3xx_lcs.h"
 #include "cc3xx_otp.h"
 #include "cc3xx_dma.h"
+#include "cc3xx_kdf.h"
 
 #endif /* CC3XX_DRV_H */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2022, Texas Instruments Incorporated
+ * Copyright (c) 2017-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -89,6 +89,13 @@
  *  SHA2_init();
  *
  *  handle = SHA2_open(SHA2_INSTANCE, NULL);
+ *
+ * // For CC27XX devices only,
+ * // Since the SHA2 driver for CC27XX relies on one HW engine (the HSM) for all of its operations
+ * // If the HSM boot up sequence fails, SHA2_open() will return NULL.
+ * if (!handle) {
+ *     // Handle error
+ * }
  *
  *  result = SHA2_hashData(handle, message, strlen(message), actualDigest);
  *
@@ -276,6 +283,87 @@
  *
  *  SHA2_close(handle);
  *  @endcode
+ *
+ * ## One-step HMAC operation for CC27XX #
+ *
+ *  The #SHA2_hmac() function can perform a SHA2 operation in a single call.
+ *  It will always use the most highly optimized routine with the least overhead
+ *  and the fastest runtime. It requires that the entire input message is
+ *  available to the function in a contiguous location at the start of the call.
+ *
+ *  After a SHA2 operation completes, the application may either start
+ *  another operation or close the driver by calling #SHA2_close().
+ *
+ *  @code
+ *  SHA2_Params params;
+ *  SHA2_Handle handle;
+ *  int_fast16_t result;
+ *  CryptoKey hmacKey;
+ *
+ *  uint8_t message[] = {
+ *          0xb1, 0x68, 0x9c, 0x25, 0x91, 0xea, 0xf3, 0xc9,
+ *          0xe6, 0x60, 0x70, 0xf8, 0xa7, 0x79, 0x54, 0xff,
+ *          0xb8, 0x17, 0x49, 0xf1, 0xb0, 0x03, 0x46, 0xf9,
+ *          0xdf, 0xe0, 0xb2, 0xee, 0x90, 0x5d, 0xcc, 0x28,
+ *          0x8b, 0xaf, 0x4a, 0x92, 0xde, 0x3f, 0x40, 0x01,
+ *          0xdd, 0x9f, 0x44, 0xc4, 0x68, 0xc3, 0xd0, 0x7d,
+ *          0x6c, 0x6e, 0xe8, 0x2f, 0xac, 0xea, 0xfc, 0x97,
+ *          0xc2, 0xfc, 0x0f, 0xc0, 0x60, 0x17, 0x19, 0xd2,
+ *          0xdc, 0xd0, 0xaa, 0x2a, 0xec, 0x92, 0xd1, 0xb0,
+ *          0xae, 0x93, 0x3c, 0x65, 0xeb, 0x06, 0xa0, 0x3c,
+ *          0x9c, 0x93, 0x5c, 0x2b, 0xad, 0x04, 0x59, 0x81,
+ *          0x02, 0x41, 0x34, 0x7a, 0xb8, 0x7e, 0x9f, 0x11,
+ *          0xad, 0xb3, 0x04, 0x15, 0x42, 0x4c, 0x6c, 0x7f,
+ *          0x5f, 0x22, 0xa0, 0x03, 0xb8, 0xab, 0x8d, 0xe5,
+ *          0x4f, 0x6d, 0xed, 0x0e, 0x3a, 0xb9, 0x24, 0x5f,
+ *          0xa7, 0x95, 0x68, 0x45, 0x1d, 0xfa, 0x25, 0x8e};
+ *
+ *  // In this case, keyingMaterial is 40 bytes long. It could also be
+ *  // any other length.
+ *  uint8_t keyingMaterial[] = {
+ *          0x97, 0x79, 0xd9, 0x12, 0x06, 0x42, 0x79, 0x7f,
+ *          0x17, 0x47, 0x02, 0x5d, 0x5b, 0x22, 0xb7, 0xac,
+ *          0x60, 0x7c, 0xab, 0x08, 0xe1, 0x75, 0x8f, 0x2f,
+ *          0x3a, 0x46, 0xc8, 0xbe, 0x1e, 0x25, 0xc5, 0x3b,
+ *          0x8c, 0x6a, 0x8f, 0x58, 0xff, 0xef, 0xa1, 0x76};
+ *
+ *
+ *
+ *  uint8_t actualHmac[SHA2_DIGEST_LENGTH_BYTES_256];
+ *  uint8_t expectedHmac[] = {
+ *      0x76, 0x9f, 0x00, 0xd3, 0xe6, 0xa6, 0xcc, 0x1f,
+ *      0xb4, 0x26, 0xa1, 0x4a, 0x4f, 0x76, 0xc6, 0x46,
+ *      0x2e, 0x61, 0x49, 0x72, 0x6e, 0x0d, 0xee, 0x0e,
+ *      0xc0, 0xcf, 0x97, 0xa1, 0x66, 0x05, 0xac, 0x8b
+ *  };
+ *
+ *  SHA2_init();
+ *
+ *  SHA2_Params_init(&params);
+ *  params.returnBehavior = SHA2_RETURN_BEHAVIOR_BLOCKING;
+ *  handle = SHA2_open(0, &params);
+ *
+ *  // For CC27XX devices only,
+ *  // Since the SHA2 driver for CC27XX relies on one HW engine (the HSM) for all of its operations
+ *  // If the HSM boot up sequence fails, SHA2_open() will return NULL.
+ *  assert(handle != NULL);
+ *
+ *  CryptoKeyPlaintextHSM_initKey(&hmacKey,
+ *                             keyingMaterial,
+ *                             sizeof(keyingMaterial));
+ *
+ *  result = SHA2_hmac(handle,
+ *                     &hmacKey,
+ *                     message,
+ *                     sizeof(message),
+ *                     actualHmac);
+ *  assert(result == SHA2_STATUS_SUCCESS);
+ *
+ *  result = memcmp(actualHmac, expectedHmac, SHA2_DIGEST_LENGTH_BYTES_256);
+ *  assert(result == 0);
+ *
+ *  SHA2_close(handle);
+ *  @endcode
  */
 
 #ifndef ti_drivers_SHA2__include
@@ -349,6 +437,25 @@ extern "C" {
  * did not return KEYSTORE_PSA_STATUS_SUCCESS
  */
 #define SHA2_STATUS_KEYSTORE_ERROR ((int_fast16_t)-5)
+
+/*!
+ * @brief  The requested operation involves a DMA transfer larger than
+ * the hardware's DMA controller can handle.
+ *
+ * Functions return SHA2_STATUS_DMA_ERROR only on CC27XX devices, as
+ * large DMA transfers will not be automatically segmented into multiple
+ * token transactions.
+ */
+#define SHA2_STATUS_DMA_ERROR ((int_fast16_t)-6)
+
+/*!
+ * @brief  The requested operation contains data that cannot be accessed by
+ * the HSM Module.
+ *
+ * Functions return SHA2_STATUS_DATA_INACCESSIBLE only on CC35XX devices, since
+ * HSM module on CC35XX cannot access external flash and data must be in RAM.
+ */
+#define SHA2_STATUS_DATA_INACCESSIBLE ((int_fast16_t)-7)
 
 /*!
  * @brief   The way in which SHA2 function calls return after performing an
@@ -594,7 +701,7 @@ void SHA2_close(SHA2_Handle handle);
  *
  *  @sa     #SHA2_reset()
  */
-int_fast16_t SHA2_setupHmac(SHA2_Handle handle, CryptoKey *key);
+int_fast16_t SHA2_setupHmac(SHA2_Handle handle, const CryptoKey *key);
 
 /*!
  *  @brief  Adds a segment of @c data with a @c length in bytes to the
@@ -623,6 +730,9 @@ int_fast16_t SHA2_setupHmac(SHA2_Handle handle, CryptoKey *key);
  *  @retval #SHA2_STATUS_RESOURCE_UNAVAILABLE  The required hardware resource
  *                                             was not available. Try again
  *                                             later.
+ *  @retval #SHA2_STATUS_DMA_ERROR             The requested transaction is too
+ *                                             large for the HSM DMA controller
+ *                                             to handle.
  *  @retval #SHA2_STATUS_CANCELED              The hash operation was canceled.
  *
  *  @sa     #SHA2_open(), #SHA2_reset(), #SHA2_finalize()
@@ -711,6 +821,9 @@ int_fast16_t SHA2_finalizeHmac(SHA2_Handle handle, void *hmac);
  *  @retval #SHA2_STATUS_RESOURCE_UNAVAILABLE  The required hardware resource
  *                                             was not available. Try again
  *                                             later.
+ *  @retval #SHA2_STATUS_DMA_ERROR             The requested transaction is too
+ *                                             large for the HSM DMA controller
+ *                                             to handle.
  *  @retval #SHA2_STATUS_CANCELED              The hash operation was canceled.
  *
  *  @sa     #SHA2_open()
@@ -753,7 +866,7 @@ int_fast16_t SHA2_hashData(SHA2_Handle handle, const void *data, size_t dataLeng
  *
  *  @sa     #SHA2_open()
  */
-int_fast16_t SHA2_hmac(SHA2_Handle handle, CryptoKey *key, const void *data, size_t dataLength, void *hmac);
+int_fast16_t SHA2_hmac(SHA2_Handle handle, const CryptoKey *key, const void *data, size_t dataLength, void *hmac);
 
 /*!
  *  @brief Clears internal buffers and aborts an ongoing SHA2 operation.

@@ -44,11 +44,30 @@ const Common = system.getScript("/ti/ti_wisunfan/ti_wisunfan_common.js");
 const Docs = system.getScript("/ti/ti_wisunfan/advanced_config/"
     + "ti_wisunfan_advanced_config_docs.js");
 
+const networkProfileOptions = [
+    {name: "Small", displayName: "Maximize Responsiveness",
+        description: "Maximum network responsiveness (for small networks)"},
+    {name: "Medium", displayName: "Balanced Mode",
+        description: "Balance responsiveness and scalability (for medium size networks)"},
+    {name: "Large", displayName: "Maximize Scalabiliy",
+        description: "Maximize network scalability (for large networks)"},
+]
+
 // Configurables for the static 15.4 network settings group
 const config = {
     displayName: "Advanced",
     description: "Configure advanced settings",
     config: [
+        {
+            name: "networkProfile",
+            displayName: "Network Profile",
+            options: networkProfileOptions,
+            default: "Small",
+            hidden: false,
+            description: Docs.networkProfile.description,
+            longDescription: Docs.networkProfile.longDescription,
+            onChange: onNetworkSizeChange
+        },
         {
             name: "rapidJoin",
             displayName: "Rapid Join",
@@ -66,19 +85,45 @@ const config = {
         {
             name: "rapidDisconnectDetectBr",
             displayName: "Border Router Disconnect Detection Time (s)",
-            default: 1800,
+            default: 1800, // 1800s, 30 min
             description: Docs.rapidDisconnectDetectBr.description,
             longDescription: Docs.rapidDisconnectDetectBr.longDescription
         },
         {
             name: "rapidDisconnectDetectRn",
             displayName: "Router Node Disconnect Detection Time (s)",
-            default: 7200,
+            default: 7200, // 7200s, 2 hours
             description: Docs.rapidDisconnectDetectRn.description,
             longDescription: Docs.rapidDisconnectDetectRn.longDescription
         }
     ]
 };
+
+function onNetworkSizeChange(inst, ui)
+{
+    if (inst.networkProfile == "Small")
+    {
+        ui.rapidJoin.readOnly = false;
+        inst.rapidDisconnectDetectBr = 30*60;  // 30 min
+        inst.rapidDisconnectDetectRn = 2*3600; // 2 hours
+    }
+    else if (inst.networkProfile == "Medium")
+    {
+        ui.rapidJoin.readOnly = Docs.rapidJoin.readOnly;
+        inst.rapidJoin = false;
+        inst.mplLowLatency = false;
+        inst.rapidDisconnectDetectBr = 60*60;  // 60 min
+        inst.rapidDisconnectDetectRn = 4*3600; // 4 hours
+    }
+    else if (inst.networkProfile == "Large")
+    {
+        ui.rapidJoin.readOnly = Docs.rapidJoin.readOnly;
+        inst.rapidJoin = false;
+        inst.mplLowLatency = false;
+        inst.rapidDisconnectDetectBr = 90*60;  // 90 min
+        inst.rapidDisconnectDetectRn = 8*3600; // 8 hours
+    }
+}
 
 /*
  * ======== validate ========
@@ -97,7 +142,6 @@ function validate(inst, validation)
             inst, "mplLowLatency");
     }
 
-    // Add info and errors for disconnection detection times
     if(inst.rapidDisconnectDetectBr > 65535)
     {
         validation.logError("Disconnection detection time cannot \
@@ -110,19 +154,55 @@ function validate(inst, validation)
             exceed 65535 sec",
             inst, "rapidDisconnectDetectRn");
     }
-    if(inst.rapidDisconnectDetectBr < 300 ||
-       inst.rapidDisconnectDetectBr > 1800)
+
+    // Add info and errors for disconnection detection times
+    if(inst.networkProfile == "Small")
     {
-        validation.logInfo("Disconnection detection time recommended \
-            to be between 300 and 1800 sec",
-            inst, "rapidDisconnectDetectBr");
+        if(inst.rapidDisconnectDetectBr < 300 ||
+           inst.rapidDisconnectDetectBr > 1800)
+        {
+            validation.logInfo("Disconnection detection time recommended \
+                to be between 300 and 1800 sec",
+                inst, "rapidDisconnectDetectBr");
+        }
+        if(inst.rapidDisconnectDetectRn < 300 ||
+           inst.rapidDisconnectDetectRn > 7200)
+        {
+            validation.logInfo("Disconnection detection time recommended \
+                to be between 300 and 7200 sec",
+                inst, "rapidDisconnectDetectRn");
+        }
     }
-    if(inst.rapidDisconnectDetectRn < 300 ||
-       inst.rapidDisconnectDetectRn > 7200)
+    else if(inst.networkProfile == "Medium")
     {
-        validation.logInfo("Disconnection detection time recommended \
-            to be between 300 and 7200 sec",
-            inst, "rapidDisconnectDetectRn");
+        if(inst.rapidDisconnectDetectBr != 3600)
+        {
+            validation.logInfo("Disconnection detection time recommended \
+                to be 3600 sec",
+                inst, "rapidDisconnectDetectBr");
+        }
+        if(inst.rapidDisconnectDetectRn != 14400)
+        {
+            validation.logInfo("Disconnection detection time recommended \
+                to be 14400 sec",
+                inst, "rapidDisconnectDetectRn");
+        }
+
+    }
+    else if(inst.networkProfile == "Large")
+    {
+        if(inst.rapidDisconnectDetectBr != 5400)
+        {
+            validation.logInfo("Disconnection detection time recommended \
+                to be 5400 sec",
+                inst, "rapidDisconnectDetectBr");
+        }
+        if(inst.rapidDisconnectDetectRn != 28800)
+        {
+            validation.logInfo("Disconnection detection time recommended \
+                to be 28800 sec",
+                inst, "rapidDisconnectDetectRn");
+        }
     }
     return;
 }

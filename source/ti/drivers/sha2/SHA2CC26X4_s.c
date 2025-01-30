@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,9 +42,7 @@
 
 #include <ti/drivers/tfm/SecureCallback.h>
 
-#include <psa_manifest/crypto_sp.h> /* Auto-generated header */
-
-#include <third_party/tfm/interface/include/tfm_api.h>
+#include <third_party/tfm/secure_fw/spm/core/spm.h>
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
@@ -430,7 +428,7 @@ static inline psa_status_t SHA2_s_construct(psa_msg_t *msg)
             configPtr_s->object = NULL;
         }
     }
-    else if (TFM_CLIENT_ID_IS_S(msg->client_id))
+    else if (!TFM_CLIENT_ID_IS_NS(msg->client_id))
     {
         /*
          * Return the pointer to the secure config struct provided by the
@@ -547,28 +545,6 @@ static inline psa_status_t SHA2_s_close(psa_msg_t *msg)
 }
 
 /*
- *  ======== SHA2_s_copyKey ========
- */
-static psa_status_t SHA2_s_copyKey(CryptoKey *secureKey, const CryptoKey *key)
-{
-    /* Validate crypto key struct address range */
-    if (cmse_has_unpriv_nonsecure_read_access((void *)key, sizeof(CryptoKey)) == NULL)
-    {
-        return PSA_ERROR_PROGRAMMER_ERROR;
-    }
-
-    /* Copy key to secure memory */
-    (void)spm_memcpy(secureKey, key, sizeof(CryptoKey));
-
-    if (CryptoKey_verifySecureInputKey(secureKey) != CryptoKey_STATUS_SUCCESS)
-    {
-        return PSA_ERROR_PROGRAMMER_ERROR;
-    }
-
-    return PSA_SUCCESS;
-}
-
-/*
  *  ======== SHA2_s_hashData ========
  */
 static inline psa_status_t SHA2_s_hashData(psa_msg_t *msg)
@@ -640,7 +616,6 @@ static inline psa_status_t SHA2_s_hmac(psa_msg_t *msg)
     SHA2_Handle handle_s;
     SHA2CC26X2_Object *object;
     int_fast16_t ret;
-    psa_status_t status = PSA_SUCCESS;
     uint8_t hashLen;
 
     if ((msg->in_size[0] != sizeof(hmacMsg)) || (msg->out_size[0] != sizeof(ret)))
@@ -665,10 +640,10 @@ static inline psa_status_t SHA2_s_hmac(psa_msg_t *msg)
             return PSA_ERROR_PROGRAMMER_ERROR;
         }
 
-        status = SHA2_s_copyKey(&key_s, hmacMsg.key);
-        if (status != PSA_SUCCESS)
+        ret = CryptoKey_copySecureInputKey(&key_s, &hmacMsg.key);
+        if (ret != CryptoKey_STATUS_SUCCESS)
         {
-            return status;
+            return PSA_ERROR_PROGRAMMER_ERROR;
         }
 
         /* Validate input data address range */
@@ -678,7 +653,7 @@ static inline psa_status_t SHA2_s_hmac(psa_msg_t *msg)
         }
 
         /* Validate output HMAC address range */
-        if (cmse_has_unpriv_nonsecure_rw_access((void *)hmacMsg.hmac, hashLen) == NULL)
+        if (cmse_has_unpriv_nonsecure_rw_access(hmacMsg.hmac, hashLen) == NULL)
         {
             return PSA_ERROR_PROGRAMMER_ERROR;
         }
@@ -692,7 +667,7 @@ static inline psa_status_t SHA2_s_hmac(psa_msg_t *msg)
 
     psa_write(msg->handle, 0, &ret, sizeof(ret));
 
-    return status;
+    return PSA_SUCCESS;
 }
 
 /*
@@ -703,7 +678,6 @@ static inline psa_status_t SHA2_s_setHashType(psa_msg_t *msg)
     SHA2_Handle handle_s;
     SHA2_s_SetHashTypeMsg setTypeMsg;
     int_fast16_t ret;
-    psa_status_t status = PSA_SUCCESS;
 
     if ((msg->in_size[0] != sizeof(setTypeMsg)) || (msg->out_size[0] != sizeof(ret)))
     {
@@ -735,7 +709,7 @@ static inline psa_status_t SHA2_s_setHashType(psa_msg_t *msg)
 
     psa_write(msg->handle, 0, &ret, sizeof(ret));
 
-    return status;
+    return PSA_SUCCESS;
 }
 
 /*
@@ -751,7 +725,6 @@ static inline psa_status_t SHA2_s_setupHmac(psa_msg_t *msg)
     SHA2_Handle handle_s;
     SHA2_s_SetupHmacMsg setupMsg;
     int_fast16_t ret;
-    psa_status_t status = PSA_SUCCESS;
 
     if ((msg->in_size[0] != sizeof(setupMsg)) || (msg->out_size[0] != sizeof(ret)))
     {
@@ -768,10 +741,10 @@ static inline psa_status_t SHA2_s_setupHmac(psa_msg_t *msg)
             return PSA_ERROR_PROGRAMMER_ERROR;
         }
 
-        status = SHA2_s_copyKey(&key_s, setupMsg.key);
-        if (status != PSA_SUCCESS)
+        ret = CryptoKey_copySecureInputKey(&key_s, &setupMsg.key);
+        if (ret != CryptoKey_STATUS_SUCCESS)
         {
-            return status;
+            return PSA_ERROR_PROGRAMMER_ERROR;
         }
 
         ret = SHA2_setupHmac(handle_s, &key_s);
@@ -783,7 +756,7 @@ static inline psa_status_t SHA2_s_setupHmac(psa_msg_t *msg)
 
     psa_write(msg->handle, 0, &ret, sizeof(ret));
 
-    return status;
+    return PSA_SUCCESS;
 }
 
 /*
@@ -794,7 +767,6 @@ static inline psa_status_t SHA2_s_addData(psa_msg_t *msg)
     SHA2_Handle handle_s;
     SHA2_s_AddDataMsg addDataMsg;
     int_fast16_t ret;
-    psa_status_t status = PSA_SUCCESS;
 
     if ((msg->in_size[0] != sizeof(addDataMsg)) || (msg->out_size[0] != sizeof(ret)))
     {
@@ -826,7 +798,7 @@ static inline psa_status_t SHA2_s_addData(psa_msg_t *msg)
 
     psa_write(msg->handle, 0, &ret, sizeof(ret));
 
-    return status;
+    return PSA_SUCCESS;
 }
 
 /*
@@ -838,7 +810,6 @@ static inline psa_status_t SHA2_s_finalize(psa_msg_t *msg, int32_t msgType)
     SHA2_s_FinalizeMsg finalizeMsg;
     SHA2CC26X2_Object *object;
     int_fast16_t ret;
-    psa_status_t status = PSA_SUCCESS;
     uint8_t hashLen;
 
     if ((msg->in_size[0] != sizeof(finalizeMsg)) || (msg->out_size[0] != sizeof(ret)))
@@ -885,7 +856,7 @@ static inline psa_status_t SHA2_s_finalize(psa_msg_t *msg, int32_t msgType)
 
     psa_write(msg->handle, 0, &ret, sizeof(ret));
 
-    return status;
+    return PSA_SUCCESS;
 }
 
 /*
@@ -898,7 +869,7 @@ static inline psa_status_t SHA2_s_cancelOperation(psa_msg_t *msg)
     int_fast16_t ret;
 
     /* Cancellation is only supported for non-secure clients */
-    if (TFM_CLIENT_ID_IS_S(msg->client_id))
+    if (!TFM_CLIENT_ID_IS_NS(msg->client_id))
     {
         return PSA_ERROR_PROGRAMMER_ERROR;
     }

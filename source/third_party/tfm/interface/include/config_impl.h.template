@@ -15,11 +15,6 @@
 #define {{"%-56s"|format("CONFIG_TFM_SPM_BACKEND_IPC")}} {{config_impl['CONFIG_TFM_SPM_BACKEND_IPC']}}
 #define {{"%-56s"|format("CONFIG_TFM_SPM_BACKEND_SFN")}} {{config_impl['CONFIG_TFM_SPM_BACKEND_SFN']}}
 
-/* API calls */
-#define {{"%-56s"|format("CONFIG_TFM_PSA_API_SFN_CALL")}} {{config_impl['CONFIG_TFM_PSA_API_SFN_CALL']}}
-#define {{"%-56s"|format("CONFIG_TFM_PSA_API_CROSS_CALL")}} {{config_impl['CONFIG_TFM_PSA_API_CROSS_CALL']}}
-#define {{"%-56s"|format("CONFIG_TFM_PSA_API_SUPERVISOR_CALL")}} {{config_impl['CONFIG_TFM_PSA_API_SUPERVISOR_CALL']}}
-
 #define {{"%-56s"|format("CONFIG_TFM_CONNECTION_BASED_SERVICE_API")}} {{config_impl['CONFIG_TFM_CONNECTION_BASED_SERVICE_API']}}
 #define {{"%-56s"|format("CONFIG_TFM_MMIO_REGION_ENABLE")}} {{config_impl['CONFIG_TFM_MMIO_REGION_ENABLE']}}
 #define {{"%-56s"|format("CONFIG_TFM_FLIH_API")}} {{config_impl['CONFIG_TFM_FLIH_API']}}
@@ -27,7 +22,7 @@
 
 #if CONFIG_TFM_SPM_BACKEND_IPC == 1
 /* Trustzone NS agent working stack size. */
-#if defined(TFM_FIH_PROFILE_ON) && TFM_LVL == 1
+#if defined(TFM_FIH_PROFILE_ON) && TFM_ISOLATION_LEVEL == 1
 #define {{"%-56s"|format("CONFIG_TFM_NS_AGENT_TZ_STACK_SIZE")}} 1256
 #else
 #define {{"%-56s"|format("CONFIG_TFM_NS_AGENT_TZ_STACK_SIZE")}} 1024

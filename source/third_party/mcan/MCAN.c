@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Texas Instruments Incorporated
+ * Copyright (c) 2023-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -165,7 +165,7 @@
 /* Start Address bit shift for any MCAN registers containing a word-aligned
  * start address field.
  */
-#define MCAN_START_ADDR_SHIFT  (2U)
+#define MCAN_START_ADDR_SHIFT (2U)
 
 /*!
  *  @brief Macro to extract a field value. This macro extracts the field value
@@ -230,7 +230,7 @@ static void MCAN_readMsg(uint32_t elemAddr, MCAN_RxBufElement *elem);
 static void MCAN_writeMsgNoCpy(uint32_t elemAddr, const MCAN_TxBufElementNoCpy *elem);
 static void MCAN_writeMsg(uint32_t elemAddr, const MCAN_TxBufElement *elem);
 
-/*! Payload bytes indexed by 'dlc' field. */
+/*! Payload bytes indexed by Data Length Code (DLC) field. */
 static const size_t MCAN_dataSize[16] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 20, 24, 32, 48, 64};
 
 /*! Element Size (RAM words) indexed by TXESC.TBDS, RXESC.RBDS or RXESC.FnDS */
@@ -347,7 +347,7 @@ static void MCAN_readMsgNoCpy(uint32_t elemAddr, MCAN_RxBufElementNoCpy *elem)
 
     dataSize = MCAN_dataSize[elem->dlc];
 
-    MCAN_readMsgRAM(elem->data, tempElemAddr, dataSize);
+    MCAN_readMsgRam(elem->data, tempElemAddr, dataSize);
 }
 
 /*
@@ -387,7 +387,7 @@ static void MCAN_readMsg(uint32_t elemAddr, MCAN_RxBufElement *elem)
 
     dataSize = MCAN_dataSize[elem->dlc];
 
-    MCAN_readMsgRAM(elem->data, tempElemAddr, dataSize);
+    MCAN_readMsgRam(elem->data, tempElemAddr, dataSize);
 }
 
 /*
@@ -425,7 +425,7 @@ static void MCAN_writeMsgNoCpy(uint32_t elemAddr, const MCAN_TxBufElementNoCpy *
 
     dataSize = MCAN_dataSize[elem->dlc];
 
-    MCAN_writeMsgRAM(tempElemAddr, elem->data, dataSize);
+    MCAN_writeMsgRam(tempElemAddr, elem->data, dataSize);
 }
 
 /*
@@ -463,7 +463,7 @@ static void MCAN_writeMsg(uint32_t elemAddr, const MCAN_TxBufElement *elem)
 
     dataSize = MCAN_dataSize[elem->dlc];
 
-    MCAN_writeMsgRAM(tempElemAddr, elem->data, dataSize);
+    MCAN_writeMsgRam(tempElemAddr, elem->data, dataSize);
 }
 
 /*
@@ -490,39 +490,29 @@ int_fast16_t MCAN_init(const MCAN_InitParams *initParams)
     int_fast16_t status = MCAN_STATUS_ERROR;
     uint32_t regVal;
 
-    MCAN_enableConfigChange();
-
-    /* Configure MCAN mode (FD vs Classic CAN operation) and controls */
-    regVal = MCAN_readReg(MCAN_CCCR);
-    /* Clock stop request must be cleared when written in Standby mode */
-    MCAN_SET_FIELD(regVal, MCAN_CCCR_CSR, 0U);
-    MCAN_SET_FIELD(regVal, MCAN_CCCR_FDOE, initParams->fdMode);
-    MCAN_SET_FIELD(regVal, MCAN_CCCR_BRSE, initParams->brsEnable);
-    MCAN_SET_FIELD(regVal, MCAN_CCCR_TXP, initParams->txpEnable);
-    MCAN_SET_FIELD(regVal, MCAN_CCCR_EFBI, initParams->efbi);
-    MCAN_SET_FIELD(regVal, MCAN_CCCR_PXHD, initParams->pxhDisable);
-    MCAN_SET_FIELD(regVal, MCAN_CCCR_DAR, initParams->darEnable);
-    MCAN_writeReg(MCAN_CCCR, regVal);
-
-    if ((MCAN_TDCR_TDCF_MAX >= initParams->tdcConfig.tdcf) && (MCAN_TDCR_TDCO_MAX >= initParams->tdcConfig.tdco) &&
-        (MCAN_RWD_WDC_MAX >= initParams->wdcPreload))
+    if (MCAN_RWD_WDC_MAX >= initParams->wdcPreload)
     {
-        /* Configure Transceiver Delay Compensation */
-        regVal = 0;
-        MCAN_SET_FIELD(regVal, MCAN_TDCR_TDCF, initParams->tdcConfig.tdcf);
-        MCAN_SET_FIELD(regVal, MCAN_TDCR_TDCO, initParams->tdcConfig.tdco);
-        MCAN_writeReg(MCAN_TDCR, regVal);
+        MCAN_enableConfigChange();
+
+        /* Configure MCAN mode (FD vs Classic CAN operation) and controls */
+        regVal = MCAN_readReg(MCAN_CCCR);
+        /* Clock stop request must be cleared when written in Standby mode */
+        MCAN_SET_FIELD(regVal, MCAN_CCCR_CSR, 0U);
+        MCAN_SET_FIELD(regVal, MCAN_CCCR_FDOE, initParams->fdMode);
+        MCAN_SET_FIELD(regVal, MCAN_CCCR_BRSE, initParams->brsEnable);
+        MCAN_SET_FIELD(regVal, MCAN_CCCR_TXP, initParams->txpEnable);
+        MCAN_SET_FIELD(regVal, MCAN_CCCR_EFBI, initParams->efbi);
+        MCAN_SET_FIELD(regVal, MCAN_CCCR_PXHD, initParams->pxhDisable);
+        MCAN_SET_FIELD(regVal, MCAN_CCCR_DAR, initParams->darEnable);
+        MCAN_writeReg(MCAN_CCCR, regVal);
 
         /* Configure MSG RAM watchdog counter preload value */
         MCAN_MODIFY_FIELD(MCAN_RWD, MCAN_RWD_WDC, initParams->wdcPreload);
 
-        /* Enable/Disable Transceiver Delay Compensation */
-        MCAN_MODIFY_FIELD(MCAN_DBTP, MCAN_DBTP_TDC, initParams->tdcEnable);
+        MCAN_disableConfigChange();
 
         status = MCAN_STATUS_SUCCESS;
     }
-
-    MCAN_disableConfigChange();
 
     return status;
 }
@@ -553,12 +543,12 @@ int_fast16_t MCAN_config(const MCAN_ConfigParams *config)
     MCAN_SET_FIELD(regVal, MCAN_GFC_ANFS, config->filterConfig.anfs);
     MCAN_writeReg(MCAN_GFC, regVal);
 
-    if ((MCAN_TSCC_TCP_MAX >= config->tsPrescalar) && (MCAN_TOCC_TOP_MAX >= config->timeoutPreload))
+    if ((MCAN_TSCC_TCP_MAX >= config->tsPrescaler) && (MCAN_TOCC_TOP_MAX >= config->timeoutPreload))
     {
         /* Configure timestamp counter */
         regVal = 0;
         MCAN_SET_FIELD(regVal, MCAN_TSCC_TSS, config->tsSelect);
-        MCAN_SET_FIELD(regVal, MCAN_TSCC_TCP, config->tsPrescalar);
+        MCAN_SET_FIELD(regVal, MCAN_TSCC_TCP, config->tsPrescaler);
         MCAN_writeReg(MCAN_TSCC, regVal);
 
         /* Configure timeout counter */
@@ -579,6 +569,33 @@ int_fast16_t MCAN_config(const MCAN_ConfigParams *config)
 }
 
 /*
+ *  ======== MCAN_getBitTime ========
+ */
+void MCAN_getBitTime(MCAN_BitTimingParams *bitTiming)
+{
+    uint32_t regVal;
+
+    /* Read Nominal Bit Timing and Prescaler */
+    regVal                       = MCAN_readReg(MCAN_NBTP);
+    bitTiming->nomRatePrescaler  = MCAN_GET_FIELD(regVal, MCAN_NBTP_NBRP);
+    bitTiming->nomTimeSeg1       = MCAN_GET_FIELD(regVal, MCAN_NBTP_NTSEG1);
+    bitTiming->nomTimeSeg2       = MCAN_GET_FIELD(regVal, MCAN_NBTP_NTSEG2);
+    bitTiming->nomSynchJumpWidth = MCAN_GET_FIELD(regVal, MCAN_NBTP_NSJW);
+
+    /* Read Data Bit Timing and Prescaler */
+    regVal                        = MCAN_readReg(MCAN_DBTP);
+    bitTiming->dataRatePrescaler  = MCAN_GET_FIELD(regVal, MCAN_DBTP_DBRP);
+    bitTiming->dataTimeSeg1       = MCAN_GET_FIELD(regVal, MCAN_DBTP_DTSEG1);
+    bitTiming->dataTimeSeg2       = MCAN_GET_FIELD(regVal, MCAN_DBTP_DTSEG2);
+    bitTiming->dataSynchJumpWidth = MCAN_GET_FIELD(regVal, MCAN_DBTP_DSJW);
+
+    /* Read Transceiver Delay Compensation */
+    regVal                    = MCAN_readReg(MCAN_TDCR);
+    bitTiming->tdcConfig.tdcf = MCAN_GET_FIELD(regVal, MCAN_TDCR_TDCF);
+    bitTiming->tdcConfig.tdco = MCAN_GET_FIELD(regVal, MCAN_TDCR_TDCO);
+}
+
+/*
  *  ======== MCAN_setBitTime ========
  */
 int_fast16_t MCAN_setBitTime(const MCAN_BitTimingParams *bitTiming)
@@ -589,10 +606,10 @@ int_fast16_t MCAN_setBitTime(const MCAN_BitTimingParams *bitTiming)
     MCAN_enableConfigChange();
 
     if ((MCAN_NBTP_NSJW_MAX >= bitTiming->nomSynchJumpWidth) && (MCAN_NBTP_NTSEG2_MAX >= bitTiming->nomTimeSeg2) &&
-        (MCAN_NBTP_NTSEG1_MAX >= bitTiming->nomTimeSeg1) && (MCAN_NBTP_NBRP_MAX >= bitTiming->nomRatePrescalar))
+        (MCAN_NBTP_NTSEG1_MAX >= bitTiming->nomTimeSeg1) && (MCAN_NBTP_NBRP_MAX >= bitTiming->nomRatePrescaler))
     {
         regVal = 0;
-        MCAN_SET_FIELD(regVal, MCAN_NBTP_NBRP, bitTiming->nomRatePrescalar);
+        MCAN_SET_FIELD(regVal, MCAN_NBTP_NBRP, bitTiming->nomRatePrescaler);
         MCAN_SET_FIELD(regVal, MCAN_NBTP_NTSEG1, bitTiming->nomTimeSeg1);
         MCAN_SET_FIELD(regVal, MCAN_NBTP_NTSEG2, bitTiming->nomTimeSeg2);
         MCAN_SET_FIELD(regVal, MCAN_NBTP_NSJW, bitTiming->nomSynchJumpWidth);
@@ -601,23 +618,49 @@ int_fast16_t MCAN_setBitTime(const MCAN_BitTimingParams *bitTiming)
         status = MCAN_STATUS_SUCCESS;
     }
 
-    if (MCAN_STATUS_SUCCESS == status)
+    if ((MCAN_STATUS_SUCCESS == status) && (MCAN_DBTP_DSJW_MAX >= bitTiming->dataSynchJumpWidth) &&
+        (MCAN_DBTP_DTSEG2_MAX >= bitTiming->dataTimeSeg2) && (MCAN_DBTP_DTSEG1_MAX >= bitTiming->dataTimeSeg1) &&
+        (MCAN_DBTP_DBRP_MAX >= bitTiming->dataRatePrescaler))
     {
-        if ((MCAN_DBTP_DSJW_MAX >= bitTiming->dataSynchJumpWidth) &&
-            (MCAN_DBTP_DTSEG2_MAX >= bitTiming->dataTimeSeg2) && (MCAN_DBTP_DTSEG1_MAX >= bitTiming->dataTimeSeg1) &&
-            (MCAN_DBTP_DBRP_MAX >= bitTiming->dataRatePrescalar))
+        regVal = 0;
+        MCAN_SET_FIELD(regVal, MCAN_DBTP_DBRP, bitTiming->dataRatePrescaler);
+        MCAN_SET_FIELD(regVal, MCAN_DBTP_DTSEG1, bitTiming->dataTimeSeg1);
+        MCAN_SET_FIELD(regVal, MCAN_DBTP_DTSEG2, bitTiming->dataTimeSeg2);
+        MCAN_SET_FIELD(regVal, MCAN_DBTP_DSJW, bitTiming->dataSynchJumpWidth);
+
+        if (0U < bitTiming->tdcConfig.tdco)
         {
-            regVal = MCAN_readReg(MCAN_DBTP);
-            MCAN_SET_FIELD(regVal, MCAN_DBTP_DBRP, bitTiming->dataRatePrescalar);
-            MCAN_SET_FIELD(regVal, MCAN_DBTP_DTSEG1, bitTiming->dataTimeSeg1);
-            MCAN_SET_FIELD(regVal, MCAN_DBTP_DTSEG2, bitTiming->dataTimeSeg2);
-            MCAN_SET_FIELD(regVal, MCAN_DBTP_DSJW, bitTiming->dataSynchJumpWidth);
-            MCAN_writeReg(MCAN_DBTP, regVal);
+            /* Data rate prescaler must be <= 1 to enable TDC */
+            if (1U >= bitTiming->dataRatePrescaler)
+            {
+                /* Enable Transceiver Delay Compensation */
+                MCAN_SET_FIELD(regVal, MCAN_DBTP_TDC, 1U);
+            }
+            else
+            {
+                status = MCAN_STATUS_ERROR;
+            }
         }
-        else
-        {
-            status = MCAN_STATUS_ERROR;
-        }
+
+        MCAN_writeReg(MCAN_DBTP, regVal);
+    }
+    else
+    {
+        status = MCAN_STATUS_ERROR;
+    }
+
+    if ((MCAN_STATUS_SUCCESS == status) && (MCAN_TDCR_TDCF_MAX >= bitTiming->tdcConfig.tdcf) &&
+        (MCAN_TDCR_TDCO_MAX >= bitTiming->tdcConfig.tdco))
+    {
+        /* Configure Transceiver Delay Compensation */
+        regVal = 0;
+        MCAN_SET_FIELD(regVal, MCAN_TDCR_TDCF, bitTiming->tdcConfig.tdcf);
+        MCAN_SET_FIELD(regVal, MCAN_TDCR_TDCO, bitTiming->tdcConfig.tdco);
+        MCAN_writeReg(MCAN_TDCR, regVal);
+    }
+    else
+    {
+        status = MCAN_STATUS_ERROR;
     }
 
     MCAN_disableConfigChange();
@@ -625,9 +668,9 @@ int_fast16_t MCAN_setBitTime(const MCAN_BitTimingParams *bitTiming)
 }
 
 /*
- *  ======== MCAN_configMsgRAM ========
+ *  ======== MCAN_configMsgRam ========
  */
-void MCAN_configMsgRAM(const MCAN_MsgRAMConfig *msgRAMConfig)
+void MCAN_configMsgRam(const MCAN_MsgRamConfig *msgRamConfig)
 {
     uint32_t regVal;
     uint32_t regValRXESC = 0U;
@@ -635,79 +678,79 @@ void MCAN_configMsgRAM(const MCAN_MsgRAMConfig *msgRAMConfig)
     MCAN_enableConfigChange();
 
     /* Configure Standard Message Filters section */
-    if (0U != msgRAMConfig->sidFilterListSize)
+    if (0U != msgRamConfig->sidFilterListSize)
     {
         regVal = 0U;
-        MCAN_SET_FIELD(regVal, MCAN_SIDFC_FLSSA, (msgRAMConfig->sidFilterStartAddr >> MCAN_START_ADDR_SHIFT));
-        MCAN_SET_FIELD(regVal, MCAN_SIDFC_LSS, msgRAMConfig->sidFilterListSize);
+        MCAN_SET_FIELD(regVal, MCAN_SIDFC_FLSSA, (msgRamConfig->sidFilterStartAddr >> MCAN_START_ADDR_SHIFT));
+        MCAN_SET_FIELD(regVal, MCAN_SIDFC_LSS, msgRamConfig->sidFilterListSize);
         MCAN_writeReg(MCAN_SIDFC, regVal);
     }
 
     /* Configure Extended Message Filters section */
-    if (0U != msgRAMConfig->xidFilterListSize)
+    if (0U != msgRamConfig->xidFilterListSize)
     {
         regVal = 0U;
-        MCAN_SET_FIELD(regVal, MCAN_XIDFC_FLESA, (msgRAMConfig->xidFilterStartAddr >> MCAN_START_ADDR_SHIFT));
-        MCAN_SET_FIELD(regVal, MCAN_XIDFC_LSE, msgRAMConfig->xidFilterListSize);
+        MCAN_SET_FIELD(regVal, MCAN_XIDFC_FLESA, (msgRamConfig->xidFilterStartAddr >> MCAN_START_ADDR_SHIFT));
+        MCAN_SET_FIELD(regVal, MCAN_XIDFC_LSE, msgRamConfig->xidFilterListSize);
         MCAN_writeReg(MCAN_XIDFC, regVal);
     }
 
     /* Configure Rx FIFO 0 section */
-    if (0U != msgRAMConfig->rxFIFO0Size)
+    if (0U != msgRamConfig->rxFifo0Size)
     {
         regVal = 0U;
-        MCAN_SET_FIELD(regVal, MCAN_RXF0C_F0SA, (msgRAMConfig->rxFIFO0StartAddr >> MCAN_START_ADDR_SHIFT));
-        MCAN_SET_FIELD(regVal, MCAN_RXF0C_F0S, msgRAMConfig->rxFIFO0Size);
-        MCAN_SET_FIELD(regVal, MCAN_RXF0C_F0WM, msgRAMConfig->rxFIFO0Watermark);
-        MCAN_SET_FIELD(regVal, MCAN_RXF0C_F0OM, msgRAMConfig->rxFIFO0OpMode);
+        MCAN_SET_FIELD(regVal, MCAN_RXF0C_F0SA, (msgRamConfig->rxFifo0StartAddr >> MCAN_START_ADDR_SHIFT));
+        MCAN_SET_FIELD(regVal, MCAN_RXF0C_F0S, msgRamConfig->rxFifo0Size);
+        MCAN_SET_FIELD(regVal, MCAN_RXF0C_F0WM, msgRamConfig->rxFifo0Watermark);
+        MCAN_SET_FIELD(regVal, MCAN_RXF0C_F0OM, msgRamConfig->rxFifo0OpMode);
         MCAN_writeReg(MCAN_RXF0C, regVal);
 
         /* Configure Rx FIFO0 elements size */
-        MCAN_SET_FIELD(regValRXESC, MCAN_RXESC_F0DS, msgRAMConfig->rxFIFO0ElemSize);
+        MCAN_SET_FIELD(regValRXESC, MCAN_RXESC_F0DS, msgRamConfig->rxFifo0ElemSize);
     }
 
     /* Configure Rx FIFO 1 section */
-    if (0U != msgRAMConfig->rxFIFO1Size)
+    if (0U != msgRamConfig->rxFifo1Size)
     {
         regVal = 0U;
-        MCAN_SET_FIELD(regVal, MCAN_RXF1C_F1SA, (msgRAMConfig->rxFIFO1StartAddr >> MCAN_START_ADDR_SHIFT));
-        MCAN_SET_FIELD(regVal, MCAN_RXF1C_F1S, msgRAMConfig->rxFIFO1Size);
-        MCAN_SET_FIELD(regVal, MCAN_RXF1C_F1WM, msgRAMConfig->rxFIFO1Watermark);
-        MCAN_SET_FIELD(regVal, MCAN_RXF1C_F1OM, msgRAMConfig->rxFIFO1OpMode);
+        MCAN_SET_FIELD(regVal, MCAN_RXF1C_F1SA, (msgRamConfig->rxFifo1StartAddr >> MCAN_START_ADDR_SHIFT));
+        MCAN_SET_FIELD(regVal, MCAN_RXF1C_F1S, msgRamConfig->rxFifo1Size);
+        MCAN_SET_FIELD(regVal, MCAN_RXF1C_F1WM, msgRamConfig->rxFifo1Watermark);
+        MCAN_SET_FIELD(regVal, MCAN_RXF1C_F1OM, msgRamConfig->rxFifo1OpMode);
         MCAN_writeReg(MCAN_RXF1C, regVal);
 
         /* Configure Rx FIFO1 elements size */
-        MCAN_SET_FIELD(regValRXESC, MCAN_RXESC_F1DS, msgRAMConfig->rxFIFO1ElemSize);
+        MCAN_SET_FIELD(regValRXESC, MCAN_RXESC_F1DS, msgRamConfig->rxFifo1ElemSize);
     }
 
     /* Configure Rx Buffer Start Address */
-    MCAN_MODIFY_FIELD(MCAN_RXBC, MCAN_RXBC_RBSA, (msgRAMConfig->rxBufStartAddr >> MCAN_START_ADDR_SHIFT));
+    MCAN_MODIFY_FIELD(MCAN_RXBC, MCAN_RXBC_RBSA, (msgRamConfig->rxBufStartAddr >> MCAN_START_ADDR_SHIFT));
     /* Configure Rx Buffer elements size */
-    MCAN_SET_FIELD(regValRXESC, MCAN_RXESC_RBDS, msgRAMConfig->rxBufElemSize);
+    MCAN_SET_FIELD(regValRXESC, MCAN_RXESC_RBDS, msgRamConfig->rxBufElemSize);
     MCAN_writeReg(MCAN_RXESC, regValRXESC);
 
     /* Configure Tx Event FIFO section */
-    if (0U != msgRAMConfig->txEventFIFOSize)
+    if (0U != msgRamConfig->txEventFifoSize)
     {
         regVal = 0U;
-        MCAN_SET_FIELD(regVal, MCAN_TXEFC_EFSA, (msgRAMConfig->txEventFIFOStartAddr >> MCAN_START_ADDR_SHIFT));
-        MCAN_SET_FIELD(regVal, MCAN_TXEFC_EFS, msgRAMConfig->txEventFIFOSize);
-        MCAN_SET_FIELD(regVal, MCAN_TXEFC_EFWM, msgRAMConfig->txEventFIFOWatermark);
+        MCAN_SET_FIELD(regVal, MCAN_TXEFC_EFSA, (msgRamConfig->txEventFifoStartAddr >> MCAN_START_ADDR_SHIFT));
+        MCAN_SET_FIELD(regVal, MCAN_TXEFC_EFS, msgRamConfig->txEventFifoSize);
+        MCAN_SET_FIELD(regVal, MCAN_TXEFC_EFWM, msgRamConfig->txEventFifoWatermark);
         MCAN_writeReg(MCAN_TXEFC, regVal);
     }
 
     /* Configure Tx Buffer and FIFO/Q section */
-    if ((0U != msgRAMConfig->txFIFOQSize) || (0U != msgRAMConfig->txBufNum))
+    if ((0U != msgRamConfig->txFifoQSize) || (0U != msgRamConfig->txBufNum))
     {
         regVal = 0U;
-        MCAN_SET_FIELD(regVal, MCAN_TXBC_TBSA, (msgRAMConfig->txBufStartAddr >> MCAN_START_ADDR_SHIFT));
-        MCAN_SET_FIELD(regVal, MCAN_TXBC_NDTB, msgRAMConfig->txBufNum);
-        MCAN_SET_FIELD(regVal, MCAN_TXBC_TFQS, msgRAMConfig->txFIFOQSize);
-        MCAN_SET_FIELD(regVal, MCAN_TXBC_TFQM, msgRAMConfig->txFIFOQMode);
+        MCAN_SET_FIELD(regVal, MCAN_TXBC_TBSA, (msgRamConfig->txBufStartAddr >> MCAN_START_ADDR_SHIFT));
+        MCAN_SET_FIELD(regVal, MCAN_TXBC_NDTB, msgRamConfig->txBufNum);
+        MCAN_SET_FIELD(regVal, MCAN_TXBC_TFQS, msgRamConfig->txFifoQSize);
+        MCAN_SET_FIELD(regVal, MCAN_TXBC_TFQM, msgRamConfig->txFifoQMode);
         MCAN_writeReg(MCAN_TXBC, regVal);
 
         /* Configure Tx Buffer element size */
-        MCAN_MODIFY_FIELD(MCAN_TXESC, MCAN_TXESC_TBDS, msgRAMConfig->txBufElemSize);
+        MCAN_MODIFY_FIELD(MCAN_TXESC, MCAN_TXESC_TBDS, msgRamConfig->txBufElemSize);
     }
 
     MCAN_disableConfigChange();
@@ -765,9 +808,9 @@ void MCAN_setTxBufAddReq(uint32_t bufIdx)
 }
 
 /*
- *  ======== MCAN_getTxFIFOQStatus ========
+ *  ======== MCAN_getTxFifoQStatus ========
  */
-void MCAN_getTxFIFOQStatus(MCAN_TxFIFOQStatus *fifoQStatus)
+void MCAN_getTxFifoQStatus(MCAN_TxFifoQStatus *fifoQStatus)
 {
     uint32_t regVal = MCAN_readReg(MCAN_TXFQS);
 
@@ -904,40 +947,57 @@ void MCAN_readRxMsg(MCAN_MemType memType, uint32_t num, MCAN_RxBufElement *elem)
 }
 
 /*
- *  ======== MCAN_readTxEventFIFO ========
+ *  ======== MCAN_readTxEventFifo ========
  */
-void MCAN_readTxEventFIFO(MCAN_TxEventFIFOElement *txEventElem)
+int_fast16_t MCAN_readTxEventFifo(MCAN_TxEventFifoElement *elem)
 {
+    int_fast16_t status = MCAN_STATUS_ERROR;
     uint32_t elemAddr;
     uint32_t elemSize;
+    uint32_t fillLevel;
     uint32_t idx;
     uint32_t regVal;
     uint32_t startAddr;
 
-    startAddr = MCAN_READ_FIELD(MCAN_TXEFC, MCAN_TXEFC_EFSA);
-    elemSize  = MCAN_TX_EVENT_ELEM_SIZE;
-    idx       = MCAN_READ_FIELD(MCAN_TXEFS, MCAN_TXEFS_EFGI);
+    regVal    = MCAN_readReg(MCAN_TXEFS);
+    fillLevel = MCAN_GET_FIELD(regVal, MCAN_TXEFS_EFFL);
 
-    /* Shift address field to correct position */
-    startAddr = (startAddr << MCAN_START_ADDR_SHIFT);
-    elemSize *= 4U;
-    elemAddr = startAddr + (elemSize * idx);
-    elemAddr += MCAN_getMRAMOffset();
+    if (0U != fillLevel)
+    {
+        idx = MCAN_GET_FIELD(regVal, MCAN_TXEFS_EFGI);
 
-    regVal           = MCAN_readReg(elemAddr);
-    txEventElem->id  = MCAN_GET_FIELD(regVal, MCAN_TX_EVENT_FIFO_ELEM_ID);
-    txEventElem->rtr = (uint8_t)MCAN_GET_FIELD(regVal, MCAN_TX_EVENT_FIFO_ELEM_RTR);
-    txEventElem->xtd = (uint8_t)MCAN_GET_FIELD(regVal, MCAN_TX_EVENT_FIFO_ELEM_XTD);
-    txEventElem->esi = (uint8_t)MCAN_GET_FIELD(regVal, MCAN_TX_EVENT_FIFO_ELEM_ESI);
+        startAddr = MCAN_READ_FIELD(MCAN_TXEFC, MCAN_TXEFC_EFSA);
+        elemSize  = MCAN_TX_EVENT_ELEM_SIZE;
 
-    elemAddr += 4U;
-    regVal            = MCAN_readReg(elemAddr);
-    txEventElem->txts = (uint16_t)MCAN_GET_FIELD(regVal, MCAN_TX_EVENT_FIFO_ELEM_TXTS);
-    txEventElem->dlc  = (uint8_t)MCAN_GET_FIELD(regVal, MCAN_TX_EVENT_FIFO_ELEM_DLC);
-    txEventElem->brs  = (uint8_t)MCAN_GET_FIELD(regVal, MCAN_TX_EVENT_FIFO_ELEM_BRS);
-    txEventElem->fdf  = (uint8_t)MCAN_GET_FIELD(regVal, MCAN_TX_EVENT_FIFO_ELEM_FDF);
-    txEventElem->et   = (uint8_t)MCAN_GET_FIELD(regVal, MCAN_TX_EVENT_FIFO_ELEM_ET);
-    txEventElem->mm   = (uint8_t)MCAN_GET_FIELD(regVal, MCAN_TX_EVENT_FIFO_ELEM_MM);
+        /* Shift address field to correct position */
+        startAddr = (startAddr << MCAN_START_ADDR_SHIFT);
+        elemAddr  = startAddr + (elemSize * idx);
+        elemAddr += MCAN_getMRAMOffset();
+
+        regVal    = MCAN_readReg(elemAddr);
+        elem->id  = MCAN_GET_FIELD(regVal, MCAN_TX_EVENT_FIFO_ELEM_ID);
+        elem->rtr = (uint8_t)MCAN_GET_FIELD(regVal, MCAN_TX_EVENT_FIFO_ELEM_RTR);
+        elem->xtd = (uint8_t)MCAN_GET_FIELD(regVal, MCAN_TX_EVENT_FIFO_ELEM_XTD);
+        elem->esi = (uint8_t)MCAN_GET_FIELD(regVal, MCAN_TX_EVENT_FIFO_ELEM_ESI);
+
+        elemAddr += 4U;
+        regVal     = MCAN_readReg(elemAddr);
+        elem->txts = (uint16_t)MCAN_GET_FIELD(regVal, MCAN_TX_EVENT_FIFO_ELEM_TXTS);
+        elem->dlc  = (uint8_t)MCAN_GET_FIELD(regVal, MCAN_TX_EVENT_FIFO_ELEM_DLC);
+        elem->brs  = (uint8_t)MCAN_GET_FIELD(regVal, MCAN_TX_EVENT_FIFO_ELEM_BRS);
+        elem->fdf  = (uint8_t)MCAN_GET_FIELD(regVal, MCAN_TX_EVENT_FIFO_ELEM_FDF);
+        elem->et   = (uint8_t)MCAN_GET_FIELD(regVal, MCAN_TX_EVENT_FIFO_ELEM_ET);
+        elem->mm   = (uint8_t)MCAN_GET_FIELD(regVal, MCAN_TX_EVENT_FIFO_ELEM_MM);
+
+        /* Write the Event FIFO Acknowledge Index to increment the Tx Event FIFO
+         * get index.
+         */
+        MCAN_MODIFY_FIELD(MCAN_TXEFA, MCAN_TXEFA_EFAI, idx);
+
+        status = MCAN_STATUS_SUCCESS;
+    }
+
+    return status;
 }
 
 /*
@@ -1159,9 +1219,9 @@ void MCAN_clearIntStatus(uint32_t intMask)
 }
 
 /*
- *  ======== MCAN_getRxFIFOStatus ========
+ *  ======== MCAN_getRxFifoStatus ========
  */
-void MCAN_getRxFIFOStatus(MCAN_RxFIFONum fifoNum, MCAN_RxFIFOStatus *fifoStatus)
+void MCAN_getRxFifoStatus(MCAN_RxFifoNum fifoNum, MCAN_RxFifoStatus *fifoStatus)
 {
     uint32_t regVal;
 
@@ -1185,9 +1245,9 @@ void MCAN_getRxFIFOStatus(MCAN_RxFIFONum fifoNum, MCAN_RxFIFOStatus *fifoStatus)
 }
 
 /*
- *  ======== MCAN_setRxFIFOAck ========
+ *  ======== MCAN_setRxFifoAck ========
  */
-int_fast16_t MCAN_setRxFIFOAck(MCAN_RxFIFONum fifoNum, uint32_t idx)
+int_fast16_t MCAN_setRxFifoAck(MCAN_RxFifoNum fifoNum, uint32_t idx)
 {
     int_fast16_t status = MCAN_STATUS_ERROR;
     uint32_t numElements;
@@ -1195,6 +1255,7 @@ int_fast16_t MCAN_setRxFIFOAck(MCAN_RxFIFONum fifoNum, uint32_t idx)
     if (MCAN_RX_FIFO_NUM_0 == fifoNum)
     {
         numElements = MCAN_READ_FIELD(MCAN_RXF0C, MCAN_RXF0C_F0S);
+
         if (numElements >= idx)
         {
             MCAN_MODIFY_FIELD(MCAN_RXF0A, MCAN_RXF0A_F0AI, idx);
@@ -1204,6 +1265,7 @@ int_fast16_t MCAN_setRxFIFOAck(MCAN_RxFIFONum fifoNum, uint32_t idx)
     else if (MCAN_RX_FIFO_NUM_1 == fifoNum)
     {
         numElements = MCAN_READ_FIELD(MCAN_RXF1C, MCAN_RXF1C_F1S);
+
         if (numElements >= idx)
         {
             MCAN_MODIFY_FIELD(MCAN_RXF1A, MCAN_RXF1A_F1AI, idx);
@@ -1216,6 +1278,20 @@ int_fast16_t MCAN_setRxFIFOAck(MCAN_RxFIFONum fifoNum, uint32_t idx)
     }
 
     return status;
+}
+
+/*
+ *  ======== MCAN_getTxEventFifoStatus ========
+ */
+void MCAN_getTxEventFifoStatus(MCAN_TxEventFifoStatus *fifoStatus)
+{
+    uint32_t regVal = MCAN_readReg(MCAN_TXEFS);
+
+    fifoStatus->fillLvl  = MCAN_GET_FIELD(regVal, MCAN_TXEFS_EFFL);
+    fifoStatus->getIdx   = MCAN_GET_FIELD(regVal, MCAN_TXEFS_EFGI);
+    fifoStatus->putIdx   = MCAN_GET_FIELD(regVal, MCAN_TXEFS_EFPI);
+    fifoStatus->fifoFull = MCAN_GET_FIELD(regVal, MCAN_TXEFS_EFF);
+    fifoStatus->eleLost  = MCAN_GET_FIELD(regVal, MCAN_TXEFS_TEFL);
 }
 
 /*
@@ -1282,4 +1358,12 @@ void MCAN_disableTxBufTransInt(uint32_t bufMask)
 uint32_t MCAN_getClkStopAck(void)
 {
     return (MCAN_READ_FIELD(MCAN_CCCR, MCAN_CCCR_CSA));
+}
+
+/*
+ *  ======== MCAN_getTimestampCounter ========
+ */
+uint16_t MCAN_getTimestampCounter(void)
+{
+    return (uint16_t)MCAN_readReg(MCAN_TSCV);
 }

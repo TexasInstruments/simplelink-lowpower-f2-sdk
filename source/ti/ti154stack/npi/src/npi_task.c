@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2024, Texas Instruments Incorporated
+ Copyright (c) 2015-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -156,8 +156,9 @@
 
 
 //! \brief Task priority for NPI RTOS task
+#ifndef NPITASK_PRIORITY
 #define NPITASK_PRIORITY 2
-
+#endif
 
 // ****************************************************************************
 // typedefs
@@ -452,7 +453,7 @@ static void NPITask_process(void)
     for (;; )
     {
         /* Wait for response message */
-        
+
 #if defined(ICALL_EVENTS) && !defined(USE_DMM)
         uint32_t NPITask_events;
 

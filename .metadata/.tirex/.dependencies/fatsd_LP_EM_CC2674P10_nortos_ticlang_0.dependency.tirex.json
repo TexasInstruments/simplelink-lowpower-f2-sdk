@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../README.md -> README.md",
+            "+../README.html -> README.html",
+            "+../fatsd_nortos.c -> fatsd_nortos.c",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../fatsd.syscfg -> fatsd.syscfg",
+            "+../../../../../../source/ti/boards/LP_EM_CC2674P10/Board.html -> Board.html",
+            "+cc13x4_cc26x4_nortos.cmd -> cc13x4_cc26x4_nortos.cmd"
+        ]
+    }
+]

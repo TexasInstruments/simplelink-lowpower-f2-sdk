@@ -15,11 +15,6 @@
 #define CONFIG_TFM_SPM_BACKEND_IPC                               1
 #define CONFIG_TFM_SPM_BACKEND_SFN                               0
 
-/* API calls */
-#define CONFIG_TFM_PSA_API_SFN_CALL                              0
-#define CONFIG_TFM_PSA_API_CROSS_CALL                            1
-#define CONFIG_TFM_PSA_API_SUPERVISOR_CALL                       0
-
 #define CONFIG_TFM_CONNECTION_BASED_SERVICE_API                  1
 #define CONFIG_TFM_MMIO_REGION_ENABLE                            0
 #define CONFIG_TFM_FLIH_API                                      1
@@ -27,7 +22,7 @@
 
 #if CONFIG_TFM_SPM_BACKEND_IPC == 1
 /* Trustzone NS agent working stack size. */
-#if defined(TFM_FIH_PROFILE_ON) && TFM_LVL == 1
+#if defined(TFM_FIH_PROFILE_ON) && TFM_ISOLATION_LEVEL == 1
 #define CONFIG_TFM_NS_AGENT_TZ_STACK_SIZE                        1256
 #else
 #define CONFIG_TFM_NS_AGENT_TZ_STACK_SIZE                        1024

@@ -100,12 +100,12 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>To trigger various events, buttons can be used as well as the configurable user interface. The <a href="#ExampleUsage">Example Usage</a> section of this document explains how to use the user interface, although both the button presses and the UART perform the same actions.</p>
 </blockquote>
 <ul>
-<li><code>CONFIG_GPIO_RLED</code> - Turns on after the sensor connects to the collector.</li>
-<li><code>CONFIG_GPIO_BTN1</code> - Press to initialize the sensor application.</li>
-<li><code>CONFIG_GPIO_BTN2</code> - Press to disassociate from the network.</li>
+<li><code>CONFIG_LED_RED</code> - Turns on after the sensor connects to the collector.</li>
+<li><code>CONFIG_BTN_LEFT</code> - Press to initialize the sensor application.</li>
+<li><code>CONFIG_BTN_RIGHT</code> - Press to disassociate from the network.</li>
 </ul>
 <blockquote>
-<p>If <code>CONFIG_GPIO_BTN2</code> is held while power is applied to the Launchpad, NV Flash will be erased.</p>
+<p>To erase NV flash, Hold <code>CONFIG_BTN_RIGHT</code> down, then press and release the reset button. Wait a second then release BTN-2. You should see a CUI message indicating NV erase. If BTN-2 is not held down constantly during the boot process the NVS flash will not be erased.</p>
 </blockquote>
 <h2 id="resources-jumper-settings"><a name="Resources&amp;JumperSettings"></a>Resources &amp; Jumper Settings</h2>
 <p>The following hardware is required to run TI 15.4-Stack Out of Box (OOB) example applications:</p>
@@ -281,7 +281,23 @@ Sensor 0x0001: FW Ver sv: 1.0 bv:0x96
 Info: Sending 0x0001 FW Version Req
 cmd: v</code></pre>
 <h2 id="generating-the-required-binary-images"><a name="GeneratingtheRequiredBinaryImages"></a>Generating the Required Binary Images</h2>
-<p>For OAD projects on Thor boards, MCUboot is used as the bootloader. To build MCUboot to work with the Thor OAD examples out of the box, first import the project from <code>examples/nortos/[Desired Board]/mcuboot_app/mcuboot</code>. After importing the project, we need to make a few changes; by default, MCUboot uses up all the on-chip flash for both images. We need to leave 0x4000 bytes of on-chip flash open at 0xFC000 for persistent memory between OAD images to store network and OAD information. The basic sensor OAD application also takes up a lot less space than half of the device’s flash, so to cut down on OAD time we allocate 0x26000 bytes to each slot. To do so, open <code>flash_map_backend/flash_map_backend.c</code> and change <code>BOOT_PRIMARY_1_SIZE</code> and <code>BOOT_SECONDARY_1_SIZE</code> to 0x26000. Next, change <code>BOOT_SECONDARY_1_BASE_ADDRESS</code> to <code>BOOT_PRIMARY_1_SIZE</code> + <code>BOOT_PRIMARY_1_BASE_ADDRESS</code>. After that, open up <code>mcuboot_config/mcuboot_config.h</code> and make sure <code>#define MCUBOOT_OVERWRITE_ONLY</code> is <em>not</em> commented out. Lastly, make sure <code>#define MCUBOOT_DIRECT_XIP</code> <em>is</em> commented out. This enables overwrite mode, which is what our OAD process uses. Finally, uncomment <code>#define TI_BOOT_USE_EXTERNAL_FLASH</code> if using an off-chip OAD project.</p>
+<p>For OAD projects on Thor boards, MCUboot is used as the bootloader. To build MCUboot to work with the Thor OAD examples out of the box, first import the project from <code>examples/nortos/[Desired Board]/mcuboot_app/mcuboot</code>. After importing the project, we need to make a few changes; by default, MCUboot uses up all the on-chip flash for both images. We need to leave 0x4000 bytes of on-chip flash open at 0xFC000 for persistent memory between OAD images to store network and OAD information. The basic sensor OAD application also takes up a lot less space than half of the device’s flash, so to cut down on OAD time we allocate 0x26000 bytes to each slot.</p>
+<p>To configure MCUboot with these settings, open the MCUboot sysconfig file in the MCUboot project and set the following configurables:</p>
+<ul>
+<li>For the <code>Upgrade Mode</code> configurable, choose <code>Overwrite</code>. This enables overwrite mode, which is what our OAD process uses.</li>
+<li>For the <code>Enable External Flash</code> configurable:
+<ul>
+<li>If using an off-chip OAD project, choose true (checked)</li>
+<li>Otherwise if using an on-chip OAD project, choose false (unchecked).</li>
+</ul></li>
+<li>In the <code>Image 1</code> module, if using a CC13X4 platform, modify the following configurables:
+<ul>
+<li>Primary image - Base address: 0x00006000</li>
+<li>Primary image - Image size: 0x00026000</li>
+<li>Secondary image - Base address: 0x0002C000 for on-chip OAD, 0x0 for off-chip OAD</li>
+<li>Secondary image - Image size: 0x00026000</li>
+</ul></li>
+</ul>
 <p>After configuring the bootloader, we can now take a look at the Sensor OAD project. By default, binary images will be built with the following post-build step, using a prebuilt binary of the MCUboot image tool:</p>
 <p><code>&lt;SDK_INSTALL_DIR&gt;/tools/common/mcuboot/imgtool sign --header-size 0x80 --align 4 --slot-size 0x26000 --pad --version 1.0.0 --pad-header --key &lt;SDK_INSTALL_DIR&gt;/source/third_party/mcuboot/root-ec-p256.pem ${ProjName}-noheader.bin ${ProjName}.bin</code></p>
 <ul>
@@ -395,7 +411,7 @@ cmd: v</code></pre>
   with 100,000+ analog ICs and embedded processors, along with software, tools
   and the industry‘s largest sales/support staff.</p>
   <p>
-    <a href="https://www.ti.com/corp/docs/legal/copyright.shtml">© Copyright 1995-2024</a>, Texas Instruments Incorporated. All rights reserved. <br>
+    <a href="https://www.ti.com/corp/docs/legal/copyright.shtml">© Copyright 1995-2025</a>, Texas Instruments Incorporated. All rights reserved. <br>
     <a href="https://www.ti.com/corp/docs/legal/trademark/trademrk.htm">Trademarks</a> | <a href="https://www.ti.com/corp/docs/legal/privacy.shtml">Privacy policy</a> | <a href="https://www.ti.com/corp/docs/legal/termsofuse.shtml">Terms of use</a> | <a href="https://www.ti.com/lsds/ti/legal/termsofsale.page">Terms of sale</a>
   </p>
 </footer>

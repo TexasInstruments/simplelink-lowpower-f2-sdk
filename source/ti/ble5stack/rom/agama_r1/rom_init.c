@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2017-2024, Texas Instruments Incorporated
+ Copyright (c) 2017-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -491,7 +491,7 @@ const uint32 ROM_Flash_JT[] =
 #endif // ( CTRL_CONFIG & (ADV_NCONN_CFG | ADV_CONN_CFG) )
 #if ( CTRL_CONFIG & ( SCAN_CFG | INIT_CFG ) )
   (uint32)LE_SetExtScanEnable,                               // ROM_JT_OFFSET[102]
-  (uint32)LE_SetExtScanParams,                               // ROM_JT_OFFSET[103]
+  (uint32)LE_SetExtScanParams_sPatch,                        // ROM_JT_OFFSET[103]
 #else // !( CTRL_CONFIG & (SCAN_CFG | INIT_CFG) )
   (uint32)ROM_Spinlock,
   (uint32)ROM_Spinlock,
@@ -596,10 +596,10 @@ const uint32 ROM_Flash_JT[] =
   (uint32)LL_TX_bm_alloc,                                    // ROM_JT_OFFSET[171]
   (uint32)LL_TxData,                                         // ROM_JT_OFFSET[172]
   (uint32)LL_WriteAuthPayloadTimeout,                        // ROM_JT_OFFSET[173]
-  (uint32)LL_ENC_AES128_Decrypt,                             // ROM_JT_OFFSET[174]
-  (uint32)LL_ENC_AES128_Encrypt,                             // ROM_JT_OFFSET[175]
+  (uint32)LL_ENC_AES128_Decrypt_sPatch,                      // ROM_JT_OFFSET[174]
+  (uint32)LL_ENC_AES128_Encrypt_sPatch,                      // ROM_JT_OFFSET[175]
   (uint32)LL_ENC_DecryptMsg,                                 // ROM_JT_OFFSET[176]
-  (uint32)LL_ENC_Encrypt,                                    // ROM_JT_OFFSET[177]
+  (uint32)LL_ENC_Encrypt_sPatch,                             // ROM_JT_OFFSET[177]
   (uint32)LL_ENC_EncryptMsg,                                 // ROM_JT_OFFSET[178]
   (uint32)LL_ENC_GenDeviceIV,                                // ROM_JT_OFFSET[179]
   (uint32)LL_ENC_GenDeviceSKD,                               // ROM_JT_OFFSET[180]
@@ -753,7 +753,7 @@ const uint32 ROM_Flash_JT[] =
   (uint32)llEndExtAdvTask,                                   // ROM_JT_OFFSET[304]
   (uint32)llEndExtInitTask,                                  // ROM_JT_OFFSET[305]
   (uint32)llEndExtScanTask,                                  // ROM_JT_OFFSET[306]
-  (uint32)llEnqueueCtrlPkt,                                  // ROM_JT_OFFSET[307]
+  (uint32)llEnqueueCtrlPkt_sPatch,                           // ROM_JT_OFFSET[307]
   (uint32)llEqAlreadyValidAddr,                              // ROM_JT_OFFSET[308]
   (uint32)llEqSynchWord,                                     // ROM_JT_OFFSET[309]
   (uint32)llEqualBytes,                                      // ROM_JT_OFFSET[310]
@@ -2362,6 +2362,15 @@ uint8 MAP_llSetStarvationMode(uint16 connId, uint8 setOnOffValue)
 #endif
 }
 
+uint8 MAP_llGetStarvationMode(uint16 connId)
+{
+#ifdef USE_DMM
+  return LL_INACTIVE_CONNECTIONS;
+#else
+  return llGetStarvationMode(connId);
+#endif
+}
+
 void MAP_llMaster_TaskEnd(void)
 {
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & INIT_CFG)
@@ -3124,6 +3133,7 @@ void MAP_llSetRxCfg(void)
 /*******************************************************************************
  * SDAA module
  */
+extern void  llHandleSDAALastCmdDone( void );
 extern uint8 llHandleSDAAControlTX( void *nextConnPtr,
                                     void *secTask,
                                     uint8 startTaskType);

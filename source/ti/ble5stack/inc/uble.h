@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2024, Texas Instruments Incorporated
+ Copyright (c) 2009-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -436,6 +436,18 @@ extern "C"
 #define UBLE_NUM_EVTDST      2      //!< Number of Event Destinations
 
 /**
+ *
+ * Monitor Complete Status
+ * MONITOR_SUCCESS : There was two packets in the RX window.
+ * MONITOR_CONTINUE: The timing wasn't good for the rcl.
+ * MONITOR_UNSTABLE: There was number of packets in the RX window that is differ from 2
+ * MONITOR_INVALID : There was a failure duing monitoring the session
+ */
+#define MONITOR_SUCCESS      0
+#define MONITOR_CONTINUE     1
+#define MONITOR_UNSTABLE     2
+#define MONITOR_INVALID      3
+/**
  * Unit conversions
  */
 /** @brief 1 us = 4 RAT tick */
@@ -481,8 +493,7 @@ typedef uint8 ubleEvtDst_t;
 /** @brief Micro BLE Stack Event */
 typedef uint8 ubleEvt_t;
 
-PACKED_TYPEDEF_STRUCT {
-  port_queueElem_t pElem;  //!< queue element pointer
+typedef struct {
   ubleEvtDst_t     dst;    //!< destination
   ubleEvt_t        evt;    //!< event
 } ubleEvtHdr_t;  //!< Type of Micro BLE Stack event header
@@ -490,9 +501,9 @@ PACKED_TYPEDEF_STRUCT {
 /** @brief Type of Micro BLE Stack message */
 typedef uint8 ubleMsg_t;
 
-PACKED_TYPEDEF_STRUCT {
+typedef struct {
   ubleEvtHdr_t  hdr;      //!< header
-  ubleMsg_t     msg[];    //!< message
+  ubleMsg_t     *msg;    //!< message
 } ubleEvtMsg_t; //!< Type of Micro BLE Stack event message
 
 /** @} End UBLE_Structures */
@@ -526,7 +537,7 @@ typedef void (*ubleProcessMsg_t)(ubleEvtMsg_t *pEvtMsg);
 
 /// @cond NODOC
 /** @brief Type of Micro BLE Stack Parameters */
-PACKED_TYPEDEF_STRUCT {
+typedef struct {
   uint8  rfPriority;              //!< RF Priority
   int8   txPower;                 //!< TX Power in dBm
 #if defined(FEATURE_ADVERTISER)
@@ -563,7 +574,7 @@ PACKED_TYPEDEF_STRUCT {
  *
  * @note Min/max work only for uint8-type parameters
  */
-PACKED_TYPEDEF_STRUCT {
+typedef struct {
   uint8  offset;
   uint8  len;
   uint8  min;

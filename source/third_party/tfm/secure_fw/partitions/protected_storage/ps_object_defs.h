@@ -45,6 +45,8 @@ struct ps_obj_header_t {
 
 
 #define PS_MAX_OBJECT_DATA_SIZE  PS_MAX_ASSET_SIZE
+#define PS_TAG_IV_LEN_MAX   ((PS_TAG_LEN_BYTES > PS_IV_LEN_BYTES) ? \
+                             PS_TAG_LEN_BYTES : PS_IV_LEN_BYTES)
 
 /*!
  * \struct ps_object_t
@@ -55,6 +57,10 @@ struct ps_obj_header_t {
 struct ps_object_t {
     struct ps_obj_header_t header;         /*!< Object header */
     uint8_t data[PS_MAX_OBJECT_DATA_SIZE]; /*!< Object data */
+/* TI-TFM: Added #ifdef to fix compile error with PS_ENCRYPTION=OFF */
+#ifdef PS_ENCRYPTION
+    uint8_t tag_iv[PS_TAG_IV_LEN_MAX];
+#endif
 };
 
 

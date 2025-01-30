@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2019-2023, Arm Limited. All rights reserved.
  * Copyright (c) 2020 STMicroelectronics. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -96,6 +96,16 @@ int boot_platform_pre_load(uint32_t image_id);
  */
 int boot_platform_post_load(uint32_t image_id);
 
+/**
+ * Version of a SW component, to be encoded as "major.minor.revision+build_num".
+ */
+struct boot_measurement_version {
+    uint8_t major;
+    uint8_t minor;
+    uint16_t revision;
+    uint32_t build_num;
+};
+
 struct boot_measurement_metadata {
     uint32_t measurement_type;  /* Identifier of the measurement method
                                  * used to compute the measurement value.
@@ -103,9 +113,7 @@ struct boot_measurement_metadata {
     uint8_t signer_id[64];      /* Signer identity (hash of public key). */
     size_t  signer_id_size;     /* Size of the signer's ID in bytes. */
     char sw_type[10];           /* Representing the role of the SW component. */
-    char sw_version[14];        /* Version of the SW component in the form of:
-                                 * "major.minor.revision+build".
-                                 */
+    struct boot_measurement_version sw_version; /* Version of the SW component */
 };
 
 /**

@@ -290,10 +290,16 @@ for(deviceNum = 0; deviceNum < app.length; deviceNum++)
           defaultName = 'DEFAULT_' + currCluster._name.toUpperCase() + '_ATTRIBUTE_REPORTING_STATUS';
         }
         if (currAttribute._type.endsWith('[]')) {
-          attributeDefaults += 'extern const ' + currAttribute._type.substring(0, currAttribute._type.length-2) + ' ' + defaultName + '[];\n';
+          if (!attributeDefaults.includes(defaultName))
+          {
+            attributeDefaults += 'extern const ' + currAttribute._type.substring(0, currAttribute._type.length-2) + ' ' + defaultName + '[];\n';
+          }
         }
         else {
-          attributeDefaults += 'extern const ' + currAttribute._type + ' ' + defaultName + ';\n';
+          if (!attributeDefaults.includes(defaultName))
+          {
+            attributeDefaults += 'extern const ' + currAttribute._type + ' ' + defaultName + ';\n';
+          }
         }
       }
 
@@ -328,10 +334,16 @@ for(deviceNum = 0; deviceNum < app.length; deviceNum++)
           defaultName = 'DEFAULT_' + currCluster._name.toUpperCase() + '_ATTRIBUTE_REPORTING_STATUS';
         }
         if (currAttribute._type.endsWith('[]')) {
-          attributeDefaults += 'extern const ' + currAttribute._type.substring(0, currAttribute._type.length-2) + ' ' + defaultName + '[];\n';
+          if (!attributeDefaults.includes(defaultName))
+          {
+            attributeDefaults += 'extern const ' + currAttribute._type.substring(0, currAttribute._type.length-2) + ' ' + defaultName + '[];\n';
+          }
         }
         else {
-          attributeDefaults += 'extern const ' + currAttribute._type + ' ' + defaultName + ';\n';
+          if (!attributeDefaults.includes(defaultName))
+          {
+            attributeDefaults += 'extern const ' + currAttribute._type + ' ' + defaultName + ';\n';
+          }
         }
       }
 

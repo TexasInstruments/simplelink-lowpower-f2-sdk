@@ -35,6 +35,9 @@ const ECDSA2      = ECDSA.addInstance();
 const ECJPAKE     = scripting.addModule("/ti/drivers/ECJPAKE");
 const ECJPAKE1    = ECJPAKE.addInstance();
 
+const EDDSA       = scripting.addModule("/ti/drivers/EDDSA");
+const EDDSA1      = EDDSA.addInstance();
+
 const SHA2        = scripting.addModule("/ti/drivers/SHA2");
 const SHA2_1      = SHA2.addInstance();
 const SHA2_2      = SHA2.addInstance();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2023 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2024 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@ let deviceSettingsTable = {
         ],
         defaultTimestampProvider : "RTC TimestampProvider",
         defaultNumInterrupts : 16 + 38,
-        vectorTableAlignment : 256, 
+        vectorTableAlignment : 256,
         defaultCpuFrequency : 48000000
     },
     "cc13x4_cc26x4" : {
@@ -77,26 +77,6 @@ let deviceSettingsTable = {
         defaultNumInterrupts : 16 + 47,
         vectorTableAlignment : 256,
         defaultCpuFrequency : 48000000
-    },
-    "cc32xx" : {
-        bootModule : null,
-        hwiModule : "/ti/sysbios/family/arm/m3/Hwi",
-        timerModule : "/ti/sysbios/family/arm/lm4/Timer",
-        defaultClockTickPeriod : 1000,
-        defaultClockTickMode : "Clock_TickMode_PERIODIC",
-        clockSupportModule : "/ti/sysbios/family/arm/m3/ClockSupport",
-        taskSupportModule : "/ti/sysbios/family/arm/m3/TaskSupport",
-        secondsModule : "/ti/sysbios/family/arm/cc32xx/Seconds",
-        defaultTaskStackSize : 1024,
-        availableTimestampProviderModules : [
-            { name: "SysTick TimestampProvider", displayName: "SysTick TimestampProvider" },
-            { name: "DWT TimestampProvider", displayName: "DWT TimestampProvider" },
-            { name: "LM4 TimestampProvider", displayName: "LM4 TimestampProvider" }
-        ],
-        defaultTimestampProvider : "SysTick TimestampProvider",
-        defaultNumInterrupts : 16 + 179,
-        vectorTableAlignment : 1024,
-        defaultCpuFrequency : 80000000
     },
     "cc23x0" : {
         bootModule : "/ti/sysbios/family/arm/cc26xx/Boot",
@@ -121,10 +101,6 @@ let deviceSettingsTable = {
     }
 };
 
-/* Add the CC32XXSF derivative */
-deviceSettingsTable["cc32xxsf"] = Object.assign({}, deviceSettingsTable.cc32xx);
-deviceSettingsTable["cc32xxsf"].defaultResetVectorAddress = 0x01000800;
-
 /* Add the CC13x1/CC26x1 derivative */
 deviceSettingsTable["cc13x1_cc26x1"] = Object.assign({}, deviceSettingsTable.cc13x2_cc26x2);
 
@@ -143,15 +119,6 @@ if (deviceId.match(/CC23.0/)) {
 } else if (deviceId.match(/CC13.4.*|CC26.4.*|CC2653.*/)) {
     /* CC13X4/CC26X4 */
     deviceSettings = deviceSettingsTable.cc13x4_cc26x4;
-} else if (deviceId.match(/CC32..SF.*/)) {
-    /* CC32XXSF */
-    deviceSettings = deviceSettingsTable.cc32xxsf;
-} else if (deviceId.match(/CC32.*/)) {
-    /* CC32XX */
-    deviceSettings = deviceSettingsTable.cc32xx;
-} else if (deviceId.match(/MSP432E.*/)) {
-    /* MSP432E */
-    deviceSettings = deviceSettingsTable.msp432e;
 } else {
     /* default to CC13X2/CC26X2 */
     deviceSettings = deviceSettingsTable.cc13x2_cc26x2;

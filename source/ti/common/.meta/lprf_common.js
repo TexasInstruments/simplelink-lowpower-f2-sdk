@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2024 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,6 +67,7 @@ const deviceToBoard = {
     CC2340R5: "LP_EM_CC2340R5",
     CC2340R2: "LP_EM_CC2340R2",
     CC2745R10_Q1: "LP_EM_CC2745R10_Q1",
+    CC2674P10RGZ: "LP_EM_CC2674P10"
 };
 
 /*!

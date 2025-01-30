@@ -68,6 +68,34 @@ SECTIONS
     {
         *(.text*)
 
+        /* .copy.table
+         * To copy multiple ROM to RAM sections,
+         * define __STARTUP_COPY_MULTIPLE in startup file */
+        . = ALIGN(4);
+        __copy_table_start__ = .;
+        LONG (LOADADDR(.ER_CODE_SRAM))
+        LONG (ADDR(.ER_CODE_SRAM))
+        LONG (SIZEOF(.ER_CODE_SRAM) / 4)
+#ifdef CODE_SHARING
+        LONG (LOADADDR(.tfm_shared_symbols))
+        LONG (ADDR(.tfm_shared_symbols))
+        LONG (SIZEOF(.tfm_shared_symbols) / 4)
+#endif
+        LONG (LOADADDR(.data))
+        LONG (ADDR(.data))
+        LONG (SIZEOF(.data) / 4)
+        __copy_table_end__ = .;
+
+        /* .zero.table
+         * To clear multiple BSS sections,
+         * uncomment .zero.table and,
+         * define __STARTUP_CLEAR_BSS_MULTIPLE in startup file */
+        . = ALIGN(4);
+        __zero_table_start__ = .;
+       LONG (ADDR(.bss))
+       LONG (SIZEOF(.bss) / 4)
+        __zero_table_end__ = .;
+
         KEEP(*(.init))
         KEEP(*(.fini))
 
@@ -101,38 +129,6 @@ SECTIONS
         *(.ARM.exidx* .gnu.linkonce.armexidx.*)
     } > FLASH
     __exidx_end = .;
-
-    /* To copy multiple ROM to RAM sections,
-     * define __STARTUP_COPY_MULTIPLE in startup_cmsdk_musca_bl2.S */
-    .copy.table :
-    {
-        . = ALIGN(4);
-        __copy_table_start__ = .;
-        LONG (LOADADDR(.ER_CODE_SRAM))
-        LONG (ADDR(.ER_CODE_SRAM))
-        LONG (SIZEOF(.ER_CODE_SRAM) / 4)
-#ifdef CODE_SHARING
-        LONG (LOADADDR(.tfm_shared_symbols))
-        LONG (ADDR(.tfm_shared_symbols))
-        LONG (SIZEOF(.tfm_shared_symbols) / 4)
-#endif
-        LONG (LOADADDR(.data))
-        LONG (ADDR(.data))
-        LONG (SIZEOF(.data) / 4)
-        __copy_table_end__ = .;
-    } > FLASH
-
-    /* To clear multiple BSS sections,
-     * uncomment .zero.table section and,
-     * define __STARTUP_CLEAR_BSS_MULTIPLE in startup_cmsdk_musca_bl2.S */
-    .zero.table :
-    {
-        . = ALIGN(4);
-        __zero_table_start__ = .;
-       LONG (ADDR(.bss))
-       LONG (SIZEOF(.bss) / 4)
-        __zero_table_end__ = .;
-    } > FLASH
 
 #ifdef CODE_SHARING
     /* The code sharing between bootloader and runtime firmware requires to

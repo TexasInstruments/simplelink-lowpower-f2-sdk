@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -268,7 +268,7 @@ int_fast16_t SHA2_hashData(SHA2_Handle handle, const void *data, size_t length, 
  *      - The intermediate output is saved by the SHA2 driver as usual in
  *        SHA2CC26X1_Object.workzone.state
  */
-int_fast16_t SHA2CC26X1_setupHmac(SHA2_Handle handle, CryptoKey *key)
+int_fast16_t SHA2CC26X1_setupHmac(SHA2_Handle handle, const CryptoKey *key)
 {
     uint8_t xorBuffer[SHA2_BLOCK_SIZE_BYTES_256];
     SHA2CC26X1_Object *object = (SHA2CC26X1_Object *)handle->object;
@@ -334,7 +334,7 @@ int_fast16_t SHA2CC26X1_setupHmac(SHA2_Handle handle, CryptoKey *key)
  *  avoid invoking the callback multiple times during compound operations such
  *  as SHA2_hmac()
  */
-int_fast16_t SHA2_setupHmac(SHA2_Handle handle, CryptoKey *key)
+int_fast16_t SHA2_setupHmac(SHA2_Handle handle, const CryptoKey *key)
 {
     SHA2CC26X1_Object *object = (SHA2CC26X1_Object *)handle->object;
 
@@ -390,7 +390,7 @@ int_fast16_t SHA2_finalizeHmac(SHA2_Handle handle, void *hmac)
  *  to concatenate intermediate results and the message, this function is not
  *  actually faster than an application using the segmented APIs.
  */
-int_fast16_t SHA2_hmac(SHA2_Handle handle, CryptoKey *key, const void *data, size_t size, void *hmac)
+int_fast16_t SHA2_hmac(SHA2_Handle handle, const CryptoKey *key, const void *data, size_t size, void *hmac)
 {
     SHA2CC26X1_setupHmac(handle, key);
 

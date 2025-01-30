@@ -19,6 +19,9 @@
 #include "ns_types.h"
 #include "ns_trace.h"
 #include <string.h>
+#if defined(__TI_COMPILER_VERSION__) || defined(__GNUC__)
+#include <strings.h>
+#endif
 #include "net_dns_internal.h"
 #include "net_interface.h"
 #include "NWK_INTERFACE/Include/protocol.h"

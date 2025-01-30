@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Copyright (c) 2020-2022, Arm Limited. All rights reserved.
+# Copyright (c) 2020-2023, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -17,33 +17,6 @@ if(BL2)
     target_compile_definitions(platform_bl2
         PRIVATE
             CRYPTO_HW_ACCELERATOR
-    )
-endif()
-
-################################ BL1 ###########################################
-
-if(BL1 AND PLATFORM_DEFAULT_BL1)
-    add_subdirectory(cc312-rom)
-
-    target_sources(bl1_crypto_hw
-        PRIVATE
-            ./cc312_rom_crypto_hw.c
-            $<$<NOT:$<BOOL:${TFM_BL1_SOFTWARE_CRYPTO}>>:${CMAKE_CURRENT_SOURCE_DIR}/bl1/cc312_rom_crypto.c>
-            $<$<NOT:$<BOOL:${TFM_BL1_DUMMY_TRNG}>>:${CMAKE_CURRENT_SOURCE_DIR}/bl1/cc312_rom_trng.c>
-    )
-
-    target_link_libraries(bl1_crypto_hw
-        PUBLIC
-            bl1_1_shared_lib_interface
-            cc312_rom
-            platform_region_defs
-            tfm_fih_headers
-            platform_bl1
-    )
-
-    target_link_libraries(bl1_1_shared_lib
-        PUBLIC
-            bl1_crypto_hw
     )
 endif()
 
@@ -231,9 +204,8 @@ if (TFM_PARTITION_CRYPTO)
             platform_s
     )
     target_link_libraries(crypto_service_mbedcrypto
-        PRIVATE
-            ${CC312_DRIVER_API_TARGET}
         PUBLIC
+            ${CC312_DRIVER_API_TARGET}
             crypto_service_crypto_hw
     )
 
@@ -243,6 +215,11 @@ if (TFM_PARTITION_CRYPTO)
             MBEDTLS_ECDH_LEGACY_CONTEXT
             $<$<BOOL:${CC312_LEGACY_DRIVER_API_ENABLED}>:LEGACY_DRIVER_API_ENABLED>
             $<$<BOOL:${CC312_LEGACY_DRIVER_API_ENABLED}>:CC312_LEGACY_DRIVER_API_ENABLED>
+    )
+
+    target_include_directories(psa_crypto_config
+        INTERFACE
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     )
 
     target_compile_options(crypto_service_cc312

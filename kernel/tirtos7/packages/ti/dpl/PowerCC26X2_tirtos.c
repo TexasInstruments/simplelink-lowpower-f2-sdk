@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2022, Texas Instruments Incorporated
+ * Copyright (c) 2017-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,8 @@
 #include <ti/sysbios/knl/Swi.h>
 #include <ti/sysbios/hal/Hwi.h>
 
+#include <ti/log/Log.h>
+
 /* driverlib header files */
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(inc/hw_types.h)
@@ -75,10 +77,20 @@ void PowerCC26XX_standbyPolicy(void)
     /* query the declared constraints */
     constraints = Power_getConstraintMask();
 
+    Log_printf(LogModule_Power,
+               Log_VERBOSE,
+               "PowerCC26XX_standbyPolicy: Standby constraint count = %d. Idle constraint count = %d",
+               Power_getConstraintCount(PowerCC26XX_DISALLOW_STANDBY),
+               Power_getConstraintCount(PowerCC26XX_DISALLOW_IDLE));
+
     /* do quick check to see if only WFI allowed; if yes, do it now */
     if ((constraints & ((1 << PowerCC26XX_DISALLOW_STANDBY) | (1 << PowerCC26XX_DISALLOW_IDLE))) ==
         ((1 << PowerCC26XX_DISALLOW_STANDBY) | (1 << PowerCC26XX_DISALLOW_IDLE)))
     {
+
+        Log_printf(LogModule_Power,
+                   Log_INFO,
+                   "PowerCC26XX_standbyPolicy: Only WFI allowed");
 
         /* Flush any remaining log messages in the ITM */
         ITM_flush();
@@ -110,6 +122,11 @@ void PowerCC26XX_standbyPolicy(void)
             if (time > Power_getTransitionLatency(PowerCC26XX_STANDBY, Power_TOTAL))
             {
 
+                Log_printf(LogModule_Power,
+                           Log_INFO,
+                           "PowerCC26XX_standbyPolicy: Entering standby at ClockP ticks = 0x%x",
+                           ClockP_getSystemTicks());
+
                 /* schedule the wakeup event */
                 ticks -= PowerCC26X2_WAKEDELAYSTANDBY / Clock_tickPeriod;
                 Clock_setTimeout(Clock_handle((Clock_Struct *)&PowerCC26X2_module.clockObj), ticks);
@@ -126,12 +143,22 @@ void PowerCC26XX_standbyPolicy(void)
 
                 Clock_stop(Clock_handle((Clock_Struct *)&PowerCC26X2_module.clockObj));
                 justIdle = FALSE;
+
+                Log_printf(LogModule_Power,
+                           Log_INFO,
+                           "PowerCC26XX_standbyPolicy: Exit standby at ClockP ticks = 0x%x",
+                           ClockP_getSystemTicks());
             }
         }
 
         /* idle if allowed */
         if (justIdle)
         {
+
+            Log_printf(LogModule_Power,
+                   Log_INFO,
+                   "PowerCC26XX_standbyPolicy: Entering idle at ClockP ticks = 0x%x",
+                   ClockP_getSystemTicks());
 
             /* Flush any remaining log messages in the ITM */
             ITM_flush();

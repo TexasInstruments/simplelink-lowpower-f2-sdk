@@ -24,7 +24,7 @@ As a result, TF-M in multi-core topology requires a dedicated access check
 process which can work without CMSE support. This document discuss about the
 design of the memory access check in multi-core topology.
 
-.. _Armv8-M Security Extension: https://developer.arm.com/architectures/cpu-architecture/m-profile/docs/100720/0100/secure-software-guidelines/armv8m-security-extension
+.. _Armv8-M Security Extension: https://developer.arm.com/documentation/100720/0100/Secure-Software-Guidelines/ARMv8-M-Security-Extension
 
 **************
 Overall Design
@@ -93,7 +93,7 @@ The pseudo code of ``tfm_has_access_to_region()`` is shown below.
     :linenos:
     :emphasize-lines: 19,36,46
 
-    enum tfm_status_e tfm_has_access_to_region(const void *p, size_t s, uint8_t flags)
+    int32_t tfm_has_access_to_region(const void *p, size_t s, uint8_t flags)
     {
         struct security_attr_info_t security_attr;
         struct mem_attr_info_t mem_attr;

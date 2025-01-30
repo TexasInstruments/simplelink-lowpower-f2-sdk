@@ -16,7 +16,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2017-2024, Texas Instruments Incorporated
+ Copyright (c) 2017-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -346,10 +346,18 @@ void *HEAPMGR_MALLOC(hmU32_t size)
   heapmgrHdr_t *hdr;
   heapmgrHdr_t tmp;
   hmU8_t coal = 0;
+  hmU32_t allocSize = size;
 
   HEAPMGR_ASSERT(size);
 
   size += HDRSZ;
+
+  // If 'size' is very large and it will overflow, the result will be
+  // smaller than 'allocSize'. In this case, don't try to allocate.
+  if ( size < allocSize )
+  {
+    return (NULL);
+  }
 
   // Calculate required bytes to add to 'size' to align to heapmgrAlign_t.
   if (sizeof(heapmgrAlign_t) == 2)

@@ -429,27 +429,27 @@
 //#####################################
 #ifndef SET_CCFG_CPU_LOCK_CFG_LOCKNSVTOR
 #define SET_CCFG_CPU_LOCK_CFG_LOCKNSVTOR                0x1        // Disable lock on non-secure vector table base address
-//#define SET_CCFG_CPU_LOCK_CFG_LOCKNSVTOR              0x1        // Enable lock on non-secure vector table base address
+//#define SET_CCFG_CPU_LOCK_CFG_LOCKNSVTOR              0x0        // Enable lock on non-secure vector table base address
 #endif
 
 #ifndef SET_CCFG_CPU_LOCK_CFG_LOCKSVTAIRCR
 #define SET_CCFG_CPU_LOCK_CFG_LOCKSVTAIRCR              0x1        // Disable lock on secure interrupt config
-//#define SET_CCFG_CPU_LOCK_CFG_LOCKSVTAIRCR            0x1        // Enable lock on secure interrupt config
+//#define SET_CCFG_CPU_LOCK_CFG_LOCKSVTAIRCR            0x0        // Enable lock on secure interrupt config
 #endif
 
 #ifndef SET_CCFG_CPU_LOCK_CFG_LOCKSAU
 #define SET_CCFG_CPU_LOCK_CFG_LOCKSAU                   0x1        // Disable lock on SAU regions
-//#define SET_CCFG_CPU_LOCK_CFG_LOCKSAU                 0x1        // Enable lock on SAU regions
+//#define SET_CCFG_CPU_LOCK_CFG_LOCKSAU                 0x0        // Enable lock on SAU regions
 #endif
 
 #ifndef SET_CCFG_CPU_LOCK_CFG_LOCKNSMPU
 #define SET_CCFG_CPU_LOCK_CFG_LOCKNSMPU                 0x1        // Disable lock on non-secure MPU
-//#define SET_CCFG_CPU_LOCK_CFG_LOCKNSMPU               0x1        // Enable lock on non-secure MPU
+//#define SET_CCFG_CPU_LOCK_CFG_LOCKNSMPU               0x0        // Enable lock on non-secure MPU
 #endif
 
 #ifndef SET_CCFG_CPU_LOCK_CFG_LOCKSMPU
 #define SET_CCFG_CPU_LOCK_CFG_LOCKSMPU                  0x1        // Disable lock on secure MPU
-//#define SET_CCFG_CPU_LOCK_CFG_LOCKSMPU                0x1        // Enable lock on secure MPU
+//#define SET_CCFG_CPU_LOCK_CFG_LOCKSMPU                0x0        // Enable lock on secure MPU
 #endif
 
 //#####################################

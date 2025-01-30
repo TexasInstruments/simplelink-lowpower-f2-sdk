@@ -27,7 +27,7 @@ define block ER_TFM_CODE with fixed order, alignment = 8, maximum size = S_CODE_
        readonly
 };
 
-define block TFM_UNPRIV_CODE with alignment = GTZC_FLASH_ALIGN {
+define block TFM_UNPRIV_CODE_START with alignment = GTZC_FLASH_ALIGN {
        section SFN,
        ro section .rodata object tfm_*_secure_api.o,
        ro object *6M_tl*.a,
@@ -40,16 +40,22 @@ define block TFM_UNPRIV_CODE with alignment = GTZC_FLASH_ALIGN {
        ro object tick.o
        };
 
+    /*
+     * This empty, zero long execution region is here to mark the end address
+     * of TFM unprivileged code.
+     */
+define block TFM_UNPRIV_CODE_END with alignment = 32, size = 0 { };
+
     /**** Section for holding partition RO load data */
     /*
      * Sort the partition info by priority to guarantee the initing order.
      * The first loaded partition will be inited at last in SFN model.
      */
 define block TFM_SP_LOAD_LIST with alignment = 4 {
-    ro section .part_load_priority_lowest object load_info_*.o,
-    ro section .part_load_priority_low object load_info_*.o,
-    ro section .part_load_priority_normal object load_info_*.o,
-    ro section .part_load_priority_high object load_info_*.o,
+    ro section .part_load_priority_00 object load_info_*.o,
+    ro section .part_load_priority_01 object load_info_*.o,
+    ro section .part_load_priority_02 object load_info_*.o,
+    ro section .part_load_priority_03 object load_info_*.o,
 };
 
     /**** PSA RoT RO part (CODE + RODATA) start here */
@@ -122,18 +128,18 @@ define block ER_TFM_DATA          with alignment = 8 {readwrite};
 
 /* The runtime partition placed order is same as load partition */
 define block ER_PART_RT_POOL      with alignment = 4 {
-    zi section .bss.part_runtime_priority_lowest,
-    zi section .bss.part_runtime_priority_low,
-    zi section .bss.part_runtime_priority_normal,
-    zi section .bss.part_runtime_priority_high,
+    zi section .bss.part_runtime_priority_00,
+    zi section .bss.part_runtime_priority_01,
+    zi section .bss.part_runtime_priority_02,
+    zi section .bss.part_runtime_priority_03,
 };
 
 /* The runtime service placed order is same as load partition */
 define block ER_SERV_RT_POOL      with alignment = 4 {
-    zi section .bss.serv_runtime_priority_lowest,
-    zi section .bss.serv_runtime_priority_low,
-    zi section .bss.serv_runtime_priority_normal,
-    zi section .bss.serv_runtime_priority_high,
+    zi section .bss.serv_runtime_priority_00,
+    zi section .bss.serv_runtime_priority_01,
+    zi section .bss.serv_runtime_priority_02,
+    zi section .bss.serv_runtime_priority_03,
 };
 
 keep {block ER_PART_RT_POOL, block ER_SERV_RT_POOL};
@@ -184,7 +190,8 @@ define block LR_CODE with fixed order {
        block TFM_PSA_CODE_END,
 /**** UnPrivileged Flash start here , UNPRIV_BLOCK is align to match GTZC constrains */
 
-       block TFM_UNPRIV_CODE,
+       block TFM_UNPRIV_CODE_START,
+       block TFM_UNPRIV_CODE_END,
 
 /**** APPLICATION RoT RO part (CODE + RODATA) start here */
 

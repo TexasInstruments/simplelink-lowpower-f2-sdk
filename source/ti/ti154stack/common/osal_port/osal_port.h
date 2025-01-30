@@ -8,7 +8,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2004-2024, Texas Instruments Incorporated
+ Copyright (c) 2004-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -637,6 +637,19 @@ uint8_t OsalPort_isBufSet( uint8_t *buf, uint8_t val, uint8_t len );
  * @return  uint16 - new random number
  */
 uint16_t OsalPort_rand( void );
+
+
+/*********************************************************************
+ * @fn        OsalPort_clearTaskQueues
+ *
+ * @brief    Clears all Queues used for intertask communications. If
+ *           needed, make it atomic at caller level
+ *
+ * @param   none
+ *
+ * @return  none
+ */
+void OsalPort_clearTaskQueues( void );
 
 /*********************************************************************
 *********************************************************************/

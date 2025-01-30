@@ -1,4 +1,4 @@
-/* Copyright (c) 2022-2023 Texas Instruments Incorporated - http://www.ti.com
+/* Copyright (c) 2022-2024 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -74,7 +74,7 @@ function getLibs(mod)
 function validate(mod, validation)
 {
     if (system.getRTOS() != "freertos") {
-        validation.logError("Please configure sysconfig with --rtos freertos to use this module!", mod);
+        validation.logError("Please configure SysConfig with --rtos freertos to use this module!", mod);
     }
 
     if (mod.idleStackSize % 4 != 0) {
@@ -86,6 +86,9 @@ function validate(mod, validation)
     if (mod.posixThreadStackSize % 4 != 0) {
         validation.logError("Stack size must be an integer number of words", mod, "posixThreadStackSize");
     }
+    if (mod.maxTaskNameLen <= 0) {
+        validation.logError("Maximum Task Name Length must be greater than 0", mod, "maxTaskNameLen");
+    }
 
     if (mod.rovQueueEnabled && mod.queueRegistrySize == 0) {
         validation.logError("The Queue registry size may not be zero if extended kernel object decoding is enabled", mod, "queueRegistrySize");
@@ -93,6 +96,18 @@ function validate(mod, validation)
 
     if (mod.useEventGroups && !(mod.useTimers) ) {
         validation.logError("Enabling Event Groups requires enabling Software Timers", mod, "useEventGroups");
+    }
+
+    if (mod.timerTaskPriority > mod.maxPriorities ) {
+        validation.logError("Timer task priority cannot be higher than maximum number of priorities", mod, "timerTaskPriority");
+    }
+
+    if (mod.timerTaskPriority <= 0 ) {
+        validation.logError("Timer task priority must be greater than 0", mod, "timerTaskPriority");
+    }
+
+    if (mod.maxPriorities <= 0 ) {
+        validation.logError("Maximum number of task priorities must be greater than 0", mod, "maxPriorities");
     }
 }
 
@@ -205,7 +220,7 @@ See the FreeRTOS documentation on Event Groups for more information.`,
                 longDescription: `
 When set to false, assert calls will not have any effect. This option can improve runtime performance
 as well as reduce the application's code size. This assert macro disables interrupts and spins forever.`,
-                default: true
+                default: false
             },
             {
                 name: "isrStackInitEnabled",
@@ -215,6 +230,14 @@ as well as reduce the application's code size. This assert macro disables interr
 Initialize the ISR stack to a known value at startup. This enables ROV to monitor stack usage at runtime for the ISR
 stack`,
                 default: true
+            },
+            {
+                name: "useTimeSlicing",
+                displayName: "Enable Time Slicing",
+                longDescription: `
+If time slicing is enabled, the scheduler will switch between tasks of equal priority on every RTOS tick.
+For more details, please refer to the FreeRTOS documentation of configUSE_TIME_SLICING`,
+                default: false
             },
             {
                 name: "rovQueueEnabled",
@@ -249,11 +272,35 @@ of kernel objects used by TI code and the application. If set to 0, the queue wi
                 hidden: true
             },
             {
+                name: "maxTaskNameLen",
+                displayName: "Maximum Task Name Length",
+                longDescription: `
+Used to set the maximum number of characters in a FreeRTOS task's name.
+For more details, please refer to the FreeRTOS documentation of configMAX_TASK_NAME_LEN`,
+                default: 12
+            },
+            {
+                name: "maxPriorities",
+                displayName: "Maximum Task Priorities",
+                longDescription: `
+Used to set the maximum number of task priorities.
+For more details, please refer to the FreeRTOS documentation of configMAX_PRIORITIES`,
+                default: 10
+            },
+            {
+                name: "timerTaskPriority",
+                displayName: "Timer Task Priority",
+                longDescription: `
+Used to set the timer task priority.
+For more details, please refer to the FreeRTOS documentation of configTIMER_TASK_PRIORITY`,
+                default: 5
+            },
+            {
                 name: "useCustomHeap",
                 displayName: "Enable Custom Heap",
-                description: `Enable the applicaion to use a custom heap`,
+                description: `Enable the application to use a custom heap`,
                 longDescription: `
-When set to true, configAPPLICAITON_ALLOCATED_HEAP will be set in FreeRTOSConfig.h. The application is
+When set to true, configAPPLICATION_ALLOCATED_HEAP will be set in FreeRTOSConfig.h. The application is
 responsible for defining vPortFree and pvPortMalloc with their custom heap configuration.`,
                 default: false,
                 onChange: onChooseCustomHeap
@@ -353,14 +400,22 @@ responsible for defining vPortFree and pvPortMalloc with their custom heap confi
         "/freertos/ti_freertos_portable_config.c.xdt": true,
         "/ti/utils/build/GenLibs.cmd.xdt": { modName: "/freertos/FreeRTOS", getLibs: getLibs },
 
-        "/ti/utils/rov/syscfg_c.rov.xs.xdt": ["/kernel/freertos/rov/heap.rov.js",
-                                              "/kernel/freertos/rov/helper.rov.js",
-                                              "/kernel/freertos/rov/mutex.rov.js",
-                                              "/kernel/freertos/rov/queue.rov.js",
-                                              "/kernel/freertos/rov/semaphore.rov.js",
-                                              "/kernel/freertos/rov/stack.rov.js",
-                                              "/kernel/freertos/rov/task.rov.js",
-                                              "/kernel/freertos/rov/timer.rov.js"]
+        "/ti/utils/rov/syscfg_c.rov.xs.xdt": ["crov:/kernel/freertos/rov/heap.rov.js",
+                                              "crov:/kernel/freertos/rov/helper.rov.js",
+                                              "crov:/kernel/freertos/rov/mutex.rov.js",
+                                              "crov:/kernel/freertos/rov/queue.rov.js",
+                                              "crov:/kernel/freertos/rov/semaphore.rov.js",
+                                              "crov:/kernel/freertos/rov/stack.rov.js",
+                                              "crov:/kernel/freertos/rov/task.rov.js",
+                                              "crov:/kernel/freertos/rov/timer.rov.js",
+                                              "objView:/kernel/freertos/rov_theia/heap.rov.js",
+                                              "objView:/kernel/freertos/rov_theia/helper.rov.js",
+                                              "objView:/kernel/freertos/rov_theia/mutex.rov.js",
+                                              "objView:/kernel/freertos/rov_theia/queue.rov.js",
+                                              "objView:/kernel/freertos/rov_theia/semaphore.rov.js",
+                                              "objView:/kernel/freertos/rov_theia/stack.rov.js",
+                                              "objView:/kernel/freertos/rov_theia/task.rov.js",
+                                              "objView:/kernel/freertos/rov_theia/timer.rov.js"]
     },
     getCFiles: getCFiles,
     getPortableFiles: getPortableFiles

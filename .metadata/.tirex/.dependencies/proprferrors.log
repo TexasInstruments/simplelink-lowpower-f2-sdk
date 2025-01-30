@@ -7105,3 +7105,9 @@ In project: examples/rtos/LP_EM_CC1354P10_6/prop_rf/tfm_rfPacketTx/tirtos7/iar/t
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1354P10_6/Board.html
 In project: examples/rtos/LP_EM_CC1354P10_6/prop_rf/tfm_rfPacketTx/tirtos7/ticlang/tfm_rfPacketTx_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC2674P10/Board.html
+In project: examples/rtos/LP_EM_CC2674P10/prop_rf/rfDiagnostics/tirtos7/gcc/rfDiagnostics_LP_EM_CC2674P10_tirtos7_gcc.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC2674P10/Board.html
+In project: examples/rtos/LP_EM_CC2674P10/prop_rf/rfDiagnostics/tirtos7/ticlang/rfDiagnostics_LP_EM_CC2674P10_tirtos7_ticlang.projectspec
+

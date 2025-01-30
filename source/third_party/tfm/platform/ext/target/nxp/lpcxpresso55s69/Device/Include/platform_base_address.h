@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017-2019 Arm Limited. All rights reserved.
+ * Copyright 2019-2023 NXP. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,5 +31,7 @@
 #define FLASH0_BASE_NS                (0x00000000)
 #define FLASH0_SIZE                   (FLASH_TOTAL_SIZE)  /* 608 kB */
 #define FLASH0_PAGE_SIZE              (0x00000200)  /* 512 B */
+
+#define USART_BASE                    USART0
 
 #endif  /* __PLATFORM_BASE_ADDRESS_H__ */

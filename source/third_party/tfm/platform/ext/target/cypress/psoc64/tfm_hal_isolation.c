@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2020-2022, Arm Limited. All rights reserved.
- * Copyright (c) 2022 Cypress Semiconductor Corporation (an Infineon
+ * Copyright (c) 2022-2023 Cypress Semiconductor Corporation (an Infineon
  * company) or an affiliate of Cypress Semiconductor Corporation. All rights
  * reserved.
  *
@@ -11,8 +11,8 @@
 #include "array.h"
 #include "cy_device.h"
 #include "mmio_defs.h"
+#include "internal_status_code.h"
 #include "target_cfg.h"
-#include "tfm_api.h"
 #include "tfm_hal_defs.h"
 #include "tfm_multi_core.h"
 #include "tfm_plat_defs.h"
@@ -51,7 +51,7 @@ enum tfm_hal_status_t tfm_hal_memory_check(uintptr_t boundary,
                                            size_t size,
                                            uint32_t access_type)
 {
-    enum tfm_status_e status;
+    int32_t status;
     uint32_t flags = 0;
 
     if ((access_type & TFM_HAL_ACCESS_READWRITE) == TFM_HAL_ACCESS_READWRITE) {
@@ -62,16 +62,20 @@ enum tfm_hal_status_t tfm_hal_memory_check(uintptr_t boundary,
         return TFM_HAL_ERROR_INVALID_INPUT;
     }
 
+    if (access_type & TFM_HAL_ACCESS_NS) {
+        flags |= MEM_CHECK_NONSECURE;
+    }
+
     if (!((uint32_t)boundary & HANDLE_ATTR_PRIV_MASK)) {
         flags |= MEM_CHECK_MPU_UNPRIV;
     }
 
     if ((uint32_t)boundary & HANDLE_ATTR_NS_MASK) {
-        flags |= MEM_CHECK_NONSECURE;
+        tfm_core_panic();
     }
 
     status = tfm_has_access_to_region((const void *)base, size, flags);
-    if (status != TFM_SUCCESS) {
+    if (status != SPM_SUCCESS) {
          return TFM_HAL_ERROR_MEM_FAULT;
     }
 
@@ -94,7 +98,6 @@ enum tfm_hal_status_t tfm_hal_bind_boundary(
 {
     uint32_t i, j;
     bool privileged;
-    bool ns_agent;
     uint32_t partition_attrs = 0;
     const struct asset_desc_t *p_asset;
 
@@ -102,13 +105,12 @@ enum tfm_hal_status_t tfm_hal_bind_boundary(
         return TFM_HAL_ERROR_GENERIC;
     }
 
-#if TFM_LVL == 1
+#if TFM_ISOLATION_LEVEL == 1
     privileged = true;
 #else
     privileged = IS_PSA_ROT(p_ldinf);
 #endif
 
-    ns_agent = IS_NS_AGENT(p_ldinf);
     p_asset = LOAD_INFO_ASSET(p_ldinf);
 
     /*
@@ -133,8 +135,6 @@ enum tfm_hal_status_t tfm_hal_bind_boundary(
     }
     partition_attrs = ((uint32_t)privileged << HANDLE_ATTR_PRIV_POS) &
                         HANDLE_ATTR_PRIV_MASK;
-    partition_attrs |= ((uint32_t)ns_agent << HANDLE_ATTR_NS_POS) &
-                        HANDLE_ATTR_NS_MASK;
     *p_boundary = (uintptr_t)partition_attrs;
 
     return TFM_HAL_SUCCESS;

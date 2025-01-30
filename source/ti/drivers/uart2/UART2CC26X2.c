@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2023, Texas Instruments Incorporated
+ * Copyright (c) 2019-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,6 +50,8 @@
 #include <ti/drivers/uart2/UART2CC26X2.h>
 #include <ti/drivers/uart2/UART2Support.h>
 
+#include <ti/log/Log.h>
+
 /* driverlib header files */
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(inc/hw_memmap.h)
@@ -69,6 +71,9 @@
 #else
     #error "Unsupported compiler"
 #endif
+
+/* Macro for using the definition of the UART2 Log module */
+Log_MODULE_USE(LogModule_UART2);
 
 /* Options for DMA write and read */
 #define TX_CONTROL_OPTS (UDMA_SIZE_8 | UDMA_SRC_INC_8 | UDMA_DST_INC_NONE | UDMA_ARB_4 | UDMA_MODE_BASIC)
@@ -219,6 +224,8 @@ static inline size_t UART2CC26X2_getRxData(UART2_Handle handle, size_t size)
     while (!(HWREG(hwAttrs->baseAddr + UART_O_FR) & UART_FR_RXFE) && size)
     {
         data = HWREG(hwAttrs->baseAddr + UART_O_DR);
+        Log_printf(LogModule_UART2, Log_VERBOSE,
+                   "UART2CC26X2_getRxData: Write one byte to the ring buffer from the FIFO.");
         RingBuf_put(&object->rxBuffer, data);
         ++consumed;
         --size;
@@ -561,6 +568,12 @@ void UART2Support_dmaStartRx(UART2_Handle handle)
             object->rxSize = MAX_DMA_SIZE;
         }
 
+        Log_printf(LogModule_UART2,
+                   Log_VERBOSE,
+                   "UART2Support_dmaStartRx: Starting DMA transfer of %d byte(s) to address 0x%x",
+                   object->rxSize,
+                   dstAddr);
+
         /* Setup DMA control-structure and destination */
         rxDmaEntry->pvDstEndAddr = dstAddr + object->rxSize - 1;
         rxDmaEntry->ui32Control  = RX_CONTROL_OPTS;
@@ -609,8 +622,16 @@ void UART2Support_dmaStartTx(UART2_Handle handle)
     {
         UARTIntDisable(hwAttrs->baseAddr, UART_INT_EOT);
 
-        if ((object->eventMask & UART2_EVENT_TX_BEGIN) && object->eventCallback)
+        /* Invoke UART2_EVENT_TX_BEGIN callback when first enabling TX */
+        if ((object->eventMask & UART2_EVENT_TX_BEGIN) && object->eventCallback && (object->state.txEnabled == false))
         {
+
+            Log_printf(LogModule_UART2,
+                       Log_INFO,
+                       "UART2Support_dmaStartTx: Entering event callback with event = 0x%x and user argument = 0x%x",
+                       UART2_EVENT_TX_BEGIN,
+                       object->userArg);
+
             object->eventCallback(handle, UART2_EVENT_TX_BEGIN, 0, object->userArg);
         }
 
@@ -618,6 +639,12 @@ void UART2Support_dmaStartTx(UART2_Handle handle)
         {
             object->txSize = MAX_DMA_SIZE;
         }
+
+        Log_printf(LogModule_UART2,
+                   Log_VERBOSE,
+                   "UART2Support_dmaStartTx: Starting DMA transfer of %d byte(s) from address 0x%x",
+                   object->txSize,
+                   srcAddr);
 
         txDmaEntry               = hwAttrs->dmaTxTableEntryPri;
         txDmaEntry->pvSrcEndAddr = srcAddr + object->txSize - 1;
@@ -664,12 +691,20 @@ void UART2Support_dmaStopRx(UART2_Handle handle)
         bytesRemaining = uDMAChannelSizeGet(hwAttrsUdma->baseAddr, dmaChannelNum(hwAttrs->rxChannelMask));
         rxCount        = object->rxSize - bytesRemaining;
 
+        Log_printf(LogModule_UART2,
+                   Log_VERBOSE,
+                   "UART2Support_dmaStopRx: Stop DMA transfer. Remaining number of bytes: %d",
+                   bytesRemaining);
+
         /* If the driver is currently reading data into the ring buffer, update the ring buffer count with the
          * number of bytes transferred into it through DMA
          */
         if (object->state.readToRingbuf)
         {
             RingBuf_putAdvance(&object->rxBuffer, rxCount);
+            Log_printf(LogModule_UART2, Log_VERBOSE,
+                       "UART2Support_dmaStopRx: Data read into ring buffer by DMA: %d byte(s)",
+                       rxCount);
         }
         else
         {
@@ -709,9 +744,17 @@ uint32_t UART2Support_dmaStopTx(UART2_Handle handle)
         bytesRemaining = uDMAChannelSizeGet(hwAttrsUdma->baseAddr, dmaChannelNum(hwAttrs->txChannelMask));
         txCount        = object->txSize - bytesRemaining;
 
+        Log_printf(LogModule_UART2,
+                   Log_VERBOSE,
+                   "UART2Support_dmaStopTx: Stop DMA transfer. Remaining number of bytes: %d",
+                   bytesRemaining);
+
         /* If the driver is currently doing a nonblocking write, update the ring buffer */
         if (object->state.writeMode == UART2_Mode_NONBLOCKING)
         {
+            Log_printf(LogModule_UART2, Log_VERBOSE,
+                       "UART2Support_dmaStopTx: Attempt to consume %d byte(s) in the ring buffer",
+                       txCount);
             RingBuf_getConsume(&object->txBuffer, txCount);
         }
         else
@@ -937,6 +980,11 @@ static void UART2CC26X2_hwiIntRead(uintptr_t arg, uint32_t status)
 
             if (object->state.readMode == UART2_Mode_CALLBACK)
             {
+                Log_printf(LogModule_UART2,
+                           Log_INFO,
+                           "UART2CC26X2_hwiIntRead: Entering read callback. Function pointer = 0x%x",
+                           object->readCallback);
+
                 object->readCallback(handle, readBufCopy, object->bytesRead, object->userArg, UART2_STATUS_SUCCESS);
             }
             else
@@ -967,6 +1015,11 @@ static void UART2CC26X2_hwiIntWrite(uintptr_t arg)
 
     if ((object->state.writeMode == UART2_Mode_CALLBACK) && (object->writeCount == 0) && object->writeInUse)
     {
+        Log_printf(LogModule_UART2,
+                   Log_INFO,
+                   "UART2CC26X2_hwiIntWrite: Entering write callback. Function pointer = 0x%x",
+                   object->writeCallback);
+
         object->writeInUse = false;
         object->writeCallback(handle,
                               (void *)object->writeBuf,
@@ -999,6 +1052,11 @@ static void UART2CC26X2_hwiIntFxn(uintptr_t arg)
     status = UARTIntStatus(hwAttrs->baseAddr, true);
     UARTIntClear(hwAttrs->baseAddr, status);
 
+    Log_printf(LogModule_UART2,
+               Log_INFO,
+               "UART2CC26X2_hwiIntFxn: Entering ISR. MIS register = 0x%x",
+               status);
+
     if (status & (UART_INT_OE | UART_INT_BE | UART_INT_PE | UART_INT_FE))
     {
         if (status & UART_INT_OE)
@@ -1025,6 +1083,12 @@ static void UART2CC26X2_hwiIntFxn(uintptr_t arg)
 
         if (event && object->eventCallback)
         {
+            Log_printf(LogModule_UART2,
+                       Log_INFO,
+                       "UART2CC26X2_hwiIntFxn: Entering event callback with event = 0x%x and user argument = 0x%x",
+                       event,
+                       object->userArg);
+
             object->eventCallback(handle, event, object->state.overrunCount, object->userArg);
         }
         object->rxStatus = UART2Support_rxStatus2ErrorCode(errStatus);
@@ -1054,6 +1118,12 @@ static void UART2CC26X2_hwiIntFxn(uintptr_t arg)
 
             if ((object->eventMask & UART2_EVENT_TX_FINISHED) && object->eventCallback)
             {
+                Log_printf(LogModule_UART2,
+                           Log_INFO,
+                           "UART2CC26X2_hwiIntFxn: Entering event callback with event = 0x%x and user argument = 0x%x",
+                           UART2_EVENT_TX_FINISHED,
+                           object->userArg);
+
                 object->eventCallback(handle, UART2_EVENT_TX_FINISHED, 0, object->userArg);
             }
 

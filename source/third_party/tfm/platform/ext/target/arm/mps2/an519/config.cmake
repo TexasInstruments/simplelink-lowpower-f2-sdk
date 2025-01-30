@@ -14,12 +14,6 @@ else()
     set(BL2_TRAILER_SIZE 0x10400 CACHE STRING "Trailer size")
 endif()
 
-# Make FLIH IRQ test as the default IRQ test
-set(TEST_NS_SLIH_IRQ                  OFF   CACHE BOOL    "Whether to build NS regression Second-Level Interrupt Handling tests")
-
 # Platform-specific configurations
 set(CONFIG_TFM_USE_TRUSTZONE          ON )
 set(TFM_MULTI_CORE_TOPOLOGY           OFF)
-
-set(PLATFORM_SLIH_IRQ_TEST_SUPPORT    ON)
-set(PLATFORM_FLIH_IRQ_TEST_SUPPORT    ON)

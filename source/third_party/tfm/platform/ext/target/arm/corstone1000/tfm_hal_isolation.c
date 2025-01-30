@@ -8,7 +8,7 @@
  *
  */
 
-#include "tfm_api.h"
+#include "internal_status_code.h"
 #include "tfm_hal_defs.h"
 #include "tfm_multi_core.h"
 #include "tfm_hal_isolation.h"
@@ -20,8 +20,8 @@
 
 #ifdef CONFIG_TFM_ENABLE_MEMORY_PROTECT
 
-REGION_DECLARE(Image$$, TFM_UNPRIV_CODE, $$RO$$Base);
-REGION_DECLARE(Image$$, TFM_UNPRIV_CODE, $$RO$$Limit);
+REGION_DECLARE(Image$$, TFM_UNPRIV_CODE_START, $$RO$$Base);
+REGION_DECLARE(Image$$, TFM_UNPRIV_CODE_END, $$RO$$Limit);
 REGION_DECLARE(Image$$, TFM_APP_CODE_START, $$Base);
 REGION_DECLARE(Image$$, TFM_APP_CODE_END, $$Base);
 REGION_DECLARE(Image$$, TFM_APP_RW_STACK_START, $$Base);
@@ -60,8 +60,8 @@ enum tfm_hal_status_t tfm_hal_set_up_static_boundaries(
     ARM_MPU_Disable();
 
     /* TFM Core unprivileged code region */
-    base = (uint32_t)&REGION_NAME(Image$$, TFM_UNPRIV_CODE, $$RO$$Base);
-    limit = (uint32_t)&REGION_NAME(Image$$, TFM_UNPRIV_CODE, $$RO$$Limit);
+    base = (uint32_t)&REGION_NAME(Image$$, TFM_UNPRIV_CODE_START, $$RO$$Base);
+    limit = (uint32_t)&REGION_NAME(Image$$, TFM_UNPRIV_CODE_END, $$RO$$Limit);
 
     configure_mpu(rnr++, base, limit, XN_EXEC_OK, AP_RO_PRIV_UNPRIV);
 
@@ -99,7 +99,7 @@ enum tfm_hal_status_t tfm_hal_memory_check(uintptr_t boundary,
                                            size_t size,
                                            uint32_t access_type)
 {
-    enum tfm_status_e status;
+    int32_t status;
     uint32_t flags = 0;
 
     if ((access_type & TFM_HAL_ACCESS_READWRITE) == TFM_HAL_ACCESS_READWRITE) {
@@ -108,6 +108,10 @@ enum tfm_hal_status_t tfm_hal_memory_check(uintptr_t boundary,
         flags |= MEM_CHECK_MPU_READ;
     } else {
         return TFM_HAL_ERROR_INVALID_INPUT;
+    }
+
+    if (access_type & TFM_HAL_ACCESS_NS) {
+        flags |= MEM_CHECK_NONSECURE;
     }
 
     if (!((uint32_t)boundary & HANDLE_ATTR_PRIV_MASK)) {
@@ -119,7 +123,7 @@ enum tfm_hal_status_t tfm_hal_memory_check(uintptr_t boundary,
     }
 
     status = tfm_has_access_to_region((const void *)base, size, flags);
-    if (status != TFM_SUCCESS) {
+    if (status != SPM_SUCCESS) {
          return TFM_HAL_ERROR_MEM_FAULT;
     }
 
@@ -175,13 +179,13 @@ enum tfm_hal_status_t tfm_hal_bind_boundary(
         return TFM_HAL_ERROR_GENERIC;
     }
 
-#if TFM_LVL == 1
+#if TFM_ISOLATION_LEVEL == 1
     privileged = true;
 #else
     privileged = IS_PSA_ROT(p_ldinf);
 #endif
 
-    ns_agent = IS_NS_AGENT(p_ldinf);
+    ns_agent = IS_NS_AGENT_TZ(p_ldinf);
     partition_attrs = ((uint32_t)privileged << HANDLE_ATTR_PRIV_POS) &
                         HANDLE_ATTR_PRIV_MASK;
     partition_attrs |= ((uint32_t)ns_agent << HANDLE_ATTR_NS_POS) &

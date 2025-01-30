@@ -43,13 +43,13 @@
 #define MBED_CONF_MBED_MESH_API_HEAP_STAT_INFO_DEFINITION                     mem_stat_t memory_heap_stat;
 #define MBED_CONF_MBED_MESH_API_USE_MALLOC_FOR_HEAP                           0
 
-#define MBED_CONF_MBED_MESH_API_WISUN_NETWORK_SIZE                            1
+// #define MBED_CONF_MBED_MESH_API_WISUN_NETWORK_SIZE                            1
 
 #define MBED_CONF_MBED_MESH_API_MAC_NEIGH_TABLE_SIZE                          32
 
 //#define MBED_CONF_NANOSTACK_HAL_CRITICAL_SECTION_USABLE_FROM_INTERRUPT        0
 #define MBED_CONF_NANOSTACK_HAL_EVENT_LOOP_DISPATCH_FROM_APPLICATION          0
-#define MBED_CONF_NANOSTACK_HAL_EVENT_LOOP_THREAD_STACK_SIZE                  6144
+// #define MBED_CONF_NANOSTACK_HAL_EVENT_LOOP_THREAD_STACK_SIZE                  6144
 
 #define MBED_CONF_NSAPI_DEFAULT_STACK                                         NANOSTACK
 #define MBED_CONF_TARGET_NETWORK_DEFAULT_INTERFACE_TYPE                       ETHERNET

@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../spiffsinternal.c -> spiffsinternal.c",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../main_spiffs_tirtos.c -> tirtos7/main_spiffs_tirtos.c",
+            "+../spiffsinternal.syscfg -> spiffsinternal.syscfg",
+            "+../../../../../../../source/ti/boards/LP_EM_CC2674P10/Board.html -> Board.html",
+            "+cc13x4_cc26x4_tirtos7.lds -> cc13x4_cc26x4_tirtos7.lds"
+        ]
+    }
+]

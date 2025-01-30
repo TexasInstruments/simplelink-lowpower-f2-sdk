@@ -40,7 +40,7 @@ STM32_Programmer_CLI is required.(see https://www.st.com/en/development-tools/st
 
 Write software on target
 ^^^^^^^^^^^^^^^^^^^^^^^^
-In build folder:
+In secure build folder directory api_ns:
 
   - ``postbuild.sh``: Updates regression.sh and TFM_UPDATE.sh scripts according to flash_layout.h
   - ``regression.sh``: Sets platform option bytes config and erase platform

@@ -255,18 +255,18 @@ function getRfDesignOptions(deviceId)
     {
         newRfDesignOptions = [{name: "LP_CC2651R3SIPA"}];
     }
-	else if(deviceId === "CC1354P10RSK" || deviceId === "CC1354P10RGZ")
+	  else if(deviceId === "CC1354P10RSK" || deviceId === "CC1354P10RGZ")
     {
         newRfDesignOptions = [{name: "LP_EM_CC1354P10_1"},
                               {name: "LP_EM_CC1354P10_6"}];
     }
-	else if(deviceId === "CC1354R10RGZ")
+	  else if(deviceId === "CC1354R10RGZ")
     {
         newRfDesignOptions = [{name: "LP_CC1354R10_RGZ"}];
     }
-    else if(deviceId === "CC2674P10RGZ")
+    else if(deviceId === "CC2674P10RGZ" || deviceId === "CC2674P10")
     {
-        newRfDesignOptions = [{name: "LP_CC2674P10_RGZ"}];
+        newRfDesignOptions = [{name: "LP_EM_CC2674P10"}];
     }
     else if(deviceId === "CC2674R10RGZ")
     {
@@ -351,15 +351,15 @@ function moduleInstances(inst)
             permission: "ReadOnly"
         }
 
-        if(inst.rfDesign == "LAUNCHXL-CC1352P-2" || inst.rfDesign == "LAUNCHXL-CC1352P-4" || inst.rfDesign == "LP_CC2652PSIP" || inst.rfDesign == "LP_CC1352P7-4" || inst.rfDesign == "LP_CC2651P3" || inst.rfDesign == "LP_EM_CC1354P10_6" || inst.rfDesign == "LP_CC2674P10_RGZ")
+        if(inst.rfDesign == "LAUNCHXL-CC1352P-2" || inst.rfDesign == "LAUNCHXL-CC1352P-4" || inst.rfDesign == "LP_CC2652PSIP" || inst.rfDesign == "LP_CC1352P7-4" || inst.rfDesign == "LP_CC2651P3" || inst.rfDesign == "LP_EM_CC1354P10_6" || inst.rfDesign == "LP_EM_CC2674P10")
         {
             args.highPA = true;
-            if(inst.rfDesign == "LAUNCHXL-CC1352P-4" || inst.rfDesign == "LP_CC1352P7-4" || inst.rfDesign == "LP_CC2652PSIP" || inst.rfDesign == "LP_EM_CC1354P10_6")
+            if(inst.rfDesign == "LAUNCHXL-CC1352P-4" || inst.rfDesign == "LP_CC1352P7-4" || inst.rfDesign == "LP_CC2652PSIP" || inst.rfDesign == "LP_EM_CC1354P10_6" )
             {
                 args.phyType = "bt5le2mp10";
                 args.txPowerHi = "10";
             }
-            if(inst.rfDesign == "LP_CC2674P10_RGZ")
+            if(inst.rfDesign == "LP_EM_CC2674P10")
             {
                 args.phyType = "bt5le2mp10";
                 args.txPowerHi = "20";

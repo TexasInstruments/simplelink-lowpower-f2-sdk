@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@ extern TRNG_ns_SecureCB trngSecureCB_ns[];
 extern TRNGCC26X4_ns_Object trngObject_ns[];
 
 /*
- *  ======== TRNG_ns_cryptoKeycallbackFxn ========
+ *  ======== TRNG_ns_cryptoKeyCallbackFxn ========
  */
 void TRNG_ns_cryptoKeyCallbackFxn(uintptr_t arg)
 {
@@ -81,7 +81,7 @@ void TRNG_ns_cryptoKeyCallbackFxn(uintptr_t arg)
 }
 
 /*
- *  ======== TRNG_ns_callbackFxn ========
+ *  ======== TRNG_ns_randomBytesCallbackFxn ========
  */
 void TRNG_ns_randomBytesCallbackFxn(uintptr_t arg)
 {
@@ -148,7 +148,10 @@ void TRNG_init(void)
         /* Initialize CryptoPSA semaphores and SecureCB driver */
         CryptoPSACC26X4_init();
 
-        /* Force power ON for TRNG */
+        /* Enable power and clocks for TRNG here since the entropy pool starts
+         * filling as soon as TRNG initialization is done before the TRNG driver
+         * instance is opened or constructed.
+         */
         (void)Power_setDependency(PowerCC26XX_PERIPH_TRNG);
 
         key = HwiP_disable();

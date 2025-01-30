@@ -7,7 +7,9 @@
 #
 #-------------------------------------------------------------------------------
 
-# The "manifest" field must be relative path to this file or absolute path.
+# The "manifest" field must be a path relative to this file, a path relative to
+# the directory that tfm_parse_manifest_list.py is run in (which by default is
+# the TF-M root directory), or an absolute path.
 #
 # Files per Secure Partition are generated to:
 #   - "output_path", if it is a absolute path - not recommended
@@ -34,7 +36,8 @@
         "library_list": [
            "*tfm_*ns_agent_mailbox.*"
          ],
-      }
+      },
+      "non_ffm_attributes": ['ns_agent']
     },
     {
       "description": "Protected Storage Partition",

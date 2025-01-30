@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Copyright (c) 2021-2022, Arm Limited. All rights reserved.
+# Copyright (c) 2021-2023, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -7,6 +7,7 @@
 
 import hashlib
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives import cmac
 from cryptography.hazmat.backends import default_backend
 import secrets
 import argparse
@@ -46,16 +47,19 @@ def derive_encryption_key(security_counter):
     with open(args.encrypt_key_file, "rb") as encrypt_key_file:
         encrypt_key = encrypt_key_file.read()
 
-    state = struct_pack([(1).to_bytes(4, byteorder='little'),
-                         # C keeps the null byte, python removes it, so we add
-                         # it back manually.
-                         "BL2_DECRYPTION_KEY".encode('ascii') + bytes(1),
-                         bytes(1), security_counter,
-                         (32).to_bytes(4, byteorder='little')])
-    state_hash_object = hashlib.sha256()
-    state_hash_object.update(state)
-    state_hash = state_hash_object.digest()
-    return Cipher(algorithms.AES(encrypt_key), modes.ECB()).encryptor().update(state_hash)
+    output_key = bytes(0);
+    # The KDF outputs 16 bytes per iteration, so we need 2 for an AES-256 key
+    for i in range(2):
+        state = struct_pack([(i + 1).to_bytes(4, byteorder='little'),
+                             # C keeps the null byte, python removes it, so we add
+                             # it back manually.
+                             "BL2_DECRYPTION_KEY".encode('ascii') + bytes(1),
+                             bytes(1), security_counter,
+                             (32).to_bytes(4, byteorder='little')])
+        c = cmac.CMAC(algorithms.AES(encrypt_key))
+        c.update(state)
+        output_key += c.finalize()
+    return output_key
 
 
 

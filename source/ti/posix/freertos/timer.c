@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2023 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2016-2024 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,6 +51,8 @@
 #include <time.h>
 #include <sys/types.h>
 
+#include "time_defines.h"
+
 /*
  *  ======== TimerObj ========
  */
@@ -69,7 +71,7 @@ typedef struct TimerObj
 extern int _clock_abstime2ticks(clockid_t clockId, const struct timespec *abstime, TickType_t *ticks);
 
 static void callbackFxn(TimerHandle_t xTimer);
-static TickType_t timespecToTicks(const struct timespec *ts);
+static uint64_t timespecToTicks(const struct timespec *ts);
 
 /*
  *  ======== timer_create ========
@@ -173,7 +175,7 @@ int timer_gettime(timer_t timerid, struct itimerspec *its)
 
         /* Left over ticks when we subtract off the seconds part */
         xLeftOverTicks = xTicksRemaining - (secs * (TickType_t)configTICK_RATE_HZ);
-        nsecs          = xLeftOverTicks * (1000000000 / configTICK_RATE_HZ);
+        nsecs          = xLeftOverTicks * (NSEC_PER_SEC / configTICK_RATE_HZ);
 
         /*
          *  Store the amount of time remaining until the timer expires
@@ -206,13 +208,14 @@ int timer_settime(timer_t timerid, int flags, const struct itimerspec *value, st
     BaseType_t xHigherPriorityTaskWoken;
     BaseType_t status;
 
-    if ((value->it_interval.tv_nsec < 0) || (value->it_interval.tv_nsec >= 1000000000))
+    /* Number of nanoseconds in a timespec struct should always be in the range [0,1000000000) */
+    if ((value->it_interval.tv_nsec < 0) || (value->it_interval.tv_nsec >= NSEC_PER_SEC))
     {
         errno = EINVAL;
         return (-1);
     }
 
-    if ((value->it_value.tv_nsec < 0) || (value->it_value.tv_nsec >= 1000000000))
+    if ((value->it_value.tv_nsec < 0) || (value->it_value.tv_nsec >= NSEC_PER_SEC))
     {
         errno = EINVAL;
         return (-1);
@@ -273,7 +276,15 @@ int timer_settime(timer_t timerid, int flags, const struct itimerspec *value, st
     if ((value->it_interval.tv_sec != 0) || (value->it_interval.tv_nsec != 0))
     {
         /* Non-zero reload value, so change period */
-        timeoutTicks  = timespecToTicks(&(value->it_interval));
+        uint64_t totalTicks = timespecToTicks(&(value->it_interval));
+
+        if (totalTicks > FREERTOS_MAX_TICKS)
+        {
+            errno = EINVAL;
+            return (-1);
+        }
+
+        timeoutTicks  = (TickType_t)totalTicks;
         /*
          *  Change the timer period.  FreeRTOS timers only have a
          *  period, so we'll ignore value->it_value.
@@ -303,7 +314,15 @@ int timer_settime(timer_t timerid, int flags, const struct itimerspec *value, st
         }
         else
         {
-            timeoutTicks = timespecToTicks(&(value->it_value));
+            uint64_t totalTicks = timespecToTicks(&(value->it_value));
+
+            if (totalTicks > FREERTOS_MAX_TICKS)
+            {
+                errno = EINVAL;
+                return (-1);
+            }
+
+            timeoutTicks = (TickType_t)totalTicks;
         }
     }
 
@@ -354,10 +373,12 @@ static void callbackFxn(TimerHandle_t xTimer)
 /*
  *  ======== timespecToTicks ========
  */
-static TickType_t timespecToTicks(const struct timespec *ts)
+static uint64_t timespecToTicks(const struct timespec *ts)
 {
     uint64_t ticks;
 
-    ticks = ts->tv_sec * configTICK_RATE_HZ + ts->tv_nsec * (uint64_t)configTICK_RATE_HZ / 1000000000L;
-    return ((TickType_t)ticks);
+    /* Calculate total amount of ticks from both seconds and nanoseconds in the timespec */
+    ticks = ts->tv_sec * configTICK_RATE_HZ + ts->tv_nsec * (uint64_t)configTICK_RATE_HZ / NSEC_PER_SEC;
+
+    return ticks;
 }

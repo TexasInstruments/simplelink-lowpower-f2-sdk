@@ -9,7 +9,7 @@
  Target Device: cc13xx_cc26xx
 
  ******************************************************************************
- 
+
  Copyright (c) 2012-2024, Texas Instruments Incorporated
  All rights reserved.
 
@@ -41,8 +41,8 @@
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  ******************************************************************************
- 
- 
+
+
  *****************************************************************************/
 
 #ifndef sha2_driverlib__include
@@ -119,6 +119,48 @@ int_fast16_t SHA2_addData(const void* data, size_t length);
  * @return     SHA2_STATUS_SUCCESS on success, SHA2_STATUS_ERROR otherwise.
  */
 int_fast16_t SHA2_finalize(void *digest);
+
+/**
+ *  @fn         SHA2_setupHmac
+ *  @brief  Starts an HMAC operation on segmented data
+ *
+ *  This function uses @c key to compute the all intermediate results involving
+ *  @c key as specified in FIPS 198-1.
+ *
+ *  This function blocks until the final digest hash been computed.
+ *
+ *  @param  key     The key with which to sign the message with
+ *
+ *  @return #SHA2_STATUS_SUCCESS               The hash operation succeeded.
+ *  @return #SHA2_STATUS_ERROR                 The hash operation failed.
+ *  @return #SHA2_STATUS_RESOURCE_UNAVAILABLE  The required hardware resource
+ *                                             was not available. Try again
+ *                                             later.
+ *  @return #SHA2_STATUS_CANCELED              The hash operation was canceled.
+ */
+int_fast16_t SHA2_setupHmac(const uint8_t *key, size_t keyLength);
+
+/**
+ *  @fn         SHA2_finalizeHmac
+ *  @brief  Finishes an HMAC operation and writes the result to @c hmac.
+ *
+ *  This function finishes a an HMAC operation that has been previously started
+ *  by #SHA2_setupHmac() and #SHA2_addData().
+ *
+ *  This function blocks until the final digest hash been computed.
+ *
+ *  @param  hmac        Pointer to the location to write the digest to.
+ *
+ *  @return #SHA2_STATUS_SUCCESS               The hash operation succeeded.
+ *  @return #SHA2_STATUS_ERROR                 The hash operation failed.
+ *  @return #SHA2_STATUS_RESOURCE_UNAVAILABLE  The required hardware resource
+ *                                             was not available. Try again
+ *                                             later.
+ *  @return #SHA2_STATUS_CANCELED              The hash operation was canceled.
+ *
+ */
+int_fast16_t SHA2_finalizeHmac(uint8_t* data);
+
 
 /**
  * @fn         SHA2_cancelOperation

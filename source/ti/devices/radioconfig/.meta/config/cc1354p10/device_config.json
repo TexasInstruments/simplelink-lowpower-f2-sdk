@@ -12,12 +12,12 @@
             {
                 "_file": "device_description.json",
                 "_phy": "ieee_15_4",
-                "$": ".\/..\/config\/cc1352p_ieee_15_4_pg21"
+                "$": ".\/..\/config\/cc1354p10_ieee_15_4_pg20"
             },
             {
                 "_file": "device_description.json",
                 "_phy": "ble",
-                "$": ".\/..\/config\/cc1352p_ble_pg21"
+                "$": ".\/..\/config\/cc1354p10_ble_pg20"
             },
             {
                 "_file": "targets.json",

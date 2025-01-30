@@ -164,8 +164,7 @@ const observationTimeLongDescription =  `Fixed observation period. This value wi
 __Note__: in units of 100 ms\n
 __Default__: False\n`
 
-const rssiThresholdLongDescription =  `RSSI Threshold is the value at point the RSSI value is considered\
- high enough for the channel to be labeled as noisy.\n
+const rssiThresholdLongDescription =  `RSSI Threshold is the RSSI value considered high enough for the channel to be labeled as noisy.\n
 __Default__: -70\n`
 
 const numberOfNoisySamplesLongDescription =  `The number of noisy samples refers to the quantity of samples the device will collect in order\
@@ -176,12 +175,10 @@ const blockingChannelTimeLongDescription =  `When the channel is determined to b
  on the channel for the selected time period.\n
 __Default__: False\n`
 
-const sdaaLongDescription =  `SDAA (Selective Detect And Avoid) module,\
- This module is responsible for monitoring and limiting TX consumption\
- per channel.\n
+const adaptivityLongDescription =  `Enable Adaptivity module,\
+ This module is responsible for monitoring and limiting the transmit time on each BLE channel,\
+ This module can be used to help meet the adaptivity requirements of some regulatory regions.\n
 __Default__: Disabled\n`
-
-
 
 // Long description for the peerConnParamUpdateRejectInd configuration parameter
 const peerConnParamUpdateRejectIndLongDescription = `When enabling this parameter\
@@ -206,7 +203,7 @@ __Default__: False (unchecked)\n`
     peerConnParamUpdateRejectIndLongDescription: peerConnParamUpdateRejectIndLongDescription,
     rxWindowDurationLongDescription: rxWindowDurationLongDescription,
     txUsageThreshLongDescription: txUsageThreshLongDescription,
-    sdaaLongDescription: sdaaLongDescription,
+    adaptivityLongDescription: adaptivityLongDescription,
     fixedObservTimeLongDescription: fixedObservTimeLongDescription,
     observationTimeLongDescription: observationTimeLongDescription,
     rssiThresholdLongDescription: rssiThresholdLongDescription,

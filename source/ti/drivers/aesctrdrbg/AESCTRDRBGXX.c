@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2023, Texas Instruments Incorporated
+ * Copyright (c) 2019-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,6 +46,11 @@
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyPlaintext.h>
 #include <ti/drivers/cryptoutils/utils/CryptoUtils.h>
 
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX)
+    #include <ti/drivers/cryptoutils/hsm/HSMLPF3.h>
+    #include <ti/drivers/cryptoutils/hsm/HSMLPF3Utility.h>
+#endif
+
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(driverlib/aes.h)
 
@@ -62,6 +67,10 @@
     #include <ti/drivers/aesctr/AESCTRLPF3.h>
 #else
     #include <ti/drivers/aesctr/AESCTRCC26XX.h>
+#endif
+
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX)
+    #define CryptoKeyPlaintext_initKey CryptoKeyPlaintextHSM_initKey
 #endif
 
 /* Forward declarations */
@@ -432,8 +441,10 @@ int_fast16_t AESCTRDRBG_getRandomBytes(AESCTRDRBG_Handle handle, void *randomByt
     AESCTRDRBGXX_Object *object;
     AESCTR_Operation operation;
     int_fast16_t status;
+#if (DeviceFamily_PARENT != DeviceFamily_PARENT_CC27XX)
     bool lockAcquired;
     uint32_t lockAcquireTimeout;
+#endif
 
     object = handle->object;
 
@@ -447,6 +458,12 @@ int_fast16_t AESCTRDRBG_getRandomBytes(AESCTRDRBG_Handle handle, void *randomByt
         return AESCTRDRBG_STATUS_RESEED_REQUIRED;
     }
 
+    /* For CC27XX devices, AES-CTR DRBG leverages the HSM engine for encryption operations.
+     * The underlying SW architecture maintains an internal mutex mechanism to ensure only
+     * one driver instance is utilizing the HSM engine at once. Therefore, there is no need
+     * to call `AESCTR_acquireLock`, `AESCTR_disableThreadSafety`, and `AESCTR_releaseLock`.
+     */
+#if (DeviceFamily_PARENT != DeviceFamily_PARENT_CC27XX)
     if (SwiP_inISR() || HwiP_inISR())
     {
         lockAcquireTimeout = SemaphoreP_NO_WAIT;
@@ -463,6 +480,7 @@ int_fast16_t AESCTRDRBG_getRandomBytes(AESCTRDRBG_Handle handle, void *randomByt
     }
 
     AESCTR_disableThreadSafety(object->ctrHandle);
+#endif
 
     /* Set the keying material of the CryptoKey to 0.
      * If we use AESCTR to encrypt a buffer full of zeros,
@@ -493,7 +511,9 @@ int_fast16_t AESCTRDRBG_getRandomBytes(AESCTRDRBG_Handle handle, void *randomByt
 
     if (status != AESCTR_STATUS_SUCCESS)
     {
+#if (DeviceFamily_PARENT != DeviceFamily_PARENT_CC27XX)
         AESCTR_releaseLock(object->ctrHandle);
+#endif
 
         if (status == AESCTR_STATUS_UNALIGNED_IO_NOT_SUPPORTED)
         {
@@ -516,8 +536,10 @@ int_fast16_t AESCTRDRBG_getRandomBytes(AESCTRDRBG_Handle handle, void *randomByt
 
     status = AESCTRDRBGXX_updateState(handle, NULL, 0);
 
+#if (DeviceFamily_PARENT != DeviceFamily_PARENT_CC27XX)
     AESCTR_enableThreadSafety(object->ctrHandle);
     AESCTR_releaseLock(object->ctrHandle);
+#endif
 
     if (status != AESCTRDRBG_STATUS_SUCCESS)
     {
@@ -542,8 +564,10 @@ int_fast16_t AESCTRDRBG_reseed(AESCTRDRBG_Handle handle,
     int_fast16_t status;
     uint8_t tmp[AESCTRDRBG_MAX_SEED_LENGTH];
     uint32_t i;
+#if (DeviceFamily_PARENT != DeviceFamily_PARENT_CC27XX)
     bool lockAcquired;
     uint32_t lockAcquireTimeout;
+#endif
 
     object = handle->object;
 
@@ -557,6 +581,12 @@ int_fast16_t AESCTRDRBG_reseed(AESCTRDRBG_Handle handle,
         return AESCTRDRBG_STATUS_ERROR;
     }
 
+    /* For CC27XX devices, AES-CTR DRBG leverages the HSM engine for encryption operations.
+     * The underlying SW architecture maintains an internal mutex mechanism to ensure only
+     * one driver instance is utilizing the HSM engine at once. Therefore, there is no need
+     * to call `AESCTR_acquireLock`, `AESCTR_disableThreadSafety`, and `AESCTR_releaseLock`.
+     */
+#if (DeviceFamily_PARENT != DeviceFamily_PARENT_CC27XX)
     if (SwiP_inISR() || HwiP_inISR())
     {
         lockAcquireTimeout = SemaphoreP_NO_WAIT;
@@ -573,6 +603,7 @@ int_fast16_t AESCTRDRBG_reseed(AESCTRDRBG_Handle handle,
     }
 
     AESCTR_disableThreadSafety(object->ctrHandle);
+#endif
 
     /* Set temporary buffer as additionalData padded with zeros */
     memset(tmp, 0, object->seedLength);
@@ -587,8 +618,10 @@ int_fast16_t AESCTRDRBG_reseed(AESCTRDRBG_Handle handle,
     /* Use the combined seed to generate a new (counter, keyingMaterial) pair */
     status = AESCTRDRBGXX_updateState(handle, tmp, object->seedLength);
 
+#if (DeviceFamily_PARENT != DeviceFamily_PARENT_CC27XX)
     AESCTR_enableThreadSafety(object->ctrHandle);
     AESCTR_releaseLock(object->ctrHandle);
+#endif
 
     if (status != AESCTRDRBG_STATUS_SUCCESS)
     {
@@ -600,3 +633,106 @@ int_fast16_t AESCTRDRBG_reseed(AESCTRDRBG_Handle handle,
 
     return AESCTRDRBG_STATUS_SUCCESS;
 }
+
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX)
+/*
+ *  ======== AESCTRDRBG_getRandomBytesFromHSM ========
+ */
+int_fast16_t AESCTRDRBG_getRandomBytesFromHSM(void *randomBytes, size_t randomBytesSize)
+{
+    int_fast16_t status    = AESCTRDRBG_STATUS_ERROR;
+    int_fast16_t hsmRetval = HSMLPF3_STATUS_ERROR;
+    int32_t tokenResult    = 0U;
+
+    if ((randomBytesSize > HSM_RAW_RNG_MAX_LENGTH) || (!HSM_IS_SIZE_MULTIPLE_OF_WORD(randomBytesSize)))
+    {
+        /* Return error. */
+        return AESCTRDRBG_STATUS_INPUT_LENGTH_INVALID;
+    }
+
+    if (!HSMLPF3_acquireLock(SemaphoreP_NO_WAIT, (uintptr_t)0U))
+    {
+        return AESCTRDRBG_STATUS_RESOURCE_UNAVAILABLE;
+    }
+
+    Power_setConstraint(PowerLPF3_DISALLOW_STANDBY);
+
+    /* Populates the HSMLPF3 commandToken as a RNG get DRBG random number operation */
+    HSMLPF3_constructRNGGetRandomNumberPhysicalToken((uintptr_t)randomBytes, randomBytesSize);
+
+    /* Submit token to the HSM IP engine */
+    hsmRetval = HSMLPF3_submitToken(HSMLPF3_RETURN_BEHAVIOR_POLLING, NULL, (uintptr_t)0U);
+
+    if (hsmRetval == HSMLPF3_STATUS_SUCCESS)
+    {
+        /* Handles post command token submission mechanism.
+         * Waits for a result token from the HSM IP in polling and blocking modes (and calls the drivers post-processing
+         * fxn) and returns immediately when in callback mode.
+         */
+        hsmRetval = HSMLPF3_waitForResult();
+
+        if (hsmRetval == HSMLPF3_STATUS_SUCCESS)
+        {
+            tokenResult = HSMLPF3_getResultCode();
+
+            if ((tokenResult & HSMLPF3_RETVAL_MASK) == EIP130TOKEN_RESULT_SUCCESS)
+            {
+                status = AESCTRDRBG_STATUS_SUCCESS;
+            }
+        }
+    }
+
+    HSMLPF3_releaseLock();
+
+    Power_releaseConstraint(PowerLPF3_DISALLOW_STANDBY);
+
+    return status;
+}
+
+/*
+ *  ======== AESCTRDRBG_reseedHSMPostProcessing ========
+ */
+static inline void AESCTRDRBG_reseedHSMPostProcessing(uintptr_t arg0)
+{
+    HSMLPF3_releaseLock();
+
+    Power_releaseConstraint(PowerLPF3_DISALLOW_STANDBY);
+}
+
+/*
+ *  ======== AESCTRDRBG_reseedHSM ========
+ */
+int_fast16_t AESCTRDRBG_reseedHSM(void)
+{
+    int_fast16_t status    = AESCTRDRBG_STATUS_ERROR;
+    int_fast16_t hsmRetval = HSMLPF3_STATUS_ERROR;
+
+    if (!HSMLPF3_acquireLock(SemaphoreP_NO_WAIT, (uintptr_t)0U))
+    {
+        return AESCTRDRBG_STATUS_RESOURCE_UNAVAILABLE;
+    }
+
+    Power_setConstraint(PowerLPF3_DISALLOW_STANDBY);
+
+    /* Populates the HSMLPF3 commandToken as an RNG configure operation */
+    HSMLPF3_constructRNGReseedDRBGPhysicalToken();
+
+    /* Submit token to the HSM IP engine */
+    hsmRetval = HSMLPF3_submitToken(HSMLPF3_RETURN_BEHAVIOR_CALLBACK,
+                                    AESCTRDRBG_reseedHSMPostProcessing,
+                                    (uintptr_t)0U);
+
+    if (hsmRetval == HSMLPF3_STATUS_SUCCESS)
+    {
+        status = AESCTRDRBG_STATUS_SUCCESS;
+    }
+    else
+    {
+        HSMLPF3_releaseLock();
+
+        Power_releaseConstraint(PowerLPF3_DISALLOW_STANDBY);
+    }
+
+    return status;
+}
+#endif

@@ -43,15 +43,15 @@ static uint32_t n_configured_regions = 0;
 REGION_DECLARE(Image$$, ER_VENEER, $$Base);
 REGION_DECLARE(Image$$, VENEER_ALIGN, $$Limit);
 #endif /* CONFIG_TFM_USE_TRUSTZONE */
-REGION_DECLARE(Image$$, TFM_UNPRIV_CODE, $$RO$$Base);
-REGION_DECLARE(Image$$, TFM_UNPRIV_CODE, $$RO$$Limit);
+REGION_DECLARE(Image$$, TFM_UNPRIV_CODE_START, $$RO$$Base);
+REGION_DECLARE(Image$$, TFM_UNPRIV_CODE_END, $$RO$$Limit);
 REGION_DECLARE(Image$$, TFM_APP_CODE_START, $$Base);
 REGION_DECLARE(Image$$, TFM_APP_CODE_END, $$Base);
 REGION_DECLARE(Image$$, TFM_APP_RW_STACK_START, $$Base);
 REGION_DECLARE(Image$$, TFM_APP_RW_STACK_END, $$Base);
 #ifdef CONFIG_TFM_PARTITION_META
 REGION_DECLARE(Image$$, TFM_SP_META_PTR, $$ZI$$Base);
-REGION_DECLARE(Image$$, TFM_SP_META_PTR, $$ZI$$Limit);
+REGION_DECLARE(Image$$, TFM_SP_META_PTR_END, $$ZI$$Limit);
 #endif /* CONFIG_TFM_PARTITION_META */
 
 #define ARM_MPU_NON_TRANSIENT        ( 1U )
@@ -68,10 +68,8 @@ REGION_DECLARE(Image$$, TFM_SP_META_PTR, $$ZI$$Limit);
 #define ARM_MPU_PRIVILEGED           ( 0U )
 #define ARM_MPU_EXECUTE_NEVER        ( 1U )
 #define ARM_MPU_EXECUTE_OK           ( 0U )
-#ifdef TFM_PXN_ENABLE
-    #define ARM_MPU_PRIVILEGE_EXECUTE_NEVER        ( 1U )
-    #define ARM_MPU_PRIVILEGE_EXECUTE_OK           ( 0U )
-#endif
+#define ARM_MPU_PRIVILEGE_EXECUTE_NEVER  ( 1U )
+#define ARM_MPU_PRIVILEGE_EXECUTE_OK     ( 0U )
 
 #endif /* CONFIG_TFM_ENABLE_MEMORY_PROTECT */
 
@@ -106,17 +104,17 @@ const ARM_MPU_Region_t mpu_region_attributes[] = {
      * Privilege Executable - if PXN available, Attribute set: 0
      */
     {
-        ARM_MPU_RBAR((uint32_t)&REGION_NAME(Image$$, TFM_UNPRIV_CODE, $$RO$$Base),
+        ARM_MPU_RBAR((uint32_t)&REGION_NAME(Image$$, TFM_UNPRIV_CODE_START, $$RO$$Base),
                      ARM_MPU_SH_NON,
                      ARM_MPU_READ_ONLY,
                      ARM_MPU_UNPRIVILEGED,
                      ARM_MPU_EXECUTE_OK),
         #ifdef TFM_PXN_ENABLE
-        ARM_MPU_RLAR_PXN((uint32_t)&REGION_NAME(Image$$, TFM_UNPRIV_CODE, $$RO$$Limit) - 1,
+        ARM_MPU_RLAR_PXN((uint32_t)&REGION_NAME(Image$$, TFM_UNPRIV_CODE_END, $$RO$$Limit) - 1,
                          ARM_MPU_PRIVILEGE_EXECUTE_OK,
                          0)
         #else
-        ARM_MPU_RLAR((uint32_t)&REGION_NAME(Image$$, TFM_UNPRIV_CODE, $$RO$$Limit) - 1,
+        ARM_MPU_RLAR((uint32_t)&REGION_NAME(Image$$, TFM_UNPRIV_CODE_END, $$RO$$Limit) - 1,
                      0)
         #endif
     },
@@ -132,7 +130,7 @@ const ARM_MPU_Region_t mpu_region_attributes[] = {
                      ARM_MPU_EXECUTE_OK),
         #ifdef TFM_PXN_ENABLE
         ARM_MPU_RLAR_PXN((uint32_t)&REGION_NAME(Image$$, TFM_APP_CODE_END, $$Base) - 1,
-            #if TFM_LVL == 1
+            #if TFM_ISOLATION_LEVEL == 1
                          ARM_MPU_PRIVILEGE_EXECUTE_OK,
             #else
                          ARM_MPU_PRIVILEGE_EXECUTE_NEVER,
@@ -174,14 +172,20 @@ const ARM_MPU_Region_t mpu_region_attributes[] = {
                      ARM_MPU_UNPRIVILEGED,
                      ARM_MPU_EXECUTE_NEVER),
         #ifdef TFM_PXN_ENABLE
-        ARM_MPU_RLAR_PXN((uint32_t)&REGION_NAME(Image$$, TFM_SP_META_PTR, $$ZI$$Limit) - 1,
+        ARM_MPU_RLAR_PXN((uint32_t)&REGION_NAME(Image$$, TFM_SP_META_PTR_END, $$ZI$$Limit) - 1,
                          ARM_MPU_PRIVILEGE_EXECUTE_NEVER,
                          1)
         #else
-        ARM_MPU_RLAR((uint32_t)&REGION_NAME(Image$$, TFM_SP_META_PTR, $$ZI$$Limit) - 1,
+        ARM_MPU_RLAR((uint32_t)&REGION_NAME(Image$$, TFM_SP_META_PTR_END, $$ZI$$Limit) - 1,
                      1)
         #endif
-    }
+    },
+#endif
+    /* Individual platforms may add further static MPU regions by defining
+     * PLATFORM_STATIC_MPU_REGIONS in their tfm_peripherals_def.h header.
+     */
+#ifdef PLATFORM_STATIC_MPU_REGIONS
+    PLATFORM_STATIC_MPU_REGIONS
 #endif
 };
     ARM_MPU_Region_t localcfg;
@@ -241,6 +245,7 @@ const ARM_MPU_Region_t mpu_region_attributes[] = {
                                     ARM_MPU_ATTR_DEVICE_nGnRE));
 
     /* Configure regions */
+    /* Note: CMSIS MPU API clears the lower 5 address bits without check */
     for (i = 0; i < ARRAY_SIZE(mpu_region_attributes); i++) {
         localcfg.RBAR = mpu_region_attributes[i].RBAR;
         localcfg.RLAR = mpu_region_attributes[i].RLAR;
@@ -275,14 +280,14 @@ enum tfm_hal_status_t tfm_hal_bind_boundary(
 {
     uint32_t i, j;
     bool privileged;
-    bool ns_agent;
+    bool ns_agent_tz;
     uint32_t partition_attrs = 0;
     const struct asset_desc_t *p_asset;
     struct platform_data_t *plat_data_ptr;
     const uintptr_t* mmio_list;
     size_t mmio_list_length;
 
-#if TFM_LVL == 2
+#if TFM_ISOLATION_LEVEL == 2
     ARM_MPU_Region_t local_mpu_region;
     uint32_t mpu_region_num;
 #endif
@@ -290,13 +295,13 @@ enum tfm_hal_status_t tfm_hal_bind_boundary(
         return TFM_HAL_ERROR_GENERIC;
     }
 
-#if TFM_LVL == 1
+#if TFM_ISOLATION_LEVEL == 1
     privileged = true;
 #else
     privileged = IS_PSA_ROT(p_ldinf);
 #endif
 
-    ns_agent = IS_NS_AGENT(p_ldinf);
+    ns_agent_tz = IS_NS_AGENT_TZ(p_ldinf);
     p_asset = LOAD_INFO_ASSET(p_ldinf);
 
     get_partition_named_mmio_list(&mmio_list, &mmio_list_length);
@@ -336,16 +341,31 @@ enum tfm_hal_status_t tfm_hal_bind_boundary(
                                      plat_data_ptr->periph_ppc_mask);
             }
         }
-#if TFM_LVL == 2
+#if TFM_ISOLATION_LEVEL == 2
         /*
          * Static boundaries are set. Set up MPU region for MMIO.
          * Setup regions for unprivileged assets only.
          */
         if (!privileged) {
-            //Turn off MPU during configuration
-            if ((MPU->CTRL & MPU_CTRL_ENABLE_Msk)) {
+            mpu_region_num =
+                (MPU->TYPE & MPU_TYPE_DREGION_Msk) >> MPU_TYPE_DREGION_Pos;
+
+            /* There is a limited number of available MPU regions in v8M */
+            if (mpu_region_num <= n_configured_regions) {
+                return TFM_HAL_ERROR_GENERIC;
+            }
+            if ((plat_data_ptr->periph_start & ~MPU_RBAR_BASE_Msk) != 0) {
+                return TFM_HAL_ERROR_GENERIC;
+            }
+            if ((plat_data_ptr->periph_limit & ~MPU_RLAR_LIMIT_Msk) != 0x1F) {
+                return TFM_HAL_ERROR_GENERIC;
+            }
+
+            /* Turn off MPU during configuration */
+            if (MPU->CTRL & MPU_CTRL_ENABLE_Msk) {
                 ARM_MPU_Disable();
             }
+
             /* Assemble region base and limit address register contents. */
             local_mpu_region.RBAR = ARM_MPU_RBAR(plat_data_ptr->periph_start,
                                                  ARM_MPU_SH_NON,
@@ -361,20 +381,13 @@ enum tfm_hal_status_t tfm_hal_bind_boundary(
             local_mpu_region.RLAR = ARM_MPU_RLAR(plat_data_ptr->periph_limit,
                                                  2);
             #endif
-            n_configured_regions++;
-
-            mpu_region_num =
-                (MPU->TYPE & MPU_TYPE_DREGION_Msk) >> MPU_TYPE_DREGION_Pos;
-
-            /* There is a limited number of availale MPU regions in v8M */
-            if (mpu_region_num < n_configured_regions) {
-                return TFM_HAL_ERROR_GENERIC;
-            }
 
             /* Configure device mpu region */
             ARM_MPU_SetRegion(n_configured_regions,
                               local_mpu_region.RBAR,
                               local_mpu_region.RLAR);
+
+            n_configured_regions++;
 
             /* Enable MPU with the new region added */
             ARM_MPU_Enable(MPU_CTRL_PRIVDEFENA_Msk | MPU_CTRL_HFNMIENA_Msk);
@@ -384,7 +397,7 @@ enum tfm_hal_status_t tfm_hal_bind_boundary(
 
     partition_attrs = ((uint32_t)privileged << HANDLE_ATTR_PRIV_POS) &
                         HANDLE_ATTR_PRIV_MASK;
-    partition_attrs |= ((uint32_t)ns_agent << HANDLE_ATTR_NS_POS) &
+    partition_attrs |= ((uint32_t)ns_agent_tz << HANDLE_ATTR_NS_POS) &
                         HANDLE_ATTR_NS_MASK;
     *p_boundary = (uintptr_t)partition_attrs;
 
@@ -428,10 +441,15 @@ enum tfm_hal_status_t tfm_hal_memory_check(uintptr_t boundary, uintptr_t base,
         return TFM_HAL_ERROR_INVALID_INPUT;
     }
 
+    if (access_type & TFM_HAL_ACCESS_NS) {
+        flags |= CMSE_NONSECURE;
+    }
+
     if (!((uint32_t)boundary & HANDLE_ATTR_PRIV_MASK)) {
         flags |= CMSE_MPU_UNPRIV;
     }
 
+    /* This check is only done for ns_agent_tz */
     if ((uint32_t)boundary & HANDLE_ATTR_NS_MASK) {
         CONTROL_Type ctrl;
         ctrl.w = __TZ_get_CONTROL_NS();

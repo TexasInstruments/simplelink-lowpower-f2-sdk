@@ -135,12 +135,12 @@ const config = {
             onChange: onPtmChange
         },
         {
-            name: "sdaa",
-            displayName: "Selective Detect And Avoid (SDAA)",
-            longDescription: Docs.sdaaLongDescription,
-            hidden: true,
+            name: "adaptivity",
+            displayName: "Adaptivity",
+            longDescription: Docs.adaptivityLongDescription,
+            hidden: false,
             default: false,
-            onChange: onSdaaChange
+            onChange: onAdaptivityChange
         },
         {
             name: "useRcosc",
@@ -172,7 +172,7 @@ const config = {
             ]
         },
         {
-            displayName: "SDAA advance settings",
+            displayName: "Adaptivity advance settings",
             config: [
                 {
                     name: "fixedObservTime",
@@ -193,7 +193,7 @@ const config = {
                     name: "txUsageThresh",
                     displayName: "Tx Usage Threshold (%)",
                     longDescription: Docs.txUsageThreshLongDescription,
-                    default: "10",
+                    default: "0",
                     hidden: true,
                 },
                 {
@@ -339,14 +339,9 @@ function onPtmChange(inst, ui)
     }
 }
 
-function onSdaaChange(inst, ui)
+function onAdaptivityChange(inst, ui)
 {
-    ui.rxWindowDuration.hidden = !inst.sdaa;
-    ui.txUsageThresh.hidden = !inst.sdaa;
-    ui.rssiThreshold.hidden = !inst.sdaa;
-    ui.numberOfNoisySamples.hidden = !inst.sdaa;
-    ui.blockingChannelTime.hidden = !inst.sdaa;
-    ui.fixedObservTime.hidden = !inst.sdaa;
+    ui.rssiThreshold.hidden = !inst.adaptivity;
 }
 
 function onDynamicObservTimeChange(inst, ui)

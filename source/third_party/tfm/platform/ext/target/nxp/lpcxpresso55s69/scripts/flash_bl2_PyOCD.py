@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NXP Semiconductors. All rights reserved.
+# Copyright 2020-2023 NXP. All rights reserved.
 # SPDX-License-Identifier: BSD-3-Clause
 
 import os
@@ -19,7 +19,6 @@ else:
 target = 'LPC55S69'
 
 # Flash with PyOCD
-os.system('pyocd erase --mass -t ' + target)                                                       # erase the flash memory
-os.system('pyocd flash bl2.hex -t ' + target)                                                      # flash the secure image into target
-os.system('pyocd flash tfm_s_signed.bin --base-address ' + BL2_S_IMAGE_START + ' -t ' + target)    # flash the signed secure image into target
-os.system('pyocd flash tfm_ns_signed.bin --base-address ' + BL2_NS_IMAGE_START + ' -t ' + target)  # flash the signed non-secure image into target
+os.system('pyocd erase --mass -t ' + target)                                                        # erase the flash memory
+os.system('pyocd flash bl2.hex -t ' + target)                                                       # flash the BL2 image into target
+os.system('pyocd flash tfm_s_ns_signed.bin --base-address ' + BL2_S_IMAGE_START + ' -t ' + target)  # flash the signed image into target

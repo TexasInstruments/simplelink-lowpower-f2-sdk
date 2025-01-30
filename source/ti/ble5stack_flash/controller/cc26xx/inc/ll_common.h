@@ -11,7 +11,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2024, Texas Instruments Incorporated
+ Copyright (c) 2009-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -508,7 +508,7 @@ extern char *llCtrl_BleLogStrings[];
 
 // There is only supposed to be at most one control procedure pending, but some
 // extra space is allocated here just in case some queueing is required.
-#define LL_MAX_NUM_CTRL_PROC_PKTS                      4
+#define LL_MAX_NUM_CTRL_PROC_PKTS                      10
 
 // Control Procedure Actions
 #define LL_CTRL_PROC_STATUS_SUCCESS                    0
@@ -2054,6 +2054,7 @@ extern uint16               llFindNextActiveConnId( uint16 );
 extern uint8                llGetNextConn( void );
 extern uint16               llGetLstoNumOfEventsLeftMargin( uint16 );
 extern uint8                llSetStarvationMode( uint16 , uint8 );
+extern uint8                llGetStarvationMode( uint16 );
 extern void                 llRealignConn( llConnState_t *, uint32 );
 extern void                 llSortActiveConns( uint8 *, uint8 );
 extern void                 llShellSortActiveConns(uint8 *activeConns, uint8 numActiveConns);
@@ -2155,6 +2156,13 @@ extern uint32               llDmmGetActivityIndex(uint16 cmdNum);
 extern uint8                llDmmSetAdvHandle(uint8 handle, uint8 clear);
 extern void                 llDmmDynamicFree(void);
 extern llStatus_t           llDmmDynamicAlloc(void);
+
+// OSPREY Coex
+#ifdef CC33xx
+#ifdef OSPREY_COEX
+extern void                 llCoexSetHighPriorityGroup(uint16 cmdNum);
+#endif
+#endif
 
 // LL Process Event functions
 extern void                 llProcessScanTimeout( void );

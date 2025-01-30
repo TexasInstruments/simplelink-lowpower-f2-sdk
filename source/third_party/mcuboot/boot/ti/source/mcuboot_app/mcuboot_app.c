@@ -49,7 +49,7 @@
 #endif
 #define BLINK_INTERVAL     500000  /* Set blink interval to 500000us or 500ms */
 
-static void start_app(uint32_t *vector_table) {
+static __attribute__((naked)) void start_app(uint32_t *vector_table) {
 
     /* The following code resets the SP to the value specified in the
      * provided vector table, and then the Reset Handler is invoked.
@@ -74,12 +74,11 @@ static void start_app(uint32_t *vector_table) {
      *
      * */
 
-    /* Reset the SP with the value stored at vector_table[0] */
-    __asm volatile ("MSR msp, %0" : : "r" (vector_table[0]) : );
-
-    /* Jump to the Reset Handler address at vector_table[1] */
-
-    ( (void (*)(void)) (*(vector_table + 1)) )();
+    __asm volatile ("ldr r1, [r0, #0]\n"
+                    "msr msp, r1\n"
+                    "ldr r1, [r0, #4]\n"
+                    "mov pc, r1\n"
+                    );
 }
 
 static void do_boot(struct boot_rsp *rsp) {

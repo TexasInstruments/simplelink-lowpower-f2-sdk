@@ -7,6 +7,7 @@
 
 #include <stdbool.h>
 #include "tfm_platform_api.h"
+#include "psa/client.h"
 #include "psa_manifest/sid.h"
 
 enum tfm_platform_err_t tfm_platform_system_reset(void)

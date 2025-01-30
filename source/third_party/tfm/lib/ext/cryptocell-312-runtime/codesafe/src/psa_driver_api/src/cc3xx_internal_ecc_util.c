@@ -8,7 +8,7 @@
 #include "cc3xx_internal_ecc_util.h"
 #include "psa/crypto.h"
 
-#include "cc3xx_config.h"
+#include "cc3xx_psa_api_config.h"
 
 #include "cc_ecpki_error.h"
 #include "cc_pal_abort.h"

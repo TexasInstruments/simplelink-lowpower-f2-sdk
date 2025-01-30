@@ -21,13 +21,13 @@
  * bit 11: 1 - MM-IOVEC enabled, 0 - MM-IOVEC disabled
  */
 #define SERVICE_FLAG_STATELESS_HINDEX_MASK      (0xFF)
-#define SERVICE_FLAG_NS_ACCESSIBLE              (1U << 8)
-#define SERVICE_FLAG_STATELESS                  (1U << 9)
+#define SERVICE_FLAG_NS_ACCESSIBLE              (1UL << 8)
+#define SERVICE_FLAG_STATELESS                  (1UL << 9)
 
-#define SERVICE_FLAG_VERSION_POLICY_BIT         (1U << 10)
-#define SERVICE_VERSION_POLICY_RELAXED          (0U << 10)
-#define SERVICE_VERSION_POLICY_STRICT           (1U << 10)
-#define SERVICE_FLAG_MM_IOVEC                   (1U << 11)
+#define SERVICE_FLAG_VERSION_POLICY_BIT         (1UL << 10)
+#define SERVICE_VERSION_POLICY_RELAXED          (0UL << 10)
+#define SERVICE_VERSION_POLICY_STRICT           (1UL << 10)
+#define SERVICE_FLAG_MM_IOVEC                   (1UL << 11)
 
 #define SERVICE_GET_STATELESS_HINDEX(flag)      \
     ((flag) & SERVICE_FLAG_STATELESS_HINDEX_MASK)

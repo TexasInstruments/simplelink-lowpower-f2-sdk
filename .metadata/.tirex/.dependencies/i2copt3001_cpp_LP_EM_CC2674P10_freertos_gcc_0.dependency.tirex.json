@@ -1,0 +1,16 @@
+[
+    {
+        "files": [
+            "+../../i2copt3001_cpp.cpp -> i2copt3001_cpp.cpp",
+            "+../../OPT3001.cpp -> OPT3001.cpp",
+            "+../../OPT3001.h -> OPT3001.h",
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../main_freertos.c -> main_freertos.c",
+            "+../i2copt3001_cpp.syscfg -> i2copt3001_cpp.syscfg",
+            "+../../syscall_stubs.c -> syscall_stubs.c",
+            "+../../../../../../../source/ti/boards/LP_EM_CC2674P10/Board.html -> Board.html",
+            "+cc13x4_cc26x4_freertos.lds -> cc13x4_cc26x4_freertos.lds"
+        ]
+    }
+]

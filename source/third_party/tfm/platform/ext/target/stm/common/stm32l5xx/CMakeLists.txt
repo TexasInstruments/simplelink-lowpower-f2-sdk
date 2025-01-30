@@ -13,6 +13,7 @@ set(CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
 
 target_include_directories(platform_region_defs
     INTERFACE
+        partition
         include
         ${CMAKE_CURRENT_SOURCE_DIR}/boards
 )
@@ -31,18 +32,6 @@ target_add_scatter_file(tfm_s
     $<$<AND:$<VERSION_EQUAL:${TFM_ISOLATION_LEVEL},3>,$<C_COMPILER_ID:GNU>>:${CMAKE_BINARY_DIR}/generated/platform/ext/common/gcc/tfm_isolation_l3.ld>
     $<$<AND:$<VERSION_EQUAL:${TFM_ISOLATION_LEVEL},3>,$<C_COMPILER_ID:IAR>>:${CMAKE_BINARY_DIR}/generated/platform/ext/common/iar/tfm_isolation_l3.icf>
 )
-
-if(NS)
-    target_add_scatter_file(tfm_ns
-        $<$<C_COMPILER_ID:GNU>:${STM_COMMON_DIR}/hal/template/gcc/appli_ns.ld>
-        $<$<C_COMPILER_ID:ARMClang>:${STM_COMMON_DIR}/hal/template/armclang/appli_ns.sct>
-        $<$<C_COMPILER_ID:IAR>:${STM_COMMON_DIR}/hal/template/iar/appli_ns.icf>
-    )
-    target_link_libraries(CMSIS_5_tfm_ns
-        INTERFACE
-            CMSIS_5_RTX_V8MMN
-    )
-endif()
 
 if(BL2)
     target_add_scatter_file(bl2
@@ -115,17 +104,51 @@ target_sources(tfm_s
 
 #========================= Platform Non-Secure ================================#
 
-target_include_directories(platform_ns
-    PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/Device/Include
-        ${CMAKE_CURRENT_SOURCE_DIR}/hal/Inc
+# Install linker scripts
+install(FILES
+    ${STM_COMMON_DIR}/hal/template/iar/appli_ns.icf
+    ${STM_COMMON_DIR}/hal/template/gcc/appli_ns.ld
+    ${STM_COMMON_DIR}/hal/template/armclang/appli_ns.sct
+    DESTINATION ${INSTALL_PLATFORM_NS_DIR}/linker_scripts
 )
 
-target_sources(platform_ns
-    PRIVATE
+install(DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/Device/Include
+    DESTINATION ${INSTALL_PLATFORM_NS_DIR}/Device
+)
+
+install(FILES
+    ${PLATFORM_DIR}/ext/common/test_interrupt.h
+    ${PLATFORM_DIR}/ext/driver/Driver_USART.h
+    ${PLATFORM_DIR}/ext/driver/Driver_Common.h
+    ${PLATFORM_DIR}/include/tfm_plat_defs.h
+    DESTINATION ${INSTALL_PLATFORM_NS_DIR}/include
+)
+
+install(DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/hal/Inc
+    DESTINATION ${INSTALL_PLATFORM_NS_DIR}/hal
+)
+
+install(FILES
+    ${STM_COMMON_DIR}/hal/CMSIS_Driver/low_level_com.c
+    DESTINATION ${INSTALL_PLATFORM_NS_DIR}/CMSIS_Driver
+)
+install(FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Device/Source/Templates/system_stm32l5xx.c
+    DESTINATION ${INSTALL_PLATFORM_NS_DIR}/Device/Source/
+)
+
+install(FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/boards/cmsis.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/boards/target_cfg.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/boards/tfm_peripherals_def.h
+    DESTINATION ${INSTALL_PLATFORM_NS_DIR}/include
+)
+
+
+install(FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/hal/Src/stm32l5xx_hal.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/Device/Source/Templates/system_stm32l5xx.c
-        ${STM_COMMON_DIR}/hal/CMSIS_Driver/low_level_com.c
         ${CMAKE_CURRENT_SOURCE_DIR}/hal/Src/stm32l5xx_hal_dma.c
         ${CMAKE_CURRENT_SOURCE_DIR}/hal/Src/stm32l5xx_hal_pwr.c
         ${CMAKE_CURRENT_SOURCE_DIR}/hal/Src/stm32l5xx_hal_pwr_ex.c
@@ -134,8 +157,8 @@ target_sources(platform_ns
         ${CMAKE_CURRENT_SOURCE_DIR}/hal/Src/stm32l5xx_hal_uart.c
         ${CMAKE_CURRENT_SOURCE_DIR}/hal/Src/stm32l5xx_hal_uart_ex.c
         ${CMAKE_CURRENT_SOURCE_DIR}/hal/Src/stm32l5xx_hal_cortex.c
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/hal/Src
 )
-
 #========================= Platform BL2 =======================================#
 
 if(BL2)
@@ -212,7 +235,7 @@ install(FILES
         ${STM_COMMON_DIR}/scripts/stm_tool.py
         ${STM_COMMON_DIR}/scripts/bin2hex.py
         ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../../bl2/ext/mcuboot/scripts/macro_parser.py
-        DESTINATION ${CMAKE_BINARY_DIR}/scripts/ )
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/scripts/ )
 
 if (${CMAKE_C_COMPILER_ID} STREQUAL GNU)
     set(PREPROCESSOR_FILE ${STM_COMMON_DIR}/scripts/gcc/preprocess.sh)
@@ -228,7 +251,7 @@ install(FILES ${STM_COMMON_DIR}/scripts/regression.sh
          ${STM_COMMON_DIR}/scripts/TFM_BIN2HEX.sh
          ${STM_COMMON_DIR}/scripts/postbuild.sh
          PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
-         DESTINATION ${CMAKE_BINARY_DIR} )
+         DESTINATION ${CMAKE_INSTALL_PREFIX}  )
 
 if (TFM_S_REG_TEST OR TFM_NS_REG_TEST)
     #the define FLASH_LAYOUT_FOR_TEST

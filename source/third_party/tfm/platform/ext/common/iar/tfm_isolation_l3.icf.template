@@ -66,10 +66,10 @@ define block ER_TFM_CODE with fixed order, alignment = 8 {
      * The first loaded partition will be inited at last in SFN model.
      */
 define block TFM_SP_LOAD_LIST with alignment = 4 {
-    ro section .part_load_priority_lowest object load_info_*.o,
-    ro section .part_load_priority_low object load_info_*.o,
-    ro section .part_load_priority_normal object load_info_*.o,
-    ro section .part_load_priority_high object load_info_*.o,
+    ro section .part_load_priority_00 object load_info_*.o,
+    ro section .part_load_priority_01 object load_info_*.o,
+    ro section .part_load_priority_02 object load_info_*.o,
+    ro section .part_load_priority_03 object load_info_*.o,
 };
 
 #if defined(S_RAM_CODE_START)
@@ -113,11 +113,16 @@ define block ER_{{partition.manifest.name}}_RO  with alignment = {{ 'TFM_LINKER_
 /**** blocks CODE + RO-data definition ends here*/
 
 /**** Block Unprivileged Secure code + RO-data definition starts here */
-define block TFM_UNPRIV_CODE with alignment = TFM_LINKER_UNPRIV_CODE_ALIGNMENT {
+define block TFM_UNPRIV_CODE_START with alignment = TFM_LINKER_UNPRIV_CODE_ALIGNMENT {
     section SFN,
     readonly
 };
 
+    /*
+     * This empty, zero long execution region is here to mark the end address
+     * of TFM unprivileged code.
+     */
+define block TFM_UNPRIV_CODE_END with alignment = TFM_LINKER_UNPRIV_CODE_ALIGNMENT, size = 0 { };
 
 /* position tag block : base address of secure data area ( S_DATA_START)*/
 define block PT_SECURE_DATA_START with alignment = TFM_LINKER_SECURE_DATA_ALIGNMENT, size = 0 { };
@@ -137,18 +142,18 @@ define block ER_TFM_DATA          with alignment = 8 {readwrite};
 
 /* The runtime partition placed order is same as load partition */
 define block ER_PART_RT_POOL      with alignment = 4 {
-    zi section .bss.part_runtime_priority_lowest,
-    zi section .bss.part_runtime_priority_low,
-    zi section .bss.part_runtime_priority_normal,
-    zi section .bss.part_runtime_priority_high,
+    zi section .bss.part_runtime_priority_00,
+    zi section .bss.part_runtime_priority_01,
+    zi section .bss.part_runtime_priority_02,
+    zi section .bss.part_runtime_priority_03,
 };
 
 /* The runtime service placed order is same as load partition */
 define block ER_SERV_RT_POOL      with alignment = 4 {
-    zi section .bss.serv_runtime_priority_lowest,
-    zi section .bss.serv_runtime_priority_low,
-    zi section .bss.serv_runtime_priority_normal,
-    zi section .bss.serv_runtime_priority_high,
+    zi section .bss.serv_runtime_priority_00,
+    zi section .bss.serv_runtime_priority_01,
+    zi section .bss.serv_runtime_priority_02,
+    zi section .bss.serv_runtime_priority_03,
 };
 
 keep {block ER_PART_RT_POOL, block ER_SERV_RT_POOL};
@@ -211,6 +216,12 @@ define block PT_PRIV_RWZI_END with alignment = TFM_LINKER_PT_PRIV_RWZI_ALIGNMENT
 define block TFM_SP_META_PTR with alignment = TFM_LINKER_SP_META_PTR_ALIGNMENT {
     zi section .bss.SP_META_PTR_SPRTL_INST
        };
+
+    /*
+     * This empty, zero long execution region is here to mark the end address
+     * of TFM partition metadata pointer region.
+     */
+define block TFM_SP_META_PTR_END with alignment = TFM_LINKER_SP_META_PTR_ALIGNMENT, size = 0 { };
 #endif
 
 #ifdef RAM_VECTORS_SUPPORT
@@ -241,7 +252,8 @@ define block LR_CODE with fixed order {
     block ER_{{partition.manifest.name}}_RO,
     {% endif %}
 {% endfor %}
-    block TFM_UNPRIV_CODE,
+    block TFM_UNPRIV_CODE_START,
+    block TFM_UNPRIV_CODE_END,
     block PT_RO_END,
 };
 
@@ -300,6 +312,7 @@ define block DATA with fixed order {
 
 #if defined(CONFIG_TFM_PARTITION_META)
     block TFM_SP_META_PTR,
+    block TFM_SP_META_PTR_END,
 #endif
 
 #ifdef RAM_VECTORS_SUPPORT

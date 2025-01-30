@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2024, Texas Instruments Incorporated
+ Copyright (c) 2013-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -141,7 +141,8 @@ icall_userCfg_t user0Cfg = BLE_USER_CFG;
     defined(CC13X2P_4_LAUNCHXL) ||      \
     defined(CC2652RB_LAUNCHXL)  ||      \
     defined(EM_CC1354P10_1_LP)  ||      \
-    defined(EM_CC1354P10_6_LP)
+    defined(EM_CC1354P10_6_LP)  ||      \
+    defined(DeviceFamily_CC26X4)
 #define MAC_APP_TASK_STACK_SIZE 2048
 #else
 #define MAC_APP_TASK_STACK_SIZE 900

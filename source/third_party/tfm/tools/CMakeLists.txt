@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Copyright (c) 2020-2022, Arm Limited. All rights reserved.
+# Copyright (c) 2020-2023, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -10,17 +10,6 @@ find_package(Python3)
 
 ############################### Manifest lists declaration #####################
 list(APPEND MANIFEST_LISTS ${TFM_MANIFEST_LIST})
-
-if (TFM_NS_REG_TEST OR TFM_S_REG_TEST)
-    list(APPEND MANIFEST_LISTS ${TFM_TEST_PATH}/secure_fw/tfm_test_manifest_list.yaml)
-endif()
-
-if ("${TEST_PSA_API}" STREQUAL "IPC")
-    # The manifest tool does not recognize CMake varibles. Do configure_file() first.
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/tfm_psa_ff_test_manifest_list.yaml
-                   ${CMAKE_CURRENT_BINARY_DIR}/tfm_psa_ff_test_manifest_list.yaml)
-    list(APPEND MANIFEST_LISTS ${CMAKE_CURRENT_BINARY_DIR}/tfm_psa_ff_test_manifest_list.yaml)
-endif()
 
 if (TFM_EXTRA_MANIFEST_LIST_FILES)
     list(APPEND MANIFEST_LISTS ${TFM_EXTRA_MANIFEST_LIST_FILES})
@@ -34,6 +23,7 @@ endif()
 
 # Remove any duplicate entries to prevent same path appended twice in case of mulitiple runs
 list(REMOVE_DUPLICATES MANIFEST_LISTS)
+list(REMOVE_DUPLICATES TFM_EXTRA_GENERATED_FILE_LIST_PATH)
 
 ############################### File list declaration ##########################
 set(GENERATED_FILE_LISTS ${CMAKE_CURRENT_SOURCE_DIR}/tfm_generated_file_list.yaml)
@@ -65,6 +55,7 @@ foreach(MANIFEST_LIST ${MANIFEST_LISTS})
         message(FATAL_ERROR "Manifest list ${MANIFEST_LIST} doesn't exist")
     endif()
 
+
     # Get the path of the manifest list
     get_filename_component(MANIFEST_LIST_PATH ${MANIFEST_LIST} DIRECTORY)
 
@@ -74,7 +65,13 @@ foreach(MANIFEST_LIST ${MANIFEST_LISTS})
     foreach(MANIFEST ${MANIFESTS})
         # Convert to absolute paths
         if (NOT IS_ABSOLUTE ${MANIFEST})
-            get_filename_component(MANIFEST "${MANIFEST_LIST_PATH}/${MANIFEST}" ABSOLUTE)
+            # First try relative to the manifest
+            if (EXISTS "${MANIFEST_LIST_PATH}/${MANIFEST}")
+                get_filename_component(MANIFEST "${MANIFEST_LIST_PATH}/${MANIFEST}" ABSOLUTE)
+            # Then try relative to the root TF-M source directory
+            elseif (EXISTS "${CMAKE_SOURCE_DIR}/${MANIFEST}")
+                get_filename_component(MANIFEST "${CMAKE_SOURCE_DIR}/${MANIFEST}" ABSOLUTE)
+            endif()
         endif()
         list(APPEND MANIFEST_FILES ${MANIFEST})
     endforeach()
@@ -84,11 +81,13 @@ parse_field_from_yaml("${GENERATED_FILE_LISTS}" template TEMPLATE_FILES)
 # Replace relative paths with absolute paths
 # Paths used in GENERATED_FILE_LISTS are all relative to TF-M root (${CMAKE_SOURCE_DIR})
 list(TRANSFORM TEMPLATE_FILES REPLACE "^([^/\\][^:].*)" "${CMAKE_SOURCE_DIR}/\\1")
-
-parse_field_from_yaml("${GENERATED_FILE_LISTS}" output OUTPUT_FILES)
-# Replace relative paths with absolute paths
-# Paths used in GENERATED_FILE_LISTS are all relative to TF-M root (${CMAKE_SOURCE_DIR})
-list(TRANSFORM OUTPUT_FILES REPLACE "^([^/\\][^:].*)" "${CMAKE_BINARY_DIR}/generated/\\1")
+# Append the fixed templates that are not in the GENERATED_FILE_LISTS
+list(APPEND TEMPLATE_FILES
+     ${CMAKE_CURRENT_SOURCE_DIR}/templates/manifestfilename.template
+     ${CMAKE_CURRENT_SOURCE_DIR}/templates/partition_intermedia.template
+     ${CMAKE_CURRENT_SOURCE_DIR}/templates/partition_load_info.template
+     ${CMAKE_CURRENT_SOURCE_DIR}/config_impl.cmake.template
+)
 
 ############################### Generate Manifest config header ################
 
@@ -120,30 +119,12 @@ endfunction()
 #   - The isolation level
 #   - The SPM backend
 #   - "conditional" attributes for every Secure Partition in manifest lists
-#   - "stack_size" in manifests
-#   - "heap_size" in manifests
 append_manifest_config(MANIFEST_CONFIG_H_CONTENT TFM_ISOLATION_LEVEL STRING)
 append_manifest_config(MANIFEST_CONFIG_H_CONTENT CONFIG_TFM_SPM_BACKEND STRING)
 
 parse_field_from_yaml("${MANIFEST_LISTS}" conditional CONDITIONS)
 foreach(CON ${CONDITIONS})
     append_manifest_config(MANIFEST_CONFIG_H_CONTENT ${CON} BOOL)
-endforeach()
-
-parse_field_from_yaml("${MANIFEST_FILES}" stack_size STACK_SIZES)
-foreach(STK_SIZE ${STACK_SIZES})
-    if (NOT STK_SIZE GREATER 0)
-        # The "stack_size" might not be a valid number. Treat it as a configuration
-        append_manifest_config(MANIFEST_CONFIG_H_CONTENT ${STK_SIZE} STRING)
-    endif()
-endforeach()
-
-parse_field_from_yaml("${MANIFEST_FILES}" heap_size HEAP_SIZES)
-foreach(HEAP_SIZE ${HEAP_SIZES})
-    if (NOT HEAP_SIZE GREATER 0)
-        # The "heap_size" might not be a valid number. Treat it as a configuration
-        append_manifest_config(MANIFEST_CONFIG_H_CONTENT ${HEAP_SIZE} STRING)
-    endif()
 endforeach()
 
 # Generate the config header
@@ -178,11 +159,24 @@ set(MANIFEST_COMMAND
     -o ${CMAKE_BINARY_DIR}/generated
     ${PARSE_MANIFEST_QUIET_FLAG})
 
+add_custom_command(
+    OUTPUT ${CMAKE_BINARY_DIR}/generated
+    COMMAND ${MANIFEST_COMMAND}
+    DEPENDS ${MANIFEST_LISTS} ${GENERATED_FILE_LISTS}
+            ${MANIFEST_FILES} ${TEMPLATE_FILES}
+)
+
+add_custom_target(
+    manifest_tool
+    DEPENDS ${CMAKE_BINARY_DIR}/generated
+)
+
 # The files need to be generated before cmake will allow them to be used as
 # sources. Due to issue with custom_command scoping the easiest way to do this
 # is to run the script at cmake-time.
 execute_process(
     COMMAND ${MANIFEST_COMMAND}
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     RESULT_VARIABLE RET
 )
 

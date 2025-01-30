@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -21,7 +21,7 @@
 
 #include <string.h>
 
-#define OTP_COUNTER_MAX_SIZE    (128u * sizeof(uint32_t))
+#define OTP_COUNTER_MAX_SIZE    (16u * sizeof(uint32_t))
 #define NV_COUNTER_SIZE         4
 #define OTP_COUNTER_MAGIC       0x3333CAFE
 
@@ -75,16 +75,23 @@ enum tfm_plat_err_t tfm_plat_read_nv_counter(enum tfm_nv_counter_t counter_id,
         return TFM_PLAT_ERR_SYSTEM_ERR;
     }
 
-    switch(counter_id) {
-    case (PLAT_NV_COUNTER_BL2_0):
-        return read_nv_counter_otp(PLAT_OTP_ID_NV_COUNTER_BL2_0, val);
-    case (PLAT_NV_COUNTER_BL2_1):
-        return read_nv_counter_otp(PLAT_OTP_ID_NV_COUNTER_BL2_1, val);
-    case (PLAT_NV_COUNTER_BL2_2):
-        return read_nv_counter_otp(PLAT_OTP_ID_NV_COUNTER_BL2_2, val);
-    case (PLAT_NV_COUNTER_BL2_3):
-        return read_nv_counter_otp(PLAT_OTP_ID_NV_COUNTER_BL2_3, val);
+    /* Assumes Platform nv counters are contiguous*/
+    if (counter_id >= PLAT_NV_COUNTER_BL2_0 &&
+        counter_id < (PLAT_NV_COUNTER_BL2_0 + MCUBOOT_IMAGE_NUMBER)) {
+        return read_nv_counter_otp(PLAT_OTP_ID_NV_COUNTER_BL2_0 +
+                                       (counter_id - PLAT_NV_COUNTER_BL2_0),
+                                   val);
+    }
 
+    switch (counter_id) {
+#ifdef PLATFORM_HAS_PS_NV_OTP_COUNTERS
+    case (PLAT_NV_COUNTER_PS_0):
+        return read_nv_counter_otp(PLAT_OTP_ID_NV_COUNTER_PS_0, val);
+    case (PLAT_NV_COUNTER_PS_1):
+        return read_nv_counter_otp(PLAT_OTP_ID_NV_COUNTER_PS_1, val);
+    case (PLAT_NV_COUNTER_PS_2):
+        return read_nv_counter_otp(PLAT_OTP_ID_NV_COUNTER_PS_2, val);
+#endif /* PLATFORM_HAS_PS_NV_OTP_COUNTERS */
     case (PLAT_NV_COUNTER_NS_0):
         return read_nv_counter_otp(PLAT_OTP_ID_NV_COUNTER_NS_0, val);
     case (PLAT_NV_COUNTER_NS_1):
@@ -133,15 +140,23 @@ static enum tfm_plat_err_t set_nv_counter_otp(enum tfm_otp_element_id_t id,
 enum tfm_plat_err_t tfm_plat_set_nv_counter(enum tfm_nv_counter_t counter_id,
                                             uint32_t value)
 {
-    switch(counter_id) {
-    case (PLAT_NV_COUNTER_BL2_0):
-        return set_nv_counter_otp(PLAT_OTP_ID_NV_COUNTER_BL2_0, value);
-    case (PLAT_NV_COUNTER_BL2_1):
-        return set_nv_counter_otp(PLAT_OTP_ID_NV_COUNTER_BL2_1, value);
-    case (PLAT_NV_COUNTER_BL2_2):
-        return set_nv_counter_otp(PLAT_OTP_ID_NV_COUNTER_BL2_2, value);
-    case (PLAT_NV_COUNTER_BL2_3):
-        return set_nv_counter_otp(PLAT_OTP_ID_NV_COUNTER_BL2_3, value);
+    /* Assumes Platform nv counters are contiguous*/
+    if (counter_id >= PLAT_NV_COUNTER_BL2_0 &&
+        counter_id < (PLAT_NV_COUNTER_BL2_0 + MCUBOOT_IMAGE_NUMBER)) {
+        return set_nv_counter_otp(PLAT_OTP_ID_NV_COUNTER_BL2_0 +
+                                      (counter_id - PLAT_NV_COUNTER_BL2_0),
+                                  value);
+    }
+
+    switch (counter_id) {
+#ifdef PLATFORM_HAS_PS_NV_OTP_COUNTERS
+    case (PLAT_NV_COUNTER_PS_0):
+        return set_nv_counter_otp(PLAT_OTP_ID_NV_COUNTER_PS_0, value);
+    case (PLAT_NV_COUNTER_PS_1):
+        return set_nv_counter_otp(PLAT_OTP_ID_NV_COUNTER_PS_1, value);
+    case (PLAT_NV_COUNTER_PS_2):
+        return set_nv_counter_otp(PLAT_OTP_ID_NV_COUNTER_PS_2, value);
+#endif /* PLATFORM_HAS_PS_NV_OTP_COUNTERS */
 
     case (PLAT_NV_COUNTER_NS_0):
         return set_nv_counter_otp(PLAT_OTP_ID_NV_COUNTER_NS_0, value);

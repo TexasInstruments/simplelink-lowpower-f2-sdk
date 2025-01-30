@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,14 +47,18 @@ let templates;
 let logSinks = ["/ti/log/LogSinkBuf"];
 
 /* Include LogSinks conditionally on the board */
-if(!deviceId.match(/CC23.0/)) {
+if(!(deviceId.match(/CC23.0/) || deviceId.match(/CC35.0/))) {
 
     logSinks.push("/ti/log/LogSinkITM");
 }
-/* LogSinkUART excluded form CC35 as it doesn't have UART2 driver yet */
-if(!deviceId.match(/CC35.0/)) {
-    logSinks.push("/ti/log/LogSinkUART");
+/* Include LogSinks conditionally on the board */
+if (deviceId.match(/CC23.0/) || deviceId.match(/CC27/))
+{
+    logSinks.push("/ti/log/LogSinkTraceLPF3");
 }
+
+/* Include LogSinkUART for all devices*/
+logSinks.push("/ti/log/LogSinkUART");
 
 topModules = [
     LogModule.sinksToTopModule(logSinks)

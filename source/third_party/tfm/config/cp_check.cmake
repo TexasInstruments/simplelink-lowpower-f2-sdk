@@ -5,6 +5,26 @@
 #
 #-------------------------------------------------------------------------------
 
+if(POLICY CMP0123)
+    cmake_policy(SET CMP0123 NEW)
+endif()
+
+if(NOT COMMAND tfm_invalid_config)
+    function(tfm_invalid_config)
+        if (${ARGV})
+            string (REPLACE ";" " " ARGV_STRING "${ARGV}")
+            string (REPLACE "STREQUAL"     "=" ARGV_STRING "${ARGV_STRING}")
+            string (REPLACE "GREATER"      ">" ARGV_STRING "${ARGV_STRING}")
+            string (REPLACE "LESS"         "<" ARGV_STRING "${ARGV_STRING}")
+            string (REPLACE "VERSION_LESS" "<" ARGV_STRING "${ARGV_STRING}")
+            string (REPLACE "EQUAL"        "=" ARGV_STRING "${ARGV_STRING}")
+            string (REPLACE "IN_LIST"      "in" ARGV_STRING "${ARGV_STRING}")
+
+            message(FATAL_ERROR "INVALID CONFIG: ${ARGV_STRING}")
+        endif()
+    endfunction()
+endif()
+
 ########################## FPU and MVE #########################################
 
 tfm_invalid_config(NOT CMAKE_C_COMPILER_ID STREQUAL "GNU" AND (CONFIG_TFM_ENABLE_MVE OR CONFIG_TFM_ENABLE_MVE_FP))
@@ -23,8 +43,16 @@ if (CONFIG_TFM_FLOAT_ABI STREQUAL "hard")
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/cvetest.c "int x;")
     # Compile with mitigation -mfix-cmse-cve-2021-35465.
     if (CMAKE_C_COMPILER_ID STREQUAL "ARMClang")
+        # This flag is dedicated for this check.
+        # Check command will fail if C flags consist of keyword other than cpu/arch type.
+        # Toolchain file shall define a dedicated CP_CHECK_C_FLAGS to collect cpu/arch type
+        # if CMAKE_C_FLAGS is appended with other flags already before this check.
+        if(NOT DEFINED CP_CHECK_C_FLAGS)
+            set(CP_CHECK_C_FLAGS ${CMAKE_C_FLAGS})
+        endif()
+
         execute_process (
-            COMMAND ${CMAKE_C_COMPILER} --target=${CROSS_COMPILE} ${CMAKE_C_FLAGS} -mcmse -mfix-cmse-cve-2021-35465 -S ${CMAKE_CURRENT_BINARY_DIR}/cvetest.c -o ${CMAKE_CURRENT_BINARY_DIR}/cvetest.s
+            COMMAND ${CMAKE_C_COMPILER} --target=${CROSS_COMPILE} ${CP_CHECK_C_FLAGS} -mcmse -mfix-cmse-cve-2021-35465 -S ${CMAKE_CURRENT_BINARY_DIR}/cvetest.c -o ${CMAKE_CURRENT_BINARY_DIR}/cvetest.s
             RESULT_VARIABLE ret
             ERROR_VARIABLE err
         )

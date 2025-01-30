@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022, Texas Instruments Incorporated
+ * Copyright (c) 2021-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -84,8 +84,6 @@ void *GPIO_getUserArg(uint_least8_t index)
 /*
  *  ======== GPIO_resetConfig ========
  */
-
-#if (DeviceFamily_ID != DeviceFamily_ID_CC3220)
 void GPIO_resetConfig(uint_least8_t index)
 {
     if (index != GPIO_INVALID_INDEX)
@@ -96,4 +94,3 @@ void GPIO_resetConfig(uint_least8_t index)
         GPIO_setUserArg(index, NULL);
     }
 }
-#endif

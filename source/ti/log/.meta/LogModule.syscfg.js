@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2024 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,23 +57,24 @@ function objectValuesToArray(obj, stack) {
 
 /*
  *  ======== getLogSinks ========
- *  Get all LogSinks that exist in current product. The LogSink must exist in
- *  the current product (typically defined in a *.component.js file) with the
- *  format "/LogSink[A-Z]..."
+ *  Get all LogSinks that exist in all products. The LogSink must exist
+ *  with the format "/LogSink[A-Z]..."
  */
 function getLogSinks() {
     let logSinks = []
-    // Get all components in product
-    let components = system.getProducts()[0].components;
-    for (var i = 0; i < components.length; i++) {
-        let temp = system.getScript(components[i]);
-        // Get all modules in component topModule
-        let modules = []
-        if ('topModules' in temp) {
-            objectValuesToArray(temp.topModules, modules);
-            for (var j = 0; j < modules.length; j++) {
-                if (typeof modules[j] === 'string' && modules[j].match(/\/LogSink[A-Z]/)) {
-                    logSinks.push({ name: modules[j] });
+    // Get all components in all products
+    for (var i = 0; i < system.getProducts().length; i++){
+        let components = system.getProducts()[i].components;
+        for (var j = 0; j < components.length; j++) {
+            let temp = system.getScript(components[j]);
+            // Get all modules in component topModule
+            let modules = []
+            if ('topModules' in temp) {
+                objectValuesToArray(temp.topModules, modules);
+                for (var k = 0; k < modules.length; k++) {
+                    if (typeof modules[k] === 'string' && modules[k].match(/\/LogSink[A-Z]/)) {
+                        logSinks.push({ name: modules[k] });
+                    }
                 }
             }
         }
@@ -164,13 +165,23 @@ let static_config = [
     {
         name: "enableGlobal",
         displayName: "Global Enable Module",
+        description: "Enable or disable all modules. If disabled, no logs will be generated",
         default: true
     },
     {
         name: "globalLogLevelGroup",
         displayName: "Global Log Level Configuration",
+        description: "Set which log levels should generate logs (this is applied globally for all modules)",
         collapsed: false,
         config: logLevels
+    },
+    {
+        name: "enableDynamicModuleLogLevels",
+        displayName: "Enable Dynamic Module Log Levels",
+        description: `Enable runtime checking for each log module's log level bitmask and allow
+        each log module's log level bitmask to be dynamically changed at runtime. If disabled,
+        a log module's log level will be static and no runtime checks or dynamic changes can occur.`,
+        default: false
     }
 ];
 
@@ -239,7 +250,9 @@ function getOpts() {
     /* Push the module-level enable define for each active module */
     for (let i = 0; i < logModule.$instances.length; i++) {
         let inst = logModule.$instances[i];
-        options.push("-Dti_log_Log_ENABLE_" + inst.$name + "=1");
+        if (inst.enableModule === true) {
+            options.push("-Dti_log_Log_ENABLE_" + inst.$name + "=1");
+        }
     }
 
     /* Push the global enable define that enables all logs */

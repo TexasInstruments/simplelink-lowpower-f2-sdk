@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -80,17 +80,6 @@ static int_fast16_t KeyStore_PSA_exportCommon(KeyStore_PSA_KeyFileId key,
 }
 
 /*
- *  ======== KeyStore_PSA_exportCertificate ========
- */
-int_fast16_t KeyStore_PSA_exportCertificate(KeyStore_PSA_KeyFileId key,
-                                            uint8_t *data,
-                                            size_t dataSize,
-                                            size_t *dataLength)
-{
-    return KeyStore_PSA_exportCommon(key, data, dataSize, dataLength, KEYSTORE_PSA_S_MSG_TYPE_EXPORT_CERTIFICATE);
-}
-
-/*
  *  ======== KeyStore_PSA_exportPublicKey ========
  */
 int_fast16_t KeyStore_PSA_exportPublicKey(KeyStore_PSA_KeyFileId key,
@@ -114,7 +103,7 @@ int_fast16_t KeyStore_PSA_exportKey(KeyStore_PSA_KeyFileId key, uint8_t *data, s
  */
 static int_fast16_t KeyStore_PSA_destroyCommon(KeyStore_PSA_KeyFileId key, int32_t type)
 {
-    KeyStore_s_DestroyPurgeKeyCertificateMsg destroyCommonMsg;
+    KeyStore_s_DestroyPurgeKeyMsg destroyCommonMsg;
     int_fast16_t ret = KEYSTORE_PSA_STATUS_GENERIC_ERROR;
 
     destroyCommonMsg.key = key;
@@ -142,48 +131,6 @@ static int_fast16_t KeyStore_PSA_destroyCommon(KeyStore_PSA_KeyFileId key, int32
 int_fast16_t KeyStore_PSA_destroyKey(KeyStore_PSA_KeyFileId key)
 {
     return KeyStore_PSA_destroyCommon(key, KEYSTORE_PSA_S_MSG_TYPE_DESTROY_KEY);
-}
-
-/*
- *  ======== KeyStore_PSA_destroyCertificate ========
- */
-int_fast16_t KeyStore_PSA_destroyCertificate(KeyStore_PSA_KeyFileId key)
-{
-    return KeyStore_PSA_destroyCommon(key, KEYSTORE_PSA_S_MSG_TYPE_DESTROY_CERTIFICATE);
-}
-
-/*
- *  ======== KeyStore_PSA_importCertificate ========
- */
-int_fast16_t KeyStore_PSA_importCertificate(KeyStore_PSA_KeyAttributes *attributes,
-                                            KeyStore_PSA_KeyFileId *key,
-                                            uint8_t *data,
-                                            size_t dataLength)
-
-{
-    KeyStore_s_ImportCertificateMsg importCertificateMsg;
-    int_fast16_t ret = KEYSTORE_PSA_STATUS_GENERIC_ERROR;
-
-    importCertificateMsg.attributes = &attributes->client;
-    importCertificateMsg.key        = key;
-    importCertificateMsg.data       = data;
-    importCertificateMsg.dataLength = dataLength;
-
-    invecs[0].base = &importCertificateMsg;
-    invecs[0].len  = sizeof(importCertificateMsg);
-
-    outvecs[0].base = &ret;
-    outvecs[0].len  = sizeof(ret);
-
-    /*
-     * PSA call to secure driver:
-     *
-     * Return value can be ignored since ret (in outvecs) is initialized to KEYSTORE_PSA_STATUS_GENERIC_ERROR and
-     * will only be updated if the PSA call is successful.
-     */
-    (void)CryptoPSACC26X4_call(KEYSTORE_PSA_S_MSG_TYPE_IMPORT_CERTIFICATE, invecs, outvecs);
-
-    return ret;
 }
 
 /*

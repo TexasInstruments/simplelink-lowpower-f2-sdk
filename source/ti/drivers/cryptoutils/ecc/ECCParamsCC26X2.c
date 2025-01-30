@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021, Texas Instruments Incorporated
+ * Copyright (c) 2017-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -117,7 +117,7 @@ const ECCParams_CurveParams ECCParams_BrainpoolP512R1 = {.curveType  = ECCParams
                                                          .cofactor   = 1};
 
 const ECCParams_CurveParams ECCParams_Curve25519 = {.curveType  = ECCParams_CURVE_TYPE_MONTGOMERY,
-                                                    .length     = 32,
+                                                    .length     = Curve25519_PARAM_SIZE_BYTES,
                                                     .prime      = Curve25519_prime.byte,
                                                     .order      = Curve25519_order.byte,
                                                     .a          = Curve25519_a.byte,

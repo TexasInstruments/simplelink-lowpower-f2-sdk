@@ -30,14 +30,14 @@ extern "C" {
 /* Space reserved for user-defined flags. These are stored in the file metadata
  * and can be retrieved by getting the file info.
  */
-#define ITS_FLASH_FS_USER_FLAGS_MASK   ((1U << 16) - 1)
+#define ITS_FLASH_FS_USER_FLAGS_MASK   ((1UL << 16) - 1)
 
 /* Filesystem flags that can be provided when calling the write function */
-#define ITS_FLASH_FS_WRITE_FLAGS_MASK  ((1U << 24) - (1U << 16))
+#define ITS_FLASH_FS_WRITE_FLAGS_MASK  ((1UL << 24) - (1UL << 16))
 /* Create the file if it does not already exist */
-#define ITS_FLASH_FS_FLAG_CREATE       (1U << 16)
+#define ITS_FLASH_FS_FLAG_CREATE       (1UL << 16)
 /* Remove existing file data if it exists */
-#define ITS_FLASH_FS_FLAG_TRUNCATE     (1U << 17)
+#define ITS_FLASH_FS_FLAG_TRUNCATE     (1UL << 17)
 
 /* Invalid block index */
 #define ITS_BLOCK_INVALID_ID 0xFFFFFFFFU
@@ -167,15 +167,24 @@ struct its_flash_fs_ops_t {
 typedef struct its_flash_fs_ctx_t its_flash_fs_ctx_t;
 
 /*!
- * \struct its_file_info_t
+ * \struct its_flash_fs_file_info_t
  *
- * \brief Structure to store the file information.
+ * \brief Structure containing file information.
+ *
+ * \details This structure is not written to the filesystem, it is used by the
+ *          file system functions to simplify accessing the containing
+ *          information.
  */
-struct its_file_info_t {
-    size_t size_current; /*!< The current size of the flash file data */
-    size_t size_max;     /*!< The maximum size of the flash file data in bytes.
-                          */
-    uint32_t flags;      /*!< Flags set when the file was created */
+struct its_flash_fs_file_info_t {
+    size_t size_current;  /*!< The current size of the file in bytes */
+    size_t size_max;      /*!< The maximum size of the file in bytes. */
+    uint32_t flags;       /*!< Flags set when the file was created */
+#ifdef ITS_ENCRYPTION
+    /*!< Additional authenticated data */
+    uint8_t add[ITS_FILE_ID_SIZE + ITS_DATA_SIZE_FIELD_SIZE + ITS_FLAG_SIZE];
+    uint8_t nonce[12];/*!< Nonce/IV for encrypted files */
+    uint8_t tag[16];   /*!< Authentication tag */
+#endif
 };
 
 /**
@@ -220,23 +229,21 @@ psa_status_t its_flash_fs_wipe_all(its_flash_fs_ctx_t *fs_ctx);
  *
  * \param[in,out] fs_ctx  Filesystem context
  * \param[in]     fid     File ID
- * \param[out]    info    Pointer to the information structure to store the
- *                        file information values \ref its_file_info_t
+ * \param[out]    info    Pointer to the file information
+ *                        structure \ref its_flash_fs_file_info_t
  *
  * \return Returns error code specified in \ref psa_status_t
  */
 psa_status_t its_flash_fs_file_get_info(its_flash_fs_ctx_t *fs_ctx,
                                         const uint8_t *fid,
-                                        struct its_file_info_t *info);
+                                        struct its_flash_fs_file_info_t *info);
 
 /**
  * \brief Writes data to a file.
  *
  * \param[in,out] fs_ctx     Filesystem context
  * \param[in]     fid        File ID
- * \param[in]     flags      Flags of the file
- * \param[in]     max_size   Maximum size of the file to be created. Ignored if
- *                           the file is not being created.
+ * \param[in]     finfo      Pointer to \ref its_flash_fs_file_info_t
  * \param[in]     data_size  Size of the incoming write data.
  * \param[in]     offset     Offset in the file to write. Must be less than or
  *                           equal to the current file size.
@@ -246,8 +253,7 @@ psa_status_t its_flash_fs_file_get_info(its_flash_fs_ctx_t *fs_ctx,
  */
 psa_status_t its_flash_fs_file_write(its_flash_fs_ctx_t *fs_ctx,
                                      const uint8_t *fid,
-                                     uint32_t flags,
-                                     size_t max_size,
+                                     struct its_flash_fs_file_info_t *finfo,
                                      size_t data_size,
                                      size_t offset,
                                      const uint8_t *data);

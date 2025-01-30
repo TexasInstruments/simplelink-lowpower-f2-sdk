@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -1658,7 +1658,7 @@ static int8_t ns_sw_mac_api_enable_edfe_ext(mac_api_t *api, mcps_edfe_handler *e
 }
 
 #ifdef FEATURE_MAC_SECURITY
-void mac_delete_Device_FH_NT_entry(mlme_device_descriptor_t *device_desc, deviceIndexDesc_t *pDevice)
+void mac_delete_Device_FH_NT_entry(const mlme_device_descriptor_t *device_desc, deviceIndexDesc_t *pDevice)
 {
     uint16_t deviceIndex;
     deviceDescriptor_t *pDeviceTable;
@@ -2484,7 +2484,7 @@ void timac_tasklet_event_handler(arm_event_s *event)
 
                 tr_cmdline("TxSeq(%d Tx(%d,%d)) ",macMplHnd.mpl_seq,slotIdx,bfio);
                 //invoke send MPL API
-                st = timac_Send_MPL(&mpl_user_test_data,sizeof(mpl_user_test_data));
+                st = timac_Send_MPL((uint8_t *)mpl_user_test_data, sizeof(mpl_user_test_data));
 
             }
             break;

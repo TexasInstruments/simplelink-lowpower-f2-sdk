@@ -24,6 +24,8 @@
 ;//-------- <<< Use Configuration Wizard in Context Menu >>> ------------------
 ;*/
 
+                PRESERVE8
+
                 IMPORT |Image$$ARM_LIB_STACK$$ZI$$Limit|
 
 ; The CPU VTOR register

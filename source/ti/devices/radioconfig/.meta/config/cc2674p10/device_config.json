@@ -12,7 +12,7 @@
             {
                 "_file": "device_description.json",
                 "_phy": "ieee_15_4",
-                "$": ".\/..\/config\/cc1352p_ieee_15_4_pg21"
+                "$": ".\/..\/config\/cc2674p10_ieee_15_4_pg20"
             },
             {
                 "_file": "targets.json",

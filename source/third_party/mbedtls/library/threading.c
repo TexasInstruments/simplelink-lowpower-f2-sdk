@@ -17,6 +17,15 @@
  *  limitations under the License.
  */
 
+/* TI-MBEDTLS: Remove POSIX defintions that conflict with TI definitions */
+/*
+ * Ensure gmtime_r is available even with -std=c99; must be defined before
+ * mbedtls_config.h, which pulls in glibc's features.h. Harmless on other platforms.
+ */
+// #if !defined(_POSIX_C_SOURCE)
+// #define _POSIX_C_SOURCE 200112L
+// #endif
+
 #include "common.h"
 
 #if defined(MBEDTLS_THREADING_C)

@@ -26,7 +26,7 @@
 #include "platform_retarget_dev.h"
 #include "platform_retarget.h"
 #include "system_core_init.h"
-#include "platform/include/tfm_plat_defs.h"
+#include "tfm_plat_defs.h"
 
 /* ARM UART driver structures */
 #ifdef ARM_UART0_S
@@ -302,24 +302,24 @@ struct ppc_sse200_dev_t APB_PPCEXP3_DEV_S = {
 /* CMSDK Timer driver structures */
 #ifdef CMSDK_TIMER0_S
 static const struct cmsdk_timer_dev_cfg_t CMSDK_TIMER0_DEV_CFG_S
-#ifdef TEST_NS_SLIH_IRQ
+#ifdef TFM_PARTITION_SLIH_TEST
     TFM_LINK_SET_RO_IN_PARTITION_SECTION("TFM_SP_SLIH_TEST", "APP-ROT")
-#elif defined(TEST_NS_FLIH_IRQ)
+#elif defined(TFM_PARTITION_FLIH_TEST)
     TFM_LINK_SET_RO_IN_PARTITION_SECTION("TFM_SP_FLIH_TEST", "APP-ROT")
 #endif
     = {.base = CMSDK_TIMER0_BASE_S};
 static struct cmsdk_timer_dev_data_t CMSDK_TIMER0_DEV_DATA_S
-#ifdef TEST_NS_SLIH_IRQ
+#ifdef TFM_PARTITION_SLIH_TEST
     TFM_LINK_SET_RW_IN_PARTITION_SECTION("TFM_SP_SLIH_TEST", "APP-ROT")
-#elif defined(TEST_NS_FLIH_IRQ)
+#elif defined(TFM_PARTITION_FLIH_TEST)
     TFM_LINK_SET_RW_IN_PARTITION_SECTION("TFM_SP_FLIH_TEST", "APP-ROT")
 #endif
     = {.is_initialized = 0};
 
 struct cmsdk_timer_dev_t CMSDK_TIMER0_DEV_S
-#ifdef TEST_NS_SLIH_IRQ
+#ifdef TFM_PARTITION_SLIH_TEST
     TFM_LINK_SET_RW_IN_PARTITION_SECTION("TFM_SP_SLIH_TEST", "APP-ROT")
-#elif defined(TEST_NS_FLIH_IRQ)
+#elif defined(TFM_PARTITION_FLIH_TEST)
     TFM_LINK_SET_RW_IN_PARTITION_SECTION("TFM_SP_FLIH_TEST", "APP-ROT")
 #endif
        = {&(CMSDK_TIMER0_DEV_CFG_S), &(CMSDK_TIMER0_DEV_DATA_S)};

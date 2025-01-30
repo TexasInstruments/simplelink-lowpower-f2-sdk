@@ -80,7 +80,10 @@ enum mpu_armv8m_error_t mpu_armv8m_region_enable(
      * file needs to be setup to ensure that partitions do not overlap.
      */
 
-    if (region_cfg->region_nr >= MPU_ARMV8M_NUM_REGIONS) {
+    uint32_t num_regions =
+        ((mpu->TYPE & MPU_TYPE_DREGION_Msk) >> MPU_TYPE_DREGION_Pos);
+
+    if (region_cfg->region_nr >= num_regions) {
         return MPU_ARMV8M_ERROR;
     }
 
@@ -147,11 +150,12 @@ enum mpu_armv8m_error_t mpu_armv8m_region_disable(
 enum mpu_armv8m_error_t mpu_armv8m_clean(struct mpu_armv8m_dev_t *dev)
 {
     MPU_Type *mpu = (MPU_Type *)dev->base;
-    uint32_t i = (mpu->TYPE & MPU_TYPE_DREGION_Msk) >> MPU_TYPE_DREGION_Pos;
 
-    while (i > 0) {
-        mpu_armv8m_region_disable(dev, i-1);
-        i--;
+    uint32_t num_regions =
+        ((mpu->TYPE & MPU_TYPE_DREGION_Msk) >> MPU_TYPE_DREGION_Pos);
+
+    for (uint32_t i = 0; i < num_regions; i++) {
+        mpu_armv8m_region_disable(dev, i);
     }
 
     return MPU_ARMV8M_OK;

@@ -32,7 +32,7 @@
 #include "mpc_sie200_drv.h"
 #include "ppc_sse200_drv.h"
 #include "arm_uart_drv.h"
-#include "timer_cmsdk/timer_cmsdk.h"
+#include "timer_cmsdk.h"
 
 /* ======= Defines peripheral configuration structures ======= */
 /* ARM UART driver structures */

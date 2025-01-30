@@ -18,7 +18,6 @@
 #define __FLASH_LAYOUT_H__
 
 #include "platform_base_address.h"
-#include "config_tfm_target.h"
 
 /* Default Flash layout on Corstone-310 with BL2 (multiple image boot):
  *
@@ -55,7 +54,7 @@
  * with comment.
  */
 
-/* Size of a Secure and of a Non-secure image is set in platform config_tfm_target.h */
+/* Size of a Secure and of a Non-secure image is set in platform cmake */
 #if (FLASH_S_PARTITION_SIZE > FLASH_NS_PARTITION_SIZE)
 #define FLASH_MAX_PARTITION_SIZE FLASH_S_PARTITION_SIZE
 #else

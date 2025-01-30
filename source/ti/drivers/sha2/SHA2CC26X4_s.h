@@ -73,7 +73,7 @@ extern "C" {
  * by the non-secure client using SHA2_construct().
  */
 #ifndef CONFIG_SHA2_S_CONFIG_POOL_SIZE
-    #define CONFIG_SHA2_S_CONFIG_POOL_SIZE 1
+    #define CONFIG_SHA2_S_CONFIG_POOL_SIZE 2 /* One instance used for EdDSA */
 #endif
 
 #define SHA2_SECURE_CALLBACK_COUNT (CONFIG_TI_DRIVERS_SHA2_COUNT + CONFIG_SHA2_S_CONFIG_POOL_SIZE)
@@ -134,7 +134,7 @@ typedef struct
 typedef struct
 {
     SHA2_Handle handle;
-    CryptoKey *key;
+    const CryptoKey *key;
     const void *data;
     size_t dataLength;
     void *hmac;
@@ -149,7 +149,7 @@ typedef struct
 typedef struct
 {
     SHA2_Handle handle;
-    CryptoKey *key;
+    const CryptoKey *key;
 } SHA2_s_SetupHmacMsg;
 
 typedef struct

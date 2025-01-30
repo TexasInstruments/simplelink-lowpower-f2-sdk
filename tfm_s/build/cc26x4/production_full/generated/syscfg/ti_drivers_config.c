@@ -251,30 +251,6 @@ const uint_least8_t CONFIG_AESGCM_0_CONST = CONFIG_AESGCM_0;
 const uint_least8_t AESGCM_count = CONFIG_AESGCM_COUNT;
 
 /*
- *  =============================== DMA ===============================
- */
-
-#include <ti/drivers/dma/UDMACC26XX.h>
-#include <ti/devices/cc13x4_cc26x4/driverlib/udma.h>
-#include <ti/devices/cc13x4_cc26x4/inc/hw_memmap.h>
-
-UDMACC26XX_Object udmaCC26XXObject;
-
-const UDMACC26XX_HWAttrs udmaCC26XXHWAttrs = {
-    .baseAddr        = UDMA0_BASE,
-    .powerMngrId     = PowerCC26XX_PERIPH_UDMA,
-    .intNum          = INT_DMA_ERR,
-    .intPriority     = (~0)
-};
-
-const UDMACC26XX_Config UDMACC26XX_config[1] = {
-    {
-        .object         = &udmaCC26XXObject,
-        .hwAttrs        = &udmaCC26XXHWAttrs,
-    },
-};
-
-/*
  *  =============================== ECDH ===============================
  */
 
@@ -313,6 +289,8 @@ const uint_least8_t ECDH_count = CONFIG_ECDH_COUNT;
 #include <ti/drivers/ecdsa/ECDSACC26X2.h>
 
 #define CONFIG_ECDSA_COUNT 2
+
+
 ECDSACC26X2_Object ecdsaCC26X2Objects[CONFIG_ECDSA_COUNT];
 
 /*
@@ -374,6 +352,38 @@ const ECJPAKE_Config ECJPAKE_config[CONFIG_ECJPAKE_COUNT] = {
 
 const uint_least8_t CONFIG_ECJPAKE_0_CONST = CONFIG_ECJPAKE_0;
 const uint_least8_t ECJPAKE_count = CONFIG_ECJPAKE_COUNT;
+
+/*
+ *  =============================== EDDSA ===============================
+ */
+
+#include <ti/drivers/EDDSA.h>
+#include <ti/drivers/eddsa/EDDSACC26X2.h>
+
+#define CONFIG_EDDSA_COUNT 1
+
+
+EDDSACC26X2_Object eddsaCC26X2Objects[CONFIG_EDDSA_COUNT];
+
+/*
+ *  ======== eddsaCC26X2HWAttrs ========
+ */
+const EDDSACC26X2_HWAttrs eddsaCC26X2HWAttrs[CONFIG_EDDSA_COUNT] = {
+    {
+        .intPriority = (~0),
+        .sha2IntPriority = (~0),
+    },
+};
+
+const EDDSA_Config EDDSA_config[CONFIG_EDDSA_COUNT] = {
+    {   /* CONFIG_EDDSA_0 */
+        .object         = &eddsaCC26X2Objects[CONFIG_EDDSA_0],
+        .hwAttrs        = &eddsaCC26X2HWAttrs[CONFIG_EDDSA_0]
+    },
+};
+
+const uint_least8_t CONFIG_EDDSA_0_CONST = CONFIG_EDDSA_0;
+const uint_least8_t EDDSA_count = CONFIG_EDDSA_COUNT;
 
 /*
  *  =============================== GPIO ===============================

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,24 @@
 
 "use strict";
 
+/*
+ *  ======== config_instance ========
+ *  Define the config params of the module instance
+ */
+let config_instance = [
+    {
+        name: "printfDelegate",
+        displayName: "Printf Delegate Function",
+        default: "LogSinkITM_printfSingleton",
+        readOnly: true
+    },
+    {
+        name: "bufDelegate",
+        displayName: "Buf Delegate Function",
+        default: "LogSinkITM_bufSingleton",
+        readOnly: true
+    }
+];
 
 /*
  *  ======== modules ========
@@ -73,6 +91,7 @@ which can be received by the tilogger host-side tool.
 [3]: /../tools/log/tiutils/Readme.html "Log Tools"
 `,
     defaultInstanceName: "CONFIG_ti_log_LogSinkITM_",
+    config: config_instance,
     modules: modules,
     maxInstances        : 1,
     /* Board_init() priority to guarantee that the LogSink is initialized after GPIO */

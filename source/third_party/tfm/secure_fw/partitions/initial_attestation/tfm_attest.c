@@ -5,9 +5,9 @@
  *
  */
 
-#include "tfm_api.h"
 #include "service_api.h"
 #include "attest.h"
+#include "psa/error.h"
 #include "psa/initial_attestation.h"
 #include "tfm_boot_status.h"
 
@@ -31,7 +31,7 @@ attest_get_boot_data(uint8_t major_type,
     int32_t tfm_res;
 
     tfm_res = tfm_core_get_boot_data(major_type, boot_data, len);
-    if (tfm_res != (int32_t)TFM_SUCCESS) {
+    if (tfm_res != (int32_t)PSA_SUCCESS) {
         attest_res =  PSA_ATTEST_ERR_INIT_FAILED;
     }
 

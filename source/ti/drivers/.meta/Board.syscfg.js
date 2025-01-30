@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,23 +39,57 @@
 
 "use strict";
 
-/* get ti/drivers common utility functions */
+/* Get ti/drivers common utility functions */
 let Common = system.getScript("/ti/drivers/Common.js");
 
-/* get /ti/drivers family name from device object */
+/* Get /ti/drivers family name from device object */
 let family = Common.device2Family(system.deviceData, "Board");
 
 let config = [];
+
+function getLinkerDefs()
+{
+    let linkerDefs = [];
+
+    /* NVS-related definitions */
+    let nvsModule = system.modules["/ti/drivers/NVS"];
+    if (nvsModule) {
+        for (let i = 0; i < nvsModule.$instances.length; i++) {
+            let inst = nvsModule.$instances[i];
+            if ((inst.nvsType == "Internal") &&
+                (inst.internalFlash.regionType == "Generated")) {
+                    linkerDefs.push(
+                    {
+                        "name": "NVS_" + inst.$name + "_BASE",
+                        "value": inst.internalFlash.regionBase
+                    },
+                    {
+                        "name": "NVS_" + inst.$name + "_SIZE",
+                        "value": inst.internalFlash.regionSize
+                    }
+                );
+            }
+        }
+    }
+
+    /* TODO: add UDMA-related config base addresses - currently disabled */
+//    let deviceId = system.deviceData.deviceId;
+//    if (deviceId.match(/CC2340/)) {
+//        linkerDefs.push({ name: "UDMALPF3_CONFIG_BASE", value: 0x20000400 });
+//    }
+
+    return linkerDefs;
+}
 
 /*
  *  ======== getLibs ========
  */
 function getLibs(mod)
 {
-    /* get device ID to select appropriate libs */
+    /* Get device ID to select appropriate libs */
     let devId = system.deviceData.deviceId;
 
-    /* get device information from DriverLib */
+    /* Get device information from DriverLib */
     var DriverLib = system.getScript("/ti/devices/DriverLib");
     let family = DriverLib.getAttrs(devId).libName;
 
@@ -64,43 +98,70 @@ function getLibs(mod)
 
     /* Get toolchain specific information from GenLibs */
     let GenLibs = system.getScript("/ti/utils/build/GenLibs");
+
+    /* The drivers libraries with logging enabled use a _log suffix vs the
+     * unlogged library name.
+     * If any LogModule is shared by a drivers module the _log suffix must
+     * be selected.
+     */
+    var log_suffix = "";
+    if (system.modules["/ti/log/LogModule"]) {
+        // eslint-disable-next-line no-undef
+        if (_.some(system.modules["/ti/log/LogModule"].$instances,
+                   (inst) => {
+                       if (inst.$ownedBy)
+                       {
+                           return inst.$ownedBy.$module.$name.startsWith("/ti/drivers");
+                       }
+                       else
+                       {
+                           return false;
+                       }
+                    }
+                   )
+            )
+        {
+            log_suffix = "_log";
+        }
+    }
+
     let libPath = GenLibs.libPath;
-    let getToolchainDir = GenLibs.getToolchainDir;
-    let getDeviceIsa = GenLibs.getDeviceIsa;
     let libs = [];
 
     if (family != "") {
+        /* Add dependency on PSA Crypto library if key store module is present */
+        if (system.modules["/ti/drivers/CryptoKeyKeyStore_PSA"]) {
+            libs.push(libPath("third_party/psa_crypto", "psa_crypto_" + family + ".a"));
+        }
+
         /* Check for TrustZone module */
-        let tfmEnabled = family.match(/(cc.*4)/) && system.modules["/ti/utils/TrustZone"];
+        let tfmEnabled = family.match(/cc(13|26).[34]|cc27|cc35/) && system.modules["/ti/utils/TrustZone"];
 
         if(tfmEnabled){
-            libs.push(libPath("ti/drivers","drivers_" + family + "_ns" + ".a"));
+            libs.push(libPath("ti/drivers","drivers_" + family + "_ns" + log_suffix +".a"));
         }
         else{
-            /* For CC27XX devices use Rev A library if no board is selected or
-             * if using a Rev A board.
-             */
-            if (family.match(/cc27/) && (!system.deviceData.board || system.deviceData.board.name.match(/REVA/)))
-            {
-                libs.push(libPath("ti/drivers","drivers_" + family + "_reva.a"));
-            }
-            else
-            {
-                libs.push(libPath("ti/drivers","drivers_" + family + ".a"));
-            }
+            libs.push(libPath("ti/drivers","drivers_" + family + log_suffix +".a"));
         }
 
         if (!family.match(/cc(13|26).[34]|cc23|cc27|cc35/)) {
             libs.push(libPath("ti/grlib", "grlib.a"));
         }
 
-        if (rtos == "nortos") {
-            if(tfmEnabled){
-                libs.push("lib/" + getToolchainDir() + "/" + getDeviceIsa() + "/nortos_" + family + "_ns.a");
-            }
-            else{
-                libs.push("lib/" + getToolchainDir() + "/" + getDeviceIsa() + "/nortos_" + family + ".a");
-            }
+        /* Workaround to handle circular dependencies between the NoRTOS DPL lib
+         * and the drivers lib. For example, the NoRTOS DPL depends on the Power
+         * driver, and many drivers depend on HwiP.
+         * The "/nortos/dpl/Settings" module defines through its getLibs()
+         * function a dependency on the drivers lib for the NoRTOS DPL lib.
+         * This results in the NoRTOS DPL lib to be linked first.
+         * Below ensures that the NoRTOS DPL lib is also linked after the
+         * drivers lib. Resulting in the NoRTOS DPL lib being linked both before
+         * and after the drivers lib.
+         * This is not needed for IAR, so below is skipped for IAR.
+         */
+        if (rtos == "nortos" && system.compiler != "iar") {
+            let Settings = system.getScript("/nortos/dpl/Settings");
+            libs = libs.concat(Settings.getLibs().libs);
         }
 
     }
@@ -109,7 +170,7 @@ function getLibs(mod)
         throw Error("device2LinkCmd: unknown device family ('" + family + "') for deviceId '" + devId + "'");
     }
 
-    /* create a GenLibs input argument */
+    /* Create a GenLibs input argument */
     var linkOpts = {
         name: "/ti/drivers",
         vers: "1.0.0.0",
@@ -117,7 +178,7 @@ function getLibs(mod)
         libs: libs
     };
 
-    /* add dependency on useFatFS configuration (if needed) */
+    /* Add dependency on useFatFS configuration (if needed) */
     if (system.modules["/ti/drivers/SD"]) {
         let sdModule = system.modules["/ti/drivers/SD"];
         for (let i = 0; i < sdModule.$instances.length; i++) {
@@ -129,10 +190,30 @@ function getLibs(mod)
         }
     }
 
-    if (system.modules["/ti/drivers/ECDH"] || system.modules["/ti/drivers/ECDSA"]) {
+    if (system.modules["/ti/drivers/ECDSA"] || system.modules["/ti/drivers/ECIES"]
+        || system.modules["/ti/drivers/ECDH"]) {
         /* Add dependency on ECC library for CC13x1/CC26x1 and CC23x0 */
-        if (family.match(/cc13.1/) || family.match(/cc26.1/) || family.match(/cc23.0/) || family.match(/cc27/)) {
+        if (family.match(/cc13.1/) || family.match(/cc26.1/) || family.match(/cc23.0/)) {
             linkOpts.deps.push("/third_party/ecc");
+        }
+    }
+
+    if (system.modules["/ti/drivers/AESCCM"] ||
+        system.modules["/ti/drivers/AESCMAC"] ||
+        system.modules["/ti/drivers/SHA2"] ||
+        system.modules["/ti/drivers/AESECB"] ||
+        system.modules["/ti/drivers/AESCTR"] ||
+        system.modules["/ti/drivers/AESCTRDRBG"] ||
+        system.modules["/ti/drivers/AESGCM"] ||
+        system.modules["/ti/drivers/AESCBC"] ||
+        system.modules["/ti/drivers/ECDH"] ||
+        system.modules["/ti/drivers/ECDSA"] ||
+        system.modules["/ti/drivers/TRNG"] ||
+        system.modules["/ti/drivers/RNG"] ||
+        system.modules["/ti/drivers/CryptoKeyKeyStore_PSA"]) {
+        /* Add dependency on HSMDDK library for CC27XX and CC35XX */
+        if (family.match(/cc27/) || family.match(/cc35/)) {
+            linkOpts.deps.push("/third_party/hsmddk");
         }
     }
 
@@ -171,11 +252,17 @@ function modules(mod)
             moduleName: "/freertos/dpl/Settings",
             hidden    : true
         });
+    } else if (system.getRTOS() === "nortos") {
+        reqs.push({
+            name      : "DPL",
+            moduleName: "/nortos/dpl/Settings",
+            hidden    : true
+        });
     }
 
     if (system.deviceData.board && system.deviceData.board.components) {
 
-        /* accumulate all modules required by the board's components */
+        /* Accumulate all modules required by the board's components */
         let mods = {};
         let comps = system.deviceData.board.components;
         for (let cname in comps) {
@@ -185,7 +272,7 @@ function modules(mod)
             }
         }
 
-        /* create module requirements */
+        /* Create module requirements */
         for (let mname in mods) {
             reqs.push({
                 name: mname.replace(/\//g, '_'), // private property name
@@ -252,22 +339,26 @@ module will execute.
 `,
 
     templates    : {
-        /* contribute TI-DRIVERS libraries to linker command file */
+        /* Contribute TI-DRIVERS libraries to linker command file */
         "/ti/utils/build/GenLibs.cmd.xdt"   :
             {modName: "/ti/drivers/Board", getLibs: getLibs},
 
-        /* trigger generation of ti_drivers_config.[ch] */
+        /* Contribute TI-DRIVERS definitions to linker command file */
+        "/ti/utils/build/GenMap.cmd.xdt"   :
+            {modName: "/ti/drivers/Board", getLinkerDefs: getLinkerDefs},
+
+        /* Trigger generation of ti_drivers_config.[ch] */
         "/ti/drivers/templates/Board.c.xdt" : true,
         "/ti/drivers/templates/Board.h.xdt" : true
     },
 
     moduleStatic : {
-        /* ensure something supplies appropriate DriverLib library */
+        /* Ensure something supplies appropriate DriverLib library */
         modules  : modules,
         config   : config
     }
 };
 
-/* extend the base exports to include family-specific content */
+/* Extend the base exports to include family-specific content */
 let deviceBoard = system.getScript("/ti/drivers/Board" + family);
 exports = deviceBoard.extend(base);

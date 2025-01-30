@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2024, Texas Instruments Incorporated
+ Copyright (c) 2013-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -69,6 +69,8 @@
  
  
  *****************************************************************************/
+
+#if defined( HOST_CONFIG ) && ( defined( CENTRAL_CFG ) || defined( PERIPHERAL_CFG ) ) && ( HOST_CONFIG & ( CENTRAL_CFG | PERIPHERAL_CFG ) )
 
 /*******************************************************************************
  * INCLUDES
@@ -460,6 +462,7 @@ static bStatus_t gattServApp_SendNotiInd( uint16 connHandle, uint8 cccValue,
   return ( status );
 }
 
+#endif // ( CENTRAL_CFG | PERIPHERAL_CFG )
 
 /****************************************************************************
 ****************************************************************************/

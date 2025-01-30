@@ -14,7 +14,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2024, Texas Instruments Incorporated
+ Copyright (c) 2013-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -2469,14 +2469,24 @@ ICall_Errno ICall_registerApp(ICall_EntityID *entity,
 static void *ICall_allocMsgInternal(bool limited, size_t size)
 {
   ICall_MsgHdr *hdr;
+  size_t allocSize;
+
+  allocSize = sizeof(ICall_MsgHdr) + size;
+
+  // If 'size' is very large and 'allocSize' overflows, the result will be
+  // smaller than size. In this case, don't try to allocate.
+  if ( allocSize < size )
+  {
+    return (NULL);
+  }
 
   if (limited)
   {
-    hdr = (ICall_MsgHdr *) ICall_mallocLimited(sizeof(ICall_MsgHdr) + size);
+    hdr = (ICall_MsgHdr *) ICall_mallocLimited(allocSize);
   }
   else
   {
-    hdr = (ICall_MsgHdr *) ICall_heapMalloc(sizeof(ICall_MsgHdr) + size);
+    hdr = (ICall_MsgHdr *) ICall_heapMalloc(allocSize);
   }
 
   if (!hdr)

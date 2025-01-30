@@ -7,7 +7,6 @@
 #ifndef __TFM_UTILS_H__
 #define __TFM_UTILS_H__
 
-#include <stdbool.h>
 #include <string.h>
 #include "tfm_spm_log.h"
 

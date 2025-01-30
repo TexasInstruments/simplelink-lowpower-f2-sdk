@@ -11,7 +11,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2012-2024, Texas Instruments Incorporated
+ Copyright (c) 2012-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,6 @@
 #include <port.h>
 #include <urtls.h>
 #include <urfi.h>
-#include <urfc.h>
 
 #if defined(AOA_SYSCFG)
 #include "ti_aoa_config.h"

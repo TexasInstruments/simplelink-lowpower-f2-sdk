@@ -249,10 +249,10 @@ TF-M Profile Large adds a dedicated MbedTLS config file
 
 Major MbedTLS configurations are set as listed below:
 
-    - Enable SHA256 and SHA512
+    - Enable SHA256, SHA384 and SHA512
     - Enable generic message digest wrappers
     - Enable AES
-    - Enable CCM mode, GCM mode and CBC mode for symmetric ciphers
+    - Enable CCM mode, GCM mode, CTR mode, CFB mode and CBC mode for symmetric ciphers
     - Disable other modes for symmetric ciphers
     - Enable ECDH
     - Enable ECDSA
@@ -426,7 +426,7 @@ Reference
 
 .. [3] `PSA Certified Level 3 Lightweight Protection Profile <https://www.psacertified.org/app/uploads/2020/12/JSADEN009-PSA_Certified_Level_3_LW_PP-1.0-BET02.pdf>`_
 
-.. [4] `Arm Platform Security Architecture Firmware Framework 1.0 <https://developer.arm.com/-/media/Files/pdf/PlatformSecurityArchitecture/Architect/DEN0063-PSA_Firmware_Framework-1.0.0-2.pdf?revision=2d1429fa-4b5b-461a-a60e-4ef3d8f7f4b4>`_
+.. [4] `Arm Platform Security Architecture Firmware Framework 1.0 <https://developer.arm.com/documentation/den0063/latest/>`_
 
 .. [5] `The Transport Layer Security (TLS) Protocol Version 1.2 <https://tools.ietf.org/html/rfc5246>`_
 

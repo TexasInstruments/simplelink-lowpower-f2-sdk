@@ -88,6 +88,7 @@
 #define SE_MHU_RECEIVER_DEV    SE_MHU_RECEIVER_DEV_S
 #endif
 
+#define DEFAULT_UART_CONTROL 0
 /* Default UART baud rate */
 #define DEFAULT_UART_BAUDRATE 115200
 

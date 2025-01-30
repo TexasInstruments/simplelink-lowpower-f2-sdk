@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2024, Texas Instruments Incorporated
+ Copyright (c) 2009-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -203,6 +203,19 @@ uint8_t gapScan_processBLEPeriodicAdvCBs( osal_event_hdr_t *pMsg );
  */
 uint8_t gapScan_periodicAdvCmdStatusCBs( hciEvt_CommandStatus_t *pMsg );
 
+/*********************************************************************
+ * @fn          gapScan_processSessionEndEvt
+ *
+ * @brief       Process GAP_SCAN_SESSION_END_EVENT
+ *
+ * @param       pSession - advertising report session to process
+ * @param       status - status value to replace existing one in
+ *                       pSession->pDefrag with.
+ *
+ * @return      none
+ */
+void gapScan_processSessionEndEvt(GapScan_AdvRptSession_t* pSession,
+                                  uint8_t status);
 /*********************************************************************
 *********************************************************************/
 

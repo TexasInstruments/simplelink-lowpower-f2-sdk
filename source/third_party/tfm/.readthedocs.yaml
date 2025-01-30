@@ -1,0 +1,35 @@
+#-------------------------------------------------------------------------------
+#
+# Copyright (c) 2023, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+#-------------------------------------------------------------------------------
+
+# Read the Docs configuration file
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+
+# Version of the configuration file, v1 is no longer supported
+version: 2
+
+# Configuration for the documentation build
+build:
+  os: ubuntu-22.04
+  tools:
+    python: "3.11"
+  apt_packages:
+    - plantuml
+
+# Build documentation in the "docs/" directory with Sphinx
+sphinx:
+  configuration: docs/conf.py
+
+# The documentation will also be built in a pdf format
+formats:
+   - pdf
+   - htmlzip
+
+# Configuration of the Python environment
+python:
+   install:
+   - requirements: docs/requirements.txt

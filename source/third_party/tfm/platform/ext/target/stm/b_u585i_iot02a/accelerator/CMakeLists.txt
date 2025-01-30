@@ -93,6 +93,11 @@ if (TFM_PARTITION_CRYPTO)
             ${PLATFORM_DIR}/ext/cmsis
     )
 
+    target_include_directories(psa_crypto_config
+        INTERFACE
+            $<BUILD_INTERFACE:${PLATFORM_DIR}/ext/target/${TFM_PLATFORM}/accelerator/>
+    )
+
     target_compile_definitions(crypto_service_crypto_hw
         PRIVATE
             ST_HW_CONTEXT_SAVING
@@ -113,6 +118,6 @@ if (TFM_PARTITION_CRYPTO)
     )
     target_link_libraries(crypto_service_crypto_hw
          INTERFACE
-         tfm_partition_defs
+            tfm_config
     )
 endif()

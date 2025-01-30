@@ -57,24 +57,21 @@ Secure Boot Configuration
 
 All non-OAD projects can be configured to be built as a secure boot project. This will configure the project to be built into a `<project_name>.bin` file, meant to be securely booted into via MCUBoot. To configure a project to be build in this mode, change the project build configuration of the imported project to the SecureBoot configurationbefore building the project. This can be done in both CCS and IAR IDEs. A sysconfig option for secure boot configuration is present in current projects, but is only used to inform users to change the project build configuration.
 
-Similar to OAD projects, the secure boot project must be booted into with the MCUBoot bootloader already flashed onto the device.  MCUBoot can be built from the following project: `<SDK_INSTALL_DIR>/examples/nortos/<board_type>/mcuboot_app/mcuboot`. Configure MCUBoot as follows:
+Similar to OAD projects, the secure boot project must be booted into with the MCUBoot bootloader already flashed onto the device. MCUBoot can be built from the following project: `<SDK_INSTALL_DIR>/examples/nortos/<board_type>/mcuboot_app/mcuboot`. Configure MCUboot using the MCUBoot project sysconfig file as follows:
 
-* In the `<mcuboot_example_root>/mcuboot_config/mcuboot_config.h` file:
-    * Comment out `#define MCUBOOT_DIRECT_XIP` to undefine it
-    * Uncomment `#define MCUBOOT_OVERWRITE_ONLY` so it is defined
-    * Make sure `#define TI_BOOT_USE_EXTERNAL_FLASH` is commented out and not defined
-* In the `<mcuboot_example_root>/flash_map_backend/flash_map_backend.c` file:
-    * Find the definitions for `BOOT_PRIMARY_1_BASE_ADDRESS`, `BOOT_PRIMARY_1_SIZE`, `BOOT_SECONDARY_1_BASE_ADDRESS`, and `BOOT_SECONDARY_1_SIZE`. There should be several, but only one set defined for the platform you are currently using (CC13X2X7 or CC13X4).
-    * If using a CC13X2X7 platform, modify the values above to the following:
-        * `#define BOOT_PRIMARY_1_BASE_ADDRESS     0x00000000`
-        * `#define BOOT_PRIMARY_1_SIZE             0x000A8000`
-        * `#define BOOT_SECONDARY_1_BASE_ADDRESS   0x000A8000`
-        * `#define BOOT_SECONDARY_1_SIZE           0x0`
-    * If using a CC13X4 platform, modify the values above to the following:
-        * `#define BOOT_PRIMARY_1_BASE_ADDRESS     0x00006000`
-        * `#define BOOT_PRIMARY_1_SIZE             0x000A8000`
-        * `#define BOOT_SECONDARY_1_BASE_ADDRESS   0x000AE000`
-        * `#define BOOT_SECONDARY_1_SIZE           0x0`
+* For the `Upgrade Mode` configurable, choose `Overwrite`
+* For the `Enable External Flash` configurable, choose false (unchecked)
+* In the `Image 1` module:
+    * If using a CC13X2X7 platform, modify the following configurables:
+        * Primary image - Base address:     0x00000000
+        * Primary image - Image size:       0x000A8000
+        * Secondary image - Base address:   0x000A8000
+        * Secondary image - Image size      0x00000000
+    * If using a CC13X4 platform, modify the following configurables:
+        * Primary image - Base address:     0x00006000
+        * Primary image - Image size:       0x000A8000
+        * Secondary image - Base address:   0x000AE000
+        * Secondary image - Image size      0x00000000
 
 Once both MCUBoot is configured and flashed on the device, the Wi-SUN secure boot project image (.bin file) must be loaded onto the device. This file can either be flashed to the device with CCS/TI-flash or with a serial bootloader application. Currently, the 15.4 stack Linux Gateway provides a serial bootloader application to faciliate this. Please refer to the 15.4 documentation on how to download and use the serial bootloader.
 

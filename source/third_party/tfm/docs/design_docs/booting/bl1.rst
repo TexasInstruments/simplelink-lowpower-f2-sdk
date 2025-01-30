@@ -224,23 +224,12 @@ BL1 FI and DPA mitigations
 BL1 reuses the FI countermeasures used in the TF-M runtime, which are found in
 ``lib/fih/``.
 
-BL1 implements countermeasures against DPA, which are primarily targeted
-towards being able to handle cryptographic material without leaking its
-contents. The functions with these countermeasures are found in
-``bl1/bl1_1/shared_lib/util.c``
+BL1 implements countermeasures against fault injection. The functions with these
+countermeasures are found in ``bl1/bl1_1/shared_lib/util.c``
 
-``bl_secure_memeql`` tests if memory regions have the same value
+``bl_fih_memeql`` tests if memory regions have the same value
 
-- It does not perform early exits to prevent timing attacks.
-- It compares chunks in random orders to prevent DPA trace correlation analysis
-- It inserts random delays to prevent DPA trace correlation analysis
-- It performs loop integrity checks
-- It uses FIH constructs
-
-``bl_secure_memcpy`` copies memory regions
-
-- It copies chunks in random orders to prevent DPA trace correlation analysis
-- It inserts random delays to prevent DPA trace correlation analysis
+- It inserts random delays to improve resilience to FIH attacks
 - It performs loop integrity checks
 - It uses FIH constructs
 
@@ -299,4 +288,4 @@ subdivided into BL1_1 and BL1_2 tests.
 
 --------------
 
-*Copyright (c) 2022, Arm Limited. All rights reserved.*
+*Copyright (c) 2022-2023, Arm Limited. All rights reserved.*

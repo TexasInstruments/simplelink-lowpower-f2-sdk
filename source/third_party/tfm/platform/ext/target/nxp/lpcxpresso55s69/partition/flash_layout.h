@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018-2022 Arm Limited. All rights reserved.
- * Copyright 2019-2021 NXP. All rights reserved.
+ * Copyright 2019-2023 NXP. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -206,15 +206,15 @@
 /* Flash device name used by BL2
  * Name is defined in flash driver file: Driver_Flash.c
  */
-#define FLASH_DEV_NAME Driver_FLASH0
+#define FLASH_DEV_NAME                  Driver_FLASH0
 /* Smallest flash programmable unit in bytes */
-#define TFM_HAL_FLASH_PROGRAM_UNIT       FLASH_AREA_IMAGE_SECTOR_SIZE
+#define TFM_HAL_FLASH_PROGRAM_UNIT      FLASH_AREA_IMAGE_SECTOR_SIZE
 
 /* Protected Storage (PS) Service definitions
  * Note: Further documentation of these definitions can be found in the
  * TF-M PS Integration Guide.
  */
-#define TFM_HAL_PS_FLASH_DRIVER Driver_FLASH0
+#define TFM_HAL_PS_FLASH_DRIVER         Driver_FLASH0
 
 /* In this target the CMSIS driver requires only the offset from the base
  * address instead of the full memory address.
@@ -230,7 +230,7 @@
 /* Smallest flash programmable unit in bytes */
 #define TFM_HAL_PS_PROGRAM_UNIT         FLASH_AREA_IMAGE_SECTOR_SIZE
 #define PS_FLASH_NAND_BUF_SIZE          (FLASH_AREA_IMAGE_SECTOR_SIZE * \
-                                        TFM_HAL_ITS_SECTORS_PER_BLOCK)
+                                        TFM_HAL_PS_SECTORS_PER_BLOCK)
 
 /* Internal Trusted Storage (ITS) Service definitions
  * Note: Further documentation of these definitions can be found in the
@@ -238,22 +238,22 @@
  * allocated in the external flash just for development platforms that don't
  * have internal flash available.
  */
-#define TFM_HAL_ITS_FLASH_DRIVER Driver_FLASH0
+#define TFM_HAL_ITS_FLASH_DRIVER        Driver_FLASH0
 
 /* In this target the CMSIS driver requires only the offset from the base
  * address instead of the full memory address.
  */
 /* Base address of dedicated flash area for ITS */
-#define TFM_HAL_ITS_FLASH_AREA_ADDR    FLASH_ITS_AREA_OFFSET
+#define TFM_HAL_ITS_FLASH_AREA_ADDR     FLASH_ITS_AREA_OFFSET
 /* Size of dedicated flash area for ITS */
-#define TFM_HAL_ITS_FLASH_AREA_SIZE    FLASH_ITS_AREA_SIZE
-#define ITS_RAM_FS_SIZE                TFM_HAL_ITS_FLASH_AREA_SIZE
+#define TFM_HAL_ITS_FLASH_AREA_SIZE     FLASH_ITS_AREA_SIZE
+#define ITS_RAM_FS_SIZE                 TFM_HAL_ITS_FLASH_AREA_SIZE
 /* Number of physical erase sectors per logical FS block */
 #define TFM_HAL_ITS_SECTORS_PER_BLOCK   3
 
 /* Smallest flash programmable unit in bytes */
 #define TFM_HAL_ITS_PROGRAM_UNIT        FLASH_AREA_IMAGE_SECTOR_SIZE
-#define ITS_FLASH_NAND_BUF_SIZE        (FLASH_AREA_IMAGE_SECTOR_SIZE * \
+#define ITS_FLASH_NAND_BUF_SIZE         (FLASH_AREA_IMAGE_SECTOR_SIZE * \
                                         TFM_HAL_ITS_SECTORS_PER_BLOCK)
 
 /* OTP / NV counter definitions */

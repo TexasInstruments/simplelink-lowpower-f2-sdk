@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2024, Texas Instruments Incorporated
+ Copyright (c) 2015-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -86,8 +86,10 @@
 // globals
 //*****************************************************************************
 
+#if (NPI_FLOW_CTRL == 1)
 //! \brief Flag for low power mode
 static volatile bool npiPMSetConstraint = FALSE;
+#endif
 
 #if (NPI_FLOW_CTRL == 1)
 static volatile bool npiTxActive = FALSE;
@@ -96,8 +98,10 @@ static volatile bool npiTxActive = FALSE;
 static sem_t npiTxActiveLock;
 #endif
 
+#if (NPI_FLOW_CTRL == 1)
 //! \brief The packet that was being sent when HWI of MRDY going low was received
 static volatile uint32 mrdyPktStamp = 0;
+#endif
 
 //! \brief Packets transmitted counter
 static uint32 txPktCount = 0;

@@ -12,10 +12,11 @@
 extern "C" {
 #endif
 
+#include <limits.h>
 #include <stdint.h>
 #include "tfm_crypto_defs.h"
 #include "tfm_crypto_key.h"
-#include "tfm_api.h"
+#include "psa/client.h"
 
 /**
  * \brief List of possible operation types supported by the TFM based

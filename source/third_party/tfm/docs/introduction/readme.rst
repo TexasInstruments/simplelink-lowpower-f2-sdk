@@ -49,6 +49,27 @@ Terms ``TFM`` and ``TF-M`` are commonly used in documents and code and both
 refer to ``Trusted Firmware M.`` :doc:`Glossary </glossary>` has the list
 of terms and abbreviations.
 
+************
+Repositories
+************
+
+TF-M is comprised of multiple repositories that supplement each other in making the project both customisable and maintainable.
+
+.. list-table:: TF-M Repositories
+    :widths: auto
+    :header-rows: 1
+
+    * - **Repository**
+      - **Description**
+    * - `trusted-firmware-m <https://git.trustedfirmware.org/TF-M/trusted-firmware-m.git/tree/>`_
+      - Software implementation of TF-M with documentation and essential tools
+    * - `tf-m-tests <https://git.trustedfirmware.org/TF-M/tf-m-tests.git/tree/>`_
+      - Tests that focus on the functionalities of TF-M components
+    * - `tf-m-tools <https://git.trustedfirmware.org/TF-M/tf-m-tools.git/tree/>`_
+      - Non essential tools used for testing and verification of TF-M
+    * - `tf-m-extras <https://git.trustedfirmware.org/TF-M/tf-m-extras.git/tree/>`_
+      - Extension of the main repository to host examples, demonstrations, third-party modules etc
+
 #######
 License
 #######

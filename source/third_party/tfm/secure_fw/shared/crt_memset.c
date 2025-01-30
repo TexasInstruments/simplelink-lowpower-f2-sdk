@@ -13,8 +13,8 @@ void *memset(void *s, int c, size_t n)
     uint32_t pattern_word;
 
     p_mem.p_byte = (uint8_t *)s;
-    pattern_word = (((uint8_t)c) << 24) | (((uint8_t)c) << 16) |
-                   (((uint8_t)c) << 8) | ((uint8_t)c);
+    pattern_word = (((uint32_t)c) << 24) | (((uint32_t)c) << 16) |
+                   (((uint32_t)c) << 8) | ((uint32_t)c);
 
     while (n && ADDR_WORD_UNALIGNED(p_mem.uint_addr)) {
         *p_mem.p_byte++ = (uint8_t)c;

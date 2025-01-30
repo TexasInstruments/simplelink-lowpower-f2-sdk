@@ -26,7 +26,7 @@
 
 #include <string.h>
 
-#include "mcuboot_config/mcuboot_config.h"
+#include "mcuboot_config.h"
 
 #ifdef MCUBOOT_SIGN_EC256
 /*TODO: remove this after cypress port mbedtls to abstract crypto api */

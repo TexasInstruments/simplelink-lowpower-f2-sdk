@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2017-2024, Texas Instruments Incorporated
+ Copyright (c) 2017-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -175,7 +175,7 @@ extern "C"
 #elif defined(DeviceFamily_CC13X4) || defined(DeviceFamily_CC26X4) ||  \
       defined(DeviceFamily_CC26X3) || defined(DeviceFamily_CC23X0R5) || \
       defined(DeviceFamily_CC23X0R53) || defined(DeviceFamily_CC23X0R2) || \
-      defined(DeviceFamily_CC23X0R22)
+      defined(DeviceFamily_CC23X0R22) || defined(DeviceFamily_ID_CC27XX)
     #define FLASH_ADDRESS(page, offset)     (((page) << 11) + (offset))
     #define FLASH_PAGE(addr)                (addr >> 11)
     #define INTFLASH_PAGE_MASK              0xFFFFF800

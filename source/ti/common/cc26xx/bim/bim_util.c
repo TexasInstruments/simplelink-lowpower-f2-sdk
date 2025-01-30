@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2012-2024, Texas Instruments Incorporated
+ Copyright (c) 2012-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -85,7 +85,7 @@ const uint8_t OAD_EXTFL_ID[OAD_IMG_ID_LEN] = OAD_EXTFL_ID_VAL;
  * @return      None.
  */
 
-void jumpToPrgEntry(uint32_t *vectorTable)
+__attribute__((naked)) void jumpToPrgEntry(uint32_t *vectorTable)
 {
     /* The following code resets the SP to the value specified in the
      * provided vector table, and then the Reset Handler is invoked.
@@ -110,12 +110,11 @@ void jumpToPrgEntry(uint32_t *vectorTable)
      *
      * */
 
-    /* Reset the SP with the value stored at vector_table[0] */
-    __asm volatile ("MSR msp, %0" : : "r" (vectorTable[0]) : );
-
-    /* Jump to the Reset Handler address at vector_table[1] */
-
-    ( (void (*)(void)) (*(vectorTable + 1)) )();
+    __asm volatile ("ldr r1, [r0, #0]\n"
+                    "msr msp, r1\n"
+                    "ldr r1, [r0, #4]\n"
+                    "mov pc, r1\n"
+                    );
 }
 
 /*******************************************************************************

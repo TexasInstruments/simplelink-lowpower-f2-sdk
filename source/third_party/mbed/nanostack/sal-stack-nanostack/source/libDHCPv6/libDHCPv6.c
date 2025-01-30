@@ -256,9 +256,16 @@ uint8_t libdhcpv6_duid_linktype_size(uint16_t linkType)
 
 uint16_t libdhcvp6_request_option_size(uint8_t optionCnt)
 {
-    uint16_t optionLength = 4;
-    optionLength += 2 * optionCnt;
-    return optionLength;
+    if(optionCnt == 0)
+    {
+        return 0;
+    }
+    else
+    {
+        uint16_t optionLength = 4;
+        optionLength += 2 * optionCnt;
+        return optionLength;
+    }
 }
 
 uint16_t libdhcpv6_non_temporal_address_size(bool addressDefined)
@@ -330,12 +337,15 @@ uint8_t *libdhcpv6_rapid_commit_option_write(uint8_t *ptr)
 
 uint8_t *libdhcvp6_request_option_write(uint8_t *ptr, uint8_t optionCnt, uint16_t *optionPtr)
 {
-    uint16_t optionLength = libdhcvp6_request_option_size(optionCnt);
-    ptr = common_write_16_bit(DHCPV6_OPTION_REQUEST_OPTION, ptr);
-    ptr = common_write_16_bit((optionLength - 4), ptr);
-    while (optionCnt) {
-        ptr = common_write_16_bit(*optionPtr++, ptr);
-        optionCnt--;
+    // Only write additional options if we actually request any
+    if (optionCnt > 0){
+        uint16_t optionLength = libdhcvp6_request_option_size(optionCnt);
+        ptr = common_write_16_bit(DHCPV6_OPTION_REQUEST_OPTION, ptr);
+        ptr = common_write_16_bit((optionLength - 4), ptr);
+        while (optionCnt) {
+            ptr = common_write_16_bit(*optionPtr++, ptr);
+            optionCnt--;
+        }
     }
     return ptr;
 }
@@ -829,6 +839,7 @@ uint8_t *libdhcpv6_generic_nontemporal_address_message_write(uint8_t *ptr, dhcpv
 
     ptr = libdhcpv6_identity_association_option_write(ptr, packet->iaID, packet->timerT0, packet->timerT1, add_address);
     if (add_address) {
+        //In a message sent by a client to a server, the preferred-lifetime and valid-lifetime fields SHOULD be set to 0. According to RFC 8415 the fields will be ignored by the server if set.
         ptr = libdhcpv6_ia_address_option_write(ptr, nonTemporalAddress->requestedAddress, nonTemporalAddress->preferredLifeTime, nonTemporalAddress->validLifeTime);
     }
 
@@ -848,10 +859,10 @@ uint16_t libdhcpv6_solication_message_length(uint16_t clientDUIDLength, bool add
 }
 
 
-uint8_t *libdhcpv6_dhcp_relay_msg_write(uint8_t *ptr, uint8_t type, uint8_t hop_limit,  uint8_t *peer_addres, uint8_t *link_address)
+uint8_t *libdhcpv6_dhcp_relay_msg_write(uint8_t *ptr, uint8_t type, uint8_t hop_count,  uint8_t *peer_addres, uint8_t *link_address)
 {
     *ptr++ = type;
-    *ptr++ = hop_limit;
+    *ptr++ = hop_count;
     memcpy(ptr, link_address, 16);
     ptr += 16;
     memcpy(ptr, peer_addres, 16);
@@ -880,7 +891,7 @@ bool libdhcpv6_relay_msg_read(uint8_t *ptr, uint16_t length, dhcpv6_relay_msg_t 
     }
     // Relay message base first
     relay_msg->type = *ptr++;
-    relay_msg->hop_limit = *ptr++;
+    relay_msg->hop_count = *ptr++;
     relay_msg->link_address = ptr;
     relay_msg->peer_address = ptr + 16;
     ptr += 32;

@@ -12,6 +12,13 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/*
+ * Quantized default IRQ priority, the value is:
+ * (Number of configurable priority) / 4: (1UL << __NVIC_PRIO_BITS) / 4
+ */
+#define DEFAULT_IRQ_PRIORITY    (1UL << (__NVIC_PRIO_BITS - 2))
+
 #define CTIMER                  CTIMER2                     /* Timer 2 */
 #define CTIMER_CLK_FREQ         CLOCK_GetCTimerClkFreq(2U)
 #define CTIMER_CLK_ATTACH       kFRO_HF_to_CTIMER2

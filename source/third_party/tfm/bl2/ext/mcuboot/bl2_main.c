@@ -35,6 +35,10 @@
 #include "mcuboot_suites.h"
 #endif /* TEST_BL2 */
 
+#if defined(MCUBOOT_USE_PSA_CRYPTO)
+#include "psa/crypto.h"
+#endif
+
 /* Avoids the semihosting issue */
 #if defined (__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
 __asm("  .global __ARM_use_no_argv\n");
@@ -112,8 +116,8 @@ int main(void)
 
     plat_err = tfm_plat_otp_init();
     if (plat_err != TFM_PLAT_ERR_SUCCESS) {
-            BOOT_LOG_ERR("OTP system initialization failed");
-            FIH_PANIC;
+        BOOT_LOG_ERR("OTP system initialization failed");
+        FIH_PANIC;
     }
 
     if (tfm_plat_provisioning_is_required()) {
@@ -122,9 +126,8 @@ int main(void)
             BOOT_LOG_ERR("Provisioning failed");
             FIH_PANIC;
         }
-    } else {
-        tfm_plat_provisioning_check_for_dummy_keys();
     }
+    tfm_plat_provisioning_check_for_dummy_keys();
 
     FIH_CALL(boot_nv_security_counter_init, fih_rc);
     if (FIH_NOT_EQ(fih_rc, FIH_SUCCESS)) {
@@ -137,6 +140,20 @@ int main(void)
         BOOT_LOG_ERR("Platform post init failed");
         FIH_PANIC;
     }
+
+#if defined(MCUBOOT_USE_PSA_CRYPTO)
+    /* If the bootloader is configured to use PSA Crypto APIs in the
+     * abstraction layer, the component needs to be explicitly initialized
+     * before MCUboot APIs, as the crypto abstraction expects that the init
+     * has already happened
+     */
+    psa_status_t status = psa_crypto_init();
+    if (status != PSA_SUCCESS) {
+        BOOT_LOG_ERR("PSA Crypto init failed with error code %d", status);
+        FIH_PANIC;
+    }
+    BOOT_LOG_INF("PSA Crypto init completed");
+#endif /* MCUBOOT_USE_PSA_CRYPTO */
 
 #ifdef TEST_BL2
     (void)run_mcuboot_testsuite();
@@ -175,4 +192,21 @@ int main(void)
 
     BOOT_LOG_ERR("Never should get here");
     FIH_PANIC;
+
+    /* Dummy return to be compatible with some check tools */
+    return FIH_FAILURE;
 }
+
+#if defined(MCUBOOT_USE_PSA_CRYPTO)
+/* When MCUBOOT_USE_PSA_CRYPTO is set, the PSA Crypto layer is configured
+ * to use an external RNG generator through MBEDTLS_PSA_CRYPTO_EXTERNAL_RNG.
+ * But the cryptographic APIs required by BL2 don't require access to randomness
+ * hence we can just stub this API to always return an error code
+ */
+psa_status_t mbedtls_psa_external_get_random(
+    mbedtls_psa_external_random_context_t *context,
+    uint8_t *output, size_t output_size, size_t *output_length)
+{
+    return PSA_ERROR_NOT_SUPPORTED;
+}
+#endif /* MCUBOOT_USE_PSA_CRYPTO */

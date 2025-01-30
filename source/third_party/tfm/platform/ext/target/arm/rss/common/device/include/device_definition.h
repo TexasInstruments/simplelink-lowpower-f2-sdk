@@ -28,6 +28,9 @@
 
 #include "device_cfg.h"
 #include "host_device_definition.h"
+#ifdef RSS_HAS_EXPANSION_PERIPHERALS
+#include "rss_expansion_device_definition.h"
+#endif /* RSS_HAS_EXPANSION_PERIPHERALS */
 
 #ifdef __cplusplus
 extern "C" {
@@ -44,6 +47,16 @@ extern struct atu_dev_t ATU_DEV_S;
 #ifdef SIC_S
 #include "sic_drv.h"
 extern struct sic_dev_t SIC_DEV_S;
+#endif
+
+/* UART CMSDK driver structures */
+#ifdef UART0_CMSDK_S
+#include "uart_cmsdk_drv.h"
+extern struct uart_cmsdk_dev_t UART0_CMSDK_DEV_S;
+#endif
+#ifdef UART0_CMSDK_NS
+#include "uart_cmsdk_drv.h"
+extern struct uart_cmsdk_dev_t UART0_CMSDK_DEV_NS;
 #endif
 
 /* ARM PPC driver structures */
@@ -174,27 +187,6 @@ extern struct mpc_sie_dev_t MPC_VM1_DEV_S;
 #ifdef MPC_SIC_S
 #include "mpc_sie_drv.h"
 extern struct mpc_sie_dev_t MPC_SIC_DEV_S;
-#endif
-
-/* Message Handling Units (MHU) */
-#ifdef MHU_AP_TO_RSS
-#include "mhu_v2_x.h"
-extern struct mhu_v2_x_dev_t MHU_AP_TO_RSS_DEV;
-#endif
-
-#ifdef MHU_RSS_TO_AP
-#include "mhu_v2_x.h"
-extern struct mhu_v2_x_dev_t MHU_RSS_TO_AP_DEV;
-#endif
-
-#ifdef MHU_SCP_TO_RSS
-#include "mhu_v2_x.h"
-extern struct mhu_v2_x_dev_t MHU_SCP_TO_RSS_DEV;
-#endif
-
-#ifdef MHU_RSS_TO_SCP
-#include "mhu_v2_x.h"
-extern struct mhu_v2_x_dev_t MHU_RSS_TO_SCP_DEV;
 #endif
 
 #ifdef KMU_S

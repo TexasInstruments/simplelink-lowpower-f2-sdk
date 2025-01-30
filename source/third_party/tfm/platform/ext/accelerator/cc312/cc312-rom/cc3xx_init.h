@@ -9,7 +9,6 @@
 #define CC3XX_INIT_H
 
 #include "cc3xx_error.h"
-#include "cc3xx_dev.h"
 
 #include <stdint.h>
 #include <stddef.h>
@@ -18,8 +17,21 @@
 extern "C" {
 #endif
 
+/**
+ * @brief                        Initialize the CC3XX accelerator.
+ *
+ * @return                       CC3XX_ERR_SUCCESS on success, another
+ *                               cc3xx_err_t on error.
+ */
 cc3xx_err_t cc3xx_init(void);
-cc3xx_err_t cc3xx_finish(void);
+
+/**
+ * @brief                        Uninitialize the CC3XX accelerator.
+ *
+ * @return                       CC3XX_ERR_SUCCESS on success, another
+ *                               cc3xx_err_t on error.
+ */
+cc3xx_err_t cc3xx_uninit(void);
 
 #ifdef __cplusplus
 }

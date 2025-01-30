@@ -23,6 +23,10 @@ set(COMPILER_CMSE_FLAG $<$<COMPILE_LANGUAGE:C>:-mcmse>)
 # with the Ninja generator.
 set(CMAKE_USER_MAKE_RULES_OVERRIDE ${CMAKE_CURRENT_LIST_DIR}/cmake/set_extensions.cmake)
 
+if(NOT DEFINED CMAKE_OBJCOPY)
+    set(CMAKE_OBJCOPY ${CROSS_COMPILE}-objcopy CACHE FILEPATH "Path to objcopy")
+endif()
+
 macro(tfm_toolchain_reset_compiler_flags)
     set_property(DIRECTORY PROPERTY COMPILE_OPTIONS "")
 
@@ -108,6 +112,7 @@ macro(tfm_toolchain_set_processor_arch)
         endif()
 
         string(REGEX REPLACE "\\+nodsp" ".no_dsp" CMAKE_ASM_CPU_FLAG "${CMAKE_SYSTEM_PROCESSOR}")
+        string(REGEX REPLACE "\\+nomve" ".no_mve" CMAKE_ASM_CPU_FLAG "${CMAKE_ASM_CPU_FLAG}")
         string(REGEX REPLACE "\\+nofp" ".no_fp" CMAKE_ASM_CPU_FLAG "${CMAKE_ASM_CPU_FLAG}")
     else()
         set(CMAKE_ASM_CPU_FLAG  ${TFM_SYSTEM_ARCHITECTURE})
@@ -298,7 +303,7 @@ macro(target_add_scatter_file target)
     target_link_libraries(${target}_scatter
         platform_region_defs
         psa_interface
-        tfm_partition_defs
+        tfm_config
     )
 
     target_compile_options(${target}_scatter
@@ -367,9 +372,8 @@ macro(target_share_symbols target symbol_name_file)
         VERBATIM
         COMMAND python3 -c "from sys import argv; import re; f = open(argv[1], 'rt'); p = [x.replace('*', '.*') for x in argv[2:]]; l = [x for x in f.readlines() if re.search(r'(?=('+'$|'.join(p + ['SYMDEFS']) + r'))', x)]; f.close(); f = open(argv[1], 'wt'); f.writelines(l); f.close();" $<TARGET_FILE_DIR:${target}>/${target}_shared_symbols.txt ${KEEP_SYMBOL_LIST})
 
-    # Force the target to not remove the symbols if they're unused. Not
-    # currently possible on GNU, has to be part of the linker script.
-    list(TRANSFORM KEEP_SYMBOL_LIST PREPEND --keep=)
+    # Force the target to not remove the symbols if they're unused.
+    list(TRANSFORM KEEP_SYMBOL_LIST PREPEND --undefined=)
     target_link_options(${target}
         PRIVATE
             ${KEEP_SYMBOL_LIST}
@@ -427,7 +431,7 @@ macro(target_strip_symbols target)
     add_custom_command(
         TARGET ${target}
         POST_BUILD
-        COMMAND ${CROSS_COMPILE}-objcopy
+        COMMAND ${CMAKE_OBJCOPY}
         ARGS $<TARGET_FILE:${target}> --wildcard ${SYMBOL_LIST} $<TARGET_FILE:${target}>
     )
 endmacro()
@@ -441,7 +445,7 @@ macro(target_strip_symbols_from_dependency target dependency)
     add_custom_command(
         TARGET ${target}
         PRE_LINK
-        COMMAND ${CROSS_COMPILE}-objcopy
+        COMMAND ${CMAKE_OBJCOPY}
         ARGS $<TARGET_FILE:${dependency}> --wildcard ${SYMBOL_LIST} $<TARGET_FILE:${dependency}>
     )
 endmacro()
@@ -455,7 +459,7 @@ macro(target_weaken_symbols target)
     add_custom_command(
         TARGET ${target}
         POST_BUILD
-        COMMAND ${CROSS_COMPILE}-objcopy
+        COMMAND ${CMAKE_OBJCOPY}
         ARGS $<TARGET_FILE:${target}> --wildcard ${SYMBOL_LIST} $<TARGET_FILE:${target}>
     )
 endmacro()
@@ -469,7 +473,7 @@ macro(target_weaken_symbols_from_dependency target dependency)
     add_custom_command(
         TARGET ${target}
         PRE_LINK
-        COMMAND ${CROSS_COMPILE}-objcopy
+        COMMAND ${CMAKE_OBJCOPY}
         ARGS $<TARGET_FILE:${dependency}> --wildcard ${SYMBOL_LIST} $<TARGET_FILE:${dependency}>
     )
 endmacro()

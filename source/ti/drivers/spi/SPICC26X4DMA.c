@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023, Texas Instruments Incorporated
+ * Copyright (c) 2021-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -480,12 +480,8 @@ static void SPICC26X4DMA_hwiFxn(uintptr_t arg)
                      * start the following transaction if necessary.
                      */
                     configNextTransfer(object, hwAttrs);
-
-                    if (object->manualStart && UDMACC26XX_channelDone(object->udmaHandle, hwAttrs->txChannelBitMask))
-                    {
-                        /* Ping pong flow was broken, restart */
-                        UDMACC26XX_channelEnable(object->udmaHandle, hwAttrs->txChannelBitMask);
-                    }
+                    enableDMA(hwAttrs->baseAddr, (SPI_DMACR_TXDMAE | SPI_DMACR_RXDMAE));
+                    UDMACC26XX_channelEnable(object->udmaHandle, hwAttrs->rxChannelBitMask | hwAttrs->txChannelBitMask);
                 }
                 else
                 {
@@ -543,13 +539,9 @@ static void SPICC26X4DMA_hwiFxn(uintptr_t arg)
                     {
                         /* Reconfigure channel for following transaction */
                         configNextTransfer(object, hwAttrs);
-
-                        if (object->manualStart &&
-                            UDMACC26XX_channelDone(object->udmaHandle, hwAttrs->txChannelBitMask))
-                        {
-                            /* Ping pong flow was broken, restart */
-                            UDMACC26XX_channelEnable(object->udmaHandle, hwAttrs->txChannelBitMask);
-                        }
+                        enableDMA(hwAttrs->baseAddr, (SPI_DMACR_TXDMAE | SPI_DMACR_RXDMAE));
+                        UDMACC26XX_channelEnable(object->udmaHandle,
+                                                 hwAttrs->rxChannelBitMask | hwAttrs->txChannelBitMask);
                     }
                     else
                     {

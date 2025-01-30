@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -50,14 +50,11 @@
  */
 #include "hal_types.h"
 #include "ble_user_config.h"
+#include "hci.h"
 #include <ti/drivers/AESCCM.h>
 #include <ti/drivers/AESECB.h>
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyPlaintext.h>
 #include <ti/drivers/utils/Random.h>
-
-#ifdef CC33xx
-#include "hci.h"
-#endif // CC33xx
 
 #if !defined(CC23X0) && !defined(CC33xx)
 #include "ble_overrides.h"
@@ -383,6 +380,8 @@ const stackSpecific_t bleStackConfig =
   .bleStackType                         = 0,
 #ifdef CC2652RB_LAUNCHXL
   .extStackSettings                     = EXTENDED_STACK_SETTINGS | CC2652RB_OVERRIDE_USED,
+#elif defined(CC33xx)
+  .extStackSettings                     = EXTENDED_STACK_SETTINGS | CENTRAL_GUARD_TIME_ENABLE,
 #else
   .extStackSettings                     = EXTENDED_STACK_SETTINGS,
 #endif

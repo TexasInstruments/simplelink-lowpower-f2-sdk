@@ -79,6 +79,18 @@ enum mhu_error_t mhu_send_data(void *mhu_sender_dev,
                                size_t size);
 
 /**
+ * \brief Wait for data from MHU.
+ *
+ * \param[in]     mhu_receiver_dev  Pointer to the receiver MHU.
+ *
+ * \return Returns mhu_error_t error code.
+ *
+ * \note This function must be called before mhu_receive_data() if the MHU
+ *       receiver interrupt is not used.
+ */
+enum mhu_error_t mhu_wait_data(void *mhu_receiver_dev);
+
+/**
  * \brief Receives data from MHU.
  *
  * \param[in]     mhu_receiver_dev  Pointer to the receiver MHU.

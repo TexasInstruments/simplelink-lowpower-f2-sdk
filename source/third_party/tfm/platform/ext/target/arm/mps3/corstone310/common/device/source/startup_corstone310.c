@@ -117,7 +117,7 @@ DEFAULT_IRQ_HANDLER(DMA_Ch_3_Error_Handler)
 DEFAULT_IRQ_HANDLER(DMA_Ch_3_Terminal_Count_Handler)
 DEFAULT_IRQ_HANDLER(DMA_Ch_3_Combined_Handler)
 #endif
-DEFAULT_IRQ_HANDLER(ETHOS_U55_Handler)
+DEFAULT_IRQ_HANDLER(NPU0_Handler)
 DEFAULT_IRQ_HANDLER(GPIO0_Combined_Handler)
 DEFAULT_IRQ_HANDLER(GPIO1_Combined_Handler)
 DEFAULT_IRQ_HANDLER(GPIO2_Combined_Handler)
@@ -178,14 +178,14 @@ DEFAULT_IRQ_HANDLER(UARTRX5_Handler)
 DEFAULT_IRQ_HANDLER(UARTTX5_Handler)
 DEFAULT_IRQ_HANDLER(UART5_Combined_Handler)
 #ifdef CORSTONE310_FVP
-DEFAULT_IRQ_HANDLER(VSI0_Handler)
-DEFAULT_IRQ_HANDLER(VSI1_Handler)
-DEFAULT_IRQ_HANDLER(VSI2_Handler)
-DEFAULT_IRQ_HANDLER(VSI3_Handler)
-DEFAULT_IRQ_HANDLER(VSI4_Handler)
-DEFAULT_IRQ_HANDLER(VSI5_Handler)
-DEFAULT_IRQ_HANDLER(VSI6_Handler)
-DEFAULT_IRQ_HANDLER(VSI7_Handler)
+DEFAULT_IRQ_HANDLER(ARM_VSI0_Handler)
+DEFAULT_IRQ_HANDLER(ARM_VSI1_Handler)
+DEFAULT_IRQ_HANDLER(ARM_VSI2_Handler)
+DEFAULT_IRQ_HANDLER(ARM_VSI3_Handler)
+DEFAULT_IRQ_HANDLER(ARM_VSI4_Handler)
+DEFAULT_IRQ_HANDLER(ARM_VSI5_Handler)
+DEFAULT_IRQ_HANDLER(ARM_VSI6_Handler)
+DEFAULT_IRQ_HANDLER(ARM_VSI7_Handler)
 #endif
 
 /*----------------------------------------------------------------------------
@@ -232,7 +232,7 @@ extern const VECTOR_TABLE_Type __VECTOR_TABLE[];
   0,                                 /*  13: Reserved */
   COMBINED_PPU_Handler,              /*  14: Combined PPU Handler */
   0,                                 /*  15: Reserved */
-  ETHOS_U55_Handler,                 /*  16: Ethos-U55 Handler */
+  NPU0_Handler,                      /*  16: NPU0 Handler */
   0,                                 /*  17: Reserved */
   0,                                 /*  18: Reserved */
   0,                                 /*  19: Reserved */
@@ -458,14 +458,14 @@ extern const VECTOR_TABLE_Type __VECTOR_TABLE[];
   0,                                 /*  221: Reserved */
   0,                                 /*  222: Reserved */
   0,                                 /*  223: Reserved */
-  VSI0_Handler,                      /*  224: VSI 0 Handler */
-  VSI1_Handler,                      /*  225: VSI 1 Handler */
-  VSI2_Handler,                      /*  226: VSI 2 Handler */
-  VSI3_Handler,                      /*  227: VSI 3 Handler */
-  VSI4_Handler,                      /*  228: VSI 4 Handler */
-  VSI5_Handler,                      /*  229: VSI 5 Handler */
-  VSI6_Handler,                      /*  230: VSI 6 Handler */
-  VSI7_Handler,                      /*  231: VSI 7 Handler */
+  ARM_VSI0_Handler,                  /*  224: VSI 0 Handler */
+  ARM_VSI1_Handler,                  /*  225: VSI 1 Handler */
+  ARM_VSI2_Handler,                  /*  226: VSI 2 Handler */
+  ARM_VSI3_Handler,                  /*  227: VSI 3 Handler */
+  ARM_VSI4_Handler,                  /*  228: VSI 4 Handler */
+  ARM_VSI5_Handler,                  /*  229: VSI 5 Handler */
+  ARM_VSI6_Handler,                  /*  230: VSI 6 Handler */
+  ARM_VSI7_Handler,                  /*  231: VSI 7 Handler */
 #endif
 };
 

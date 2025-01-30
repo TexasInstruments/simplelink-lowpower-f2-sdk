@@ -32,11 +32,13 @@
 #include <stdint.h>
 #include "ti-crypto/sl_crypto.h"
 #include "mcuboot_config/mcuboot_logging.h"
+#include "mcuboot_config.h"
 #include "string.h"
 
 #if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
 #include "ti/common/cc26xx/sha2/sha2_driverlib.h"
 #include "ti/common/cc26xx/ecc/ECDSACC26X4_driverlib.h"
+#include "ti/common/cc26xx/ecc/AESCTRCC26X4_driverlib.h"
 #else
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(driverlib/hapi.h)
@@ -99,6 +101,9 @@ static void copyBytes(uint8_t *pDst, const uint8_t *pSrc, uint32_t len)
 
 #endif
 
+/*
+ *  ======== SHA2 & HMAC ========
+ */
 void SlCrypto_sha256_init(void)
 {
 #if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
@@ -120,6 +125,7 @@ int SlCrypto_sha256_update(const void *data,
                            uint32_t data_len)
 {
 #if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
+    SHA2_open();
     return SHA2_addData(data, data_len);
 #else
     return HapiSha256SwAddData(sha256SWHandle, data, data_len);
@@ -129,8 +135,8 @@ int SlCrypto_sha256_update(const void *data,
 int SlCrypto_sha256_final(uint8_t *output)
 {
     int rtn;
-
 #if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
+    SlCrypto_sha256_init();
     rtn = SHA2_finalize(output);
     SHA2_close();
 #else
@@ -139,6 +145,20 @@ int SlCrypto_sha256_final(uint8_t *output)
 
     return rtn;
 }
+
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
+int SlCrypto_sha256_setupHmac(const uint8_t *key, unsigned int key_size) {
+    return (SHA2_setupHmac(key, key_size));
+}
+
+int SlCrypto_sha256_finalizeHmac(uint8_t *tag) {
+    return (SHA2_finalizeHmac(tag));
+}
+#endif
+
+/*
+ *  ======== ECDSA & ECDH ========
+ */
 
 void SlCrypto_ecdsa_p256_init(void)
 {
@@ -303,3 +323,146 @@ int SlCrypto_ecdsa_p256_verify(const uint8_t *pk, const uint8_t *hash, const uin
     return 0;
 #endif
 }
+
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
+/*
+ *  ======== ECCParams_getUncompressedGeneratorPoint ========
+ */
+int_fast16_t ECCParams_getUncompressedGeneratorPoint(const ECCParams_CurveParams *curveParams,
+                                                     uint8_t *buffer,
+                                                     size_t length)
+{
+
+    size_t paramLength = curveParams->length;
+    size_t pointLength = (paramLength * 2) + 1;
+
+    if (length < pointLength)
+    {
+        return -1;
+    }
+
+    /* Reverse and concatenate x and y */
+    uint32_t i = 0;
+    for (i = 0; i < paramLength; i++)
+    {
+        buffer[i + 1]               = curveParams->generatorX[paramLength - i - 1];
+        buffer[i + 1 + paramLength] = curveParams->generatorY[paramLength - i - 1];
+    }
+
+    buffer[0] = 0x04;
+    /* Fill the remaining buffer with 0 if needed */
+    memset(buffer + pointLength, 0, length - pointLength);
+
+    return 0;
+}
+
+
+int SlCrypto_ecdh_p256_computeSharedSecret(const uint8_t *pk, const uint8_t *sk, uint8_t *z) {
+
+    ECDH_OperationComputeSharedSecret operation;
+    CryptoKey_Plaintext privateKey;
+    CryptoKey_Plaintext publicKey;
+    CryptoKey_Plaintext SharedKey;
+
+    uint8_t privateKeyingMaterial[SECURE_FW_ECC_NIST_P256_KEY_LEN_IN_BYTES] =  {0};
+
+    // set the size to be SECURE_FW_ECC_NIST_P256_KEY_LEN_IN_BYTES for little endian
+    uint8_t publicKeyingMaterial[2* SECURE_FW_ECC_NIST_P256_KEY_LEN_IN_BYTES+ 1] =  {0};
+
+    memcpy(privateKeyingMaterial, sk, SECURE_FW_ECC_NIST_P256_KEY_LEN_IN_BYTES);
+    CryptoKeyPlaintext_initKey(&privateKey,
+                               privateKeyingMaterial,
+                               sizeof(privateKeyingMaterial));
+
+    // set the size to be SECURE_FW_ECC_NIST_P256_KEY_LEN_IN_BYTES for little endian
+    memcpy(publicKeyingMaterial, pk, 2*SECURE_FW_ECC_NIST_P256_KEY_LEN_IN_BYTES+1);
+    CryptoKeyPlaintext_initKey(&publicKey,
+                               publicKeyingMaterial,
+                               sizeof(publicKeyingMaterial));
+
+    // set the size to be SECURE_FW_ECC_NIST_P256_KEY_LEN_IN_BYTES for little endian
+    CryptoKeyPlaintext_initKey(&SharedKey, z,
+                               2*SECURE_FW_ECC_NIST_P256_KEY_LEN_IN_BYTES+1);
+
+    /* Test code */
+    //ECCParams_getUncompressedGeneratorPoint(&ECCParams_NISTP256,publicKeyingMaterial,sizeof(publicKeyingMaterial)); // only for test.
+
+    /* Initialize the operation */
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
+    operation.curve           = &ECCParams_NISTP256;
+#endif
+    operation.myPrivateKey = &privateKey;
+    operation.theirPublicKey = &publicKey;
+    operation.sharedSecret = &SharedKey;
+//#ifdef ECDH_BIG_ENDIAN_KEY
+//    operation.keyMaterialEndianness = ECDH_BIG_ENDIAN_KEY; //ECDH_LITTLE_ENDIAN_KEY;
+//#elif
+//    operation.keyMaterialEndianness = ECDH_LITTLE_ENDIAN_KEY;
+//#endif
+
+
+    return ECDH_computeSharedSecret(&operation);
+}
+
+/*
+ *  ======== AESCTR ========
+ */
+
+extern AESCTR_OneStepOperation operation_g;
+extern CryptoKey_Plaintext aesKey_g;
+
+void SlCrypto_aesctr_init(void) {
+    AES_open();
+}
+
+void SlCrypto_aesctr_drop(void) {
+    AES_close();
+}
+
+
+int SlCrypto_aesctr_setKey(const uint8_t *keyingMaterial) {
+
+    SlCrypto_aesctr_init(); //make sure the prcm peripherals are enabled
+
+    /* init operation */
+    memset(&operation_g, 0x00, sizeof(AESCTR_OneStepOperation));
+
+    //uint8_t aesKeyMaterial[AES_CTR_KEY_SIZE] =  {0};
+    //memcpy(aesKeyMaterial, keyingMaterial, AES_CTR_KEY_SIZE);
+
+    CryptoKeyPlaintext_initKey(&aesKey_g,
+                               (uint8_t *) keyingMaterial,
+                               AES_CTR_KEY_SIZE);
+
+    /* Get the key */
+    operation_g.key = &aesKey_g;
+
+    return 0;
+}
+
+int SlCrypto_aesctr_encrypt(uint8_t *counter, const uint8_t *m, uint32_t mlen, size_t blk_off, uint8_t *c)
+{
+    SlCrypto_aesctr_init(); //make sure the prcm peripherals are enabled
+    operation_g.input             = m;
+    operation_g.inputLength       = mlen;
+    operation_g.initialCounter    = counter;
+    operation_g.output            = c;
+
+    return AESCTR_oneStepEncrypt (&operation_g);
+    //return 0;
+    //return AESCTR_startOneStepOperation(&operation_g, AESCTR_OPERATION_TYPE_ENCRYPT);
+
+}
+
+int SlCrypto_aesctr_decrypt(uint8_t *counter, const uint8_t *c, uint32_t clen, size_t blk_off, uint8_t *m)
+{
+    SlCrypto_aesctr_init(); //make sure the prcm peripherals are enabled
+    operation_g.input             = c;
+    operation_g.inputLength       = clen;
+    operation_g.initialCounter    = counter;
+    operation_g.output            = m;
+
+    return AESCTR_oneStepDecrypt (&operation_g);
+    //return AESCTR_startOneStepOperation(&operation_g, AESCTR_OPERATION_TYPE_DECRYPT);
+}
+#endif

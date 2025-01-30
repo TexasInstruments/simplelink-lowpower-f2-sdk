@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -230,14 +230,14 @@ let base = {
     description: "LED Driver",
     longDescription: `
 The [__LED driver__][1] provides a simple interface to control LEDs.
+
 * [Usage Synopsis][2]
 * [Examples][3]
 * [Configuration][4]
+
 [1]: /drivers/doxygen/html/_l_e_d_8h.html#details "C API reference"
-[2]:
-/drivers/doxygen/html/_l_e_d_8h.html#ti_drivers_LED_Synopsis "Synopsis"
-[3]: /drivers/doxygen/html/_l_e_d_8h.html#ti_drivers_LED_Examples
-"C usage examples"
+[2]: /drivers/doxygen/html/_l_e_d_8h.html#ti_drivers_LED_Synopsis "Synopsis"
+[3]: /drivers/doxygen/html/_l_e_d_8h.html#ti_drivers_LED_Examples "C usage examples"
 [4]: /drivers/syscfg/html/ConfigDoc.html#LED_Configuration_Options "Configuration options reference"
 `,
     defaultInstanceName: "CONFIG_LED_",

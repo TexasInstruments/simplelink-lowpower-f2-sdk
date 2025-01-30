@@ -10,7 +10,7 @@
 #ifndef __BOOTUTIL_CRYPTO_ECDSA_P256_H_
 #define __BOOTUTIL_CRYPTO_ECDSA_P256_H_
 
-#include "mcuboot_config/mcuboot_config.h"
+#include "mcuboot_config.h"
 
 #if (defined(MCUBOOT_USE_TINYCRYPT) + \
      defined(MCUBOOT_USE_CC310) + \

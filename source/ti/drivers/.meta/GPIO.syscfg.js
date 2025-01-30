@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,6 +48,7 @@ let family = Common.device2Family(system.deviceData, "GPIO");
 let intPriority = Common.newIntPri()[0];
 intPriority.name = "interruptPriority";
 intPriority.displayName = "Interrupt Priority";
+
 
 /*
  *  ======== generateConfig ========
@@ -178,6 +179,14 @@ This parameter configures when the GPIO pin interrupt will trigger. Even when th
                 { name: "Both Edges" }
             ]
         },
+        {
+            name: "doNotConfig",
+            displayName: "Do Not Configure",
+            description: "Pin is initialized before the GPIO driver, and should not be configured by it.",
+            hidden: false,
+            default: false,
+            onChange: updateConfigs
+        },
         /* Compatibility - these deprecated options mirror PIN configurables */
         {
             name: "outputState",
@@ -230,15 +239,18 @@ This parameter configures when the GPIO pin interrupt will trigger. Even when th
 
     if (family == "LPF3")
     {
-        /* CC23XX devices have hysteresis forcibly enabled to lower glitch sensitivity */
+        /* CC23XX devices have hysteresis forcibly enabled to lower glitch
+         * sensitivity
+         */
         removeConfigElement("hysteresis");
     }
-    else if (family == "CC32XX")
+
+    else if (family == "CC26XX")
     {
-        removeConfigElement("invert");
-        removeConfigElement("outputSlew");
-        removeConfigElement("hysteresis");
+        /* CC26XX devices do not support doNotConfig */
+        removeConfigElement("doNotConfig");
     }
+
     else if (family == "WFF3")
     {
         removeConfigElement("invert");
@@ -412,6 +424,27 @@ function updateConfigs(inst, ui)
         hideOption("outputSlew");
         hideOption("outputStrength");
         hideOption("initialOutputState");
+    }
+
+    if("doNotConfig" in inst && inst.doNotConfig == true)
+    {
+        /* Hide most options when doNotConfig is true */
+        hideOption("pull");
+        hideOption("hysteresis");
+        hideOption("interruptTrigger");
+
+        hideOption("outputType");
+        hideOption("outputSlew");
+        hideOption("outputStrength");
+        hideOption("initialOutputState");
+
+        hideOption("mode");
+        hideOption("invert");
+    }
+    else
+    {
+        showOption("mode");
+        showOption("invert");
     }
 }
 
@@ -605,7 +638,7 @@ function getPinData(module)
         {
             localPinData[i] = {
                 "name": module._getDefaultName(i),
-                "config": module._getDefaultAttrs(),
+                "config": module._getDefaultAttrs(i),
                 "callback": "NULL"
             };
         }
@@ -653,10 +686,21 @@ function getAttrs(inst)
 
     let listOfDefines = [];
 
+    /* If the doNotConfig option exists and it is enabled, then only add the
+     * GPIO_CFG_DO_NOT_CONFIG define to the list of defines and return early.
+     */
+    if ("doNotConfig" in inst && inst.doNotConfig == true)
+    {
+        listOfDefines.push("GPIO_CFG_DO_NOT_CONFIG");
+        return listOfDefines;
+    }
+
     if (inst.mode == "Output") {
         listOfDefines.push("GPIO_CFG_OUTPUT_INTERNAL");
 
-        /* If the outputStrength option exists, add the define for the selected option to list of defines */
+        /* If the outputStrength option exists, add the define for the selected
+         * option to list of defines
+         */
         if ("outputStrength" in inst)
         {
             listOfDefines.push(strengthMapping[inst.outputStrength]);
@@ -680,14 +724,18 @@ function getAttrs(inst)
         listOfDefines.push("GPIO_CFG_INPUT_INTERNAL");
         listOfDefines.push(intMapping[inst.interruptTrigger]);
 
-        /* If the pull option exists, add the define for the selected option to list of defines */
+        /* If the pull option exists, add the define for the selected option
+         * to list of defines
+         */
         if ("pull" in inst)
         {
             listOfDefines.push(pullMapping[inst.pull]);
         }
     }
 
-    /* Add defines for the invert, hysteresis and outputSlew options, if they exists and are enabled */
+    /* Add defines for the invert, hysteresis and outputSlew options,
+     * if they exists and are enabled
+     */
     if ("invert" in inst && inst.invert == true) {
         listOfDefines.push("GPIO_CFG_INVERT_ON");
     }
@@ -769,7 +817,7 @@ function _getDefaultName(dioNumber)
  *  ======== _getDefaultAttrs ========
  */
 /* istanbul ignore next */
-function _getDefaultAttrs()
+function _getDefaultAttrs(dioNumber)
 {
     return "GPIO_CFG_NO_DIR";
 }
@@ -838,7 +886,9 @@ dependency issue.
         getAttrs: getAttrs
     },
 
-    /* Board_init() priority to guarantee that GPIO is initialized before the LogSink */
+    /* Board_init() priority to guarantee that GPIO is
+     * initialized before the LogSink
+     */
     initPriority        : 1,
 
     _getPinResources: _getPinResources,

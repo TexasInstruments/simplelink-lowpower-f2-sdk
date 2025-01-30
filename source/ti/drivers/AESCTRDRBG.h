@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022, Texas Instruments Incorporated
+ * Copyright (c) 2019-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -281,6 +281,8 @@
 #include <ti/drivers/AESCommon.h>
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
 
+#include <ti/devices/DeviceFamily.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -355,6 +357,15 @@ extern "C" {
  * did not return KEYSTORE_PSA_STATUS_SUCCESS
  */
 #define AESCTRDRBG_STATUS_KEYSTORE_ERROR (AES_STATUS_KEYSTORE_GENERIC_ERROR)
+
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX)
+    /*!
+     * @brief   Requesting entropy from HSM operation failed due to the input length.
+     *
+     * Input length has to be less than 64KB.
+     */
+    #define AESCTRDRBG_STATUS_INPUT_LENGTH_INVALID (AES_STATUS_KEYSTORE_GENERIC_ERROR - 1)
+#endif
 
 /*!
  * @brief   The AES block size in bytes.
@@ -605,6 +616,56 @@ int_fast16_t AESCTRDRBG_generateKey(AESCTRDRBG_Handle handle, CryptoKey *randomK
  *  @retval #AESCTRDRBG_STATUS_UNALIGNED_IO_NOT_SUPPORTED  Pointer to \c randomBytes array must be word-aligned.
  */
 int_fast16_t AESCTRDRBG_getRandomBytes(AESCTRDRBG_Handle handle, void *randomBytes, size_t randomBytesSize);
+
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX)
+/*!
+ *  @brief  Generates the requested number of random bytes and outputs to the given array.
+ *
+ *  This operation bypasses the existing AESCTRDRBG design by fetching random bytes directly from the HSM.
+ *
+ *  @attention This function leverages the HSM DRBG IP directly.
+ *  Limitations:
+ *      1. An upper limit of 64KB per request.
+ *      2. All request amounts have to be 32-bit aligned (multiple of 4).
+ *
+ *  This API does not utilize the provided seed or the counter but rather relies on the HSM to generate deterministic
+ *  data.
+ *
+ *  This API operates in a synchronous polling mode.
+ *
+ *  @param  [out]       randomBytes                 A pointer to an array that stores the random bytes
+ *                                                  output by this function. This array has to be word-aligned.
+ *
+ *  @param  [in]        randomBytesSize             The size in bytes of the random data required.
+ *                                                  The size must be a multiple of 4 bytes.
+ *
+ *  @retval #AESCTRDRBG_STATUS_SUCCESS              Random bytes generated.
+ *  @retval #AESCTRDRBG_STATUS_ERROR                Generic driver error.
+ *  @retval #AESCTRDRBG_STATUS_RESOURCE_UNAVAILABLE The required hardware was unavailable.
+ *  @retval #AESCTRDRBG_STATUS_INPUT_LENGTH_INVALID Length has to be less than 64KB.
+ */
+int_fast16_t AESCTRDRBG_getRandomBytesFromHSM(void *randomBytes, size_t randomBytesSize);
+
+/*!
+ *  @brief   Reseed the HSM IP DRBG engine
+ *
+ *  @attention This function makes a direct call to the HSM engine to force a reseed to the HSM IP.
+ *
+ *  Although the HSM IP auto-reseeds internally after a pre-defined level set in the OTP (256 * 64KB) entropy
+ *  have been fetched, this API is provided to the user to call whenever they want to force a reseed.
+ *
+ *  This operation is done asynchronously which means the call returns as soon as the request is deposited to the HSM
+ *  engine and does not notify the user when the operation is complete.
+ *
+ *  Whilst the operation is running, the underlying HSM access semaphore is taken and no other operations or threads can
+ *  leverage the HSM IP. The #AESCTRDRBG_STATUS_RESOURCE_UNAVAILABLE error code will be returned.
+ *
+ *  @retval #AESCTRDRBG_STATUS_SUCCESS              Reseeding was successful.
+ *  @retval #AESCTRDRBG_STATUS_ERROR                Reseeding was not successful.
+ *  @retval #AESCTRDRBG_STATUS_RESOURCE_UNAVAILABLE The required hardware was unavailable.
+ */
+int_fast16_t AESCTRDRBG_reseedHSM(void);
+#endif
 
 /*!
  *  @brief  Reseed an AESCTRDRBG instance.

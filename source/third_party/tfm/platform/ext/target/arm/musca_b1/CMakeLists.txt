@@ -25,7 +25,7 @@ target_compile_definitions(platform_region_defs
 # Specify the location of platform specific build dependencies.
 target_sources(tfm_s
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/Device/Source/startup_musca.c
+        Device/Source/startup_musca.c
 )
 
 # Use a common scatter file for Isolation L1 and L2, a dedicated one for Isolation L3
@@ -39,31 +39,15 @@ target_add_scatter_file(tfm_s
     $<$<AND:$<VERSION_EQUAL:${TFM_ISOLATION_LEVEL},3>,$<C_COMPILER_ID:IAR>>:${CMAKE_BINARY_DIR}/generated/platform/ext/common/iar/tfm_isolation_l3.icf>
 )
 
-if(NS)
-    target_sources(tfm_ns
-        PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/Device/Source/startup_musca.c
-    )
-    target_add_scatter_file(tfm_ns
-        $<$<C_COMPILER_ID:ARMClang>:${CMAKE_CURRENT_SOURCE_DIR}/Device/Source/armclang/musca_ns.sct>
-        $<$<C_COMPILER_ID:GNU>:${CMAKE_CURRENT_SOURCE_DIR}/Device/Source/gcc/musca_ns.ld>
-        $<$<C_COMPILER_ID:IAR>:${CMAKE_CURRENT_SOURCE_DIR}/Device/Source/iar/musca_ns.icf>
-    )
-    target_link_libraries(CMSIS_5_tfm_ns
-        INTERFACE
-            CMSIS_5_RTX_V8MMN
-    )
-endif()
-
 if(BL2)
     target_sources(bl2
         PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/Device/Source/startup_musca.c
+            Device/Source/startup_musca.c
     )
     target_add_scatter_file(bl2
-            $<$<C_COMPILER_ID:ARMClang>:${CMAKE_CURRENT_SOURCE_DIR}/Device/Source/armclang/musca_bl2.sct>
-            $<$<C_COMPILER_ID:GNU>:${CMAKE_CURRENT_SOURCE_DIR}/Device/Source/gcc/musca_bl2.ld>
-            $<$<C_COMPILER_ID:IAR>:${CMAKE_CURRENT_SOURCE_DIR}/Device/Source/iar/musca_bl2.icf>
+            $<$<C_COMPILER_ID:ARMClang>:Device/Source/armclang/musca_bl2.sct>
+            $<$<C_COMPILER_ID:GNU>:Device/Source/gcc/musca_bl2.ld>
+            $<$<C_COMPILER_ID:IAR>:Device/Source/iar/musca_bl2.icf>
     )
 endif()
 
@@ -80,6 +64,7 @@ target_include_directories(platform_s
         partition
         services/include
         Libraries
+        ${PLATFORM_DIR}/ext/target/arm/drivers/usart/pl011
     INTERFACE
         cc312
 )
@@ -99,8 +84,8 @@ target_sources(platform_s
         Native_Driver/qspi_ip6514e_drv.c
         Native_Driver/musca_b1_scc_drv.c
         Native_Driver/ppc_sse200_drv.c
-        Native_Driver/uart_pl011_drv.c
-        $<$<NOT:$<BOOL:${TEST_NS_SLIH_IRQ}>>:${CMAKE_CURRENT_SOURCE_DIR}/Native_Driver/timer_cmsdk_drv.c>
+        ${PLATFORM_DIR}/ext/target/arm/drivers/usart/pl011/uart_pl011_drv.c
+        $<$<NOT:$<BOOL:${TFM_PARTITION_SLIH_TEST}>>:${CMAKE_CURRENT_SOURCE_DIR}/Native_Driver/timer_cmsdk_drv.c>
         $<$<OR:$<BOOL:${TFM_S_REG_TEST}>,$<BOOL:${TFM_NS_REG_TEST}>>:${CMAKE_CURRENT_SOURCE_DIR}/plat_test.c>
         $<$<BOOL:${TFM_PARTITION_PLATFORM}>:${CMAKE_CURRENT_SOURCE_DIR}/services/src/tfm_platform_system.c>
 )
@@ -114,32 +99,7 @@ target_sources(tfm_sprt
     PRIVATE
         # The SLIH test Partition accesses the timer as ARoT Partitions.
         # Put the driver to SPRT so that the SLIH tests can access it.
-        $<$<BOOL:${TEST_NS_SLIH_IRQ}>:${CMAKE_CURRENT_SOURCE_DIR}/Native_Driver/timer_cmsdk_drv.c>
-)
-
-#========================= Platform Non-Secure ================================#
-
-target_sources(platform_ns
-    PRIVATE
-        Native_Driver/uart_pl011_drv.c
-        Native_Driver/timer_cmsdk_drv.c
-        CMSIS_Driver/Driver_USART.c
-        Device/Source/system_core_init.c
-        Device/Source/device_definition.c
-        $<$<BOOL:${TFM_PARTITION_PLATFORM}>:${CMAKE_CURRENT_SOURCE_DIR}/plat_test.c>
-        $<$<BOOL:${PLATFORM_GPLED_ENABLED}>:${CMAKE_CURRENT_SOURCE_DIR}/services/src/tfm_ioctl_ns_api.c>
-        $<$<BOOL:${PLATFORM_GPLED_ENABLED}>:${CMAKE_CURRENT_SOURCE_DIR}/services/src/tfm_gpled_api.c>
-)
-
-target_include_directories(platform_ns
-    PUBLIC
-        .
-        CMSIS_Driver/Config
-        Device/Config
-        Device/Include
-        Native_Driver
-        services/include
-        Libraries
+        $<$<BOOL:${TFM_PARTITION_SLIH_TEST}>:${CMAKE_CURRENT_SOURCE_DIR}/Native_Driver/timer_cmsdk_drv.c>
 )
 
 #========================= Platform BL2 =======================================#
@@ -149,7 +109,7 @@ if(BL2)
         PRIVATE
             Device/Source/system_core_init.c
             Device/Source/device_definition.c
-            Native_Driver/uart_pl011_drv.c
+            ${PLATFORM_DIR}/ext/target/arm/drivers/usart/pl011/uart_pl011_drv.c
             CMSIS_Driver/Driver_USART.c
             Native_Driver/musca_b1_scc_drv.c
     )
@@ -165,6 +125,7 @@ if(BL2)
             CMSIS_Driver/Config
             Device/Config
             Native_Driver
+            ${PLATFORM_DIR}/ext/target/arm/drivers/usart/pl011
             ${CMAKE_SOURCE_DIR}/bl2/ext/mcuboot/include # for fih.h interop only
             ${MCUBOOT_PATH}/boot/bootutil/include # for fault_injection_hardening.h only
             ${CMAKE_BINARY_DIR}/bl2/ext/mcuboot # for mcuboot_config.h only
@@ -216,6 +177,7 @@ add_library(flash_drivers STATIC)
 
 target_include_directories(flash_drivers
     PRIVATE
+        ${PLATFORM_DIR}/ext/target/arm/drivers/usart/pl011
         ${PLATFORM_DIR}/ext/driver
         ${PLATFORM_DIR}/ext/cmsis
         ${PLATFORM_DIR}/ext/common
@@ -246,3 +208,61 @@ target_link_libraries(platform_s
     PRIVATE
         flash_drivers
 )
+
+#========================= Files for building NS side platform ================#
+install(FILES       ${PLATFORM_DIR}/ext/driver/Driver_Common.h
+                    ${PLATFORM_DIR}/ext/driver/Driver_Flash.h
+                    ${PLATFORM_DIR}/ext/driver/Driver_USART.h
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/ext/driver)
+
+install(FILES       Device/Source/startup_musca.c
+                    Device/Source/system_core_init.c
+                    Device/Source/device_definition.c
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/Device/Source
+)
+
+install(FILES       ${PLATFORM_DIR}/ext/target/arm/drivers/usart/pl011/uart_pl011_drv.c
+                    CMSIS_Driver/Driver_USART.c
+                    Libraries/mt25ql_flash_lib.c
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}
+)
+
+install(DIRECTORY   CMSIS_Driver/Config
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/CMSIS_Driver
+)
+
+install(DIRECTORY   Device/Config
+                    Device/Include
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/Device
+)
+
+install(DIRECTORY   partition
+                    Native_Driver
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}
+)
+
+install(FILES       target_cfg.h
+                    Libraries/mt25ql_flash_lib.h
+                    tfm_peripherals_def.h
+                    ${PLATFORM_DIR}/include/tfm_plat_defs.h
+                    ${PLATFORM_DIR}/ext/target/arm/drivers/usart/pl011/uart_pl011_drv.h
+                    ${PLATFORM_DIR}/ext/accelerator/cc312/crypto_accelerator_config.h
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/include)
+
+# copy all files from active platform directory
+install(DIRECTORY   ${TARGET_PLATFORM_PATH}/ns/
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+install(FILES       ${TARGET_PLATFORM_PATH}/cpuarch.cmake
+                    ${TARGET_PLATFORM_PATH}/config.cmake
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+# Install linker scripts
+install(FILES       Device/Source/armclang/musca_ns.sct
+                    Device/Source/gcc/musca_ns.ld
+                    Device/Source/iar/musca_ns.icf
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/linker_scripts)
+
+# Install test configs
+install(DIRECTORY   ${TARGET_PLATFORM_PATH}/tests
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})

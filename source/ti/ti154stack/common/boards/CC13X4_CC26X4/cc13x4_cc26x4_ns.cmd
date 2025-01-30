@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -53,8 +53,9 @@
 /* - 10063: Warning about entry point not being _c_int00                     */
 /* - 16011, 16012: 8-byte alignment errors. Observed when linking in object  */
 /*   files compiled using Keil (ARM compiler)                                */
+/* - 10068: Warning about no matching section when logs are disabled         */
 SecureStart = 0x00000100;
---diag_suppress=10063,16011,16012
+--diag_suppress=10063,16011,16012,10068
 -u SecureStart
 -e SecureStart
 
@@ -101,6 +102,15 @@ MEMORY
     CCFG (RX) : origin = CCFG_BASE, length = CCFG_SIZE
     /* Application uses internal RAM for data */
     SRAM (RWX) : origin = RAM_BASE, length = RAM_SIZE
+
+    /* Explicitly placed off target for the storage of logging data.
+     * The data placed here is NOT loaded onto the target device.
+     * This is part of 1 GB of external memory from 0x60000000 - 0x9FFFFFFF.
+     * ARM memory map can be found here:
+     * https://developer.arm.com/documentation/ddi0337/e/memory-map/about-the-memory-map
+     */
+    LOG_DATA (R) : origin = 0x90000000, length = 0x40000        /* 256 KB */
+    LOG_PTR  (R) : origin = 0x94000008, length = 0x40000        /* 256 KB */
 }
 
 /******************************************************************************
@@ -138,6 +148,8 @@ SECTIONS
     } LOAD_END(heapStart)
 
     .stack          :   >  SRAM (HIGH) LOAD_START(heapEnd)
+    .log_data       :   > LOG_DATA, type = COPY
+    .log_ptr        : { *(.log_ptr*) } > LOG_PTR align 4, type = COPY
 }
 
 /* Create global constant that points to top of stack */

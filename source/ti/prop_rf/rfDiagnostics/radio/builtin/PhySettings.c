@@ -192,7 +192,7 @@ PhySettings_RfSetting PhySettings_supportedPhys[] =
       (defined CONFIG_LP_CC2653P10)      || (defined CONFIG_CC2653P10RGZ) || \
       (defined CONFIG_LP_CC2674R10)      || (defined CONFIG_CC2674R10RGZ) || \
       (defined CONFIG_CC2674R10RSK)                                       || \
-      (defined CONFIG_LP_CC2674P10)      || (defined CONFIG_CC2674P10RGZ) || \
+      (defined CONFIG_LP_EM_CC2674P10)   || (defined CONFIG_CC2674P10RGZ) || \
       (defined CONFIG_CC2674P10RSK))
  //*********************************************************************************
  //  RF Setting:   50 kbps, 25kHz Deviation, 2-GFSK, 78 kHz RX Bandwidth
@@ -251,7 +251,7 @@ PhySettings_RfSetting PhySettings_supportedPhys[] =
       (defined CONFIG_LP_EM_CC1354P10_6) || (defined CONFIG_LP_EM_CC1354P10_1)  || \
       (defined CONFIG_LP_CC2674R10)      || (defined CONFIG_CC2674R10RGZ)       || \
       (defined CONFIG_CC2674R10RSK)                                             || \
-      (defined CONFIG_LP_CC2674P10)      || (defined CONFIG_CC2674P10RGZ)       || \
+      (defined CONFIG_LP_EM_CC2674P10)   || (defined CONFIG_CC2674P10RGZ)       || \
       (defined CONFIG_CC2674P10RSK)      || (defined CONFIG_CC1354P10RSK))
     //*********************************************************************************
     //  RF Setting:   250 kbps, 125 kHz Deviation, 2-GFSK, 471 kHz RX Bandwidth
@@ -322,7 +322,7 @@ PhySettings_RfSetting PhySettings_supportedPhys[] =
 #if ((defined CONFIG_LP_CC2653P10) || (defined CONFIG_CC2653P10RGZ)             || \
       (defined CONFIG_LP_CC2674R10)      || (defined CONFIG_CC2674R10RGZ)       || \
       (defined CONFIG_CC2674R10RSK)                                             || \
-      (defined CONFIG_LP_CC2674P10)      || (defined CONFIG_CC2674P10RGZ)       || \
+      (defined CONFIG_LP_EM_CC2674P10)   || (defined CONFIG_CC2674P10RGZ)       || \
       (defined CONFIG_CC2674P10RSK))
         .PhySettings_phyIndex       = PhySettings_PHY_0,
         .PhySettings_phyName        = {"PHY 0: IEEE250kbps, PhySettings_TEST_STUDIO_COMPL"},
@@ -352,7 +352,7 @@ PhySettings_RfSetting PhySettings_supportedPhys[] =
      (defined CONFIG_CC2652P1FSIP)      || (defined CONFIG_LP_EM_CC1354P10_6) || \
      (defined CONFIG_LP_EM_CC1354P10_1) || (defined CONFIG_CC1354P10RSK)      || \
      (defined CONFIG_LP_CC2653P10)      || (defined CONFIG_CC2653P10RGZ)      || \
-     (defined CONFIG_LP_CC2674P10)      || (defined CONFIG_CC2674P10RGZ)      || \
+     (defined CONFIG_LP_EM_CC2674P10)   || (defined CONFIG_CC2674P10RGZ)      || \
      (defined CONFIG_CC2674P10RSK))
         .RF_pCmdPropRadioDivSetupPa = NULL,
         .RF_pCmdPropRadioDivSetup   = NULL,

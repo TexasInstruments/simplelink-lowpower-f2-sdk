@@ -231,14 +231,6 @@
                             ]
                         },
                         {
-                            "_name": "override_hposc.json",
-                            "Element32b": {
-                                "_type": "HPOSC_OVERRIDE",
-                                "_comment": "HPOSC frequency offset override, freqOffset=2^22*(F_nom-F_hposc)\/F_hposc",
-                                "$": "0"
-                            }
-                        },
-                        {
                             "_name": "override_patable_14dbm.json",
                             "Element32b": {
                                 "_type": "ADI_REG_OVERRIDE",

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2023, Arm Limited. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,9 +99,18 @@ static int is_pointer_word_aligned(void *ptr) {
 enum lcm_error_t lcm_init(struct lcm_dev_t *dev)
 {
     struct _lcm_reg_map_t *p_lcm = (struct _lcm_reg_map_t *)dev->cfg->base;
+    enum lcm_lcs_t lcs;
+    enum lcm_error_t err;
 
-    if (p_lcm->key_err) {
-        return LCM_ERROR_INVALID_KEY;
+    err = lcm_get_lcs(dev, &lcs);
+    if (err != LCM_ERROR_NONE) {
+        return err;
+    }
+
+    if (lcs == LCM_LCS_SE) {
+        if (p_lcm->key_err) {
+            return LCM_ERROR_INVALID_KEY;
+        }
     }
 
     return LCM_ERROR_NONE;
@@ -611,16 +620,14 @@ enum lcm_error_t lcm_otp_write(struct lcm_dev_t *dev, uint32_t offset, uint32_t 
         return err;
     }
 
-    if (otp_size <= (offset + len)) {
+    if (otp_size < (offset + len)) {
         return LCM_ERROR_INVALID_OFFSET;
     }
 
-    /* Reject the write if the word is already written and we're not trying to
-     * write the same word
-     */
+    /* Reject the write if we'd have to unset a bit. */
     for (idx = 0; idx < len / sizeof(uint32_t); idx++) {
-        if (p_lcm->raw_otp[(offset / sizeof(uint32_t)) + idx] &&
-           p_lcm->raw_otp[(offset / sizeof(uint32_t)) + idx] ^ p_buf_word[idx]) {
+        if (p_buf_word[idx] !=
+           (p_lcm->raw_otp[(offset / sizeof(uint32_t)) + idx] | p_buf_word[idx])) {
             return LCM_ERROR_INVALID_WRITE;
         }
     }
@@ -670,7 +677,7 @@ enum lcm_error_t lcm_otp_read(struct lcm_dev_t *dev, uint32_t offset,
         return err;
     }
 
-    if (otp_size <= (offset + len)) {
+    if (otp_size < (offset + len)) {
         return LCM_ERROR_INVALID_OFFSET;
     }
 

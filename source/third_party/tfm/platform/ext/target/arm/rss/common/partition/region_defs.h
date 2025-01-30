@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2019-2023 Arm Limited. All rights reserved.
+ * Copyright (c) 2023 Cypress Semiconductor Corporation (an Infineon company)
+ * or an affiliate of Cypress Semiconductor Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +50,7 @@
  * VM0  | BL2_CODE                                               |
  *      |---------------------------------------------------------
  *      |---------------------------------------------------------
- * VM1  | BL2_CODE                 | XIP tables  | BL2_DATA      |
+ * VM1  |  XIP tables  | BL2_DATA                                |
  *      |---------------------------------------------------------
  *
  * If the size of VM0 and VM1 are larger than 64KiB, the size of BL2 code can be
@@ -97,10 +99,6 @@
 #define NS_HEAP_SIZE            (0x0001000)
 #define NS_STACK_SIZE           (0x0001000)
 
-/* This size of buffer is big enough to store an attestation
- * token produced by initial attestation service
- */
-#define PSA_INITIAL_ATTEST_TOKEN_MAX_SIZE   (0x800)
 /* This size of buffer is big enough to store an array of all the
  * boot records/measurements which is encoded in CBOR format.
  */
@@ -157,7 +155,7 @@
 #define NS_CODE_START   (RSS_RUNTIME_NS_XIP_BASE_NS)
 #define NS_CODE_SIZE    (FLASH_NS_PARTITION_SIZE)
 #else
-#define NS_CODE_START   (NS_DATA_START + NS_DATA_SIZE)
+#define NS_CODE_START   (NS_DATA_START + NS_DATA_SIZE + BL2_HEADER_SIZE)
 #define NS_CODE_SIZE    (IMAGE_NS_CODE_SIZE)
 #endif /* RSS_XIP */
 #define NS_CODE_LIMIT   (NS_CODE_START + NS_CODE_SIZE - 1)
@@ -176,9 +174,9 @@
 #ifdef RSS_XIP
 #define NS_PARTITION_START RSS_RUNTIME_NS_XIP_BASE_NS
 #else
-#define NS_PARTITION_START (NS_CODE_START)
+#define NS_PARTITION_START (NS_DATA_START + NS_DATA_SIZE)
 #endif /* RSS_XIP */
-#define NS_PARTITION_SIZE (NS_CODE_SIZE)
+#define NS_PARTITION_SIZE (FLASH_NS_PARTITION_SIZE)
 
 #define SECONDARY_PARTITION_START (FWU_HOST_IMAGE_BASE_S)
 #define SECONDARY_PARTITION_SIZE (HOST_IMAGE_MAX_SIZE)
@@ -186,7 +184,7 @@
 /* Bootloader regions */
 /* BL1_1 is XIP from ROM */
 #define BL1_1_CODE_START  (ROM_BASE_S)
-#define BL1_1_CODE_SIZE   (0xE000) /* 56 KB */
+#define BL1_1_CODE_SIZE   (ROM_SIZE - ROM_DMA_ICS_SIZE) /* 28 KiB */
 #define BL1_1_CODE_LIMIT  (BL1_1_CODE_START + BL1_1_CODE_SIZE - 1)
 
 #define PROVISIONING_DATA_START (BL1_1_CODE_START + BL1_1_CODE_SIZE)
@@ -226,7 +224,7 @@
  * runtime driver supports DMA remapping.
  */
 #define BL2_DATA_START    (BL2_XIP_TABLES_START + BL2_XIP_TABLES_SIZE)
-#define BL2_DATA_SIZE     (DTCM_SIZE - BOOT_TFM_SHARED_DATA_SIZE)
+#define BL2_DATA_SIZE     (VM0_SIZE + VM1_SIZE - BL2_XIP_TABLES_SIZE - FLASH_BL2_PARTITION_SIZE)
 #define BL2_DATA_LIMIT    (BL2_DATA_START + BL2_DATA_SIZE - 1)
 
 /* Store boot data at the start of the DTCM. */
@@ -235,7 +233,16 @@
 #define BOOT_TFM_SHARED_DATA_LIMIT (BOOT_TFM_SHARED_DATA_BASE + \
                                     BOOT_TFM_SHARED_DATA_SIZE - 1)
 
-/* AP to RSS MHU receiver interrupt */
-#define MAILBOX_IRQ CMU_MHU0_Receiver_IRQn
+#define PROVISIONING_BUNDLE_CODE_START ITCM_BASE_S
+#define PROVISIONING_BUNDLE_CODE_SIZE  ITCM_SIZE
+#define PROVISIONING_BUNDLE_VALUES_START (BL1_2_DATA_START)
+#define PROVISIONING_BUNDLE_VALUES_SIZE (0x3800)
+#define PROVISIONING_BUNDLE_DATA_START (PROVISIONING_BUNDLE_VALUES_START + \
+                                        PROVISIONING_BUNDLE_VALUES_SIZE)
+#define PROVISIONING_BUNDLE_DATA_SIZE (BL1_2_DATA_SIZE - \
+                                       PROVISIONING_BUNDLE_VALUES_SIZE)
+
+#define CM_PROVISIONING_BUNDLE_START VM0_BASE_S
+#define DM_PROVISIONING_BUNDLE_START VM1_BASE_S
 
 #endif /* __REGION_DEFS_H__ */

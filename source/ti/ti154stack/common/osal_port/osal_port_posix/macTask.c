@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2024, Texas Instruments Incorporated
+ Copyright (c) 2013-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -121,7 +121,9 @@
  * ------------------------------------------------------------------------------------------------
  */
 
+#ifndef MAC_TASK_PRIORITY
 #define MAC_TASK_PRIORITY   3
+#endif
 
 #if defined(DeviceFamily_CC13X2) || defined(DeviceFamily_CC26X2) || defined(DeviceFamily_CC13X2X7) || defined(DeviceFamily_CC26X2X7) || defined(DeviceFamily_CC13X1) || defined(DeviceFamily_CC26X1) || \
     defined(DeviceFamily_CC13X4) || defined(DeviceFamily_CC26X4) || defined(DeviceFamily_CC26X3)
@@ -595,10 +597,10 @@ static void macInit(macUserCfg_t *pUserCfg)
   status = Random_seedAutomatic();
 
   if (status != Random_STATUS_SUCCESS) {
-      while(1);
 #ifndef FREERTOS_SUPPORT
     System_abort("Random_seedAutomatic() failed");
 #endif
+    while(1);
   }
 #endif /* USE_DMM */
 
@@ -652,10 +654,10 @@ static void macInit(macUserCfg_t *pUserCfg)
   if (!AESCCM_handle)
   {
       /* abort */
-      while(1);
 #ifndef FREERTOS_SUPPORT
       System_abort("Crypto open failed");
 #endif
+      while(1);
   }
 #ifdef FEATURE_SECURE_COMMISSIONING
   if (!TRNG_handle)

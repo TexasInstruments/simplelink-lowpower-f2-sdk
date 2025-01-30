@@ -1,6 +1,6 @@
 # Copyright (c) 2020, Linaro. All rights reserved.
 # Copyright (c) 2020, Arm Limited. All rights reserved.
-# Copyright (c) 2021, NXP Semiconductors. All rights reserved.
+# Copyright 2020-2023 NXP. All rights reserved.
 # SPDX-License-Identifier: BSD-3-Clause
 
 import os

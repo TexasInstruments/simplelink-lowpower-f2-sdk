@@ -25,7 +25,7 @@ target_sources(tfm_partitions
         ${CMAKE_CURRENT_SOURCE_DIR}/load_info_idle_sp.c
 )
 
-target_compile_definitions(tfm_partition_defs
+target_compile_definitions(tfm_config
     INTERFACE
         TFM_PARTITION_IDLE
 )

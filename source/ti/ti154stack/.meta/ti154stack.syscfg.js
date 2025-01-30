@@ -87,6 +87,13 @@ const moduleStatic = {
             longDescription: docs.genLibs.longDescription
         },
         {
+            name: "loggingEnabled",
+            displayName: "Enable Logging",
+            hidden : false,
+            description: `This setting will enable logging for the TI 15.4 Stack`,
+            default: false
+        },
+        {
             name: "project",
             displayName: "Device Role",
             default: "collector",
@@ -461,7 +468,7 @@ function getLibs(inst)
             maclibName = "tfm_" + maclibName
         }
 
-        const maclib = basePath + maclibName + ".a";
+        const maclib = inst.$static.loggingEnabled ? basePath + maclibName + "_log.a" : basePath + maclibName + ".a";
         libs.push(maclib);
         if(system.modules["/ti/dmm/dmm"] === undefined)
         {
@@ -491,6 +498,11 @@ function getLibs(inst)
             else // cc13x2/cc26x2
             {
                 macosallib += "_cc13x2_26x2.a";
+            }
+
+            if(inst.$static.loggingEnabled)
+            {
+                macosallib = macosallib.replace(".a", "_log.a")
             }
             libs.push(macosallib);
         }
@@ -579,6 +591,78 @@ function moduleInstances(inst)
             name: "ti154stackModule",
             moduleName: "/ti/ti154stack/ti154stack_config_mod.js"
         });
+    }
+
+    /* If logging is enabled, push a dependency on a log module */
+    if (inst.loggingEnabled) {
+        dependencyModule.push(
+            {
+                name: "LogModule_154_App",
+                displayName: "TI 15.4 Stack Application Level Log Configuration",
+                moduleName: "/ti/log/LogModule",
+                collapsed: true,
+                args: {
+                    $name: "LogModule_154_App",
+                    // All logs enabled by default for the App Level Logs
+                    enable_DEBUG: true,
+                    enable_INFO: true,
+                    enable_VERBOSE: true,
+                    enable_WARNING: true,
+                    enable_ERROR: true
+                }
+            }
+        );
+        dependencyModule.push(
+            {
+                name: "LogModule_154_Low_Level_MAC",
+                displayName: "TI 15.4 Stack Low Level MAC Log Configuration",
+                moduleName: "/ti/log/LogModule",
+                collapsed: true,
+                args: {
+                    $name: "LogModule_154_Low_Level_MAC",
+                    enable_DEBUG: false,
+                    enable_INFO: false,
+                    enable_VERBOSE: false,
+                    // Only enable WARNING and ERROR enabled by default
+                    enable_WARNING: true,
+                    enable_ERROR: true
+                }
+            }
+        );
+        dependencyModule.push(
+            {
+                name: "LogModule_154_Low_Level_TX",
+                displayName: "TI 15.4 Stack Low Level TX Log Configuration",
+                moduleName: "/ti/log/LogModule",
+                collapsed: true,
+                args: {
+                    $name: "LogModule_154_Low_Level_TX",
+                    enable_DEBUG: false,
+                    enable_INFO: false,
+                    enable_VERBOSE: false,
+                    // Only enable WARNING and ERROR enabled by default
+                    enable_WARNING: true,
+                    enable_ERROR: true
+                }
+            }
+        );
+        dependencyModule.push(
+            {
+                name: "LogModule_154_Low_Level_RX",
+                displayName: "TI 15.4 Stack Low Level RX Log Configuration",
+                moduleName: "/ti/log/LogModule",
+                collapsed: true,
+                args: {
+                    $name: "LogModule_154_Low_Level_RX",
+                    enable_DEBUG: false,
+                    enable_INFO: false,
+                    enable_VERBOSE: false,
+                    // Only enable WARNING and ERROR enabled by default
+                    enable_WARNING: true,
+                    enable_ERROR: true
+                }
+            }
+        );
     }
 
     return(dependencyModule);

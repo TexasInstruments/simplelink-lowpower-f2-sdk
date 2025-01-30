@@ -15,7 +15,7 @@
   "priority": "LOW",
   "model": "IPC",
   "entry_point": "ns_agent_mailbox_entry",
-  "stack_size": "0x800",
+  "stack_size": "NS_AGENT_MAILBOX_STACK_SIZE",
   "irqs": [
     {
       "source": "MAILBOX_IRQ",

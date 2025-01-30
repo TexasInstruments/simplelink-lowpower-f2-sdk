@@ -1,0 +1,140 @@
+From 1b199ce317d02c46770269631fea644cefb63978 Mon Sep 17 00:00:00 2001
+From: Laurence Lundblade <laurencelundblade@users.noreply.github.com>
+Date: Sun, 12 Feb 2023 13:21:44 -0800
+Subject: [PATCH] Disable gcc -Wmaybe-uninitialized because of false positives
+ (#179)
+
+For some versions of gcc (but not all) -Wall enables -Wmaybe-uninitialized.
+
+While there are no uninitialized variables in QCBOR, warnings are still produced with some versions of gcc and with some optimization options for gcc. This just disables the warning entirely for qcbor_decode.c and notes where the warnings were checked.
+
+It is well understood that -Wmaybe-uninitialized produces false positives.
+
+QCBOR has been through full and proper static analysis so we know it doesn't have uninitialized variables. The cases that -Wmaybe-uninitialized complained about in one case (I can't reproduce them) have been checked and noted.
+
+Note that just slamming initialization on to the variables to prevent the warnings is actually a bit dangerous because you don't know what the proper initialization value should be. You actually
+have to read and understand the code to initialize correctly. That or confirm there is no
+uninitialized variables. Both have been done in this case.
+
+
+
+* Disable -Wmaybe-uninitialized because of false positives
+
+* Improved explanatory text
+
+---------
+
+Co-authored-by: Laurence Lundblade <lgl@securitytheory.com>
+---
+ src/qcbor_decode.c | 58 ++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 53 insertions(+), 5 deletions(-)
+
+diff --git a/src/qcbor_decode.c b/src/qcbor_decode.c
+index 8a547ee..57aab97 100644
+--- a/src/qcbor_decode.c
++++ b/src/qcbor_decode.c
+@@ -1,6 +1,6 @@
+ /*==============================================================================
+  Copyright (c) 2016-2018, The Linux Foundation.
+- Copyright (c) 2018-2022, Laurence Lundblade.
++ Copyright (c) 2018-2023, Laurence Lundblade.
+  Copyright (c) 2021, Arm Limited.
+  All rights reserved.
+ 
+@@ -46,6 +46,54 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #endif /* QCBOR_DISABLE_FLOAT_HW_USE */
+ 
+ 
++#if (defined(__GNUC__) && !defined(__clang__))
++/*
++ * This is how the -Wmaybe-uninitialized compiler warning is
++ * handled. It can’t be ignored because some version of gcc enable it
++ * with -Wall which is a common and useful gcc warning option. It also
++ * can’t be ignored because it is the goal of QCBOR to compile clean
++ * out of the box in all environments.
++ *
++ * The big problem with -Wmaybe-uninitialized is that it generates
++ * false positives. It complains things are uninitialized when they
++ * are not. This is because it is not a thorough static analyzer. This
++ * is why “maybe” is in its name. The problem is it is just not
++ * thorough enough to understand all the code (and someone saw fit to
++ * put it in gcc and worse to enable it with -Wall).
++ *
++ * One solution would be to change the code so -Wmaybe-uninitialized
++ * doesn’t get confused, for example adding an unnecessary extra
++ * initialization to zero. (If variables were truly uninitialized, the
++ * correct path is to understand the code thoroughly and set them to
++ * the correct value at the correct time; in essence this is already
++ * done; -Wmaybe-uninitialized just can’t tell). This path is not
++ * taken because it makes the code bigger and is kind of the tail
++ * wagging the dog.
++ *
++ * The solution here is to just use a pragma to disable it for the
++ * whole file. Disabling it for each line makes the code fairly ugly
++ * requiring #pragma to push, pop and ignore. Another reason is the
++ * warnings issues vary by version of gcc and which optimization
++ * optimizations are selected. Another reason is that compilers other
++ * than gcc don’t have -Wmaybe-uninitialized.
++ *
++ * One may ask how to be sure these warnings are false positives and
++ * not real issues. 1) The code has been read carefully to check. 2)
++ * Testing is pretty thorough. 3) This code has been run through
++ * thorough high-quality static analyzers.
++ *
++ * In particularly, most of the warnings are about
++ * Item.Item->uDataType being uninitialized. QCBORDecode_GetNext()
++ * *always* sets this value and test case confirm
++ * this. -Wmaybe-uninitialized just can't tell.
++ *
++ * https://stackoverflow.com/questions/5080848/disable-gcc-may-be-used-uninitialized-on-a-particular-variable
++ */
++#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
++#endif
++
++
++
+ 
+ #define SIZEOF_C_ARRAY(array,type) (sizeof(array)/sizeof(type))
+ 
+@@ -3202,7 +3250,6 @@ MapSearch(QCBORDecodeContext *pMe,
+       if(uReturn != QCBOR_SUCCESS) {
+          goto Done;
+       }
+-
+    } while (uNextNestLevel >= uMapNestLevel);
+ 
+    uReturn = QCBOR_SUCCESS;
+@@ -3308,7 +3355,7 @@ static QCBORError
+ CheckTypeList(int uDataType, const uint8_t puTypeList[QCBOR_TAGSPEC_NUM_TYPES])
+ {
+    for(size_t i = 0; i < QCBOR_TAGSPEC_NUM_TYPES; i++) {
+-      if(uDataType == puTypeList[i]) {
++      if(uDataType == puTypeList[i]) { /* -Wmaybe-uninitialized falsly warns here */
+          return QCBOR_SUCCESS;
+       }
+    }
+@@ -3344,10 +3391,11 @@ CheckTypeList(int uDataType, const uint8_t puTypeList[QCBOR_TAGSPEC_NUM_TYPES])
+ static QCBORError
+ CheckTagRequirement(const TagSpecification TagSpec, const QCBORItem *pItem)
+ {
+-   const int nItemType = pItem->uDataType;
++   const int nItemType = pItem->uDataType; /* -Wmaybe-uninitialized falsly warns here */
+    const int nTagReq = TagSpec.uTagRequirement & ~QCBOR_TAG_REQUIREMENT_ALLOW_ADDITIONAL_TAGS;
+ 
+ #ifndef QCBOR_DISABLE_TAGS
++   /* -Wmaybe-uninitialized falsly warns here */
+    if(!(TagSpec.uTagRequirement & QCBOR_TAG_REQUIREMENT_ALLOW_ADDITIONAL_TAGS) &&
+       pItem->uTags[0] != CBOR_TAG_INVALID16) {
+       /* There are tags that QCBOR couldn't process on this item and
+@@ -5189,7 +5237,7 @@ void QCBORDecode_GetUInt64ConvertInternalInMapSZ(QCBORDecodeContext *pMe,
+ static QCBORError
+ UInt64ConvertAll(const QCBORItem *pItem, uint32_t uConvertTypes, uint64_t *puValue)
+ {
+-   switch(pItem->uDataType) {
++   switch(pItem->uDataType) { /* -Wmaybe-uninitialized falsly warns here */
+ 
+       case QCBOR_TYPE_POSBIGNUM:
+          if(uConvertTypes & QCBOR_CONVERT_TYPE_BIG_NUM) {
+-- 
+2.25.1
+

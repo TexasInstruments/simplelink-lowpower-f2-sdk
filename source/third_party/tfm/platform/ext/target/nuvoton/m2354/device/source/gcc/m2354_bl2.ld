@@ -47,9 +47,34 @@ SECTIONS
 
         *(.text*)
 
+        /* .copy.table
+         * To copy multiple ROM to RAM sections,
+         * define etext2/data2_start/data2_end and
+         * define __STARTUP_COPY_MULTIPLE in startup file */
+        . = ALIGN(4);
+        __copy_table_start__ = .;
+        LONG (__etext)
+        LONG (__data_start__)
+        LONG ((__data_end__ - __data_start__) / 4)
+        LONG (DEFINED(__etext2) ? __etext2 : 0)
+        LONG (DEFINED(__data2_start__) ? __data2_start__ : 0)
+        LONG (DEFINED(__data2_start__) ? ((__data2_end__ - __data2_start__) / 4) : 0)
+        __copy_table_end__ = .;
+
+        /* .zero.table
+         * To clear multiple BSS sections,
+         * uncomment .zero.table section and,
+         * define __STARTUP_CLEAR_BSS_MULTIPLE in startup file */
+        . = ALIGN(4);
+        __zero_table_start__ = .;
+        LONG (__bss_start__)
+        LONG ((__bss_end__ - __bss_start__) / 4)
+        LONG (DEFINED(__bss2_start__) ? __bss2_start__ : 0)
+        LONG (DEFINED(__bss2_start__) ? ((__bss2_end__ - __bss2_start__) / 4) : 0)
+        __zero_table_end__ = .;
+
         KEEP(*(.init))
         KEEP(*(.fini))
-
 
         /* .ctors */
         *crtbegin.o(.ctors)
@@ -81,36 +106,6 @@ SECTIONS
         *(.ARM.exidx* .gnu.linkonce.armexidx.*)
     } > FLASH
     __exidx_end = .;
-
-    /* To copy multiple ROM to RAM sections,
-     * define etext2/data2_start/data2_end and
-     * define __STARTUP_COPY_MULTIPLE in startup_cmsdk_mps2_an519_bl2.S */
-    .copy.table :
-    {
-        . = ALIGN(4);
-        __copy_table_start__ = .;
-        LONG (__etext)
-        LONG (__data_start__)
-        LONG ((__data_end__ - __data_start__) / 4)
-        LONG (DEFINED(__etext2) ? __etext2 : 0)
-        LONG (DEFINED(__data2_start__) ? __data2_start__ : 0)
-        LONG (DEFINED(__data2_start__) ? ((__data2_end__ - __data2_start__) / 4) : 0)
-        __copy_table_end__ = .;
-    } > FLASH
-
-    /* To clear multiple BSS sections,
-     * uncomment .zero.table section and,
-     * define __STARTUP_CLEAR_BSS_MULTIPLE in startup_cmsdk_mps2_an519_bl2.S */
-    .zero.table :
-    {
-        . = ALIGN(4);
-        __zero_table_start__ = .;
-        LONG (__bss_start__)
-        LONG ((__bss_end__ - __bss_start__) / 4)
-        LONG (DEFINED(__bss2_start__) ? __bss2_start__ : 0)
-        LONG (DEFINED(__bss2_start__) ? ((__bss2_end__ - __bss2_start__) / 4) : 0)
-        __zero_table_end__ = .;
-    } > FLASH
 
     __etext = ALIGN(4);
 

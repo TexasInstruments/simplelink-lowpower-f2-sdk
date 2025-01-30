@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2021-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -12,21 +12,34 @@
 #include "sysflash/sysflash.h"
 #include "mcuboot_config/mcuboot_config.h"
 
-#if defined(CONFIG_TFM_BOOT_STORE_MEASUREMENTS) && !defined(MCUBOOT_MEASURED_BOOT)
-#include <stdio.h>
+#ifdef TFM_MEASURED_BOOT_API
 #include "boot_hal.h"
 #include "boot_measurement.h"
 #include "bootutil_priv.h"
 #include "psa/crypto.h"
 
+#if defined(MCUBOOT_SIGN_EC384)
+#define MCUBOOT_HASH_ALG    PSA_ALG_SHA_384
+#define MCUBOOT_HASH_SIZE   (48)
+#else
 #define MCUBOOT_HASH_ALG    PSA_ALG_SHA_256
 #define MCUBOOT_HASH_SIZE   (32)
+#endif /* MCUBOOT_SIGN_EC384 */
 
 #ifdef MCUBOOT_HW_KEY
-#include  "bootutil/crypto/sha256.h"
+#include  "bootutil/crypto/sha.h"
+#if defined(MCUBOOT_SIGN_RSA)
 #define SIG_BUF_SIZE (MCUBOOT_SIGN_RSA_LEN / 8)
-#endif
-#endif /* CONFIG_TFM_BOOT_STORE_MEASUREMENTS && !MCUBOOT_MEASURED_BOOT */
+#define SIG_EXTRA_BYTES     (24) /* Few extra bytes for encoding and for public exponent. */
+#elif defined(MCUBOOT_SIGN_EC256)
+#define SIG_BUF_SIZE        (64) /* Curve byte (32) * 2 for EC-256 */
+#define SIG_EXTRA_BYTES     (32)
+#elif defined(MCUBOOT_SIGN_EC384)
+#define SIG_BUF_SIZE        (96) /* Curve byte (48) * 2 for EC-384 */
+#define SIG_EXTRA_BYTES     (48)
+#endif /* MCUBOOT_SIGN_RSA */
+#endif /* MCUBOOT_HW_KEY */
+#endif /* TFM_MEASURED_BOOT_API */
 
 /* Firmware Update specific macros */
 #define TLV_MAJOR_FWU   0x2
@@ -45,7 +58,7 @@ extern int boot_add_data_to_shared_area(uint8_t        major_type,
 #endif /* TFM_PARTITION_FIRMWARE_UPDATE */
 
 
-#if defined(CONFIG_TFM_BOOT_STORE_MEASUREMENTS) && !defined(MCUBOOT_MEASURED_BOOT)
+#ifdef TFM_MEASURED_BOOT_API
 /**
  * Collect boot measurement and available associated metadata from the
  * TLV area of an image.
@@ -73,21 +86,16 @@ static int collect_image_measurement_and_metadata(
     uint16_t type;
 #ifdef MCUBOOT_HW_KEY
     /* Few extra bytes for encoding and for public exponent. */
-    uint8_t key_buf[SIG_BUF_SIZE + 24];
-    bootutil_sha256_context sha256_ctx;
+    uint8_t key_buf[SIG_BUF_SIZE + SIG_EXTRA_BYTES];
+    bootutil_sha_context sha_ctx;
 #endif
     int rc;
 
     /* Copy the software version information from the image header. */
-    rc = snprintf(metadata->sw_version, sizeof(metadata->sw_version),
-                  "%u.%u.%u+%u",
-                  hdr->ih_ver.iv_major,
-                  hdr->ih_ver.iv_minor,
-                  hdr->ih_ver.iv_revision,
-                  hdr->ih_ver.iv_build_num);
-    if ((rc < 0) || (rc >= sizeof(metadata->sw_version))) {
-        return -1;
-    }
+    metadata->sw_version.major = hdr->ih_ver.iv_major;
+    metadata->sw_version.minor = hdr->ih_ver.iv_minor;
+    metadata->sw_version.revision = hdr->ih_ver.iv_revision;
+    metadata->sw_version.build_num = hdr->ih_ver.iv_build_num;
 
     /* Traverse through all of the TLVs for the required items. */
     rc = bootutil_tlv_iter_begin(&it, hdr, fap, IMAGE_TLV_ANY, false);
@@ -103,7 +111,7 @@ static int collect_image_measurement_and_metadata(
             break;
         }
 
-        if (type == IMAGE_TLV_SHA256) {
+        if (type == EXPECTED_HASH_TLV) {
             /* Retrieve the image hash (measurement value) from the TLV area. */
             if (len > measurement_buf_size) {
                 return -1;
@@ -128,9 +136,9 @@ static int collect_image_measurement_and_metadata(
             }
 
             /* Calculate the hash of the public key (signer ID). */
-            bootutil_sha256_init(&sha256_ctx);
-            bootutil_sha256_update(&sha256_ctx, key_buf, len);
-            bootutil_sha256_finish(&sha256_ctx, metadata->signer_id);
+            bootutil_sha_init(&sha_ctx);
+            bootutil_sha_update(&sha_ctx, key_buf, len);
+            bootutil_sha_finish(&sha_ctx, metadata->signer_id);
 #else
         } else if (type == IMAGE_TLV_KEYHASH) {
             /* Retrieve the signer ID (hash of PUBKEY) from the TLV area. */
@@ -153,19 +161,24 @@ static int collect_image_measurement_and_metadata(
 
     return 0;
 }
-#endif /* CONFIG_TFM_BOOT_STORE_MEASUREMENTS && !MCUBOOT_MEASURED_BOOT */
+#endif /* TFM_MEASURED_BOOT_API */
 
 /**
  * Add application specific data to the shared memory area between the
  * bootloader and runtime SW.
  *
- * @param[in]  hdr        Pointer to the image header stored in RAM.
- * @param[in]  fap        Pointer to the flash area where image is stored.
+ * @param[in]  hdr           Pointer to the image header stored in RAM.
+ * @param[in]  fap           Pointer to the flash area where image is stored.
+ * @param[in]  active_slot   Which slot is active (to boot).
+ * @param[in]  max_app_size  Maximum allowed size of application for update
+ *                           slot.
  *
  * @return                0 on success; nonzero on failure.
  */
 int boot_save_shared_data(const struct image_header *hdr,
-                          const struct flash_area *fap)
+                          const struct flash_area *fap,
+                          const uint8_t active_slot,
+                          const int max_app_size)
 {
     const struct flash_area *temp_fap;
     uint8_t mcuboot_image_id = 0;
@@ -175,17 +188,20 @@ int boot_save_shared_data(const struct image_header *hdr,
     struct image_version image_ver;
     uint16_t fwu_minor;
 #endif
-#if defined(CONFIG_TFM_BOOT_STORE_MEASUREMENTS) && !defined(MCUBOOT_MEASURED_BOOT)
+#ifdef TFM_MEASURED_BOOT_API
     enum boot_measurement_slot_t slot_id;
     uint8_t image_hash[MCUBOOT_HASH_SIZE];
     struct boot_measurement_metadata metadata = {
         .measurement_type = MCUBOOT_HASH_ALG,
-        .sw_type = "",
-        .sw_version = "",
         .signer_id = { 0 },
         .signer_id_size = 0,
+        .sw_type = "",
+        .sw_version = { 0 },
     };
-#endif /* CONFIG_TFM_BOOT_STORE_MEASUREMENTS && !MCUBOOT_MEASURED_BOOT */
+#endif /* TFM_MEASURED_BOOT_API */
+
+    (void)active_slot;
+    (void)max_app_size;
 
     if (hdr == NULL || fap == NULL) {
         return -1;
@@ -225,7 +241,7 @@ int boot_save_shared_data(const struct image_header *hdr,
     }
 #endif /* TFM_PARTITION_FIRMWARE_UPDATE */
 
-#if defined(CONFIG_TFM_BOOT_STORE_MEASUREMENTS) && !defined(MCUBOOT_MEASURED_BOOT)
+#ifdef TFM_MEASURED_BOOT_API
     /* Determine the index of the measurement slot. */
     slot_id = BOOT_MEASUREMENT_SLOT_RT_0 + mcuboot_image_id;
 
@@ -270,7 +286,7 @@ int boot_save_shared_data(const struct image_header *hdr,
     if (rc) {
         return rc;
     }
-#endif /* CONFIG_TFM_BOOT_STORE_MEASUREMENTS && !MCUBOOT_MEASURED_BOOT */
+#endif /* TFM_MEASURED_BOOT_API */
 
     return 0;
 }

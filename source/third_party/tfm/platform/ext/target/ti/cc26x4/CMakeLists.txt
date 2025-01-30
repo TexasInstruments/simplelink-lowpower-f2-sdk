@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 # Copyright (c) 2020-2023, Arm Limited. All rights reserved.
-# Copyright (c) 2023, Texas Instruments Incorporated. All rights reserved.
+# Copyright (c) 2023-2024, Texas Instruments Incorporated. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -30,31 +30,6 @@ target_add_scatter_file(tfm_s
     $<$<C_COMPILER_ID:IAR>:${PLATFORM_DIR}/ext/common/iar/tfm_common_s.icf>
 )
 
-if(NS)
-    target_sources(tfm_ns
-        PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/cmsis_core/startup_cc26x4.c
-    )
-    target_add_scatter_file(tfm_ns
-        $<$<C_COMPILER_ID:ARMClang>:${PLATFORM_DIR}/ext/common/armclang/tfm_common_ns.sct>
-        $<$<C_COMPILER_ID:GNU>:${PLATFORM_DIR}/ext/common/gcc/tfm_common_ns.ld>
-        $<$<C_COMPILER_ID:IAR>:${PLATFORM_DIR}/ext/common/iar/tfm_common_ns.icf>
-    )
-    target_link_libraries(CMSIS_5_tfm_ns
-        INTERFACE
-            $<$<OR:$<BOOL:${CONFIG_TFM_ENABLE_FP}>,$<BOOL:${CONFIG_TFM_ENABLE_MVE_FP}>>:CMSIS_5_RTX_V8MMFN>
-            $<$<NOT:$<OR:$<BOOL:${CONFIG_TFM_ENABLE_FP}>,$<BOOL:${CONFIG_TFM_ENABLE_MVE_FP}>>>:CMSIS_5_RTX_V8MMN>
-    )
-    target_compile_options(tfm_ns
-        PUBLIC
-            ${COMPILER_CP_FLAG}
-    )
-    target_link_options(tfm_ns
-        PUBLIC
-            ${LINKER_CP_OPTION}
-    )
-endif()
-
 if(BL2)
     message(FATAL_ERROR "BL2 build is not suppported.")
 endif()
@@ -70,7 +45,9 @@ target_include_directories(platform_s
         partition
         retarget
         ${CMAKE_SOURCE_DIR}
-        ${SOURCE_REPO}
+        ${CMAKE_SOURCE_DIR}/../..
+        ${DRIVERLIB_SOURCE_DIR}
+        ${TIDRIVERS_INSTALL_DIR}/source/
         ${GENERATED_FLASH_LAYOUT_DIR}
 )
 
@@ -78,6 +55,7 @@ target_sources(platform_s
     PRIVATE
         $<$<AND:$<BOOL:${TFM_PARTITION_INITIAL_ATTESTATION}>,$<NOT:$<BOOL:${PLATFORM_DEFAULT_ATTEST_HAL}>>>:
             ${CMAKE_CURRENT_SOURCE_DIR}/attest_hal.c>
+        $<$<BOOL:${TI_CRYPTO_ITS_INTEGRATION}>:${CMAKE_SOURCE_DIR}/platform/ext/common/tfm_hal_its.c>
         platform_svc.c
         cmsis_core/system_core_init.c
         cmsis_drivers/Driver_Flash.c
@@ -89,15 +67,15 @@ target_sources(platform_s
         $<$<BOOL:${TFM_PARTITION_PLATFORM}>:${CMAKE_CURRENT_SOURCE_DIR}/services/src/tfm_platform_system.c>
 
         # Driver Porting Layer needed for Driver_Flash.c
-        ${KERNEL_REPO}/tfm/dpl/HwiP_tfm.c
+        ${TIDRIVERS_INSTALL_DIR}/kernel/tfm/dpl/HwiP_tfm.c
 )
 
 # Link driverlib for flash functions
 target_link_libraries(platform_s
     PRIVATE
-        $<$<C_COMPILER_ID:ARMClang>:${SOURCE_REPO}/ti/devices/cc13x4_cc26x4/driverlib/bin/ticlang/driverlib.lib>
-        $<$<C_COMPILER_ID:GNU>:${SOURCE_REPO}/ti/devices/cc13x4_cc26x4/driverlib/bin/gcc/driverlib.lib>
-        $<$<C_COMPILER_ID:IAR>:${SOURCE_REPO}/ti/devices/cc13x4_cc26x4/driverlib/bin/iar/driverlib.lib>
+        $<$<C_COMPILER_ID:ARMClang>:${DRIVERLIB_SOURCE_DIR}/ti/devices/cc13x4_cc26x4/driverlib/bin/ticlang/driverlib.lib>
+        $<$<C_COMPILER_ID:GNU>:${DRIVERLIB_SOURCE_DIR}/ti/devices/cc13x4_cc26x4/driverlib/bin/gcc/driverlib.lib>
+        $<$<C_COMPILER_ID:IAR>:${DRIVERLIB_SOURCE_DIR}/ti/devices/cc13x4_cc26x4/driverlib/bin/iar/driverlib.lib>
 )
 
 target_compile_options(platform_s
@@ -110,31 +88,6 @@ target_compile_definitions(platform_s
         $<$<BOOL:${TFM_S_REG_TEST}>:USART_BUFFER_FOR_TEST>
 )
 
-#========================= Platform Non-Secure ================================#
-
-target_sources(platform_ns
-    PRIVATE
-        native_drivers/arm_uart_drv.c
-        cmsis_drivers/Driver_USART.c
-        retarget/platform_retarget_dev.c
-        cmsis_core/system_core_init.c
-)
-
-target_include_directories(platform_ns
-    PUBLIC
-        .
-        retarget
-        cmsis_core
-        native_drivers
-        ${SOURCE_REPO}
-)
-
-target_compile_definitions(platform_ns
-    PRIVATE
-        __DOMAIN_NS=1
-        $<$<BOOL:${TFM_NS_REG_TEST}>:USART_BUFFER_FOR_TEST>
-)
-
 #========================= tfm_spm ============================================#
 
 target_sources(tfm_spm
@@ -143,3 +96,51 @@ target_sources(tfm_spm
         tfm_hal_isolation.c
         tfm_hal_platform.c
 )
+
+#========================= Files for building NS platform =====================#
+
+install(FILES       ${PLATFORM_DIR}/ext/common/test_interrupt.c
+                    ${TARGET_PLATFORM_PATH}/native_drivers/arm_uart_drv.c
+                    ${TARGET_PLATFORM_PATH}/cmsis_drivers/Driver_USART.c
+                    ${TARGET_PLATFORM_PATH}/retarget/platform_retarget_dev.c
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+install(DIRECTORY   ${TARGET_PLATFORM_PATH}/cmsis_core
+                    ${TARGET_PLATFORM_PATH}/retarget
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+install(DIRECTORY   ${PLATFORM_DIR}/ext/driver
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/include)
+
+install(FILES       ${TARGET_PLATFORM_PATH}/partition/region_defs.h
+                    ${GENERATED_FLASH_LAYOUT_DIR}/flash_layout.h
+                    ${TARGET_PLATFORM_PATH}/native_drivers/arm_uart_drv.h
+                    ${TARGET_PLATFORM_PATH}/retarget/platform_retarget.h
+                    ${TARGET_PLATFORM_PATH}/target_cfg.h
+                    ${TARGET_PLATFORM_PATH}/device_cfg.h
+                    ${TARGET_PLATFORM_PATH}/tfm_peripherals_def.h
+                    ${TARGET_PLATFORM_PATH}/cmsis_driver_config.h
+                    ${TARGET_PLATFORM_PATH}/RTE_Device.h
+                    ${PLATFORM_DIR}/ext/common/test_interrupt.h
+                    ${PLATFORM_DIR}/ext/driver/Driver_USART.h
+                    ${PLATFORM_DIR}/ext/driver/Driver_Common.h
+                    ${PLATFORM_DIR}/include/tfm_plat_defs.h
+                    ${CMAKE_SOURCE_DIR}/lib/fih/inc/fih.h
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/include)
+
+install(FILES       ${PLATFORM_DIR}/ext/common/gcc/tfm_common_ns.ld
+                    ${PLATFORM_DIR}/ext/common/armclang/tfm_common_ns.sct
+                    ${PLATFORM_DIR}/ext/common/iar/tfm_common_ns.icf
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/linker_scripts)
+
+# Copy all files from active platform directory
+install(DIRECTORY   ${TARGET_PLATFORM_PATH}/ns/
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+# Copy the platform specific CPU architecture
+install(FILES       ${TARGET_PLATFORM_PATH}/cpuarch.cmake
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+# Copy the platform specific config
+install(FILES       ${TARGET_PLATFORM_PATH}/config.cmake
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})

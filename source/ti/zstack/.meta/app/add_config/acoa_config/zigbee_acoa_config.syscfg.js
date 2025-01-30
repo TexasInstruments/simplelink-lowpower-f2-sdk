@@ -71,6 +71,11 @@ for (let i in clusters) {
       }
     }
   }
+
+  if (tempServerAttributeOptions.length == 0) {
+    acoaServerAlwaysHidden.push(cluster._id + "acoaServer");
+    tempServerAttributeOptions.push({name: "dummy", displayName: "dummy"});
+  }
   acoaModule.config.push({
     name: cluster._id + "acoaServer",
     displayName: cluster._name + " Server Attributes",
@@ -83,7 +88,6 @@ for (let i in clusters) {
     onChange: bdbScript.bdbOnChange
   })
   acoaServerDropDowns.push(cluster._id + "acoaServer");
-  if (tempServerAttributeOptions.length == 0) { acoaServerAlwaysHidden.push(cluster._id + "acoaServer"); }
 
   let tempClientAttributeOptions = [];
   if (cluster.client && cluster.client.attribute) {
@@ -93,6 +97,11 @@ for (let i in clusters) {
         tempClientAttributeOptions.push({name: attribute._id, displayName: attribute._name});
       }
     }
+  }
+
+  if (tempClientAttributeOptions.length == 0) {
+    acoaClientAlwaysHidden.push(cluster._id + "acoaClient");
+    tempClientAttributeOptions.push({name: "dummy", displayName: "dummy"});
   }
   acoaModule.config.push({
     name: cluster._id + "acoaClient",
@@ -106,7 +115,6 @@ for (let i in clusters) {
     onChange: bdbScript.bdbOnChange
   })
   acoaClientDropDowns.push(cluster._id + "acoaClient");
-  if (tempClientAttributeOptions.length == 0) { acoaClientAlwaysHidden.push(cluster._id + "acoaClient"); }
 }
 
 /* Function to handle changes in the additional server clusters */

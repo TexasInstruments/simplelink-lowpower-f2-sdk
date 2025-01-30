@@ -99,6 +99,10 @@ for (let i in devices) {
       }
     }
   }
+  if (tempServerClusterOptions.length == 0) {
+    manAlwaysHidden.push(device._id + "manServer");
+    tempServerClusterOptions.push({name: "dummy", displayName: "dummy"});
+  }
   manModule.config.push({
     name: device._id + "manServer",
     displayName: "Server Clusters",
@@ -111,9 +115,6 @@ for (let i in devices) {
     minSelections: 0
   })
   manDropDowns.push(device._id + "manServer");
-  if (tempServerClusterOptions.length == 0) {
-    manAlwaysHidden.push(device._id + "manServer");
-  }
 
   let tempClientClusterDefault = [];
   let tempClientClusterOptions = [];
@@ -125,6 +126,10 @@ for (let i in devices) {
         tempClientClusterOptions.push({name: cluster._id, displayName: clusterDict[cluster._id]._name});
       }
     }
+  }
+  if (tempClientClusterOptions.length == 0) {
+    manAlwaysHidden.push(device._id + "manClient");
+    tempClientClusterOptions.push({name: "dummy", displayName: "dummy"});
   }
   manModule.config.push({
     name: device._id + "manClient",
@@ -138,9 +143,6 @@ for (let i in devices) {
     minSelections: 0
   })
   manDropDowns.push(device._id + "manClient");
-  if (tempClientClusterOptions.length == 0) {
-    manAlwaysHidden.push(device._id + "manClient");
-  }
 }
 
 /* Add Attribute Groups */

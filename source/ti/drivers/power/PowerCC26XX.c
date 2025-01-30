@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2023, Texas Instruments Incorporated
+ * Copyright (c) 2015-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,8 @@
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26XX.h>
 
+#include <ti/log/Log.h>
+
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(inc/hw_types.h)
 #include DeviceFamily_constructPath(inc/hw_prcm.h)
@@ -84,6 +86,9 @@ extern void PowerCC26XX_RCOSC_clockFunc(uintptr_t arg);
 
 /* Externs */
 extern const PowerCC26XX_Config PowerCC26XX_config;
+
+/* Macro for weak definition of the Power Log module */
+Log_MODULE_DEFINE_WEAK(LogModule_Power, {0});
 
 /* Module_State */
 PowerCC26XX_ModuleState PowerCC26XX_module = {
@@ -407,6 +412,10 @@ int_fast16_t Power_registerNotify(Power_NotifyObj *pNotifyObj,
     /* check for NULL pointers  */
     if ((pNotifyObj == NULL) || (notifyFxn == NULL))
     {
+        Log_printf(LogModule_Power,
+                   Log_WARNING,
+                   "Power_registerNotify: Notify registration failed due to NULL pointer");
+
         status = Power_EINVALIDPOINTER;
     }
 
@@ -416,6 +425,13 @@ int_fast16_t Power_registerNotify(Power_NotifyObj *pNotifyObj,
         pNotifyObj->eventTypes = eventTypes;
         pNotifyObj->notifyFxn  = notifyFxn;
         pNotifyObj->clientArg  = clientArg;
+
+        Log_printf(LogModule_Power,
+                   Log_INFO,
+                   "Power_registerNotify: Register fxn at address 0x%x with event types 0x%x and clientArg 0x%x",
+                   notifyFxn,
+                   eventTypes,
+                   clientArg);
 
         /* place notify object on event notification queue */
         List_put(&PowerCC26XX_module.notifyList, (List_Elem *)pNotifyObj);
@@ -525,6 +541,11 @@ int_fast16_t Power_releaseDependency(Power_Resource resourceId)
         }
     }
 
+    Log_printf(LogModule_Power,
+               Log_INFO,
+               "Power_releaseDependency: Updated resource counter = %d for resource ID = 0x%x",
+               PowerCC26XX_module.resourceCounts[resourceId], resourceId);
+
     /* re-enable interrupts */
     HwiP_restore(key);
 
@@ -614,6 +635,11 @@ int_fast16_t Power_setDependency(Power_Resource resourceId)
             while (PRCMPowerDomainsAllOn(id) != PRCM_DOMAIN_POWER_ON) {}
         }
     }
+
+    Log_printf(LogModule_Power,
+               Log_INFO,
+               "Power_setDependency: Updated resource counter = %d for resource ID = 0x%x",
+               PowerCC26XX_module.resourceCounts[resourceId], resourceId);
 
     /* re-enable interrupts */
     HwiP_restore(key);
@@ -799,6 +825,11 @@ int_fast16_t Power_sleep(uint_fast16_t sleepState)
     if (sleepState != PowerCC26XX_STANDBY)
     {
         status = Power_EINVALIDINPUT;
+
+        Log_printf(LogModule_Power,
+                   Log_WARNING,
+                   "Power_sleep: Entering standby failed with status = 0x%x",
+                   status);
     }
 
     else
@@ -813,6 +844,11 @@ int_fast16_t Power_sleep(uint_fast16_t sleepState)
         else
         {
             status = Power_EBUSY;
+
+            Log_printf(LogModule_Power,
+                       Log_WARNING,
+                       "Power_sleep: Entering standby failed with status = 0x%x",
+                       status);
         }
 
         if (status == Power_SOK)
@@ -832,6 +868,11 @@ int_fast16_t Power_sleep(uint_fast16_t sleepState)
             /* check for any error */
             if (status != Power_SOK)
             {
+                Log_printf(LogModule_Power,
+                           Log_WARNING,
+                           "Power_sleep: Entering standby failed due to pre-sleep notification status = 0x%x",
+                           status);
+
                 PowerCC26XX_module.state = Power_ACTIVE;
                 PowerCC26XX_schedulerRestore();
                 return (status);
@@ -843,6 +884,10 @@ int_fast16_t Power_sleep(uint_fast16_t sleepState)
             /* 2. If XOSC_HF is active, force it off */
             if (OSCClockSourceGet(OSC_SRC_CLK_HF) == OSC_XOSC_HF)
             {
+                Log_printf(LogModule_Power,
+                           Log_VERBOSE,
+                           "Power_sleep: Forcing XOSC_HF off");
+
                 xosc_hf_active = true;
                 configureXOSCHF(PowerCC26XX_DISABLE);
             }
@@ -989,6 +1034,10 @@ int_fast16_t Power_sleep(uint_fast16_t sleepState)
             /* 26. If XOSC_HF was forced off above, initiate switch back */
             if (xosc_hf_active == true)
             {
+                Log_printf(LogModule_Power,
+                           Log_VERBOSE,
+                           "Power_sleep: Forcing XOSC_HF back on");
+
                 configureXOSCHF(PowerCC26XX_ENABLE);
             }
 
@@ -1016,6 +1065,12 @@ int_fast16_t Power_sleep(uint_fast16_t sleepState)
             /* if there was a notification error, set return status */
             if ((notifyStatus != Power_SOK) || (lateNotifyStatus != Power_SOK))
             {
+                Log_printf(LogModule_Power,
+                           Log_WARNING,
+                           "Power_sleep: Notification error leaving standby. Status = 0x%x and late status = 0x%x",
+                           notifyStatus,
+                           lateNotifyStatus);
+
                 status = Power_EFAIL;
             }
         }
@@ -1035,6 +1090,13 @@ void Power_unregisterNotify(Power_NotifyObj *pNotifyObj)
 
     /* remove notify object from its event queue */
     key = HwiP_disable();
+
+    Log_printf(LogModule_Power,
+               Log_INFO,
+               "Power_unregisterNotify: Unregister fxn at address 0x%x with event types 0x%x and clientArg 0x%x",
+               pNotifyObj->notifyFxn,
+               pNotifyObj->eventTypes,
+               pNotifyObj->clientArg);
 
     /* remove notify object from its event queue */
     List_remove(&PowerCC26XX_module.notifyList, (List_Elem *)pNotifyObj);
@@ -1220,6 +1282,10 @@ static void lfClockReadyCallback(uintptr_t arg)
     /* is LF source either RCOSC_LF or XOSC_LF yet? */
     if ((sourceLF == OSC_RCOSC_LF) || (sourceLF == OSC_XOSC_LF))
     {
+        Log_printf(LogModule_Power,
+                   Log_INFO,
+                   "lfClockReadyCallback: LF clock is ready with source = 0x%x",
+                   sourceLF);
 
         /* Disable clock qualifiers and enable clock loss */
         disableLfClkQualifiersEnableClkLoss();
@@ -1230,6 +1296,8 @@ static void lfClockReadyCallback(uintptr_t arg)
     /* is LF source XOSC_HF yet? */
     else if (sourceLF == OSC_XOSC_HF)
     {
+        Log_printf(LogModule_Power, Log_INFO, "lfClockReadyCallback: LF clock is sourced from OSC_XOSC_HF");
+
         /* Disable clock qualifiers and enable clock loss */
         disableLfClkQualifiersEnableClkLoss();
 
@@ -1241,6 +1309,7 @@ static void lfClockReadyCallback(uintptr_t arg)
     /* not yet, LF still derived from RCOSC_HF, restart clock to check back later */
     else
     {
+        Log_printf(LogModule_Power, Log_INFO, "lfClockReadyCallback: LF clock is still derived from RCOSC_HF");
 
         /* read the LF clock source from CCFG */
         ccfgLfClkSrc = CCFGRead_SCLK_LF_OPTION();
@@ -1302,11 +1371,25 @@ static int_fast16_t notify(uint_fast16_t eventType)
                 clientArg = ((Power_NotifyObj *)elem)->clientArg;
 
                 /* call the client's notification function */
+                Log_printf(LogModule_Power,
+                           Log_VERBOSE,
+                           "notify: Invoking notification fxn at address 0x%x with event type 0x%x and clientArg 0x%x",
+                           notifyFxn,
+                           eventType,
+                           clientArg);
+
                 notifyStatus = (int_fast16_t)(*(Power_NotifyFxn)notifyFxn)(eventType, 0, clientArg);
 
                 /* if client declared error stop all further notifications */
                 if (notifyStatus != Power_NOTIFYDONE)
                 {
+                    Log_printf(LogModule_Power,
+                               Log_WARNING,
+                               "notify: Notification fxn reported error, fxn at address 0x%x with event type 0x%x and notifyStatus 0x%x",
+                               notifyFxn,
+                               eventType,
+                               notifyStatus);
+
                     return (Power_EFAIL);
                 }
             }
@@ -1346,6 +1429,7 @@ static void switchXOSCHFclockFunc(uintptr_t arg0)
     /* if pending switch has already been made, just send out notifications */
     if (PowerCC26XX_module.xoscPending == false)
     {
+        Log_printf(LogModule_Power, Log_INFO, "switchXOSCHFclockFunc: Switch done. Initiate RCOSC calibration");
 
         /* initiate RCOSC calibration */
         readyToCal = (*(PowerCC26XX_config.calibrateFxn))(PowerCC26XX_INITIATE_CALIBRATE);
@@ -1363,6 +1447,8 @@ static void switchXOSCHFclockFunc(uintptr_t arg0)
     /* else, if HF ready to switch and we are allowed to, do it now ... */
     else if (!(Power_getConstraintMask() & (1 << PowerCC26XX_DISALLOW_XOSC_HF_SWITCHING)) && OSCHfSourceReady())
     {
+        Log_printf(LogModule_Power, Log_INFO, "switchXOSCHFclockFunc: Switch to XOSC.");
+
         OSCHF_AttemptToSwitchToXosc();
 
         PowerCC26XX_module.xoscPending = false;
@@ -1393,6 +1479,11 @@ static void switchXOSCHFclockFunc(uintptr_t arg0)
         /* re-start Clock object with retry timeout */
         ClockP_setTimeout(ClockP_handle(&PowerCC26XX_module.xoscClockObj), timeout);
         ClockP_start(ClockP_handle(&PowerCC26XX_module.xoscClockObj));
+
+        Log_printf(LogModule_Power,
+                   Log_INFO,
+                   "switchXOSCHFclockFunc: Set timeout for switching. Timeout = 0x%x",
+                   timeout);
     }
 
     HwiP_restore(key);

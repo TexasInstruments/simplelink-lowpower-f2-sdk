@@ -29,7 +29,7 @@ void callback_from_openamp(const void *ns_msg, size_t len)
     /*
      * registered_msg will be used inside get_caller_private_data.
      * get_caller_private_data will be called in the same context:
-     * deliver_msg* => tfm_rpc_xxx => tfm_spm_xxx => spm_fill_message
+     * deliver_msg* => tfm_rpc_xxx => tfm_spm_xxx => spm_init_connection
      * => tfm_rpc_set_caller_data => get_caller_private_data
      */
     registered_msg = priv;

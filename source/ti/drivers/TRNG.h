@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2022, Texas Instruments Incorporated
+ * Copyright (c) 2018-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -71,6 +71,13 @@
  *  for anything other than a key-material, use TRNG_getRandomBytes() that
  *  writes random bytes from the entropy source to a buffer/array.
  *
+ *  For CC27XX, the CRNG is the default configuration for the NRBG engine.
+ *  Use TRNGLPF3HSM_switchNrbgMode() to switch between CRNG and TRNG configurations.
+ *
+ *  For CC27XX devices only, the TRNG driver accepts two types of cryptoKey encoding:
+ *      - CryptoKey_BLANK_PLAINTEXT
+ *      - CryptoKey_BLANK_PLAINTEXT_HSM
+ *
  *  To generate an ECC private key, you should use rejection sampling to ensure
  *  that the keying material is in the interval [1, n - 1]. The ECDH public key
  *  generation APIs will reject private keys that are outside of this interval.
@@ -79,6 +86,23 @@
  *  outside of this interval because n is a large number close to the maximum
  *  number that would fit in the k-byte keying material array. An example
  *  of how to do this is given below.
+ *
+ *  ## TRNG Driver Limitation for CC27XX devices #
+ *
+ *  For CC27XX devices, the underlying HSM engine for which the driver gets its source of
+ *  entropy and random numbers from, you have the ability to configure the NRBG
+ *  (Non-deterministic Random Bits Generator) engine which is part of the HSM in either
+ *  CRNG or TRNG modes. Please refer to the device specific header file for a
+ *  definition of both methods.
+ *
+ *  In addition, the size of random data requested must be a 32-bit multiple. The
+ *  appropriate error code, TRNG_STATUS_INVALID_INPUT_SIZE, will be returned to the user in
+ *  the case this rule is not adhered to and the input size is not a multiple of 4 bytes, (32-bits).
+ *
+ *  For example, in the case you are requesting a 521-bit (66 bytes) key for a
+ *  SEC_P_521 related asymmetric key operations, the user must provide a buffer and a input size
+ *  that rounds up to the next (32-bit) aligned byte (68 Bytes) and therefore,
+ *  adheres to the above limitation.
  *
  *  ## After the TRNG operation completes #
  *
@@ -112,6 +136,107 @@
  *
  *  @anchor ti_drivers_TRNG_Examples
  *  ## Examples
+ *
+ * ### TRNG force a reseed (for CC27XX devices only) #
+ *
+ * This example code for reseeding the DRBG engine is only applicable for CC27XX
+ * devices. Other devices and their corresponding SDKs do not have this API.
+ *
+ *  @code
+ *
+ *  #include <ti/drivers/TRNG.h>
+ *  #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyPlaintext.h>
+ *
+ *  #define KEY_LENGTH_BYTES 16
+ *
+ *  TRNG_Handle handle;
+ *  int_fast16_t result;
+ *
+ *  uint8_t randomBytesArray[RANDOM_BYTES_SIZE] = {0};
+ *
+ *  handle = TRNG_open(0, NULL);
+ *
+ *  if (!handle) {
+ *      // Handle error
+ *      while(1);
+ *  }
+ *
+ *  result = TRNG_getRandomBytes(handle, randomBytesArray, RANDOM_BYTES_SIZE);
+ *
+ *  if (result != TRNG_STATUS_SUCCESS) {
+ *      // Handle error
+ *      while(1);
+ *  }
+ *
+ *  result = TRNGLPF3HSM_reseedDRBG(handle);
+ *
+ *  if (result != TRNG_STATUS_SUCCESS) {
+ *      // Handle error
+ *      while(1);
+ *  }
+ *
+ *  result = TRNG_getRandomBytes(handle, randomBytesArray, RANDOM_BYTES_SIZE);
+ *
+ *  if (result != TRNG_STATUS_SUCCESS) {
+ *      // Handle error
+ *      while(1);
+ *  }
+ *
+ *  TRNG_close(handle);
+ *
+ *  @endcode
+ *
+ *
+ * ### TRNG switch NRBG engine (for CC27XX devices only) #
+ *
+ * !!!!!!!!!!!!! WARNING !!!!!!!!!!!!!
+ * This example code is only applicable for CC27XX devices.
+ * Other devices and their corresponding SDKs do not have this API.
+ *
+ *  @code
+ *
+ *  #include <ti/drivers/TRNG.h>
+ *  #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyPlaintext.h>
+ *
+ *  #define KEY_LENGTH_BYTES 16
+ *
+ *  TRNG_Handle handle;
+ *  int_fast16_t result;
+ *
+ *  uint8_t randomBytesArray[RANDOM_BYTES_SIZE] = {0};
+ *
+ *  // The driver is initialized with CRNG configuration by default.
+ *  handle = TRNG_open(0, NULL);
+ *
+ *  if (!handle) {
+ *      // Handle error
+ *      while(1);
+ *  }
+ *
+ *  result = TRNG_getRandomBytes(handle, randomBytesArray, RANDOM_BYTES_SIZE);
+ *
+ *  if (result != TRNG_STATUS_SUCCESS) {
+ *      // Handle error
+ *      while(1);
+ *  }
+ *
+ *  result = TRNGLPF3HSM_switchNrbgMode(handle, TRNG_MODE_TRNG);
+ *
+ *  if (result != TRNG_STATUS_SUCCESS) {
+ *      // Handle error
+ *      while(1);
+ *  }
+ *
+ *  result = TRNG_getRandomBytes(handle, randomBytesArray, RANDOM_BYTES_SIZE);
+ *
+ *  if (result != TRNG_STATUS_SUCCESS) {
+ *      // Handle error
+ *      while(1);
+ *  }
+ *
+ *  TRNG_close(handle);
+ *
+ *  @endcode
  *
  *  ### Generate symmetric encryption key #
  *
@@ -511,10 +636,14 @@ void TRNG_close(TRNG_Handle handle);
 /*!
  *  @brief  Generate random bytes and output to the given \c CryptoKey object.
  *
- *  Generates a random bitstream of the size defined in the \c entropy
+ *  For devices other than CC27XX, Generates a random bitstream of the size defined in the \c entropy
  *  CryptoKey in the range 0 <= \c entropy buffer < 2 ^ (entropy length * 8).
  *  The entropy will be generated and stored according to the storage requirements
  *  defined in the CryptoKey.
+ *
+ *  For CC27XX devices, Leverages the HSM to generate raw entropy.
+ *  The requested amount cannot be zero and has to be between 1-256 Bytes.
+ *  For larger amounts, the amount has to be a multiple of 256 bytes and up to 64KB.
  *
  *  @deprecated This function has been replaced by a pair of new functions.
  *              See #TRNG_generateKey() and #TRNG_getRandomBytes().
@@ -581,8 +710,10 @@ int_fast16_t TRNG_generateKey(TRNG_Handle handle, CryptoKey *entropy);
  *
  *  @param  randomBytes Pointer to an array that stores the random bytes
  *                      output by this function.
+ *                      For CC27XX devices, randomBytes must be 32-bit aligned.
  *
  *  @param  randomBytesSize The size of the random data required.
+ *                          For CC27XX devices, randomBytesSize must be 32-bit multiple.
  *
  *  @retval #TRNG_STATUS_SUCCESS               The operation succeeded.
  *  @retval #TRNG_STATUS_ERROR                 The operation failed.

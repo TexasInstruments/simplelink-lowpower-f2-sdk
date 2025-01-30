@@ -10,7 +10,7 @@
 #include "cmsis_compiler.h"
 #include "tfm_plat_otp.h"
 #include "tfm_attest_hal.h"
-#include "psa/crypto.h"
+#include "crypto.h"
 #include "region_defs.h"
 #include "log.h"
 #include "fwu_agent.h"
@@ -26,6 +26,7 @@ __PACKED_STRUCT bl1_assembly_and_test_provisioning_data_t {
     uint8_t bl1_2_image_hash[32];
     uint8_t bl2_image_hash[32];
     uint8_t bl1_2_image[BL1_2_CODE_SIZE];
+    uint8_t bl1_2_image_len[4];
     uint8_t bl1_rotpk_0[56];
 };
 
@@ -54,7 +55,6 @@ int tfm_plat_provisioning_is_required(void)
 enum tfm_plat_err_t provision_assembly_and_test(void)
 {
     enum tfm_plat_err_t err;
-
     err = tfm_plat_otp_write(PLAT_OTP_ID_BL1_ROTPK_0,
                              sizeof(bl1_assembly_and_test_prov_data->bl1_rotpk_0),
                              bl1_assembly_and_test_prov_data->bl1_rotpk_0);
@@ -75,6 +75,13 @@ enum tfm_plat_err_t provision_assembly_and_test(void)
                              sizeof(bl1_assembly_and_test_prov_data->bl1_2_image),
                              bl1_assembly_and_test_prov_data->bl1_2_image);
     if (err != TFM_PLAT_ERR_SUCCESS && err != TFM_PLAT_ERR_UNSUPPORTED) {
+        return err;
+    }
+
+   err = tfm_plat_otp_write(PLAT_OTP_ID_BL1_2_IMAGE_LEN,
+                            sizeof(bl1_assembly_and_test_prov_data->bl1_2_image_len),
+                            bl1_assembly_and_test_prov_data->bl1_2_image_len);
+   if (err != TFM_PLAT_ERR_SUCCESS && err != TFM_PLAT_ERR_UNSUPPORTED) {
         return err;
     }
 

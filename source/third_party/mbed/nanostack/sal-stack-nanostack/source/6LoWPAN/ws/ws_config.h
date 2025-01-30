@@ -17,6 +17,12 @@
 
 #ifndef WS_CONFIG_H_
 #define WS_CONFIG_H_
+#include "ws_management_api.h"
+
+// network size predefines
+#define CONFIG_NETWORK_SIZE_SMALL   0x00
+#define CONFIG_NETWORK_SIZE_MEDIUM  0x01
+#define CONFIG_NETWORK_SIZE_LARGE   0x02
 
 // auth_type predefines
 #define NO_AUTH 0x00
@@ -26,16 +32,29 @@
 
 typedef struct ti_wisun_config {
     uint8_t rapid_join;
+    uint8_t network_size_config;
     uint8_t mpl_low_latency;
     uint16_t rapid_disconnect_detect_br;
     uint16_t rapid_disconnect_detect_rn;
     uint8_t auth_type;
     uint8_t use_fixed_gtk_keys; // Only impacts DEFAULT_MBEDTLS_AUTH auth_type
     uint8_t force_star_topology;
+    uint8_t use_dhcp_solicit_for_renew; // Must be set to true to be Wi-SUN Spec compliant
     uint8_t fixed_gtk_keys[4][16]; // Used with PRESHARED_KEY_AUTH/CUSTOM_EUI_AUTH or when use_fixed_gtk_keys is true with DEFAULT_MBEDTLS_AUTH
 } ti_wisun_config_t;
 
 extern ti_wisun_config_t ti_wisun_config;
+
+typedef struct ti_br_config {
+    uint8_t use_external_dhcp_server;
+    uint8_t external_dhcp_server_addr[16];
+    uint8_t use_external_radius_server;
+    uint8_t external_radius_server_addr[16];
+    uint8_t external_radius_server_shared_secret[32];
+    uint8_t external_radius_server_shared_secret_length;
+} ti_br_config_t;
+
+extern ti_br_config_t ti_br_config;
 
 #ifdef FEATURE_WISUN_SUPPORT
 
@@ -99,9 +118,9 @@ extern ti_wisun_config_t ti_wisun_config;
 #else
 #define WS_RPL_DEFAULT_LIFETIME        (ti_wisun_config.rapid_disconnect_detect_rn) // Default 2 hours
 #endif
-#define WS_RPL_DEFAULT_LIFETIME_MEDIUM (3600*4) // 4 hours
-#define WS_RPL_DEFAULT_LIFETIME_LARGE  (3600*8) // 8 hours
-#define WS_RPL_DEFAULT_LIFETIME_XLARGE (3600*12) // 12 hours
+// #define WS_RPL_DEFAULT_LIFETIME_MEDIUM (3600*4) // 4 hours
+// #define WS_RPL_DEFAULT_LIFETIME_LARGE  (3600*8) // 8 hours
+// #define WS_RPL_DEFAULT_LIFETIME_XLARGE (3600*12) // 12 hours
 
 #define WS_DHCP_ADDRESS_LIFETIME_SMALL 2*3600 // small networks less than devices 100
 #define WS_DHCP_ADDRESS_LIFETIME_MEDIUM 12*3600 // Medium size networks from 100 - 1000 device networks
@@ -137,19 +156,19 @@ extern ti_wisun_config_t ti_wisun_config;
  * the maximum Trickle interval specified for DISC_IMAX (32 minutes).
  *
  */
-#define PAN_VERSION_SMALL_NETWORK_TIMEOUT 30*60
+#define PAN_VERSION_NETWORK_TIMEOUT (ti_wisun_config.rapid_disconnect_detect_br)
 
-#define PAN_VERSION_MEDIUM_NETWORK_TIMEOUT (ti_wisun_config.rapid_disconnect_detect_br)
+// #define PAN_VERSION_MEDIUM_NETWORK_TIMEOUT 60*60
 
-#define PAN_VERSION_LARGE_NETWORK_TIMEOUT 90*60
+// #define PAN_VERSION_LARGE_NETWORK_TIMEOUT 90*60
 
-#define PAN_VERSION_XLARGE_NETWORK_TIMEOUT 120*60
+// #define PAN_VERSION_XLARGE_NETWORK_TIMEOUT 120*60
 
 /*
  *  RPL DAO timeout maximum value. This will force DAO timeout to happen before this time
  */
 #define CONST_MIN(X,Y) (( (X) < (Y) ) ? (X) : (Y))
-#define WS_RPL_DAO_MAX_TIMOUT CONST_MIN((WS_RPL_DEFAULT_LIFETIME/2), (PAN_VERSION_MEDIUM_NETWORK_TIMEOUT/2))
+#define WS_RPL_DAO_MAX_TIMOUT CONST_MIN((WS_RPL_DEFAULT_LIFETIME/2), (PAN_VERSION_NETWORK_TIMEOUT/2))
 
 /*
  *  RPL parent selection period
@@ -235,6 +254,7 @@ extern uint8_t DEVICE_MIN_SENS;
 // Rapid settings are applied when Rapid Join is selected in sysconfig
 #define WS_DHCP_SOLICIT_TIMEOUT_RAPID   10
 #define WS_DHCP_SOLICIT_MAX_RT_RAPID    30
+
 #define WS_DHCP_SOLICIT_MAX_RC          0
 
 

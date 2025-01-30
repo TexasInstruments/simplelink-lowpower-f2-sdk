@@ -133,3 +133,5 @@ and thus backwards compatibility is maintained.
     A very likely scenario:
     * When an app with a higher security version marks itself as rejected, BIM will boot into a previously committed image that **MIGHT** have a lower security version
     Rollback is not possible once an image has been committed
+
+Optionally, `OAD_IMG_ID_VAL` can be added as a predefined symbol in the project properties, which will override the original `OAD_IMG_ID_VAL` value. Note that the length of `OAD_IMG_ID_VAL` must be 8 bytes, as stated by `OAD_IMG_ID_LEN`.

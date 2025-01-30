@@ -1,6 +1,6 @@
 # SimpleLink&trade; LPSTK-CC1352R LaunchPad&trade; Settings & Resources
 
-The [__SimpleLink&trade; LPSTK-CC1352R LaunchPad&trade;__][launchpad] contains a
+The [__SimpleLink&trade; LPSTK-CC1352R LaunchPad&trade;__][board] contains a
 [__CC1352R1F3RGZR__][device] device and several on-board sensors:
 
 * The [__HDC2080__][hdc2080] is an integrated humidity and temperature sensor that provides
@@ -59,7 +59,7 @@ Place the BoosterPack directly atop the LaunchPad.
 * No modifications are needed.
 
 [device]: https://www.ti.com/product/CC1352R
-[launchpad]: https://www.ti.com/tool/LPSTK-CC1352R
+[board]: https://www.ti.com/tool/LPSTK-CC1352R
 [hdc2080]: https://www.ti.com/product/HDC2080
 [drv5055]: https://www.ti.com/product/DRV5055
 [adxl362]: https://www.analog.com/en/products/adxl362.html

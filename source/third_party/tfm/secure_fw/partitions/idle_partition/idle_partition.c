@@ -18,6 +18,7 @@ void tfm_idle_thread(void)
          * It does not expect any signals.
          */
         if (psa_wait(PSA_WAIT_ANY, PSA_POLL) == 0) {
+            __DSB();
             __WFI();
         }
     }
@@ -32,6 +33,7 @@ void tfm_idle_thread(void)
          * It does not expect any signals.
          */
         if (psa_wait(PSA_WAIT_ANY, PSA_POLL) == 0) {
+            __DSB();
             __WFI();
         }
     }

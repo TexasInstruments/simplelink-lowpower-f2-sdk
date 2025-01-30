@@ -14,7 +14,7 @@
 #include "spm.h"
 #include "tfm_hal_interrupt.h"
 #include "tfm_peripherals_def.h"
-#include "ffm/interrupt.h"
+#include "interrupt.h"
 #include "load/interrupt_defs.h"
 
 static struct irq_t timer0_irq = {0};

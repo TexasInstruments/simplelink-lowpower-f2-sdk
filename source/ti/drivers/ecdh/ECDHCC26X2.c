@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2023, Texas Instruments Incorporated
+ * Copyright (c) 2017-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -86,7 +86,7 @@ static uint32_t resultPKAMemAddr;
 #if (ENABLE_KEY_STORAGE == 1)
     /*
      * Max key sizes 521b private keys,
-     * ( 521b) * 2 + 2B for octet offset for public keys
+     * ( 521b) * 2 + 1B for octet offset for public keys
      */
     #define ECDH_MAX_KEYSTORE_PUBLIC_KEY_SIZE  133
     #define ECDH_MAX_KEYSTORE_PRIVATE_KEY_SIZE 66
@@ -144,10 +144,7 @@ static void ECDHCC26X2_internalCallbackFxn(ECDH_Handle handle,
 /*
  *  ======== ECDHCC26X2_importSecureKey ========
  */
-static int_fast16_t ECDHCC26X2_importSecureKey(CryptoKey *key,
-                                               uint8_t *keyingMaterial,
-                                               ECCParams_CurveType curveType,
-                                               ECDH_OperationType opType)
+static int_fast16_t ECDHCC26X2_importSecureKey(CryptoKey *key, uint8_t *keyingMaterial)
 {
     KeyStore_PSA_KeyFileId keyID;
     int_fast16_t status;
@@ -304,7 +301,7 @@ static int_fast16_t ECDHCC26X2_getKeyResult(CryptoKey *key,
 #if (ENABLE_KEY_STORAGE == 1)
         if ((status == ECDHCC26X2_STATUS_FSM_RUN_FSM) && (key->encoding == CryptoKey_BLANK_KEYSTORE))
         {
-            status = ECDHCC26X2_importSecureKey(key, KeyStore_keyingMaterial, curve->curveType, opType);
+            status = ECDHCC26X2_importSecureKey(key, KeyStore_keyingMaterial);
         }
 #endif
     }

@@ -28,14 +28,14 @@
  *
  * 31      12 11 10  9   8  7         0
  * +---------+--+--+---+---+----------+
- * | RES[20] |TZ|NS|I/S|A/P| Priority |
+ * | RES[20] |TZ|MB|I/S|A/P| Priority |
  * +---------+--+--+---+---+----------+
  *
  * Field                Desc                        Value
  * Priority, bits[7:0]:  Partition Priority          Lowest, low, normal, high, hightest
  * A/P, bit[8]:          ARoT or PRoT domain         1: PRoT              0: ARoT
  * I/S, bit[9]:          IPC or SFN typed partition  1: IPC               0: SFN
- * NS,  bit[10]:         NS Agent or not             1: NS Agent          0: Not
+ * MB,  bit[10]:         NS Agent Mailbox or not     1: NS Agent mailbox  0: Not
  * TZ,  bit[11]:         NS Agent TZ or not          1: NS Agent TZ       0: Not
  * RES, bits[31:12]:     20 bits reserved            0
  */
@@ -46,11 +46,11 @@
 #define PARTITION_PRI_LOWEST                    (0xFF)
 #define PARTITION_PRI_MASK                      (0xFF)
 
-#define PARTITION_MODEL_PSA_ROT                 (1U << 8)
-#define PARTITION_MODEL_IPC                     (1U << 9)
+#define PARTITION_MODEL_PSA_ROT                 (1UL << 8)
+#define PARTITION_MODEL_IPC                     (1UL << 9)
 
-#define PARTITION_NS_AGENT                      (1U << 10)
-#define PARTITION_NS_AGENT_TZ                   (1U << 11)
+#define PARTITION_NS_AGENT_MB                   (1UL << 10)
+#define PARTITION_NS_AGENT_TZ                   (1UL << 11)
 
 #define PARTITION_PRIORITY(flag)                ((flag) & PARTITION_PRI_MASK)
 #define TO_THREAD_PRIORITY(x)                   (x)
@@ -66,14 +66,19 @@
 #define IS_IPC_MODEL(pldi)                      (!!((pldi)->flags \
                                                      & PARTITION_MODEL_IPC))
 #define IS_NS_AGENT(pldi)                       (!!((pldi)->flags \
-                                                     & PARTITION_NS_AGENT))
+                                                     & (PARTITION_NS_AGENT_MB | PARTITION_NS_AGENT_TZ)))
 #ifdef CONFIG_TFM_USE_TRUSTZONE
-#define IS_NS_AGENT_TZ(pldi)                    (IS_NS_AGENT(pldi) \
-                                                     && !!((pldi)->flags \
-                                                       & PARTITION_NS_AGENT_TZ))
+#define IS_NS_AGENT_TZ(pldi)                    (!!((pldi)->flags & PARTITION_NS_AGENT_TZ))
 #else
 #define IS_NS_AGENT_TZ(pldi)                    false
 #endif
+#ifdef TFM_PARTITION_NS_AGENT_MAILBOX
+#define IS_NS_AGENT_MAILBOX(pldi)               (!!((pldi)->flags & PARTITION_NS_AGENT_MB))
+#else
+#define IS_NS_AGENT_MAILBOX(pldi)               false
+#endif
+
+#define PARTITION_TYPE_TO_INDEX(type)           (!!((type) & PARTITION_NS_AGENT_TZ))
 
 /* Partition flag end */
 

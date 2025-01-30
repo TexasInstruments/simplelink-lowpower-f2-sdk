@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -570,7 +570,7 @@ extern Clock_Handle Clock_construct(Clock_Struct *obj, Clock_FuncPtr clockFxn, u
  *
  * Clock_delete deletes a Clock object. Note that Clock_delete takes a pointer to
  * a Clock_Handle which enables Clock_delete to set the Clock_handle to NULL.
- * 
+ *
  * @param clock pointer to Clock handle
  */
 extern void Clock_delete(Clock_Handle *clock);
@@ -598,7 +598,7 @@ extern void Clock_destruct(Clock_Struct *obj);
 extern void Clock_Params_init(Clock_Params *prms);
 
 /*!
- * @brief return handle of the first Clock on Clock list 
+ * @brief return handle of the first Clock on Clock list
  *
  * Return the handle of the first Clock on the create/construct list. NULL if no
  * Clocks have been created or constructed.
@@ -608,7 +608,7 @@ extern void Clock_Params_init(Clock_Params *prms);
 extern Clock_Handle Clock_Object_first(void);
 
 /*!
- * @brief return handle of the next Clock on Clock list 
+ * @brief return handle of the next Clock on Clock list
  *
  * Return the handle of the next Clock on the create/construct list. NULL if no
  * more Clocks are on the list.
@@ -624,7 +624,7 @@ extern Clock_Handle Clock_Object_next(Clock_Handle clock);
  *
  * The value returned will wrap back to zero after it reaches the max value that
  * can be stored in 32 bits.
- * 
+ *
  * @retval time in clock ticks
  */
 extern uint32_t Clock_getTicks(void);
@@ -635,7 +635,7 @@ extern uint32_t Clock_getTicks(void);
  *
  * Used when it is necessary to change family specific options for the timer and
  * its Hwi Object.
- * 
+ *
  * @retval Timer Handle
  */
 extern void * Clock_getTimerHandle(void);
@@ -709,7 +709,7 @@ extern void Clock_tickStop(void);
  * @pre
  * This function is non-reentrant and appropriate locks must be used to protect
  * against  re-entrancy.
- * 
+ *
  * @retval true if successful
  */
 extern bool Clock_tickReconfig(void);
@@ -789,7 +789,7 @@ extern void Clock_logTick(void);
  * Timer interrupt has been serviced.
  *
  * Used by some TimestampProviders
- * 
+ *
  *@retval time in clock ticks
  */
 extern uint32_t Clock_getCompletedTicks(void);
@@ -802,7 +802,7 @@ extern uint32_t Clock_getCompletedTicks(void);
  * The period is in units returned by the underlying Timer.
  *
  * Used by some TimestampProviders
- * 
+ *
  *@retval period in timer counts
  */
 extern uint32_t Clock_getTickPeriod(void);
@@ -814,7 +814,7 @@ extern uint32_t Clock_getTickPeriod(void);
  * and the next interrupt from the timer peripheral
  *
  * Used internally by Power modules.
- * 
+ *
  *@retval count in ticks
  */
 extern uint32_t Clock_getTicksUntilInterrupt(void);
@@ -830,7 +830,7 @@ extern uint32_t Clock_getTicksUntilInterrupt(void);
  * @pre
  * Must be called with interrupts disabled.  Only applicable for
  * Clock.TickSource_TIMER.
- * 
+ *
  *@retval count in ticks
  */
 extern uint32_t Clock_getTicksUntilTimeout(void);
@@ -958,7 +958,7 @@ extern void Clock_setFunc(Clock_Handle clock, Clock_FuncPtr fxn, uintptr_t arg);
  * @brief Get period of instance
  *
  * Returns the period of an instance.
- * 
+ *
  * @param clock Clock handle
  *
  * @retval returns periodic interval in Clock ticks
@@ -970,7 +970,7 @@ extern uint32_t Clock_getPeriod(Clock_Handle clock);
  *
  * Returns the remaining time if the instance is active; if the instance is not
  * active, returns zero.
- * 
+ *
  * @param clock Clock handle
  *
  * @retval returns timeout in clock ticks
@@ -981,7 +981,7 @@ extern uint32_t Clock_getTimeout(Clock_Handle clock);
  * @brief Determine if Clock object is currently active (ie running)
  *
  * Returns true if Clock object is currently active
- * 
+ *
  * @param clock Clock handle
  *
  * @retval returns active state
@@ -1003,7 +1003,7 @@ extern Clock_Module_State Clock_Module_state;
 #define Clock_module ((Clock_Module_State *) &(Clock_Module_state))
 
 static inline Clock_Handle Clock_handle(Clock_Struct *str)
-{  
+{
     return ((Clock_Handle)str);
 }
 
@@ -1012,7 +1012,7 @@ static inline Clock_Struct * Clock_struct(Clock_Handle h)
     return ((Clock_Struct *)h);
 }
 
-/* CC32XX DPL calls this internal function, map it for now */
+/* DPL calls this internal function, map it for now */
 #define ti_sysbios_knl_Clock_doTick(a) Clock_tick()
 /* @endcond */
 

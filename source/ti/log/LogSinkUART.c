@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2023-2024 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,8 +46,6 @@
 #include <ti/drivers/dpl/HwiP.h>
 #include <ti/drivers/UART2.h>
 #include <ti/drivers/utils/RingBuf.h>
-
-#define LogSinkUART_RESET_FRAME (0xBBBBBBBB)
 
 /* Each log packet is build with fields that are 4 bytes long */
 #define LogSinkUART_BYTES_PER_FIELD (4)
@@ -158,7 +156,6 @@ void LogSinkUART_init(uint_least8_t index)
 {
     uint32_t key;
     UART2_Params uartParams;
-    uint32_t LogSinkUARTResetSequence[2] = {LogSinkUART_RESET_FRAME, TimestampP_nativeFormat32.value};
 
     LogSinkUART_Config *config         = (LogSinkUART_Config *)&LogSinkUART_config[index];
     LogSinkUART_Object *object         = config->object;
@@ -185,9 +182,6 @@ void LogSinkUART_init(uint_least8_t index)
         while (1) {}
     }
 
-    /* Send the reset sequence */
-    UART2_write(object->uartHandle, (void *)LogSinkUARTResetSequence, sizeof(LogSinkUARTResetSequence), NULL);
-
     /* enable interrupts */
     HwiP_restore(key);
 }
@@ -195,14 +189,11 @@ void LogSinkUART_init(uint_least8_t index)
 /*
  *  ======== LogSinkUART_printf ========
  */
-void ti_log_LogSinkUART_printf(const Log_Module *handle, uint32_t header, uint32_t index, uint32_t numArgs, ...)
+void LogSinkUART_printf(LogSinkUART_Config *config, uint32_t headerPtr, uint32_t numArgs, va_list argptr)
 {
     uintptr_t key;
-    va_list argptr;
     uint32_t packet[LogSinkUART_PRINTF_MAX_FIELDS];
 
-    LogSinkUART_Handle inst    = (LogSinkUART_Handle)handle->sinkConfig;
-    LogSinkUART_Config *config = (LogSinkUART_Config *)&LogSinkUART_config[inst->index];
     LogSinkUART_Object *object = config->object;
 
     size_t packetSize = (LogSinkUART_PRINTF_MIN_FIELDS + numArgs) * LogSinkUART_BYTES_PER_FIELD;
@@ -234,14 +225,12 @@ void ti_log_LogSinkUART_printf(const Log_Module *handle, uint32_t header, uint32
     if (RingBuf_space(&object->ringObj) >= packetSize + LogSinkUART_OVERFLOW_PACKET_SIZE)
     {
         /* Construct packet to be sent over UART */
-        packet[0] = header;
+        packet[0] = headerPtr;
 
-        va_start(argptr, numArgs);
         for (uint32_t i = 0; i < numArgs; i++)
         {
             packet[LogSinkUART_PRINTF_MIN_FIELDS + i] = va_arg(argptr, uintptr_t);
         }
-        va_end(argptr);
     }
     else
     {
@@ -251,7 +240,7 @@ void ti_log_LogSinkUART_printf(const Log_Module *handle, uint32_t header, uint32
          * This can then be detected by the host tool. Information
          * about which printf it is is conserved.
          */
-        packet[0]  = header & LogSinkUART_OVERFLOW_MASK;
+        packet[0]  = headerPtr & LogSinkUART_OVERFLOW_MASK;
         packetSize = LogSinkUART_OVERFLOW_PACKET_SIZE;
     }
 
@@ -262,9 +251,176 @@ void ti_log_LogSinkUART_printf(const Log_Module *handle, uint32_t header, uint32
 }
 
 /*
- *  ======== LogSinkUART_buf ========
+ *  ======== LogSinkUART_printfSingleton ========
  */
-void ti_log_LogSinkUART_buf(const Log_Module *handle, uint32_t header, uint32_t index, uint8_t *data, size_t size)
+void LogSinkUART_printfSingleton(const Log_Module *handle, uint32_t header, uint32_t headerPtr, uint32_t numArgs, ...)
+{
+    va_list argptr;
+
+    /* Since we assume LogSinkUART is a singleton in this implementation, we can
+     * access the zeroth array element directly.
+     */
+    LogSinkUART_Config *config = (LogSinkUART_Config *)&LogSinkUART_config[0];
+
+    /* Get the VA args pointer in the initial wrapper since you cannot pass VA
+     * args to further functions using elipses (...) syntax.
+     *
+     * All va_start() does is get us the pointer to the first VA arg on the
+     * stack. That value will still be valid when passed on further.
+     */
+    va_start(argptr, numArgs);
+
+    LogSinkUART_printf(config, headerPtr, numArgs, argptr);
+
+    va_end(argptr);
+}
+
+/*
+ *  ======== LogSinkUART_printfSingleton0 ========
+ */
+void LogSinkUART_printfSingleton0(const Log_Module *handle, uint32_t header, uint32_t headerPtr, ...)
+{
+    va_list argptr;
+
+    va_start(argptr, headerPtr);
+    LogSinkUART_printf((LogSinkUART_Config *)&LogSinkUART_config[0], headerPtr, 0, argptr);
+    va_end(argptr);
+}
+
+/*
+ *  ======== LogSinkUART_printfSingleton1 ========
+ */
+void LogSinkUART_printfSingleton1(const Log_Module *handle, uint32_t header, uint32_t headerPtr, ...)
+{
+    va_list argptr;
+
+    va_start(argptr, headerPtr);
+    LogSinkUART_printf((LogSinkUART_Config *)&LogSinkUART_config[0], headerPtr, 1, argptr);
+    va_end(argptr);
+}
+
+/*
+ *  ======== LogSinkUART_printfSingleton2 ========
+ */
+void LogSinkUART_printfSingleton2(const Log_Module *handle, uint32_t header, uint32_t headerPtr, ...)
+{
+    va_list argptr;
+
+    va_start(argptr, headerPtr);
+    LogSinkUART_printf((LogSinkUART_Config *)&LogSinkUART_config[0], headerPtr, 2, argptr);
+    va_end(argptr);
+}
+
+/*
+ *  ======== LogSinkUART_printfSingleton3 ========
+ */
+void LogSinkUART_printfSingleton3(const Log_Module *handle, uint32_t header, uint32_t headerPtr, ...)
+{
+    va_list argptr;
+
+    va_start(argptr, headerPtr);
+    LogSinkUART_printf((LogSinkUART_Config *)&LogSinkUART_config[0], headerPtr, 3, argptr);
+    va_end(argptr);
+}
+
+/*
+ *  ======== LogSinkUART_printfDepInjection ========
+ */
+void LogSinkUART_printfDepInjection(const Log_Module *handle,
+                                    uint32_t header,
+                                    uint32_t headerPtr,
+                                    uint32_t numArgs,
+                                    ...)
+{
+    va_list argptr;
+
+    /* Since this is a dependency injection implementation, we need to fetch the
+     * config pointer from the Log_Module handle.
+     */
+    LogSinkUART_Handle inst    = (LogSinkUART_Handle)handle->sinkConfig;
+    LogSinkUART_Config *config = (LogSinkUART_Config *)&LogSinkUART_config[inst->index];
+
+    /* Get the VA args pointer in the initial wrapper since you cannot pass VA
+     * args to further functions using elipses (...) syntax.
+     *
+     * All va_start() does is get us the pointer to the first VA arg on the
+     * stack. That value will still be valid when passed on further.
+     */
+    va_start(argptr, numArgs);
+
+    LogSinkUART_printf(config, headerPtr, numArgs, argptr);
+
+    va_end(argptr);
+}
+
+/*
+ *  ======== LogSinkUART_printfDepInjection0 ========
+ */
+void LogSinkUART_printfDepInjection0(const Log_Module *handle, uint32_t header, uint32_t headerPtr, ...)
+{
+    va_list argptr;
+
+    LogSinkUART_Handle inst    = (LogSinkUART_Handle)handle->sinkConfig;
+    LogSinkUART_Config *config = (LogSinkUART_Config *)&LogSinkUART_config[inst->index];
+
+    va_start(argptr, headerPtr);
+    LogSinkUART_printf(config, headerPtr, 0, argptr);
+    va_end(argptr);
+}
+
+/*
+ *  ======== LogSinkUART_printfDepInjection1 ========
+ */
+void LogSinkUART_printfDepInjection1(const Log_Module *handle, uint32_t header, uint32_t headerPtr, ...)
+{
+    va_list argptr;
+
+    LogSinkUART_Handle inst    = (LogSinkUART_Handle)handle->sinkConfig;
+    LogSinkUART_Config *config = (LogSinkUART_Config *)&LogSinkUART_config[inst->index];
+
+    va_start(argptr, headerPtr);
+    LogSinkUART_printf(config, headerPtr, 1, argptr);
+    va_end(argptr);
+}
+
+/*
+ *  ======== LogSinkUART_printfDepInjection2 ========
+ */
+void LogSinkUART_printfDepInjection2(const Log_Module *handle, uint32_t header, uint32_t headerPtr, ...)
+{
+    va_list argptr;
+
+    LogSinkUART_Handle inst    = (LogSinkUART_Handle)handle->sinkConfig;
+    LogSinkUART_Config *config = (LogSinkUART_Config *)&LogSinkUART_config[inst->index];
+
+    va_start(argptr, headerPtr);
+    LogSinkUART_printf(config, headerPtr, 2, argptr);
+    va_end(argptr);
+}
+
+/*
+ *  ======== LogSinkUART_printfDepInjection3 ========
+ */
+void LogSinkUART_printfDepInjection3(const Log_Module *handle, uint32_t header, uint32_t headerPtr, ...)
+{
+    va_list argptr;
+
+    LogSinkUART_Handle inst    = (LogSinkUART_Handle)handle->sinkConfig;
+    LogSinkUART_Config *config = (LogSinkUART_Config *)&LogSinkUART_config[inst->index];
+
+    va_start(argptr, headerPtr);
+    LogSinkUART_printf(config, headerPtr, 3, argptr);
+    va_end(argptr);
+}
+
+/*
+ *  ======== LogSinkUART_bufDepInjection ========
+ */
+void LogSinkUART_bufDepInjection(const Log_Module *handle,
+                                 uint32_t header,
+                                 uint32_t headerPtr,
+                                 uint8_t *data,
+                                 size_t size)
 {
     uintptr_t key;
     uint32_t packet[LogSinkUART_BUF_MIN_FIELDS];
@@ -302,7 +458,7 @@ void ti_log_LogSinkUART_buf(const Log_Module *handle, uint32_t header, uint32_t 
     if (RingBuf_space(&object->ringObj) >= packetSize + size + LogSinkUART_OVERFLOW_PACKET_SIZE)
     {
         /* Construct and store packet to be sent over UART */
-        packet[0] = header;
+        packet[0] = headerPtr;
         packet[2] = size;
         LogSinkUART_storePacket(&object->ringObj, (unsigned char *)packet, packetSize);
         LogSinkUART_storePacket(&object->ringObj, data, size);
@@ -315,7 +471,7 @@ void ti_log_LogSinkUART_buf(const Log_Module *handle, uint32_t header, uint32_t 
          * This can then be detected by the host tool. Information
          * about which buffer it is is conserved.
          */
-        packet[0] = header & LogSinkUART_OVERFLOW_MASK;
+        packet[0] = headerPtr & LogSinkUART_OVERFLOW_MASK;
         LogSinkUART_storePacket(&object->ringObj, (unsigned char *)packet, LogSinkUART_OVERFLOW_PACKET_SIZE);
     }
 

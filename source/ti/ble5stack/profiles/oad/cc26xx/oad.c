@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2017-2024, Texas Instruments Incorporated
+ Copyright (c) 2017-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -106,10 +106,7 @@ typedef struct
  */
 
 // OAD Service UUID
-static const uint8_t oadServUUID[ATT_UUID_SIZE] =
-{
-    TI_BASE_UUID_128(OAD_SERVICE_UUID)
-};
+static const uint8_t oadServUUID[ATT_UUID_SIZE] = TI_BASE_UUID_128(OAD_SERVICE_UUID);
 
 static const uint8_t oadCharUUID[OAD_CHAR_CNT][ATT_UUID_SIZE] =
 {

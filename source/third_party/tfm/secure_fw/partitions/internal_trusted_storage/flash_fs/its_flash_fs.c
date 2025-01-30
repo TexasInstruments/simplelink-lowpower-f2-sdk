@@ -6,11 +6,12 @@
  *
  */
 
-#include "its_flash_fs.h"
 
 #include <stdbool.h>
 #include <string.h>
 
+#include "config_tfm.h"
+#include "its_flash_fs.h"
 #include "its_flash_fs_dblock.h"
 #include "its_utils.h"
 
@@ -196,7 +197,7 @@ psa_status_t its_flash_fs_wipe_all(struct its_flash_fs_ctx_t *fs_ctx)
 
 psa_status_t its_flash_fs_file_get_info(struct its_flash_fs_ctx_t *fs_ctx,
                                         const uint8_t *fid,
-                                        struct its_file_info_t *info)
+                                        struct its_flash_fs_file_info_t *info)
 {
     psa_status_t err;
     uint32_t idx;
@@ -211,13 +212,17 @@ psa_status_t its_flash_fs_file_get_info(struct its_flash_fs_ctx_t *fs_ctx,
     info->size_current = tmp_metadata.cur_size;
     info->flags = tmp_metadata.flags & ITS_FLASH_FS_USER_FLAGS_MASK;
 
+#ifdef ITS_ENCRYPTION
+    memcpy(info->nonce, tmp_metadata.nonce, TFM_ITS_ENC_NONCE_LENGTH);
+    memcpy(info->tag, tmp_metadata.tag, TFM_ITS_AUTH_TAG_LENGTH);
+#endif
+
     return PSA_SUCCESS;
 }
 
 psa_status_t its_flash_fs_file_write(struct its_flash_fs_ctx_t *fs_ctx,
                                      const uint8_t *fid,
-                                     uint32_t flags,
-                                     size_t max_size,
+                                     struct its_flash_fs_file_info_t *finfo,
                                      size_t data_size,
                                      size_t offset,
                                      const uint8_t *data)
@@ -231,26 +236,30 @@ psa_status_t its_flash_fs_file_write(struct its_flash_fs_ctx_t *fs_ctx,
     uint32_t new_idx = ITS_METADATA_INVALID_INDEX;
     bool use_spare;
 
+    if (finfo == NULL) {
+        return PSA_ERROR_INVALID_ARGUMENT;
+    }
+
     /* Do not permit the user to pass filesystem-internal flags */
-    if (flags & ITS_FLASH_FS_INTERNAL_FLAGS_MASK) {
+    if (finfo->flags & ITS_FLASH_FS_INTERNAL_FLAGS_MASK) {
         return PSA_ERROR_INVALID_ARGUMENT;
     }
 
 #if (ITS_FLASH_MAX_ALIGNMENT != 1)
     /* Set the max_size to be aligned with the flash program unit */
-    max_size = ITS_UTILS_ALIGN(max_size, fs_ctx->cfg->program_unit);
+    finfo->size_max = ITS_UTILS_ALIGN(finfo->size_max, fs_ctx->cfg->program_unit);
 #endif
 
     /* Check if the file already exists */
     err = its_flash_fs_mblock_get_file_idx_meta(fs_ctx, fid, &old_idx, &file_meta);
     if (err == PSA_SUCCESS) {
-        if (flags & ITS_FLASH_FS_FLAG_TRUNCATE) {
-            if (file_meta.max_size == max_size) {
+        if (finfo->flags & ITS_FLASH_FS_FLAG_TRUNCATE) {
+            if (file_meta.max_size == finfo->size_max) {
                 /* Truncate and reuse the existing file, which is already the
                  * correct size.
                  */
                 file_meta.cur_size = 0;
-                file_meta.flags = flags;
+                file_meta.flags = finfo->flags;
                 new_idx = old_idx;
             } else {
                 /* Mark the existing file to be deleted in this block update. It
@@ -272,7 +281,7 @@ psa_status_t its_flash_fs_file_write(struct its_flash_fs_ctx_t *fs_ctx,
         }
     } else if (err == PSA_ERROR_DOES_NOT_EXIST) {
         /* The create flag must be supplied to create a new file */
-        if (!(flags & ITS_FLASH_FS_FLAG_CREATE)) {
+        if (!(finfo->flags & ITS_FLASH_FS_FLAG_CREATE)) {
             return PSA_ERROR_DOES_NOT_EXIST;
         }
     } else {
@@ -282,7 +291,7 @@ psa_status_t its_flash_fs_file_write(struct its_flash_fs_ctx_t *fs_ctx,
     /* If the existing file was not reused, then a new one must be reserved */
     if (new_idx == ITS_METADATA_INVALID_INDEX) {
         /* Check that the file's maximum size is valid */
-        if (max_size > fs_ctx->cfg->max_file_size) {
+        if (finfo->size_max > fs_ctx->cfg->max_file_size) {
             return PSA_ERROR_INVALID_ARGUMENT;
         }
 
@@ -291,7 +300,7 @@ psa_status_t its_flash_fs_file_write(struct its_flash_fs_ctx_t *fs_ctx,
 
         /* Try to reserve a new file based on the input parameters */
         err = its_flash_fs_mblock_reserve_file(fs_ctx, fid, use_spare,
-                                               max_size, flags, &new_idx,
+                                               finfo->size_max, finfo->flags, &new_idx,
                                                &file_meta, &block_meta);
         if (err != PSA_SUCCESS) {
             return err;
@@ -338,6 +347,11 @@ psa_status_t its_flash_fs_file_write(struct its_flash_fs_ctx_t *fs_ctx,
     if (err != PSA_SUCCESS) {
         return PSA_ERROR_GENERIC_ERROR;
     }
+
+#ifdef ITS_ENCRYPTION
+    memcpy(file_meta.nonce, finfo->nonce, sizeof(finfo->nonce));
+    memcpy(file_meta.tag, finfo->tag, sizeof(finfo->tag));
+#endif
 
     /* Write file metadata in the scratch metadata block */
     err = its_flash_fs_mblock_update_scratch_file_meta(fs_ctx, new_idx,

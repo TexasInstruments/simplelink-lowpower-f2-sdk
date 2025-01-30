@@ -7,8 +7,9 @@
 #
 #-------------------------------------------------------------------------------
 
+# The MUSCA_S1 has a CryptoCell-312 as an accelerator.
 set(CRYPTO_HW_ACCELERATOR               ON          CACHE BOOL      "Whether to enable the crypto hardware accelerator on supported platforms")
-set(TFM_CRYPTO_TEST_ALG_CFB             OFF         CACHE BOOL      "Test CFB cryptography mode")
+
 set(PLATFORM_GPLED_ENABLED              OFF         CACHE BOOL      "Use the general purpose LEDs on the platform board")
 
 if(BL2)

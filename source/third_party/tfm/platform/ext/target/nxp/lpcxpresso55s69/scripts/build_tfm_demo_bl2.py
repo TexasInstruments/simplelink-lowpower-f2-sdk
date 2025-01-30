@@ -1,6 +1,6 @@
-# Copyright (c) 2021, NXP Semiconductors. All rights reserved.
 # Copyright (c) 2020, Linaro. All rights reserved.
 # Copyright (c) 2020, Arm Limited. All rights reserved.
+# Copyright 2020-2023 NXP. All rights reserved.
 # SPDX-License-Identifier: BSD-3-Clause
 
 import os
@@ -46,7 +46,11 @@ if os.path.isdir("build"):
         os.system('rm -rf build')
 
 # Generate the S and NS makefiles
-os.system('cmake -S . -B build -DBL2_S_IMAGE_START=' + BL2_S_IMAGE_START + ' -DBL2_NS_IMAGE_START=' + BL2_NS_IMAGE_START + ' -DTFM_PLATFORM=nxp/lpcxpresso55s69 -DTFM_TOOLCHAIN_FILE=toolchain_GNUARM.cmake -DTFM_PROFILE=profile_medium -DCMAKE_BUILD_TYPE=Relwithdebinfo -DTFM_ISOLATION_LEVEL=2 -G"Unix Makefiles"')
+os.system('cmake -S . -B build -DTFM_PLATFORM=nxp/lpcxpresso55s69 -DTFM_TOOLCHAIN_FILE=toolchain_GNUARM.cmake -G"Unix Makefiles" \
+           -DTFM_PROFILE=profile_medium \
+           -DBL2=ON \
+           -DBL2_S_IMAGE_START=' + BL2_S_IMAGE_START + ' -DBL2_NS_IMAGE_START=' + BL2_NS_IMAGE_START + \
+           '-DMCUBOOT_LOG_LEVEL=MCUBOOT_LOG_LEVEL_INFO -DTFM_SPM_LOG_LEVEL=TFM_SPM_LOG_LEVEL_INFO -DTFM_PARTITION_LOG_LEVEL=TFM_PARTITION_LOG_LEVEL_INFO')
 
 # Build the binaries
 os.chdir('build')

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -214,6 +214,9 @@ to write logging or event words to a trace sink such as the TPIU.
 let devITM;
 if(family === "CC26XX" || family === "CC26X2") {
     /* The CC26XX family uses extended metadata, so it has a special module */
+    devITM = system.getScript("/ti/drivers/itm/ITM" + family);
+}
+else if(family === "LPF3") {
     devITM = system.getScript("/ti/drivers/itm/ITM" + family);
 }
 else{

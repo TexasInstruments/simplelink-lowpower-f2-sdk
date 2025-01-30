@@ -9,8 +9,9 @@
 #include "target_cfg.h"
 #include "Driver_MPC.h"
 #include "utilities.h"
-#include "exception_info.h"
 #include "tfm_hal_platform.h"
+/* "exception_info.h" must be the last include because of the IAR pragma */
+#include "exception_info.h"
 
 /* Import MPC driver */
 extern ARM_DRIVER_MPC Driver_EFLASH0_MPC;

@@ -21,6 +21,12 @@
 #include <RTE_Device.h>
 #include <nrfx_uarte.h>
 #include <string.h>
+#include <stdint.h>
+#include <nrf-pinctrl.h>
+
+#ifndef ARRAY_SIZE
+#define ARRAY_SIZE(arr) (sizeof(arr)/sizeof(arr[0]))
+#endif
 
 #ifndef ARG_UNUSED
 #define ARG_UNUSED(arg)  (void)arg
@@ -29,6 +35,43 @@
 #define ARM_USART_DRV_VERSION  ARM_DRIVER_VERSION_MAJOR_MINOR(2, 2)
 
 #if RTE_USART0 || RTE_USART1 || RTE_USART2 || RTE_USART3
+
+#define PSEL_DISCONNECTED 0xFFFFFFFFUL
+
+#define UART_CONFIG_INITIALIZER()                                              \
+{                                                                              \
+    .txd_pin  = PSEL_DISCONNECTED,                                             \
+    .rxd_pin  = PSEL_DISCONNECTED,                                             \
+    .rts_pin  = PSEL_DISCONNECTED,                                             \
+    .cts_pin  = PSEL_DISCONNECTED,                                             \
+    .baudrate = NRF_UARTE_BAUDRATE_115200,                                     \
+    .interrupt_priority = NRFX_UARTE_DEFAULT_CONFIG_IRQ_PRIORITY,              \
+    .config  = {                                                               \
+        .hwfc   = NRF_UARTE_HWFC_DISABLED,                                     \
+        .parity = NRF_UARTE_PARITY_EXCLUDED,                                   \
+        .stop   = NRF_UARTE_STOP_ONE,                                          \
+    },                                                                         \
+}
+
+void uart_config_set_uart_pins(nrfx_uarte_config_t *uart_config,
+                               const uint32_t uart_pins[],
+                               size_t uart_pins_count)
+{
+    for (size_t i = 0; i < uart_pins_count; i++) {
+        uint32_t psel = NRF_GET_PIN(uart_pins[i]);
+
+        if (psel == NRF_PIN_DISCONNECTED) {
+            psel = PSEL_DISCONNECTED;
+        }
+
+        switch (NRF_GET_FUN(uart_pins[i])) {
+        case NRF_FUN_UART_TX:  uart_config->txd_pin = psel; break;
+        case NRF_FUN_UART_RX:  uart_config->rxd_pin = psel; break;
+        case NRF_FUN_UART_RTS: uart_config->rts_pin = psel; break;
+        case NRF_FUN_UART_CTS: uart_config->cts_pin = psel; break;
+        }
+    }
+}
 
 static const ARM_DRIVER_VERSION DriverVersion = {
     ARM_USART_API_VERSION,
@@ -41,7 +84,8 @@ static const ARM_USART_CAPABILITIES DriverCapabilities = {
 
 typedef struct {
     const nrfx_uarte_t   uarte;
-    const nrfx_uarte_config_t *initial_config;
+    const uint32_t      *uart_pins;
+    size_t               uart_pins_count;
     size_t               tx_count;
     size_t               rx_count;
     nrf_uarte_config_t   hal_cfg;
@@ -64,8 +108,14 @@ static int32_t ARM_USARTx_Initialize(ARM_USART_SignalEvent_t cb_event,
 {
     ARG_UNUSED(cb_event);
 
+    nrfx_uarte_config_t uart_config = UART_CONFIG_INITIALIZER();
+
+    uart_config_set_uart_pins(&uart_config,
+                              uart_resources->uart_pins,
+                              uart_resources->uart_pins_count);
+
     nrfx_err_t err_code = nrfx_uarte_init(&uart_resources->uarte,
-                                          uart_resources->initial_config,
+                                          &uart_config,
                                           NULL);
     if (err_code != NRFX_SUCCESS) {
         return ARM_DRIVER_ERROR_BUSY;
@@ -73,8 +123,8 @@ static int32_t ARM_USARTx_Initialize(ARM_USART_SignalEvent_t cb_event,
 
     uart_resources->tx_count = 0;
     uart_resources->rx_count = 0;
-    uart_resources->hal_cfg  = uart_resources->initial_config->hal_cfg;
-    uart_resources->baudrate = uart_resources->initial_config->baudrate;
+    uart_resources->hal_cfg  = uart_config.config;
+    uart_resources->baudrate = uart_config.baudrate;
 
     uart_resources->initialized = true;
     return ARM_DRIVER_OK;
@@ -131,7 +181,7 @@ static int32_t ARM_USARTx_Send(const void *data, uint32_t num,
             }
         }
     } else {
-        nrfx_err_t err_code = nrfx_uarte_tx(&uart_resources->uarte, data, num);
+        nrfx_err_t err_code = nrfx_uarte_tx(&uart_resources->uarte, data, num, 0);
         if (err_code == NRFX_ERROR_BUSY) {
             return ARM_DRIVER_ERROR_BUSY;
         } else if (err_code != NRFX_SUCCESS) {
@@ -299,22 +349,11 @@ static ARM_USART_MODEM_STATUS ARM_USART_GetModemStatus(void)
 }
 
 #define DRIVER_USART(idx)                                                 \
-    static nrfx_uarte_config_t UART##idx##_initial_config = {             \
-        .pseltxd  = RTE_USART##idx##_TXD_PIN,                             \
-        .pselrxd  = RTE_USART##idx##_RXD_PIN,                             \
-        .pselrts  = RTE_USART##idx##_RTS_PIN,                             \
-        .pselcts  = RTE_USART##idx##_CTS_PIN,                             \
-        .baudrate = NRF_UARTE_BAUDRATE_115200,                            \
-        .interrupt_priority = NRFX_UARTE_DEFAULT_CONFIG_IRQ_PRIORITY,     \
-        .hal_cfg  = {                                                     \
-            .hwfc   = NRF_UARTE_HWFC_DISABLED,                            \
-            .parity = NRF_UARTE_PARITY_EXCLUDED,                          \
-            .stop   = NRF_UARTE_STOP_ONE,                                 \
-        },                                                                \
-    };                                                                    \
+    static const uint32_t UART##idx##_pins[] = RTE_USART##idx##_PINS;     \
     static UARTx_Resources UART##idx##_Resources = {                      \
         .uarte = NRFX_UARTE_INSTANCE(idx),                                \
-        .initial_config = &UART##idx##_initial_config,                    \
+        .uart_pins = UART##idx##_pins,                                    \
+        .uart_pins_count = ARRAY_SIZE(UART##idx##_pins)                   \
     };                                                                    \
     static int32_t ARM_USART##idx##_Initialize(                           \
                                         ARM_USART_SignalEvent_t cb_event) \

@@ -18,15 +18,15 @@ add_subdirectory(partitions)
 
 target_include_directories(tfm_config
     INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/partitions/crypto
-        ${CMAKE_CURRENT_SOURCE_DIR}/partitions/firmware_update
-        ${CMAKE_CURRENT_SOURCE_DIR}/partitions/initial_attestation
-        ${CMAKE_CURRENT_SOURCE_DIR}/partitions/internal_trusted_storage
-        ${CMAKE_CURRENT_SOURCE_DIR}/partitions/platform
-        ${CMAKE_CURRENT_SOURCE_DIR}/partitions/protected_storage
-        ${CMAKE_CURRENT_SOURCE_DIR}/spm/include
-        ${CMAKE_BINARY_DIR}/generated/interface/include
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/partitions/crypto>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/partitions/firmware_update>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/partitions/initial_attestation>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/partitions/internal_trusted_storage>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/partitions/platform>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/partitions/protected_storage>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/spm/include>
+        $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/generated/interface/include>
 )
 
 target_compile_definitions(tfm_config
@@ -82,9 +82,9 @@ add_convert_to_bin_target(tfm_s)
 ############################ Secure API ########################################
 
 set_source_files_properties(
-    ${CMAKE_SOURCE_DIR}/secure_fw/spm/cmsis_psa/psa_interface_svc.c
-    ${CMAKE_SOURCE_DIR}/secure_fw/spm/cmsis_psa/psa_interface_cross.c
-    ${CMAKE_SOURCE_DIR}/secure_fw/spm/cmsis_psa/psa_interface_sfn.c
+    ${CMAKE_SOURCE_DIR}/secure_fw/spm/core/psa_interface_svc.c
+    ${CMAKE_SOURCE_DIR}/secure_fw/spm/core/psa_interface_thread_fn_call.c
+    ${CMAKE_SOURCE_DIR}/secure_fw/spm/core/psa_interface_sfn.c
     PROPERTIES
     COMPILE_FLAGS $<$<C_COMPILER_ID:GNU>:-Wno-unused-parameter>
     COMPILE_FLAGS $<$<C_COMPILER_ID:ARMClang>:-Wno-unused-parameter>
@@ -92,9 +92,9 @@ set_source_files_properties(
 
 target_sources(tfm_sprt
     PRIVATE
-        $<$<BOOL:${CONFIG_TFM_PSA_API_SUPERVISOR_CALL}>:${CMAKE_SOURCE_DIR}/secure_fw/spm/cmsis_psa/psa_interface_svc.c>
-        $<$<BOOL:${CONFIG_TFM_PSA_API_CROSS_CALL}>:${CMAKE_SOURCE_DIR}/secure_fw/spm/cmsis_psa/psa_interface_cross.c>
-        $<$<BOOL:${CONFIG_TFM_PSA_API_SFN_CALL}>:${CMAKE_SOURCE_DIR}/secure_fw/spm/cmsis_psa/psa_interface_sfn.c>
+        $<$<BOOL:$<VERSION_GREATER:${TFM_ISOLATION_LEVEL},1>>:${CMAKE_SOURCE_DIR}/secure_fw/spm/core/psa_interface_svc.c>
+        $<$<BOOL:${CONFIG_TFM_SPM_BACKEND_IPC}>:${CMAKE_SOURCE_DIR}/secure_fw/spm/core/psa_interface_thread_fn_call.c>
+        $<$<BOOL:${CONFIG_TFM_SPM_BACKEND_SFN}>:${CMAKE_SOURCE_DIR}/secure_fw/spm/core/psa_interface_sfn.c>
 )
 
 ############################# Secure veneers ###################################

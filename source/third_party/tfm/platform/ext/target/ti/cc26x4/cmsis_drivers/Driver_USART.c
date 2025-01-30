@@ -156,27 +156,29 @@ static UARTx_Resources USART0_DEV = {
 };
 
 #if (__DOMAIN_NS == 1)
-#define uartOutputBuf uartOutputBuf_ns
-#define uartOutputBufIndex uartOutputBufIndex_ns
-#define uartOutputBufCount uartOutputBufCount_ns
- #if defined(USART_BUFFER_FOR_TEST)
-char uartOutputBuf_ns [16384];
- #else
-char uartOutputBuf_ns [256];
- #endif
-uint16_t uartOutputBufIndex_ns;
-uint16_t uartOutputBufCount_ns;
+    /* Non-Secure domain */
+    #define uartOutputBuf      uartOutputBuf_ns
+    #define uartOutputBufIndex uartOutputBufIndex_ns
+    #define uartOutputBufCount uartOutputBufCount_ns
+    #if defined(USART_BUFFER_FOR_TEST)
+char uartOutputBuf_ns[16 * 1024];
+    #else
+char uartOutputBuf_ns[256];
+    #endif
+uint_fast16_t uartOutputBufIndex_ns;
+uint_fast16_t uartOutputBufCount_ns;
 #else
-#define uartOutputBuf uartOutputBuf_s
-#define uartOutputBufIndex uartOutputBufIndex_s
-#define uartOutputBufCount uartOutputBufCount_s
- #if defined(USART_BUFFER_FOR_TEST)
-char uartOutputBuf_s [16384];
- #else
-char uartOutputBuf_s [256];
- #endif
-uint16_t uartOutputBufIndex_s;
-uint16_t uartOutputBufCount_s;
+    /* Secure domain */
+    #define uartOutputBuf      uartOutputBuf_s
+    #define uartOutputBufIndex uartOutputBufIndex_s
+    #define uartOutputBufCount uartOutputBufCount_s
+    #if defined(USART_BUFFER_FOR_TEST)
+char uartOutputBuf_s[20 * 1024];
+    #else
+char uartOutputBuf_s[256];
+    #endif
+uint_fast16_t uartOutputBufIndex_s;
+uint_fast16_t uartOutputBufCount_s;
 #endif
 
 static int32_t ARM_USART0_Initialize(ARM_USART_SignalEvent_t cb_event)

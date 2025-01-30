@@ -79,7 +79,7 @@ static int32_t FLASH_DRIVER_NAME##_ReadData(uint32_t addr,                    \
     if (STRATAFLASHJ3DriverCapabilities.data_width > 2 ||                     \
         STRATAFLASHJ3DriverCapabilities.data_width < 0)                       \
     {                                                                         \
-        SPI_FLASH_LOG_MSG("%s: Incorrect data width selected: addr=0x%x\n\r", \
+        CFI_FLASH_LOG_MSG("%s: Incorrect data width selected: addr=0x%x\n\r", \
                           __func__,                                           \
                           addr);                                              \
         return ARM_DRIVER_ERROR;                                              \
@@ -112,7 +112,7 @@ static int32_t FLASH_DRIVER_NAME##_ProgramData(uint32_t addr,                 \
     if (STRATAFLASHJ3DriverCapabilities.data_width > 2 ||                     \
         STRATAFLASHJ3DriverCapabilities.data_width < 0)                       \
     {                                                                         \
-        SPI_FLASH_LOG_MSG("%s: Incorrect data width selected: addr=0x%x\n\r", \
+        CFI_FLASH_LOG_MSG("%s: Incorrect data width selected: addr=0x%x\n\r", \
                           __func__,                                           \
                           addr);                                              \
         return ARM_DRIVER_ERROR;                                              \

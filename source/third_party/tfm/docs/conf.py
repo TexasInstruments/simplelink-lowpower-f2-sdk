@@ -50,10 +50,16 @@ extensions = [
     'sphinxcontrib.plantuml', #Add support for PlantUML drawings
     'sphinxcontrib.rsvgconverter', #Add support for SVG to PDF
     'sphinx_tabs.tabs', #Enable tab extension in Sphinx
+    'sphinx.ext.intersphinx', #Enable Intersphinx
 ]
 
-# PlantUML
-plantuml = 'java -jar ' + os.environ['PLANTUML_JAR_PATH']
+intersphinx_mapping = {
+    "TF-M-Tests": ("https://trustedfirmware-m.readthedocs.io/projects/tf-m-tests/en/latest/", None),
+    "TF-M-Tools": ("https://trustedfirmware-m.readthedocs.io/projects/tf-m-tools/en/latest/", None),
+    "TF-M-Extras": ("https://trustedfirmware-m.readthedocs.io/projects/tf-m-extras/en/latest/", None),
+}
+
+intersphinx_disabled_reftypes = ["*"]
 
 # Make auto section labels generated be prefixed with file name.
 autosectionlabel_prefix_document=True

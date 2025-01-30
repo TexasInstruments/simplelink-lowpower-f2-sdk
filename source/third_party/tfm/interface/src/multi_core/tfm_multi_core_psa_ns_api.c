@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2019-2021, Arm Limited. All rights reserved.
+ * Copyright (c) 2023 Cypress Semiconductor Corporation (an Infineon company)
+ * or an affiliate of Cypress Semiconductor Corporation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -10,7 +12,6 @@
 
 #include "psa/client.h"
 #include "psa/error.h"
-#include "tfm_api.h"
 #include "tfm_ns_mailbox.h"
 
 /*
@@ -27,7 +28,7 @@
  * single Armv8-M scenario via CMSIS TrustZone context management API,
  * which may not work in dual core scenario.
  */
-#define NON_SECURE_CLIENT_ID            (1)
+#define NON_SECURE_CLIENT_ID            (-1)
 
 /*
  * TODO

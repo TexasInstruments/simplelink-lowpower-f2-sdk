@@ -16,7 +16,7 @@
 #include "spm.h"
 #include "tfm_hal_interrupt.h"
 #include "tfm_peripherals_def.h"
-#include "ffm/interrupt.h"
+#include "interrupt.h"
 #include "load/interrupt_defs.h"
 #include "mailbox/platform_multicore.h"
 

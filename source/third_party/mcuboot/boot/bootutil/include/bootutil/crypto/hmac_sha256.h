@@ -10,11 +10,21 @@
 #ifndef __BOOTUTIL_CRYPTO_HMAC_SHA256_H_
 #define __BOOTUTIL_CRYPTO_HMAC_SHA256_H_
 
-#include "mcuboot_config/mcuboot_config.h"
+#include "mcuboot_config.h"
 
-#if (defined(MCUBOOT_USE_TINYCRYPT)) != 1
-    #error "One crypto backend must be defined: TINYCRYPT"
+#if (defined(MCUBOOT_USE_TINYCRYPT) + \
+     defined(MCUBOOT_USE_MBED_TLS) + \
+     defined(MCUBOOT_USE_TI_CRYPTO) + \
+     defined(MCUBOOT_USE_CC310)) != 1
+    #error "One crypto backend must be defined: either CC310, MBED_TLS, TI_CRYPTO, or TINYCRYPT"
 #endif
+
+#if defined(MCUBOOT_USE_MBED_TLS)
+    #include <stdint.h>
+    #include <stddef.h>
+    #include <mbedtls/cmac.h>
+    #include <mbedtls/md.h>
+#endif /* MCUBOOT_USE_MBED_TLS */
 
 #if defined(MCUBOOT_USE_TINYCRYPT)
     #include <tinycrypt/sha256.h>
@@ -22,6 +32,10 @@
     #include <tinycrypt/constants.h>
     #include <tinycrypt/hmac.h>
 #endif /* MCUBOOT_USE_TINYCRYPT */
+
+#if defined(MCUBOOT_USE_TI_CRYPTO)
+#include "ti-crypto/sl_crypto.h"
+#endif
 
 #include <stdint.h>
 
@@ -75,6 +89,80 @@ static inline int bootutil_hmac_sha256_finish(bootutil_hmac_sha256_context *ctx,
     return 0;
 }
 #endif /* MCUBOOT_USE_TINYCRYPT */
+
+#if defined(MCUBOOT_USE_MBED_TLS)
+/**
+ * The generic message-digest context.
+ */
+typedef mbedtls_md_context_t bootutil_hmac_sha256_context;
+
+static inline void bootutil_hmac_sha256_init(bootutil_hmac_sha256_context *ctx)
+{
+    mbedtls_md_init(ctx);
+}
+
+static inline void bootutil_hmac_sha256_drop(bootutil_hmac_sha256_context *ctx)
+{
+    mbedtls_md_free(ctx);
+}
+
+static inline int bootutil_hmac_sha256_set_key(bootutil_hmac_sha256_context *ctx, const uint8_t *key, unsigned int key_size)
+{
+    int rc;
+
+    rc = mbedtls_md_setup(ctx, mbedtls_md_info_from_string("SHA256"), 1);
+    if (rc != 0) {
+        return rc;
+    }
+    rc = mbedtls_md_hmac_starts(ctx, key, key_size);
+    return rc;
+}
+
+static inline int bootutil_hmac_sha256_update(bootutil_hmac_sha256_context *ctx, const void *data, unsigned int data_length)
+{
+    return mbedtls_md_hmac_update(ctx, data, data_length);
+}
+
+static inline int bootutil_hmac_sha256_finish(bootutil_hmac_sha256_context *ctx, uint8_t *tag, unsigned int taglen)
+{
+    (void)taglen;
+    /*
+     * HMAC the key and check that our received MAC matches the generated tag
+     */
+    return mbedtls_md_hmac_finish(ctx, tag);
+}
+#endif /* MCUBOOT_USE_MBED_TLS */
+
+#if defined(MCUBOOT_USE_TI_CRYPTO)
+typedef void* bootutil_hmac_sha256_context;
+
+static inline void bootutil_hmac_sha256_init(bootutil_hmac_sha256_context *ctx)
+{
+    SlCrypto_sha256_init();
+}
+
+static inline void bootutil_hmac_sha256_drop(bootutil_hmac_sha256_context *ctx)
+{
+    SlCrypto_sha256_drop();
+}
+
+static inline int bootutil_hmac_sha256_set_key(bootutil_hmac_sha256_context *ctx, const uint8_t *key, unsigned int key_size)
+{
+    return SlCrypto_sha256_setupHmac(key, key_size);
+}
+
+static inline int bootutil_hmac_sha256_update(bootutil_hmac_sha256_context *ctx, const void *data, unsigned int data_length)
+{
+    return SlCrypto_sha256_update(data, data_length);
+
+}
+
+static inline int bootutil_hmac_sha256_finish(bootutil_hmac_sha256_context *ctx, uint8_t *tag, unsigned int taglen)
+{
+    return SlCrypto_sha256_finalizeHmac(tag);
+}
+
+#endif /*MCUBOOT_USE_TI_CRYPTO*/
 
 #ifdef __cplusplus
 }

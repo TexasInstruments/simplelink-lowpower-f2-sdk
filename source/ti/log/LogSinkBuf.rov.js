@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -100,7 +100,7 @@ function viewInitInstance()
     for (var i = 0; i < icount; i++) {
         view = new InstanceView();
         var iaddr =
-            Program.lookupSymbolValue("LogSinkBuf_CONFIG_ti_log_LogSinkBuf_0_Config");
+            Program.lookupSymbolValue("LogSinkBuf_CONFIG_ti_log_LogSinkBuf_0_config");
         if (iaddr < 0) continue;
         iaddr += (i * typespecInst.size);
         var inst = Program.fetchFromAddr(iaddr, "LogSinkBuf_Instance");
@@ -300,7 +300,7 @@ function viewInitRecord()
             }
         }
 
-        /* The continued data strcuture doesn't have a format string as this
+        /* The continued data structure doesn't have a format string as this
             * place is used for storage of user data
             */
         if(recType != LoggerBuf_BUFFER_CONTINUED) {
@@ -378,7 +378,7 @@ function viewInitRecord()
         table = new Array();
         /* read requested instance from target memory */
         var iaddr = Program.lookupSymbolValue(
-            "LogSinkBuf_CONFIG_ti_log_LogSinkBuf_0_Config") + (idx * tsInst.size);
+            "LogSinkBuf_CONFIG_ti_log_LogSinkBuf_0_config") + (idx * tsInst.size);
         var inst = Program.fetchFromAddr(iaddr, "LogSinkBuf_Instance");
 
         /* create page for logger instance */

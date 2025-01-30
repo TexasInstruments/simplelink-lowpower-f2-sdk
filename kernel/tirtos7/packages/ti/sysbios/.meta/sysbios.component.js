@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, Texas Instruments Incorporated
+ * Copyright (c) 2022-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -191,83 +191,6 @@ let cc13x4_cc26x4_topModules = [
     }
 ];
 
-let cc32xx_topModules = [
-    {
-        displayName: displayName,
-        description: description,
-        "modules": [
-            "/ti/sysbios/BIOS"
-        ],
-        "categories": [
-            {
-                "displayName" : "Core Kernel",
-                "expanded" : false,
-                "modules": [
-                    "/ti/sysbios/knl/Clock",
-                    "/ti/sysbios/knl/Idle",
-                    "/ti/sysbios/knl/Event",
-                    "/ti/sysbios/knl/Mailbox",
-                    "/ti/sysbios/knl/Semaphore",
-                    "/ti/sysbios/knl/Swi",
-                    "/ti/sysbios/knl/Task"
-                ]
-            },
-            {
-                "displayName" : "Runtime",
-                "expanded" : false,
-                "modules" : [
-                    "/ti/sysbios/runtime/Assert",
-                    "/ti/sysbios/runtime/Error",
-                    "/ti/sysbios/runtime/Memory",
-                    "/ti/sysbios/runtime/Startup",
-                    "/ti/sysbios/runtime/SysCallback",
-                    "/ti/sysbios/runtime/SysMin",
-                    "/ti/sysbios/runtime/System",
-                    "/ti/sysbios/runtime/Timestamp"
-                ]
-            },
-            {
-                "displayName" : "Heaps",
-                "expanded" : false,
-                "modules" : [
-                    "/ti/sysbios/heaps/HeapBuf",
-                    "/ti/sysbios/heaps/HeapCallback",
-                    "/ti/sysbios/heaps/HeapMem",
-                    "/ti/sysbios/heaps/HeapMin",
-                    "/ti/sysbios/heaps/HeapMultiBuf",
-                    "/ti/sysbios/heaps/HeapTrack"
-                ]
-            },
-            {
-                "displayName" : "Gates",
-                "expanded" : false,
-                "modules" : [
-                    "/ti/sysbios/gates/GateMutex",
-                    "/ti/sysbios/gates/GateMutexPri",
-                    "/ti/sysbios/gates/GateTask",
-                    "/ti/sysbios/gates/GateSwi",
-                    "/ti/sysbios/gates/GateHwi"
-                ]
-            },
-            {
-                "displayName" : "HAL",
-                "expanded" : false,
-                "modules": [
-                    "/ti/sysbios/family/arm/m3/Hwi",
-                    "/ti/sysbios/runtime/Timestamp"
-                ]
-            },
-            {
-                "displayName" : "Utils",
-                "expanded" : false,
-                "modules" : [
-                    "/ti/sysbios/utils/Load"
-                ]
-            }
-        ]
-    }
-];
-
 let cc23x0_topModules = [
     {
         displayName: displayName,
@@ -355,9 +278,6 @@ if (deviceId.match(/CC23.0/)) {
 } else if (deviceId.match(/CC13.4.*|CC26.4.*|CC2653.*/)) {
     /* CC13X4/CC26X4 */
     topModules = cc13x4_cc26x4_topModules;
-} else if (deviceId.match(/CC32.*/)) {
-    /* CC32XX */
-    topModules = cc32xx_topModules;
 } else {
     /* default to nothing */
     topModules = [];

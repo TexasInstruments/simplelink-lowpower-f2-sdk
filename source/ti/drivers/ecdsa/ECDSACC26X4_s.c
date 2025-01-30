@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,11 +42,9 @@
 
 #include <ti/drivers/tfm/SecureCallback.h>
 
-#include <psa_manifest/crypto_sp.h> /* Auto-generated header */
-
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
-#include <third_party/tfm/interface/include/tfm_api.h>
+#include <third_party/tfm/secure_fw/spm/core/spm.h>
 #include <third_party/tfm/secure_fw/spm/include/utilities.h>
 #include <third_party/tfm/platform/ext/target/ti/cc26x4/cmse.h> /* TI CMSE helper functions */
 
@@ -272,6 +270,7 @@ static inline psa_status_t ECDSA_s_copySignOperation(ECDSA_OperationSign *secure
                                                      const ECDSA_OperationSign *operation)
 {
     const ECCParams_CurveParams *curveParams_s;
+    int_fast16_t status;
 
     /* Validate operation struct address range */
     if (cmse_has_unpriv_nonsecure_read_access((void *)operation, sizeof(ECDSA_OperationSign)) == NULL)
@@ -314,14 +313,11 @@ static inline psa_status_t ECDSA_s_copySignOperation(ECDSA_OperationSign *secure
      * Make a secure copy of the private key struct and update the operation
      * struct to point to the secure key copy.
      */
-    (void)spm_memcpy(securePrivateKey, secureOperation->myPrivateKey, sizeof(CryptoKey));
-
-    if (CryptoKey_verifySecureInputKey(securePrivateKey) != CryptoKey_STATUS_SUCCESS)
+    status = CryptoKey_copySecureInputKey(securePrivateKey, &secureOperation->myPrivateKey);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
         return PSA_ERROR_PROGRAMMER_ERROR;
     }
-
-    secureOperation->myPrivateKey = securePrivateKey;
 
     return PSA_SUCCESS;
 }
@@ -334,6 +330,7 @@ static inline psa_status_t ECDSA_s_copyVerifyOperation(ECDSA_OperationVerify *se
                                                        const ECDSA_OperationVerify *operation)
 {
     const ECCParams_CurveParams *curveParams_s;
+    int_fast16_t status;
 
     /* Validate operation struct address range */
     if (cmse_has_unpriv_nonsecure_read_access((void *)operation, sizeof(ECDSA_OperationVerify)) == NULL)
@@ -376,14 +373,11 @@ static inline psa_status_t ECDSA_s_copyVerifyOperation(ECDSA_OperationVerify *se
      * Make a secure copy of the public key struct and update the operation
      * struct to point to the secure key copy.
      */
-    (void)spm_memcpy(securePublicKey, secureOperation->theirPublicKey, sizeof(CryptoKey));
-
-    if (CryptoKey_verifySecureInputKey(securePublicKey) != CryptoKey_STATUS_SUCCESS)
+    status = CryptoKey_copySecureInputKey(securePublicKey, &secureOperation->theirPublicKey);
+    if (status != CryptoKey_STATUS_SUCCESS)
     {
         return PSA_ERROR_PROGRAMMER_ERROR;
     }
-
-    secureOperation->theirPublicKey = securePublicKey;
 
     return PSA_SUCCESS;
 }
@@ -570,7 +564,7 @@ static inline psa_status_t ECDSA_s_construct(psa_msg_t *msg)
             configPtr_s->object = NULL;
         }
     }
-    else if (TFM_CLIENT_ID_IS_S(msg->client_id))
+    else if (!TFM_CLIENT_ID_IS_NS(msg->client_id))
     {
         /*
          * Return the pointer to the secure config struct provided by the
@@ -804,7 +798,7 @@ static inline psa_status_t ECDSA_s_cancelOperation(psa_msg_t *msg)
     int_fast16_t ret;
 
     /* Cancellation is only supported for non-secure clients */
-    if (TFM_CLIENT_ID_IS_S(msg->client_id))
+    if (!TFM_CLIENT_ID_IS_NS(msg->client_id))
     {
         return PSA_ERROR_PROGRAMMER_ERROR;
     }

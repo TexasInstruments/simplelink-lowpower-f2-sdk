@@ -10,10 +10,6 @@ set(SOURCES_COMMON
     dpl/SystemP_nortos.c
 )
 
-set(SOURCES_CC32XX ${SOURCES_COMMON} dpl/ClockPSysTick_nortos.c dpl/HwiPCC32XX_nortos.c dpl/PowerCC32XX_nortos.c
-                   startup/startup_cc32xx_${TI_TOOLCHAIN_NAME}.c dpl/TimestampPCC32XX_nortos.c
-)
-
 set(SOURCES_CC13XX_CC26XX
     ${SOURCES_COMMON}
     dpl/ClockPTimer_nortos.c

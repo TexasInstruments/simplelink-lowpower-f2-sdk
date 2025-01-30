@@ -61,6 +61,7 @@ target_compile_definitions(platform_s
 target_include_directories(platform_ns
     PUBLIC
         .
+        ${NRF_PLATFORM_PATH}/common/core
 )
 
 target_sources(platform_ns
@@ -79,6 +80,8 @@ target_compile_definitions(platform_ns
 
 if(BL2)
     target_include_directories(platform_bl2
+        PUBLIC
+            ${NRF_PLATFORM_PATH}/common/core
         PRIVATE
             .
     )
@@ -95,17 +98,9 @@ if(BL2)
     )
 endif()
 
-#========================= Platform region defs ===============================#
-
-target_compile_definitions(platform_region_defs
-    INTERFACE
-        $<$<BOOL:${NRF_NS_STORAGE}>:NRF_NS_STORAGE>
-)
-
 #========================= tfm_spm ============================================#
 
 target_sources(tfm_spm
     PRIVATE
-        target_cfg.c
         ${CMAKE_CURRENT_SOURCE_DIR}/${NRF_FOLDER_PATH}/tfm_interrupts.c
 )

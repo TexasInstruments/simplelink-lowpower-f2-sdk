@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2019-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -37,24 +37,13 @@ tfm_plat_get_rotpk_hash(uint8_t image_id,
                         uint8_t *rotpk_hash,
                         uint32_t *rotpk_hash_size)
 {
-    switch(image_id) {
-        case 0:
-            return get_rotpk_hash(PLAT_OTP_ID_BL2_ROTPK_0, rotpk_hash,
-                                  rotpk_hash_size);
-        case 1:
-            return get_rotpk_hash(PLAT_OTP_ID_BL2_ROTPK_1, rotpk_hash,
-                                  rotpk_hash_size);
-        case 2:
-            return get_rotpk_hash(PLAT_OTP_ID_BL2_ROTPK_2, rotpk_hash,
-                                  rotpk_hash_size);
-        case 3:
-            return get_rotpk_hash(PLAT_OTP_ID_BL2_ROTPK_3, rotpk_hash,
-                                  rotpk_hash_size);
-        default:
-            return TFM_PLAT_ERR_INVALID_INPUT;
+    /* Assumes BL2 ROTPK are contiguous */
+    if (image_id < MCUBOOT_IMAGE_NUMBER) {
+        return get_rotpk_hash(PLAT_OTP_ID_BL2_ROTPK_0 + image_id, rotpk_hash,
+                              rotpk_hash_size);
     }
 
-    return TFM_PLAT_ERR_SYSTEM_ERR;
+    return TFM_PLAT_ERR_INVALID_INPUT;
 }
 
 #endif /* BL2 */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2016-2024 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,17 +41,7 @@
 #include <FreeRTOS.h>
 #include <task.h>
 
-/* number of microseconds per tick */
-#define TICK_PERIOD_USECS (1000000L / configTICK_RATE_HZ)
-
-/*  The maximum number of ticks before the tick count rolls over. We use
- *  0xFFFFFFFF instead of 0x100000000 to avoid 64-bit math.
- */
-#define MAX_TICKS     0xFFFFFFFFL
-#define TICKS_PER_SEC (1000000L / TICK_PERIOD_USECS)
-
-/* integral number of seconds in a period of MAX_TICKS */
-#define MAX_SECONDS (MAX_TICKS / TICKS_PER_SEC)
+#include "time_defines.h"
 
 /*
  *  ======== nanosleep ========
@@ -61,12 +51,12 @@ int nanosleep(const struct timespec *rqtp, struct timespec *rmtp)
     TickType_t ticks;
 
     /* max interval to avoid tick count overflow */
-    if (rqtp->tv_sec >= MAX_SECONDS)
+    if (rqtp->tv_sec >= FREERTOS_MAX_SECONDS)
     {
         errno = EINVAL;
         return (-1);
     }
-    if ((rqtp->tv_nsec < 0) || (rqtp->tv_nsec >= 1000000000))
+    if ((rqtp->tv_nsec < 0) || (rqtp->tv_nsec >= NSEC_PER_SEC))
     {
         errno = EINVAL;
         return (-1);
@@ -76,10 +66,10 @@ int nanosleep(const struct timespec *rqtp, struct timespec *rmtp)
         return (0);
     }
 
-    ticks = rqtp->tv_sec * (1000000 / TICK_PERIOD_USECS);
+    ticks = rqtp->tv_sec * (1000000 / FREERTOS_TICK_PERIOD_USECS);
 
     /* compute ceiling value */
-    ticks += (rqtp->tv_nsec + TICK_PERIOD_USECS * 1000 - 1) / (TICK_PERIOD_USECS * 1000);
+    ticks += (rqtp->tv_nsec + FREERTOS_TICK_PERIOD_USECS * 1000 - 1) / (FREERTOS_TICK_PERIOD_USECS * 1000);
 
     /*  Add one tick to ensure the timeout is not less than the
      *  amount of time requested. The clock may be about to tick,
@@ -115,7 +105,7 @@ unsigned sleep(unsigned seconds)
     unsigned long secs;      /* at least 32-bit */
     unsigned max_secs, rval; /* native size, might be 16-bit */
 
-    max_secs = MAX_SECONDS;
+    max_secs = FREERTOS_MAX_SECONDS;
 
     if (seconds < max_secs)
     {
@@ -152,7 +142,7 @@ int usleep(useconds_t usec)
     }
 
     /* take the ceiling */
-    xDelay = (usec + TICK_PERIOD_USECS - 1) / TICK_PERIOD_USECS;
+    xDelay = (usec + FREERTOS_TICK_PERIOD_USECS - 1) / FREERTOS_TICK_PERIOD_USECS;
 
     /* must add one tick to ensure a full duration of xDelay ticks */
     vTaskDelay(xDelay + 1);

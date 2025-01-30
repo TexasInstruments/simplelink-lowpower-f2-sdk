@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2023, Texas Instruments Incorporated
+ * Copyright (c) 2015-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -656,8 +656,9 @@ typedef struct
      *  Maximum bit rates supported by hardware:
      *  Device Family | Peripheral Max (MHz) | Controller Max (MHz) |
      *  ------------- | -------------------- | -------------------- |
-     *  CC13XX/CC26XX | 4  MHz               | 12 MHz               |
-     *  CC32XX        | 20 MHz               | 20 MHz               |
+     *  CC13X2/CC26X2 | 4  MHz               | 4 MHz                |
+     *  CC13X4/CC26X4 | 8  MHz               | 12 MHz               |
+     *  CC23XX/CC27XX | 12  MHz              | 12 MHz               |
      *
      *  Please note that depending on the specific use case, the driver may not
      *  support the hardware's maximum bit rate.

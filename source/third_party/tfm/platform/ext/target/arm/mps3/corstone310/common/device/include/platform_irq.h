@@ -48,7 +48,7 @@ typedef enum _IRQn_Type {
     /* Reserved                        = 13,      Reserved */
     Combined_PPU_IRQn                  = 14,   /* Combined PPU */
     /* Reserved                        = 15,      Reserved */
-    ETHOS_U55_IRQn                     = 16,   /* NPU0 */
+    NPU0_IRQn                          = 16,   /* NPU0 */
     /* Reserved                        = 17,      Reserved */
     /* Reserved                        = 18,      Reserved */
     /* Reserved                        = 19,      Reserved */
@@ -166,7 +166,18 @@ typedef enum _IRQn_Type {
     UARTRX5_IRQn                       = 125,   /* UART 5 RX Interrupt */
     UARTTX5_IRQn                       = 126,   /* UART 5 TX Interrupt */
     UART5_Combined_IRQn                = 127,   /* UART 5 combined Interrupt */
-    /* Reserved                        = 128:130   Reserved */
+    /* Reserved                        = 128:223   Reserved */
+#ifdef CORSTONE310_FVP
+    ARM_VSI0_IRQn                      = 224,    /* VSI 0 Interrupt */
+    ARM_VSI1_IRQn                      = 225,    /* VSI 1 Interrupt */
+    ARM_VSI2_IRQn                      = 226,    /* VSI 2 Interrupt */
+    ARM_VSI3_IRQn                      = 227,    /* VSI 3 Interrupt */
+    ARM_VSI4_IRQn                      = 228,    /* VSI 4 Interrupt */
+    ARM_VSI5_IRQn                      = 229,    /* VSI 5 Interrupt */
+    ARM_VSI6_IRQn                      = 230,    /* VSI 6 Interrupt */
+    ARM_VSI7_IRQn                      = 231,    /* VSI 7 Interrupt */
+#endif
+
 } IRQn_Type;
 
 #endif  /* __PLATFORM_IRQ_H__ */

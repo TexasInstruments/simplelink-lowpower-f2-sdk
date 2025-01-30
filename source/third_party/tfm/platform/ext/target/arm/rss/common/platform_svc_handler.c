@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -8,7 +8,6 @@
 #include "cmsis.h"
 #include "dma350_checker_layer.h"
 #include "platform_svc_numbers.h"
-#include "target_cfg.h"
 #include "tfm_hal_platform.h"
 #include "tfm_platform_system.h"
 

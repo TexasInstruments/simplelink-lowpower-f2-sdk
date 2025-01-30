@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2019-2024, Texas Instruments Incorporated
+ Copyright (c) 2019-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -101,13 +101,13 @@
  *    - DMMSch_open():  Open an instance of the DMMSch module,
  *      passing the initialized parameters.
  *    - Stack A application - DMMSch_registerClient(): Passes Task_Handle and StackRole so
- * 							  DMMSch can map the Task_Handle to the stack role
+ *                            DMMSch can map the Task_Handle to the stack role
  *    - Stack A application - RF_open() -> DMMSch_rfOpen(): DMMSch overwrites the RF_Mode and
  *                            rf patches for multi-mode operation, maps RF Handle to the stack ID,
  *                            assigns phySwitchingTime for DMM operation.
  *                            From this point, Task_Handle, StackRole, and Stack ID are all related.
  *    - Stack B application - DMMSch_registerClient(): Passes Task_Handle and StackRole so
- * 							  DMMSch can map the Task_Handle to the stack role
+ *                            DMMSch can map the Task_Handle to the stack role
  *    - Stack B application - RF_open() -> DMMSch_rfOpen(): DMMSch overwrites the RF_Mode and
  *                            rf patches for multi-mode operation, maps RF Handle to the stack ID,
  *                            assigns phySwitchingTime for DMM operation.
@@ -117,7 +117,6 @@
  *
  *
  ********************************************************************************/
-
 #ifndef DMMSch_H_
 #define DMMSch_H_
 
@@ -241,6 +240,20 @@ void DMMSch_registerClient(Task_Handle* pTaskHndl, DMMPolicy_StackRole StackRole
 #else
 extern void DMMSch_registerClient(TaskHandle_t pTaskHndl, DMMPolicy_StackRole StackRole);
 #endif
+
+/** @brief  De-Register an DMM Scheduler client, removing all cached data regarding a client from the DMM scheduler.
+ *          Note: This API will also attempt to close the DMM client's RF handle via RF_Close() if not already closed.
+ *
+ *  @param  pTaskHndl RTOS Thread handle that the stack is running in, used to map the
+ *                    RF Client handle to a stack role
+ *
+ */
+#ifndef FREERTOS
+void DMMSch_deregisterClient(Task_Handle *pTaskHndl);
+#else
+extern void DMMSch_deregisterClient(TaskHandle_t pTaskHndl);
+#endif
+
 /** @brief              Intercepts calls from a stack to RF_postCmd (re-mapped to DMMSch_rfOpen),
  *                      The DMMSch module uses this to tie
  *
@@ -252,6 +265,14 @@ extern void DMMSch_registerClient(TaskHandle_t pTaskHndl, DMMPolicy_StackRole St
  * @return              Handle to DMMSch RF instance
  */
 extern RF_Handle DMMSch_rfOpen(RF_Object *pObj, RF_Mode *pRfMode, RF_RadioSetup *pOpSetup, RF_Params *params);
+
+/** @brief              Intercepts calls from a stack to RF_close
+ *                      The DMMSch module uses this to safely close an RF instance through DMM.
+ *                      Note that this API does NOT de-register the stack with the DMM scheduler.
+ *                      This **Must** be used in tandem with DMMSch_deregisterClient to remove all client data from the DMM scheduler.
+ * @param h             Pointer to RF Handle
+ */
+extern void DMMSch_rfClose(RF_Handle h);
 
 /**
  *  @brief  Handles calls from a stack to RF_postCmd (re-mapped to DMMSch_postCmd),

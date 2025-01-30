@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2021-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -179,7 +179,7 @@ __attribute__((noinline)) static psa_status_t FlashCC26X4_s_processPsaMsg(psa_ms
  *
  *  @return     A zero status on success.
  */
-void FlashCC26X4_s_main(void *param)
+void FlashCC26X4_s_main(void)
 {
     uint32_t signals = 0;
     psa_msg_t msg;

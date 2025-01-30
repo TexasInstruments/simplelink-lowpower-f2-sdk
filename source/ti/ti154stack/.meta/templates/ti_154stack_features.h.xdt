@@ -103,6 +103,22 @@ extern "C"
 #define FEATURE_FULL_FUNCTION_DEVICE
 % }
 
+% if (RF.coexEnable && RF.coexPhy.includes("ieee_15_4")) {
+
+/* Builds the image with Wifi Coexistence Enabled */
+#ifndef IEEE_COEX_ENABLED
+#define IEEE_COEX_ENABLED
+#endif
+
+% if (RF.coexMode === "coexMode3Wire") {
+/* IEEE 3 Wire Coexistence is enabled */
+#ifndef IEEE_COEX_3_WIRE
+#define IEEE_COEX_3_WIRE
+#endif
+
+% } // End if (RF.coexMode === "coexMode3Wire")
+% } // End if (RF.coexEnable && RF.coexPhy.includes("ieee_15_4"))
+
 #ifdef __cplusplus
 }
 #endif

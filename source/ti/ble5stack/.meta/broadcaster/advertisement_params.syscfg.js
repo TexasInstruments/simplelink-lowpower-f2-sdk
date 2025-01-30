@@ -390,16 +390,15 @@ function generateDisabledOptions(name)
                     disabledOptions = disabledOptions.concat({name: "GAP_ADV_PROP_SCANNABLE", reason: "Connectable advertising is not supported"});
                 }
             }
-            else
+            if( inst.$ownedBy.$ownedBy.deviceRole.includes("BROADCASTER_CFG") && inst.eventProps.includes("GAP_ADV_PROP_CONNECTABLE"))
+            {
+               disabledOptions = disabledOptions.concat({name: "GAP_ADV_PROP_CONNECTABLE", reason: "Connectable can not be used in the Broadcaster role"});
+            }
+            if (inst.advType == "legacy")
             {
                 // Add the "reason" why it's disabled, and return that information
                 disabledOptions = disabledOptions.map((option) => ({ name: option.name,
                     reason: "The Event Properties selection for Legacy advertisement is done by choosing an option from Legacy Event Properties Options" }));
-            }
-
-            if( inst.$ownedBy.$ownedBy.deviceRole.includes("BROADCASTER_CFG"))
-            {
-               disabledOptions = disabledOptions.concat({name: "GAP_ADV_PROP_CONNECTABLE", reason: "Connectable can not be used in the Broadcaster role"});
             }
             return disabledOptions;
         }
@@ -433,11 +432,19 @@ function generateDisabledOptions(name)
  {
     if(inst.advType == "legacy")
     {
-        inst.eventProps = ["GAP_ADV_PROP_CONNECTABLE", "GAP_ADV_PROP_SCANNABLE", "GAP_ADV_PROP_LEGACY"];
+        if(inst.deviceRole.includes("BROADCASTER_CFG"))
+		{
+            inst.eventProps = legacyEventPropValidOpt.NC_NS_LEG;
+            inst.legacyEvnPropOptions = "NC_NS";
+        }
+        else
+        {
+            inst.eventProps = legacyEventPropValidOpt.CONN_SCAN_LEG;
+            inst.legacyEvnPropOptions = "CONN_SCAN";
+        }
         inst.primPhy = "GAP_ADV_PRIM_PHY_1_MBPS";
         inst.secPhy = "GAP_ADV_SEC_PHY_1_MBPS";
         ui.legacyEvnPropOptions.hidden = false;
-        inst.legacyEvnPropOptions = "CONN_SCAN";
     }
     else if(inst.advType == "extended")
     {
@@ -456,6 +463,10 @@ function generateDisabledOptions(name)
             inst.primPhy = "GAP_ADV_PRIM_PHY_CODED_S2";
             inst.secPhy = "GAP_ADV_SEC_PHY_CODED_S2";
             ui.legacyEvnPropOptions.hidden = true;
+        }
+        if(inst.deviceRole.includes("BROADCASTER_CFG"))
+        {
+            inst.eventProps = [];
         }
     }
  }

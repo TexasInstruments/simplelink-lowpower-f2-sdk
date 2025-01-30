@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,9 +42,7 @@
 
 #include <ti/drivers/tfm/SecureCallback.h>
 
-#include <psa_manifest/crypto_sp.h> /* Auto-generated header */
-
-#include <third_party/tfm/interface/include/tfm_api.h>
+#include <third_party/tfm/secure_fw/spm/core/spm.h>
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
 #include <third_party/tfm/secure_fw/spm/include/utilities.h>
@@ -291,34 +289,6 @@ static inline void ECDH_s_releaseConfig(ECDH_Handle nsHandle)
 }
 
 /*
- *  ======== ECDH_s_copyCryptoKey ========
- *  secureKey: secure destination to copy non-secure key
- *  secureOpKey: pointer to key in secure operational struct (source to copy
- *               non-secure key from)
- */
-static psa_status_t ECDH_s_copyCryptoKey(CryptoKey *secureKey, CryptoKey **secureOpKey)
-{
-    /* Validate key struct address range */
-    if (cmse_has_unpriv_nonsecure_read_access(*secureOpKey, sizeof(CryptoKey)) == NULL)
-    {
-        return PSA_ERROR_PROGRAMMER_ERROR;
-    }
-
-    /* Make a secure copy of the key */
-    (void)spm_memcpy(secureKey, *secureOpKey, sizeof(CryptoKey));
-
-    if (CryptoKey_verifySecureInputKey(secureKey) != CryptoKey_STATUS_SUCCESS)
-    {
-        return PSA_ERROR_PROGRAMMER_ERROR;
-    }
-
-    /* Update the secure operational struct to point to secure key copy */
-    *secureOpKey = secureKey;
-
-    return PSA_SUCCESS;
-}
-
-/*
  *  ======== ECDH_s_copyGenPublicKeyOperation ========
  */
 static inline psa_status_t ECDH_s_copyGenPublicKeyOperation(ECDH_OperationGeneratePublicKey *secureOperation,
@@ -327,6 +297,7 @@ static inline psa_status_t ECDH_s_copyGenPublicKeyOperation(ECDH_OperationGenera
                                                             const ECDH_OperationGeneratePublicKey *operation)
 {
     const ECCParams_CurveParams *curveParams_s;
+    int_fast16_t status;
 
     /* Validate operation struct address range */
     if (cmse_has_unpriv_nonsecure_read_access((void *)operation, sizeof(ECDH_OperationGeneratePublicKey)) == NULL)
@@ -352,13 +323,21 @@ static inline psa_status_t ECDH_s_copyGenPublicKeyOperation(ECDH_OperationGenera
      * struct to point to the secure key copy. Cast is required since key is
      * const data.
      */
-    ECDH_s_copyCryptoKey(securePrivateKey, (CryptoKey **)&secureOperation->myPrivateKey);
+    status = CryptoKey_copySecureInputKey(securePrivateKey, &secureOperation->myPrivateKey);
+    if (status != CryptoKey_STATUS_SUCCESS)
+    {
+        return PSA_ERROR_PROGRAMMER_ERROR;
+    }
 
     /*
      * Make a secure copy of the public key struct and update the operation
      * struct to point to the secure key copy.
      */
-    ECDH_s_copyCryptoKey(securePublicKey, &secureOperation->myPublicKey);
+    status = CryptoKey_copySecureOutputKey(securePublicKey, &secureOperation->myPublicKey);
+    if (status != CryptoKey_STATUS_SUCCESS)
+    {
+        return PSA_ERROR_PROGRAMMER_ERROR;
+    }
 
     return PSA_SUCCESS;
 }
@@ -373,6 +352,7 @@ static inline psa_status_t ECDH_s_copyComputeSharedSecretOperation(ECDH_Operatio
                                                                    const ECDH_OperationComputeSharedSecret *operation)
 {
     const ECCParams_CurveParams *curveParams_s;
+    int_fast16_t status;
 
     /* Validate operation struct address range */
     if (cmse_has_unpriv_nonsecure_read_access((void *)operation, sizeof(ECDH_OperationComputeSharedSecret)) == NULL)
@@ -398,20 +378,32 @@ static inline psa_status_t ECDH_s_copyComputeSharedSecretOperation(ECDH_Operatio
      * struct to point to the secure key copy. Cast is required since key is
      * const data.
      */
-    ECDH_s_copyCryptoKey(securePrivateKey, (CryptoKey **)&secureOperation->myPrivateKey);
+    status = CryptoKey_copySecureInputKey(securePrivateKey, &secureOperation->myPrivateKey);
+    if (status != CryptoKey_STATUS_SUCCESS)
+    {
+        return PSA_ERROR_PROGRAMMER_ERROR;
+    }
 
     /*
      * Make a secure copy of the public key struct and update the operation
      * struct to point to the secure key copy. Cast is required since key is
      * const data.
      */
-    ECDH_s_copyCryptoKey(securePublicKey, (CryptoKey **)&secureOperation->theirPublicKey);
+    status = CryptoKey_copySecureInputKey(securePublicKey, &secureOperation->theirPublicKey);
+    if (status != CryptoKey_STATUS_SUCCESS)
+    {
+        return PSA_ERROR_PROGRAMMER_ERROR;
+    }
 
     /*
      * Make a secure copy of the shared secret key struct and update the operation
      * struct to point to the secure key copy.
      */
-    ECDH_s_copyCryptoKey(secureSharedSecret, &secureOperation->sharedSecret);
+    status = CryptoKey_copySecureOutputKey(secureSharedSecret, &secureOperation->sharedSecret);
+    if (status != CryptoKey_STATUS_SUCCESS)
+    {
+        return PSA_ERROR_PROGRAMMER_ERROR;
+    }
 
     return PSA_SUCCESS;
 }
@@ -596,7 +588,7 @@ static inline psa_status_t ECDH_s_construct(psa_msg_t *msg)
             configPtr_s->object = NULL;
         }
     }
-    else if (TFM_CLIENT_ID_IS_S(msg->client_id))
+    else if (!TFM_CLIENT_ID_IS_NS(msg->client_id))
     {
         /*
          * Return the pointer to the secure config struct provided by the
@@ -841,7 +833,7 @@ static inline psa_status_t ECDH_s_cancelOperation(psa_msg_t *msg)
     int_fast16_t ret;
 
     /* Cancellation is only supported for non-secure clients */
-    if (TFM_CLIENT_ID_IS_S(msg->client_id))
+    if (!TFM_CLIENT_ID_IS_NS(msg->client_id))
     {
         return PSA_ERROR_PROGRAMMER_ERROR;
     }

@@ -14,8 +14,9 @@ from typing import Optional
 from tilogger.interface import LogPacket
 from tilogger.logger import Logger
 from tilogger.tracedb import ElfString, Opcode
+from tilogger.helpers import build_value
 
-from .uart_framer import UARTFrame, UARTDataFrame, UARTOpcode, build_value
+from .uart_framer import UARTFrame, UARTDataFrame, UARTOpcode
 
 py_logger = logging.getLogger("UartPacketiser")
 # To enable debug output, uncomment the following line
@@ -45,7 +46,7 @@ class UartLogPacketData:
         self.data: bytes = bytes(header.data)
         self.next_frame_has_length: bool = False
 
-        if self.elf_string.opcode in [Opcode.FORMATTED_TEXT, Opcode.EVENT_CONSTRUCT, Opcode.EVENT]:
+        if self.elf_string.opcode == Opcode.FORMATTED_TEXT:
             self.remaining_length = int(elf_string.nargs) * SWIT_SIZE
 
         elif self.elf_string.opcode == Opcode.BUFFER:
@@ -235,4 +236,4 @@ class UARTPacketiser:
         return packet
 
     def reset(self):
-        """Handle reset frame."""
+        pass

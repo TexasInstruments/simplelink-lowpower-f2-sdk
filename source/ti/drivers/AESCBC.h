@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2022, Texas Instruments Incorporated
+ * Copyright (c) 2018-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -106,6 +106,12 @@
  *    makes more sense to use a dedicated stream cipher such as CTR (Counter) that
  *    does not have this restriction. CCM and GCM both use CTR for encryption.
  *
+ *  ## Device-Specific Requirements #
+ *
+ *  For CC27XX devices, CBC operations leveraging the HSM engine
+ *  (key encoding suffixed with _HSM) have the following requirements:
+ *      - Output buffer address must be 32-bit aligned.
+ *
  *  @anchor ti_drivers_AESCBC_Usage
  *  # Usage #
  *  ## Before starting a CBC operation #
@@ -211,6 +217,63 @@
  *  }
  *
  *  CryptoKeyPlaintext_initKey(&cryptoKey, keyingMaterial, sizeof(keyingMaterial));
+ *
+ *  AESCBC_OneStepOperation operation;
+ *  AESCBC_OneStepOperation_init(&operation);
+ *
+ *  operation.key               = &cryptoKey;
+ *  operation.input             = plaintext;
+ *  operation.output            = ciphertext;
+ *  operation.inputLength       = sizeof(plaintext);
+ *  operation.iv                = iv;
+ *
+ *  encryptionResult = AESCBC_oneStepEncrypt(handle, &operation);
+ *
+ *  if (encryptionResult != AESCBC_STATUS_SUCCESS) {
+ *      // handle error
+ *  }
+ *
+ *  AESCBC_close(handle);
+ *
+ *  @endcode
+ *
+ * <h4> The following code snippet is for CC27XX devices only and leverages the HSM which is a seperate Hardware
+ * Accelerator </h4>
+ *
+ *  ### Single call CBC encryption with plaintext CryptoKey in blocking return mode using the HSM accelerator #
+ *  @code
+ *
+ *  #include <ti/drivers/AESCBC.h>
+ *  #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyPlaintext.h>
+ *
+ *  ...
+ *
+ *  AESCBC_Handle handle;
+ *  CryptoKey cryptoKey;
+ *  int_fast16_t encryptionResult;
+ *
+ *  // For example purposes only. Generate IVs in a non-static way in practice.
+ *  // Test vector 0 from NIST CAPV set CBCMMT128
+ *  uint8_t iv[16] =                {0x2f, 0xe2, 0xb3, 0x33, 0xce, 0xda, 0x8f, 0x98,
+ *                                   0xf4, 0xa9, 0x9b, 0x40, 0xd2, 0xcd, 0x34, 0xa8};
+ *  uint8_t plaintext[16] =         {0x45, 0xcf, 0x12, 0x96, 0x4f, 0xc8, 0x24, 0xab,
+ *                                   0x76, 0x61, 0x6a, 0xe2, 0xf4, 0xbf, 0x08, 0x22};
+ *  uint8_t ciphertext[sizeof(plaintext)];
+ *  uint8_t keyingMaterial[16] =    {0x1f, 0x8e, 0x49, 0x73, 0x95, 0x3f, 0x3f, 0xb0,
+ *                                   0xbd, 0x6b, 0x16, 0x66, 0x2e, 0x9a, 0x3c, 0x17};
+ *
+ *  // The ciphertext should be the following after the encryption operation:
+ *  //  0x0f, 0x61, 0xc4, 0xd4, 0x4c, 0x51, 0x47, 0xc0
+ *  //  0x3c, 0x19, 0x5a, 0xd7, 0xe2, 0xcc, 0x12, 0xb2
+ *
+ *
+ *  handle = AESCBC_open(0, NULL);
+ *
+ *  if (handle == NULL) {
+ *      // handle error
+ *  }
+ *
+ *  CryptoKeyPlaintextHSM_initKey(&cryptoKey, keyingMaterial, sizeof(keyingMaterial));
  *
  *  AESCBC_OneStepOperation operation;
  *  AESCBC_OneStepOperation_init(&operation);
@@ -740,6 +803,9 @@ typedef struct
                          *     the encrypted plaintext is copied to.
                          *   - Decryption: The plaintext derived from the
                          *     decrypted ciphertext is copied here.
+                         *
+                         *  For CC27XX devices with _HSM-suffixed key encoding,
+                         *  the output buffer needs to be 32-bit aligned.
                          */
     uint8_t *iv;        /*!< A buffer containing an IV. IVs must be unique to
                          *   each CBC operation and may not be reused. If
@@ -779,6 +845,9 @@ typedef struct
                          *     the encrypted plaintext is copied to.
                          *   - Decryption: The plaintext derived from the
                          *     decrypted ciphertext is copied here.
+                         *
+                         *  For CC27XX devices with _HSM-suffixed key encoding,
+                         *  the output buffer needs to be 32-bit aligned.
                          */
     size_t inputLength; /*!< Length of the input buffer in bytes for segmented
                          *   AES CBC operations. Must be a multiple

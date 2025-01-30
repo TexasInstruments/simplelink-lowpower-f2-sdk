@@ -14,13 +14,13 @@ cmake_policy(SET CMP0079 NEW)
 
 target_sources(tfm_s
     PRIVATE
-        ${SOURCE_REPO}/ti/drivers/power/PowerCC26X2_helpers.c
-        ${SOURCE_REPO}/ti/drivers/power/PowerCC26X2_calibrateRCOSC_helpers.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/power/PowerCC26X2_helpers.c
+        ${TIDRIVERS_INSTALL_DIR}/source/ti/drivers/power/PowerCC26X2_calibrateRCOSC_helpers.c
 )
 
 target_link_libraries(tfm_s
     PRIVATE
-        $<$<C_COMPILER_ID:ARMClang>:${SOURCE_REPO}/ti/devices/cc13x4_cc26x4/driverlib/bin/ticlang/driverlib.lib>
-        $<$<C_COMPILER_ID:GNU>:${SOURCE_REPO}/ti/devices/cc13x4_cc26x4/driverlib/bin/gcc/driverlib.lib>
-        $<$<C_COMPILER_ID:IAR>:${SOURCE_REPO}/ti/devices/cc13x4_cc26x4/driverlib/bin/iar/driverlib.lib>
+        $<$<C_COMPILER_ID:ARMClang>:${DRIVERLIB_SOURCE_DIR}/ti/devices/cc13x4_cc26x4/driverlib/bin/ticlang/driverlib.lib>
+        $<$<C_COMPILER_ID:GNU>:${DRIVERLIB_SOURCE_DIR}/ti/devices/cc13x4_cc26x4/driverlib/bin/gcc/driverlib.lib>
+        $<$<C_COMPILER_ID:IAR>:${DRIVERLIB_SOURCE_DIR}/ti/devices/cc13x4_cc26x4/driverlib/bin/iar/driverlib.lib>
 )

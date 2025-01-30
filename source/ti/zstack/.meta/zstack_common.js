@@ -126,6 +126,8 @@ const deviceToBoard = {
   CC1354P10: "LP_EM_CC1354P10_1"
 };
 
+const commonWarning = "You need to also modify the linker command file according to these guidelines: https://dev.ti.com/tirex/explore/content/simplelink_cc13xx_cc26xx_sdk_7_41_00_17/docs/zigbee/html/cc13xx_cc26xx/software-on-cc13x4-26x4.html#migrate-your-cc13x2-or-cc26x2-project";
+
 const commonMigrations = {
   // Common Linkers
   cc13x2_cc26x2: {
@@ -142,7 +144,7 @@ const commonMigrations = {
     LP_CC2652RB: {},
     CC2652RB1FRGZ: {},
     CC2652R1FSIP: {},
-    LP_CC2652RSIP: {}
+    LP_CC2652RSIP: {},
   },
   cc13x1_cc26x1: {
     CC2651P3RGZ: {},
@@ -162,7 +164,9 @@ const commonMigrations = {
     LP_CC2674R10_RGZ: {},
     LP_EM_CC1354P10_6: {},
     CC2674P10RGZ: {},
-    LP_CC2674P10_RGZ: {}
+    LP_CC2674P10_RGZ: {},
+    LP_CC1354P10_1_RGZ: {warn: commonWarning},
+    LP_CC1354R10_RGZ: {warn: commonWarning}
   }
 };
 

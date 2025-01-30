@@ -130,7 +130,7 @@ class RTLSManager(threading.Thread, UserDict):
     def run(self):
         if self.wss: self.wss.start()
         for node in self.nodes:
-            if not node.isAlive():
+            if not node.is_alive():
                 node.start()
             else:
                 if node.identifier:

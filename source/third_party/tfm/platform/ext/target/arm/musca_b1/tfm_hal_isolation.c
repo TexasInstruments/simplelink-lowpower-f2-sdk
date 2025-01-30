@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2020-2023, Arm Limited. All rights reserved.
  * Copyright (c) 2022 Cypress Semiconductor Corporation (an Infineon
  * company) or an affiliate of Cypress Semiconductor Corporation. All rights
  * reserved.
@@ -36,10 +36,10 @@ struct mpu_armv8m_dev_t dev_mpu_s = { MPU_BASE };
 
 #ifdef CONFIG_TFM_PARTITION_META
 REGION_DECLARE(Image$$, TFM_SP_META_PTR, $$ZI$$Base);
-REGION_DECLARE(Image$$, TFM_SP_META_PTR, $$ZI$$Limit);
+REGION_DECLARE(Image$$, TFM_SP_META_PTR_END, $$ZI$$Limit);
 #endif
 
-#if TFM_LVL == 3
+#if TFM_ISOLATION_LEVEL == 3
 static uint32_t idx_boundary_handle = 0;
 REGION_DECLARE(Image$$, PT_RO_START, $$Base);
 REGION_DECLARE(Image$$, PT_RO_END, $$Base);
@@ -50,7 +50,7 @@ static struct mpu_armv8m_region_cfg_t isolation_regions[] = {
     {
         0, /* will be updated before using */
         (uint32_t)&REGION_NAME(Image$$, PT_RO_START, $$Base),
-        (uint32_t)&REGION_NAME(Image$$, PT_RO_END, $$Base),
+        (uint32_t)&REGION_NAME(Image$$, PT_RO_END, $$Base) - 1,
         MPU_ARMV8M_MAIR_ATTR_CODE_IDX,
         MPU_ARMV8M_XN_EXEC_OK,
         MPU_ARMV8M_AP_RO_PRIV_UNPRIV,
@@ -62,7 +62,7 @@ static struct mpu_armv8m_region_cfg_t isolation_regions[] = {
     {
         0, /* will be updated before using */
         (uint32_t)&REGION_NAME(Image$$, PT_PRIV_RWZI_START, $$Base),
-        (uint32_t)&REGION_NAME(Image$$, PT_PRIV_RWZI_END, $$Base),
+        (uint32_t)&REGION_NAME(Image$$, PT_PRIV_RWZI_END, $$Base) - 1,
         MPU_ARMV8M_MAIR_ATTR_DATA_IDX,
         MPU_ARMV8M_XN_EXEC_NEVER,
         MPU_ARMV8M_AP_RW_PRIV_ONLY,
@@ -72,7 +72,7 @@ static struct mpu_armv8m_region_cfg_t isolation_regions[] = {
     {
         0, /* will be updated before using */
         (uint32_t)&REGION_NAME(Image$$, TFM_SP_META_PTR, $$ZI$$Base),
-        (uint32_t)&REGION_NAME(Image$$, TFM_SP_META_PTR, $$ZI$$Limit),
+        (uint32_t)&REGION_NAME(Image$$, TFM_SP_META_PTR_END, $$ZI$$Limit) - 1,
         MPU_ARMV8M_MAIR_ATTR_DATA_IDX,
         MPU_ARMV8M_XN_EXEC_NEVER,
         MPU_ARMV8M_AP_RW_PRIV_UNPRIV,
@@ -80,18 +80,18 @@ static struct mpu_armv8m_region_cfg_t isolation_regions[] = {
     }
 #endif
 };
-#else /* TFM_LVL == 3 */
+#else /* TFM_ISOLATION_LEVEL == 3 */
 
 REGION_DECLARE(Image$$, ER_VENEER, $$Base);
 REGION_DECLARE(Image$$, VENEER_ALIGN, $$Limit);
-REGION_DECLARE(Image$$, TFM_UNPRIV_CODE, $$RO$$Base);
-REGION_DECLARE(Image$$, TFM_UNPRIV_CODE, $$RO$$Limit);
+REGION_DECLARE(Image$$, TFM_UNPRIV_CODE_START, $$RO$$Base);
+REGION_DECLARE(Image$$, TFM_UNPRIV_CODE_END, $$RO$$Limit);
 REGION_DECLARE(Image$$, TFM_APP_CODE_START, $$Base);
 REGION_DECLARE(Image$$, TFM_APP_CODE_END, $$Base);
 REGION_DECLARE(Image$$, TFM_APP_RW_STACK_START, $$Base);
 REGION_DECLARE(Image$$, TFM_APP_RW_STACK_END, $$Base);
 
-#endif /* TFM_LVL == 3 */
+#endif /* TFM_ISOLATION_LEVEL == 3 */
 #endif /* CONFIG_TFM_ENABLE_MEMORY_PROTECT */
 
 enum tfm_hal_status_t tfm_hal_set_up_static_boundaries(
@@ -112,7 +112,7 @@ enum tfm_hal_status_t tfm_hal_set_up_static_boundaries(
 #ifdef CONFIG_TFM_ENABLE_MEMORY_PROTECT
 
     mpu_armv8m_clean(&dev_mpu_s);
-#if TFM_LVL == 3
+#if TFM_ISOLATION_LEVEL == 3
     int32_t i;
 
     /*
@@ -133,14 +133,14 @@ enum tfm_hal_status_t tfm_hal_set_up_static_boundaries(
         }
     }
     n_configured_regions = i;
-#else /* TFM_LVL == 3 */
+#else /* TFM_ISOLATION_LEVEL == 3 */
     struct mpu_armv8m_region_cfg_t region_cfg;
 
     /* Veneer region */
     region_cfg.region_nr = n_configured_regions;
     region_cfg.region_base = (uint32_t)&REGION_NAME(Image$$, ER_VENEER, $$Base);
     region_cfg.region_limit =
-        (uint32_t)&REGION_NAME(Image$$, VENEER_ALIGN, $$Limit);
+        (uint32_t)&REGION_NAME(Image$$, VENEER_ALIGN, $$Limit) - 1;
     region_cfg.region_attridx = MPU_ARMV8M_MAIR_ATTR_CODE_IDX;
     region_cfg.attr_access = MPU_ARMV8M_AP_RO_PRIV_UNPRIV;
     region_cfg.attr_sh = MPU_ARMV8M_SH_NONE;
@@ -153,9 +153,9 @@ enum tfm_hal_status_t tfm_hal_set_up_static_boundaries(
     /* TFM Core unprivileged code region */
     region_cfg.region_nr = n_configured_regions;
     region_cfg.region_base =
-        (uint32_t)&REGION_NAME(Image$$, TFM_UNPRIV_CODE, $$RO$$Base);
+        (uint32_t)&REGION_NAME(Image$$, TFM_UNPRIV_CODE_START, $$RO$$Base);
     region_cfg.region_limit =
-        (uint32_t)&REGION_NAME(Image$$, TFM_UNPRIV_CODE, $$RO$$Limit);
+        (uint32_t)&REGION_NAME(Image$$, TFM_UNPRIV_CODE_END, $$RO$$Limit) - 1;
     region_cfg.region_attridx = MPU_ARMV8M_MAIR_ATTR_CODE_IDX;
     region_cfg.attr_access = MPU_ARMV8M_AP_RO_PRIV_UNPRIV;
     region_cfg.attr_sh = MPU_ARMV8M_SH_NONE;
@@ -170,7 +170,7 @@ enum tfm_hal_status_t tfm_hal_set_up_static_boundaries(
     region_cfg.region_base =
         (uint32_t)&REGION_NAME(Image$$, TFM_APP_CODE_START, $$Base);
     region_cfg.region_limit =
-        (uint32_t)&REGION_NAME(Image$$, TFM_APP_CODE_END, $$Base);
+        (uint32_t)&REGION_NAME(Image$$, TFM_APP_CODE_END, $$Base) - 1;
     region_cfg.region_attridx = MPU_ARMV8M_MAIR_ATTR_CODE_IDX;
     region_cfg.attr_access = MPU_ARMV8M_AP_RO_PRIV_UNPRIV;
     region_cfg.attr_sh = MPU_ARMV8M_SH_NONE;
@@ -185,7 +185,7 @@ enum tfm_hal_status_t tfm_hal_set_up_static_boundaries(
     region_cfg.region_base =
         (uint32_t)&REGION_NAME(Image$$, TFM_APP_RW_STACK_START, $$Base);
     region_cfg.region_limit =
-        (uint32_t)&REGION_NAME(Image$$, TFM_APP_RW_STACK_END, $$Base);
+        (uint32_t)&REGION_NAME(Image$$, TFM_APP_RW_STACK_END, $$Base) - 1;
     region_cfg.region_attridx = MPU_ARMV8M_MAIR_ATTR_DATA_IDX;
     region_cfg.attr_access = MPU_ARMV8M_AP_RW_PRIV_UNPRIV;
     region_cfg.attr_sh = MPU_ARMV8M_SH_NONE;
@@ -201,7 +201,7 @@ enum tfm_hal_status_t tfm_hal_set_up_static_boundaries(
     region_cfg.region_base =
      (uint32_t)&REGION_NAME(Image$$, TFM_SP_META_PTR, $$ZI$$Base);
     region_cfg.region_limit =
-     (uint32_t)&REGION_NAME(Image$$, TFM_SP_META_PTR, $$ZI$$Limit);
+     (uint32_t)&REGION_NAME(Image$$, TFM_SP_META_PTR_END, $$ZI$$Limit) - 1;
     region_cfg.region_attridx = MPU_ARMV8M_MAIR_ATTR_DATA_IDX;
     region_cfg.attr_access = MPU_ARMV8M_AP_RW_PRIV_UNPRIV;
     region_cfg.attr_sh = MPU_ARMV8M_SH_NONE;
@@ -211,7 +211,7 @@ enum tfm_hal_status_t tfm_hal_set_up_static_boundaries(
     }
     n_configured_regions++;
 #endif /* CONFIG_TFM_PARTITION_META */
-#endif /* TFM_LVL == 3 */
+#endif /* TFM_ISOLATION_LEVEL == 3 */
 
     /* Enable MPU */
     if (mpu_armv8m_enable(&dev_mpu_s,
@@ -272,7 +272,7 @@ enum tfm_hal_status_t tfm_hal_bind_boundary(
     uint32_t partition_attrs = 0;
     const struct asset_desc_t *p_asset;
     struct platform_data_t *plat_data_ptr;
-#if TFM_LVL == 2
+#if TFM_ISOLATION_LEVEL == 2
     struct mpu_armv8m_region_cfg_t localcfg;
 #endif
 
@@ -280,7 +280,7 @@ enum tfm_hal_status_t tfm_hal_bind_boundary(
         return TFM_HAL_ERROR_GENERIC;
     }
 
-#if TFM_LVL == 1
+#if TFM_ISOLATION_LEVEL == 1
     privileged = true;
 #else
     privileged = IS_PSA_ROT(p_ldinf);
@@ -325,7 +325,7 @@ enum tfm_hal_status_t tfm_hal_bind_boundary(
             }
         }
 
-#if TFM_LVL == 2
+#if TFM_ISOLATION_LEVEL == 2
         /*
          * Static boundaries are set. Set up MPU region for MMIO.
          * Setup regions for unprivileged assets only.
@@ -344,7 +344,7 @@ enum tfm_hal_status_t tfm_hal_bind_boundary(
                 return TFM_HAL_ERROR_GENERIC;
             }
         }
-#elif TFM_LVL == 3
+#elif TFM_ISOLATION_LEVEL == 3
         /* Encode MMIO attributes into the "partition_attrs". */
         partition_attrs <<= HANDLE_PER_ATTR_BITS;
         partition_attrs |= ((j + 1) & HANDLE_ATTR_INDEX_MASK);
@@ -354,7 +354,7 @@ enum tfm_hal_status_t tfm_hal_bind_boundary(
 #endif
     }
 
-#if TFM_LVL == 3
+#if TFM_ISOLATION_LEVEL == 3
     partition_attrs <<= HANDLE_PER_ATTR_BITS;
     /*
      * Highest 8 bits are reserved for index, if they are non-zero, MMIO numbers
@@ -382,7 +382,7 @@ enum tfm_hal_status_t tfm_hal_activate_boundary(
     CONTROL_Type ctrl;
     uint32_t local_handle = (uint32_t)boundary;
     bool privileged = !!(local_handle & HANDLE_ATTR_PRIV_MASK);
-#if TFM_LVL == 3
+#if TFM_ISOLATION_LEVEL == 3
     struct mpu_armv8m_region_cfg_t localcfg;
     uint32_t i, mmio_index;
     struct platform_data_t *plat_data_ptr;
@@ -394,7 +394,7 @@ enum tfm_hal_status_t tfm_hal_activate_boundary(
     ctrl.b.nPRIV = privileged ? 0 : 1;
     __set_CONTROL(ctrl.w);
 
-#if TFM_LVL == 3
+#if TFM_ISOLATION_LEVEL == 3
     if (!p_ldinf) {
         return TFM_HAL_ERROR_GENERIC;
     }
@@ -419,7 +419,7 @@ enum tfm_hal_status_t tfm_hal_activate_boundary(
          i++) {
         localcfg.region_nr = n_configured_regions + i;
         localcfg.region_base = rt_mem[i].mem.start;
-        localcfg.region_limit = rt_mem[i].mem.limit;
+        localcfg.region_limit = rt_mem[i].mem.limit - 1;
 
         if (mpu_armv8m_region_enable(&dev_mpu_s, &localcfg) != MPU_ARMV8M_OK) {
             return TFM_HAL_ERROR_GENERIC;

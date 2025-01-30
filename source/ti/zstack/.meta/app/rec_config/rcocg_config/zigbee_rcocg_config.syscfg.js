@@ -68,6 +68,11 @@ for (let i in clusters) {
       }
     }
   }
+
+  if (tempClientCommandOptions.length == 0) {
+    rcocgClientAlwaysHidden.push(cluster._id + "rcocgClient");
+    tempClientCommandOptions.push({name: "dummy", displayName: "dummy"});
+  }
   rcocgModule.config.push({
     name: cluster._id + "rcocgClient",
     displayName: cluster._name + " Client Commands Generated",
@@ -79,7 +84,6 @@ for (let i in clusters) {
     minSelections: 0
   })
   rcocgClientDropDowns.push(cluster._id + "rcocgClient");
-  if (tempClientCommandOptions.length == 0) { rcocgClientAlwaysHidden.push(cluster._id + "rcocgClient"); }
 
   let tempServerCommandOptions = [];
   if (cluster.client && cluster.client.command) {
@@ -89,6 +93,11 @@ for (let i in clusters) {
         tempServerCommandOptions.push({name: command._id, displayName: command._name});
       }
     }
+  }
+
+  if (tempServerCommandOptions.length == 0) {
+    rcocgServerAlwaysHidden.push(cluster._id + "rcocgServer");
+    tempServerCommandOptions.push({name: "dummy", displayName: "dummy"});
   }
   rcocgModule.config.push({
     name: cluster._id + "rcocgServer",
@@ -101,7 +110,6 @@ for (let i in clusters) {
     minSelections: 0
   })
   rcocgServerDropDowns.push(cluster._id + "rcocgServer");
-  if (tempServerCommandOptions.length == 0) { rcocgServerAlwaysHidden.push(cluster._id + "rcocgServer"); }
 }
 
 /* Function to handle changes in the recommended server clusters */

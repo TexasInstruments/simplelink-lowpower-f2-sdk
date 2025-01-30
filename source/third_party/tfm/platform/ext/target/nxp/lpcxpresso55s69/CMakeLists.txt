@@ -1,13 +1,15 @@
 #-------------------------------------------------------------------------------
 # Copyright (c) 2020-2022, Arm Limited. All rights reserved.
-# Copyright (c) 2021, NXP Semiconductors. All rights reserved.
 # Copyright (c) 2020, Linaro. All rights reserved.
+# Copyright 2021-2023 NXP. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
 #-------------------------------------------------------------------------------
 
 cmake_policy(SET CMP0076 NEW)
+
+set(NXP_COMMON_DIR ${CMAKE_CURRENT_LIST_DIR}/../common)
 
 # Pull drivers from NXP git
 if (TFM_PLATFORM_NXP_HAL_FILE_PATH STREQUAL "DOWNLOAD")
@@ -42,24 +44,10 @@ target_sources(tfm_s
         ${CMAKE_CURRENT_SOURCE_DIR}/Device/Source/startup_lpcxpresso55s69.c
 )
 target_add_scatter_file(tfm_s
-    $<$<C_COMPILER_ID:GNU>:${CMAKE_SOURCE_DIR}/platform/ext/common/gcc/tfm_common_s.ld>
-    $<$<C_COMPILER_ID:IAR>:${CMAKE_SOURCE_DIR}/platform/ext/common/iar/tfm_common_s.icf>
+    $<$<C_COMPILER_ID:ARMClang>:${PLATFORM_DIR}/ext/common/armclang/tfm_common_s.sct>
+    $<$<C_COMPILER_ID:GNU>:${PLATFORM_DIR}/ext/common/gcc/tfm_common_s.ld>
+    $<$<C_COMPILER_ID:IAR>:${PLATFORM_DIR}/ext/common/iar/tfm_common_s.icf>
 )
-
-if(NS)
-    target_sources(tfm_ns
-        PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/Device/Source/startup_lpcxpresso55s69.c
-    )
-    target_add_scatter_file(tfm_ns
-            $<$<C_COMPILER_ID:GNU>:${CMAKE_CURRENT_SOURCE_DIR}/Device/Source/armgcc/LPC55S69_cm33_core0_ns.ld>
-            $<$<C_COMPILER_ID:IAR>:${CMAKE_CURRENT_SOURCE_DIR}/Device/Source/iar/LPC55S69_cm33_core0_ns.icf>
-    )
-    target_link_libraries(CMSIS_5_tfm_ns
-        INTERFACE
-            CMSIS_5_RTX_V8MMN
-    )
-endif()
 
 if(BL2)
     target_sources(bl2
@@ -67,7 +55,9 @@ if(BL2)
             ${CMAKE_CURRENT_SOURCE_DIR}/Device/Source/startup_lpcxpresso55s69.c
     )
     target_add_scatter_file(bl2
-            $<$<C_COMPILER_ID:GNU>:${CMAKE_CURRENT_SOURCE_DIR}/Device/Source/armgcc/LPC55S69_cm33_core0_bl2.ld>
+            $<$<C_COMPILER_ID:ARMClang>:${PLATFORM_DIR}/ext/common/armclang/tfm_common_bl2.sct>
+            $<$<C_COMPILER_ID:GNU>:${PLATFORM_DIR}/ext/common/gcc/tfm_common_bl2.ld>
+            $<$<C_COMPILER_ID:IAR>:${PLATFORM_DIR}/ext/common/iar/tfm_common_bl2.icf>
     )
 endif()
 
@@ -76,13 +66,14 @@ endif()
 target_include_directories(platform_s
     PUBLIC
         .
-        project_template/s
-        Device/Config
         Device/Include
+        project_template/s
         partition
+        ../../arm/drivers/mpu/armv8m
         ${PLATFORM_DIR}/ext/target/nxp/common
         ${PLATFORM_DIR}/ext/target/nxp/common/CMSIS_Driver
-        ${PLATFORM_DIR}/ext/target/nxp/common/Native_Driver
+        ${PLATFORM_DIR}/ext/target/nxp/common/Device/Config
+        ${PLATFORM_DIR}/ext/target/nxp/common/Device/Include
         ${NXP_HAL_FILE_PATH}/lpcxpresso55s69/Native_Driver
         ${NXP_HAL_FILE_PATH}/lpcxpresso55s69/Native_Driver/drivers
         ${NXP_HAL_FILE_PATH}/common/Native_Driver
@@ -95,13 +86,14 @@ target_include_directories(platform_s
 )
 
 target_sources(platform_s
+    INTERFACE
+        $<$<STREQUAL:"${TFM_FIH_PROFILE}","HIGH">:${PLATFORM_DIR}/ext/common/template/tfm_fih_rng.c>
     PRIVATE
-        ../common/CMSIS_Driver/Driver_Flash_iap1.c
-        ../common/CMSIS_Driver/Driver_USART.c
-        ../common/Native_Driver/mpu_armv8m_drv.c
+        ${NXP_COMMON_DIR}/CMSIS_Driver/Driver_Flash_iap1.c
+        ${NXP_COMMON_DIR}/CMSIS_Driver/Driver_USART.c
+        ../../arm/drivers/mpu/armv8m/mpu_armv8m_drv.c
         project_template/s/board.c
         project_template/s/clock_config.c
-        project_template/s/peripherals.c
         project_template/s/pin_mux.c
         ${NXP_HAL_FILE_PATH}/lpcxpresso55s69/Native_Driver/system_LPC55S69_cm33_core0.c
         ${NXP_HAL_FILE_PATH}/lpcxpresso55s69/Native_Driver/drivers/fsl_clock.c
@@ -127,7 +119,6 @@ target_sources(platform_s
         ${NXP_HAL_FILE_PATH}/common/Native_Driver/utilities/str/fsl_str.c
         $<$<BOOL:${TFM_PARTITION_PLATFORM}>:${PLATFORM_DIR}/ext/target/nxp/common/plat_test.c>
         $<$<BOOL:${TFM_PARTITION_PLATFORM}>:${PLATFORM_DIR}/ext/target/nxp/common/services/src/tfm_platform_system.c>
-        ${NXP_HAL_FILE_PATH}/common/plat_attest_hal.c
 )
 
 target_link_libraries(platform_s
@@ -151,57 +142,6 @@ target_sources(tfm_s
         project_template/s/hardware_init.c
 )
 
-#========================= Platform Non-Secure ================================#
-
-target_include_directories(platform_ns
-    PUBLIC
-        .
-        Device/Config
-        Device/Include
-        Native_Driver
-        project_template/ns
-        ${NXP_HAL_FILE_PATH}/lpcxpresso55s69/Native_Driver/drivers
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/components/lists
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/components/serial_manager
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/components/uart
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/drivers
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/utilities/debug_console
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/utilities/str
-)
-
-target_sources(platform_ns
-    PRIVATE
-        project_template/ns/board.c
-        project_template/ns/hardware_init.c
-        project_template/ns/clock_config.c
-        project_template/ns/peripherals.c
-        project_template/ns/pin_mux.c
-        ${PLATFORM_DIR}/ext/target/nxp/common/CMSIS_Driver/Driver_USART.c
-        ${NXP_HAL_FILE_PATH}/lpcxpresso55s69/Native_Driver/system_LPC55S69_cm33_core0.c
-        ${NXP_HAL_FILE_PATH}/lpcxpresso55s69/Native_Driver/drivers/fsl_clock.c
-        ${NXP_HAL_FILE_PATH}/lpcxpresso55s69/Native_Driver/drivers/fsl_power.c
-        ${NXP_HAL_FILE_PATH}/lpcxpresso55s69/Native_Driver/drivers/fsl_reset.c
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/components/lists/fsl_component_generic_list.c
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/components/serial_manager/fsl_component_serial_manager.c
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/components/serial_manager/fsl_component_serial_port_uart.c
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/components/uart/fsl_adapter_usart.c
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/drivers/fsl_casper.c
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/drivers/fsl_common.c
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/drivers/fsl_common_arm.c
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/drivers/fsl_ctimer.c
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/drivers/fsl_flexcomm.c
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/drivers/fsl_gpio.c
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/drivers/fsl_hashcrypt.c
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/drivers/fsl_iap.c
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/drivers/fsl_rng.c
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/drivers/fsl_usart.c
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/utilities/fsl_assert.c
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/utilities/fsl_sbrk.c
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/utilities/debug_console/fsl_debug_console.c
-        ${NXP_HAL_FILE_PATH}/common/Native_Driver/utilities/str/fsl_str.c
-        $<$<BOOL:${TFM_PARTITION_PLATFORM}>:${PLATFORM_DIR}/ext/target/nxp/common/plat_test.c>
-)
-
 #========================= Platform BL2 =======================================#
 if(BL2)
 
@@ -210,12 +150,15 @@ if(BL2)
             partition
             Device/Include
             project_template/bl2
+            ${PLATFORM_DIR}/ext/target/nxp/common
+            ${PLATFORM_DIR}/ext/target/nxp/common/Device/Include
             ${NXP_HAL_FILE_PATH}/lpcxpresso55s69/Native_Driver
             ${NXP_HAL_FILE_PATH}/lpcxpresso55s69/Native_Driver/drivers
             ${NXP_HAL_FILE_PATH}/common/Native_Driver/drivers
         PRIVATE
             .
-            Device/Config
+            ${PLATFORM_DIR}/ext/target/nxp/common/Device/Config
+            ${PLATFORM_DIR}/ext/target/nxp/common/Device/Include
             ${NXP_HAL_FILE_PATH}/common/Native_Driver/components/serial_manager
             ${NXP_HAL_FILE_PATH}/common/Native_Driver
             ${NXP_HAL_FILE_PATH}/common/Native_Driver/components/uart
@@ -227,8 +170,8 @@ if(BL2)
             project_template/bl2/board.c
             project_template/bl2/clock_config.c
             project_template/bl2/pin_mux.c
-            ../common/CMSIS_Driver/Driver_Flash_iap1.c
-            ../common/CMSIS_Driver/Driver_USART.c
+            ${NXP_COMMON_DIR}/CMSIS_Driver/Driver_Flash_iap1.c
+            ${NXP_COMMON_DIR}/CMSIS_Driver/Driver_USART.c
             ${NXP_HAL_FILE_PATH}/lpcxpresso55s69/Native_Driver/system_LPC55S69_cm33_core0.c
             ${NXP_HAL_FILE_PATH}/lpcxpresso55s69/Native_Driver/drivers/fsl_clock.c
             ${NXP_HAL_FILE_PATH}/lpcxpresso55s69/Native_Driver/drivers/fsl_power.c
@@ -266,7 +209,60 @@ endif()
 target_sources(tfm_spm
     PRIVATE
         target_cfg.c
-        ../common/faults.c
-        ../common/tfm_hal_isolation.c
-        ../common/tfm_hal_platform.c
+        ${NXP_COMMON_DIR}/mpc_ppc_faults.c
+        ${NXP_COMMON_DIR}/tfm_hal_isolation.c
+        ${NXP_COMMON_DIR}/tfm_hal_platform.c
 )
+
+#========================= Files for building NS side platform ================#
+
+install(FILES       ${TARGET_PLATFORM_PATH}/project_template/ns/board.c
+                    ${TARGET_PLATFORM_PATH}/project_template/ns/hardware_init.c
+                    ${TARGET_PLATFORM_PATH}/project_template/ns/clock_config.c
+                    ${TARGET_PLATFORM_PATH}/project_template/ns/pin_mux.c
+                    ${NXP_COMMON_DIR}/CMSIS_Driver/Driver_USART.c
+                    $<$<BOOL:${TFM_PARTITION_PLATFORM}>:${PLATFORM_DIR}/ext/target/nxp/common/plat_test.c>
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+install(DIRECTORY   ${NXP_COMMON_DIR}/Device
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+install(DIRECTORY   ${TARGET_PLATFORM_PATH}/Device
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+install(DIRECTORY   ${NXP_HAL_FILE_PATH}/lpcxpresso55s69/Native_Driver
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+install(DIRECTORY   ${NXP_HAL_FILE_PATH}/common/Native_Driver
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+install(FILES       ${PLATFORM_DIR}/ext/driver/Driver_Common.h
+                    ${PLATFORM_DIR}/ext/driver/Driver_Flash.h
+                    ${PLATFORM_DIR}/ext/driver/Driver_USART.h
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/ext/driver)
+
+install(FILES       ${TARGET_PLATFORM_PATH}/project_template/ns/app.h
+                    ${TARGET_PLATFORM_PATH}/project_template/ns/board.h
+                    ${TARGET_PLATFORM_PATH}/project_template/ns/clock_config.h
+                    ${TARGET_PLATFORM_PATH}/project_template/ns/pin_mux.h
+                    ${TARGET_PLATFORM_PATH}/config_tfm_target.h
+                    ${TARGET_PLATFORM_PATH}/target_cfg.h
+                    ${TARGET_PLATFORM_PATH}/tfm_peripherals_def.h
+                    ${NXP_COMMON_DIR}/target_cfg_common.h
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/include)
+
+install(DIRECTORY   ${TARGET_PLATFORM_PATH}/partition
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+install(FILES       ${PLATFORM_DIR}/ext/common/gcc/tfm_common_ns.ld
+                    ${PLATFORM_DIR}/ext/common/armclang/tfm_common_ns.sct
+                    ${PLATFORM_DIR}/ext/common/iar/tfm_common_ns.icf
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/linker_scripts)
+
+# copy all files from active platform directory
+install(DIRECTORY   ${TARGET_PLATFORM_PATH}/ns/
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+install(FILES       ${TARGET_PLATFORM_PATH}/cpuarch.cmake
+                    ${TARGET_PLATFORM_PATH}/config.cmake
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})

@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Copyright (c) 2022-2023, Texas Instruments Incorporated. All rights reserved.
+# Copyright (c) 2022-2024, Texas Instruments Incorporated. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -81,7 +81,4 @@
             "handling": "FLIH"
         }
     ],
-    "dependencies": [
-#        "TFM_INTERNAL_TRUSTED_STORAGE_SERVICE"
-    ]
 }

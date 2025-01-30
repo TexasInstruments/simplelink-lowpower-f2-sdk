@@ -17,10 +17,7 @@ if (NOT DEFINED MTB_PDL_CAT1_LIB_NS_TARGET)
     set(MTB_PDL_CAT1_LIB_NS_TARGET mtb-pdl-cat1_lib_ns)
 endif()
 
-if (EXISTS ${PLATFORM_DIR}/ext/target/${TFM_PLATFORM}/preload_ns.cmake)
-    include(${PLATFORM_DIR}/ext/target/${TFM_PLATFORM}/preload_ns.cmake)
-    tfm_toolchain_reload_compiler()
-endif()
+include(${CMAKE_CURRENT_LIST_DIR}/../fetch_lib.cmake)
 
 ########################## MTB_PDL_CAT1_LIB_NS #####################################
 

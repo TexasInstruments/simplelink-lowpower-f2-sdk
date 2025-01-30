@@ -9,10 +9,14 @@ if (NOT TFM_PARTITION_CRYPTO)
     return()
 endif()
 
+find_package(Python3)
+
 cmake_minimum_required(VERSION 3.15)
 cmake_policy(SET CMP0079 NEW)
 
 add_library(tfm_psa_rot_partition_crypto STATIC)
+
+add_dependencies(tfm_psa_rot_partition_crypto manifest_tool)
 
 target_sources(tfm_psa_rot_partition_crypto
     PRIVATE
@@ -27,7 +31,7 @@ target_sources(tfm_psa_rot_partition_crypto
         crypto_key_management.c
         crypto_rng.c
         crypto_library.c
-        $<$<BOOL:CRYPTO_TFM_BUILTIN_KEYS_DRIVER>:psa_driver_api/tfm_builtin_key_loader.c>
+        $<$<BOOL:${CRYPTO_TFM_BUILTIN_KEYS_DRIVER}>:psa_driver_api/tfm_builtin_key_loader.c>
 )
 
 # The generated sources
@@ -62,8 +66,7 @@ target_link_libraries(tfm_psa_rot_partition_crypto
 target_compile_definitions(tfm_psa_rot_partition_crypto
     PUBLIC
         MBEDTLS_PSA_CRYPTO_DRIVERS
-        MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS
-        $<$<BOOL:CRYPTO_BUILTIN_KEYS>:PSA_CRYPTO_DRIVER_TFM_BUILTIN_KEY>
+        $<$<BOOL:${CRYPTO_TFM_BUILTIN_KEYS_DRIVER}>:MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS PSA_CRYPTO_DRIVER_TFM_BUILTIN_KEY>
     PRIVATE
         $<$<STREQUAL:${CRYPTO_HW_ACCELERATOR_TYPE},cc312>:CRYPTO_HW_ACCELERATOR_CC312>
         MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER
@@ -76,7 +79,7 @@ target_link_libraries(tfm_partitions
         tfm_psa_rot_partition_crypto
 )
 
-target_compile_definitions(tfm_partition_defs
+target_compile_definitions(tfm_config
     INTERFACE
         TFM_PARTITION_CRYPTO
 )
@@ -106,9 +109,8 @@ target_compile_definitions(crypto_service_mbedcrypto_config
         $<$<OR:$<STREQUAL:${TFM_SYSTEM_ARCHITECTURE},armv8-m.base>,$<STREQUAL:${TFM_SYSTEM_ARCHITECTURE},armv6-m>>:MULADDC_CANNOT_USE_R7>
         $<$<BOOL:${PLATFORM_DEFAULT_NV_SEED}>:PLATFORM_DEFAULT_NV_SEED>
         $<$<BOOL:${PLATFORM_DEFAULT_CRYPTO_KEYS}>:PLATFORM_DEFAULT_CRYPTO_KEYS>
-        MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS
         MBEDTLS_PSA_CRYPTO_DRIVERS
-        $<$<BOOL:CRYPTO_TFM_BUILTIN_KEYS_DRIVER>:PSA_CRYPTO_DRIVER_TFM_BUILTIN_KEY_LOADER>
+        $<$<BOOL:${CRYPTO_TFM_BUILTIN_KEYS_DRIVER}>:MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS PSA_CRYPTO_DRIVER_TFM_BUILTIN_KEY_LOADER>
 )
 
 target_link_libraries(crypto_service_mbedcrypto_config
@@ -131,6 +133,25 @@ set(GEN_FILES OFF)
 
 # Set the prefix to be used by mbedTLS targets
 set(MBEDTLS_TARGET_PREFIX crypto_service_)
+# CMake should be aware of the config files being used
+# FixMe: comment these until the config files are cleaned up to be self-contained
+#set(MBEDTLS_PSA_CRYPTO_CONFIG_FILE "${TFM_MBEDCRYPTO_PSA_CRYPTO_CONFIG_PATH}")
+#set(MBEDTLS_CONFIG_FILE "${TFM_MBEDCRYPTO_CONFIG_PATH}")
+
+# Check if the p256m driver is enabled in the config file, as that will require a
+# dedicated target to be linked in. Note that 0 means SUCCESS here, 1 means FAILURE
+set(MBEDTLS_P256M_NOT_FOUND 1)
+execute_process(COMMAND
+    ${Python3_EXECUTABLE}
+    ${MBEDCRYPTO_PATH}/scripts/config.py -f "${TFM_MBEDCRYPTO_CONFIG_PATH}" get MBEDTLS_PSA_P256M_DRIVER_ENABLED
+    RESULT_VARIABLE MBEDTLS_P256M_NOT_FOUND)
+
+if (${MBEDTLS_P256M_NOT_FOUND} EQUAL 0)
+    message(STATUS "[Crypto service] Using P256M software driver in PSA Crypto backend")
+    set(MBEDTLS_P256M_ENABLED true)
+else()
+    set(MBEDTLS_P256M_ENABLED false)
+endif()
 
 # Mbedcrypto is quite a large lib, and it uses too much memory for it to be
 # reasonable to build it in debug info. As a compromise, if `debug` build type
@@ -142,7 +163,7 @@ add_subdirectory(${MBEDCRYPTO_PATH} ${CMAKE_CURRENT_BINARY_DIR}/mbedcrypto EXCLU
 set(CMAKE_BUILD_TYPE ${SAVED_BUILD_TYPE} CACHE STRING "Build type: [Debug, Release, RelWithDebInfo, MinSizeRel]" FORCE)
 
 if(NOT TARGET ${MBEDTLS_TARGET_PREFIX}mbedcrypto)
-    message(FATAL_ERROR "Target ${MBEDTLS_TARGET_PREFIX}mbedcrypto does not exist. Have the patches in ${CMAKE_SOURCE_DIR}/lib/ext/mbedcrypto been applied to the mbedcrypto repo at ${MBEDCRYPTO_PATH} ?
+    message(FATAL_ERROR "[Crypto service] Target ${MBEDTLS_TARGET_PREFIX}mbedcrypto does not exist. Have the patches in ${CMAKE_SOURCE_DIR}/lib/ext/mbedcrypto been applied to the mbedcrypto repo at ${MBEDCRYPTO_PATH} ?
     Hint: The command might be `cd ${MBEDCRYPTO_PATH} && git apply ${CMAKE_SOURCE_DIR}/lib/ext/mbedcrypto/*.patch`")
 endif()
 
@@ -173,10 +194,31 @@ target_compile_definitions(${MBEDTLS_TARGET_PREFIX}mbedcrypto
         MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER
 )
 
+# FixMe: The p256m CmakeLists.txt in version 3.5.0 has an issue with target
+# names and for this reason we need to force those defines at this stage
+target_compile_definitions(${MBEDTLS_TARGET_PREFIX}p256m
+    PRIVATE
+        MBEDTLS_PSA_P256M_DRIVER_ENABLED
+        MBEDTLS_PSA_CRYPTO_SPM
+)
+
+# The crypto_spe.h to be passed to p256m is here
+target_include_directories(${MBEDTLS_TARGET_PREFIX}p256m
+    PRIVATE
+        .
+)
+
+# TI-TFM: Added compiler flags for p256m target to ensure correct FPU support.
+target_compile_options(${MBEDTLS_TARGET_PREFIX}p256m
+    PRIVATE
+        ${COMPILER_CP_FLAG}
+)
+
 target_link_libraries(${MBEDTLS_TARGET_PREFIX}mbedcrypto
     PRIVATE
         psa_interface
         platform_s
+        $<$<BOOL:${MBEDTLS_P256M_ENABLED}>:${MBEDTLS_TARGET_PREFIX}p256m>
     PUBLIC
         crypto_service_mbedcrypto_config
     INTERFACE

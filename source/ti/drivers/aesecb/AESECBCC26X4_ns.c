@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -188,10 +188,10 @@ AESECB_Handle AESECB_open(uint_least8_t index, const AESECB_Params *params)
         aesecbObject_ns[index].semaphoreTimeout = params->returnBehavior == AESECB_RETURN_BEHAVIOR_BLOCKING
                                                       ? params->timeout
                                                       : SemaphoreP_NO_WAIT;
-    }
 
-    /* Set power dependency */
-    (void)Power_setDependency(PowerCC26XX_PERIPH_CRYPTO);
+        /* Set power dependency */
+        (void)Power_setDependency(PowerCC26XX_PERIPH_CRYPTO);
+    }
 
     return handle;
 }
@@ -262,10 +262,10 @@ AESECB_Handle AESECB_construct(AESECB_Config *config, const AESECB_Params *param
         aesecbObject_ns[index].semaphoreTimeout = params->returnBehavior == AESECB_RETURN_BEHAVIOR_BLOCKING
                                                       ? params->timeout
                                                       : SemaphoreP_NO_WAIT;
-    }
 
-    /* Set power dependency */
-    (void)Power_setDependency(PowerCC26XX_PERIPH_CRYPTO);
+        /* Set power dependency */
+        (void)Power_setDependency(PowerCC26XX_PERIPH_CRYPTO);
+    }
 
     return handle;
 }

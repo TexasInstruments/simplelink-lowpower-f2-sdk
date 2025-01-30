@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2017-2022 Arm Limited. All rights reserved.
+ * Copyright (c) 2022 Cypress Semiconductor Corporation (an Infineon company)
+ * or an affiliate of Cypress Semiconductor Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,10 +33,10 @@ LR_CODE S_CODE_START S_CODE_SIZE {
      * The first loaded partition will be inited at last in SFN model.
      */
     TFM_SP_LOAD_LIST +0 ALIGN 4 {
-        *(.part_load_priority_lowest)
-        *(.part_load_priority_low)
-        *(.part_load_priority_normal)
-        *(.part_load_priority_high)
+        *(.part_load_priority_00)
+        *(.part_load_priority_01)
+        *(.part_load_priority_02)
+        *(.part_load_priority_03)
     }
 
     /**** PSA RoT RO part (CODE + RODATA) start here */
@@ -58,10 +60,18 @@ LR_CODE S_CODE_START S_CODE_SIZE {
     TFM_PSA_CODE_END +0 ALIGN 32 EMPTY 0x0 {
     }
     /**** Unprivileged Secure code start here */
-    TFM_UNPRIV_CODE  AlignExpr(+0, GTZC_FLASH_ALIGN) FIXED {
+    TFM_UNPRIV_CODE_START  AlignExpr(+0, GTZC_FLASH_ALIGN) FIXED {
         *(SFN)
         * (+RO)
     }
+
+    /*
+     * This empty, zero long execution region is here to mark the end address
+     * of TFM unprivileged code.
+     */
+    TFM_UNPRIV_CODE_END +0 ALIGN 32 EMPTY 0x0 {
+    }
+
     /**** APPLICATION RoT RO part (CODE + RODATA) start here */
     /*
      * This empty, zero long execution region is here to mark the start address
@@ -134,18 +144,18 @@ LR_CODE S_CODE_START S_CODE_SIZE {
 
     /**** The runtime partition placed order is same as load partition */
     ER_PART_RT_POOL +0 ALIGN 4 {
-        *(.bss.part_runtime_priority_lowest)
-        *(.bss.part_runtime_priority_low)
-        *(.bss.part_runtime_priority_normal)
-        *(.bss.part_runtime_priority_high)
+        *(.bss.part_runtime_priority_00)
+        *(.bss.part_runtime_priority_01)
+        *(.bss.part_runtime_priority_02)
+        *(.bss.part_runtime_priority_03)
     }
 
     /**** The runtime service placed order is same as load partition */
     ER_SERV_RT_POOL +0 ALIGN 4 {
-        *(.bss.serv_runtime_priority_lowest)
-        *(.bss.serv_runtime_priority_low)
-        *(.bss.serv_runtime_priority_normal)
-        *(.bss.serv_runtime_priority_high)
+        *(.bss.serv_runtime_priority_00)
+        *(.bss.serv_runtime_priority_01)
+        *(.bss.serv_runtime_priority_02)
+        *(.bss.serv_runtime_priority_03)
     }
 
     /**** PSA RoT DATA start here */

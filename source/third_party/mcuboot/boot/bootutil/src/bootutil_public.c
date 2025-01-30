@@ -3,8 +3,8 @@
  *
  * Copyright (c) 2017-2019 Linaro LTD
  * Copyright (c) 2016-2019 JUUL Labs
- * Copyright (c) 2019-2020 Arm Limited
- * Copyright (c) 2020 Nordic Semiconductor ASA
+ * Copyright (c) 2019-2023 Arm Limited
+ * Copyright (c) 2020-2023 Nordic Semiconductor ASA
  *
  * Original license:
  *
@@ -41,15 +41,13 @@
 #include <stddef.h>
 
 #include "sysflash/sysflash.h"
-#include "flash_map_backend/flash_map_backend.h"
+#include "flash_map_backend.h"
 
 #include "bootutil/image.h"
 #include "bootutil/bootutil_public.h"
 #include "bootutil_priv.h"
+#include "bootutil_misc.h"
 #include "bootutil/bootutil_log.h"
-#ifdef MCUBOOT_ENC_IMAGES
-#include "bootutil/enc_key.h"
-#endif
 
 #ifdef CONFIG_MCUBOOT
 MCUBOOT_LOG_MODULE_DECLARE(mcuboot);
@@ -57,15 +55,27 @@ MCUBOOT_LOG_MODULE_DECLARE(mcuboot);
 MCUBOOT_LOG_MODULE_REGISTER(mcuboot_util);
 #endif
 
-const uint32_t boot_img_magic[] = {
-    0xf395c277,
-    0x7fefd260,
-    0x0f505235,
-    0x8079b62c,
+#if BOOT_MAX_ALIGN == 8
+const union boot_img_magic_t boot_img_magic = {
+    .val = {
+        0x77, 0xc2, 0x95, 0xf3,
+        0x60, 0xd2, 0xef, 0x7f,
+        0x35, 0x52, 0x50, 0x0f,
+        0x2c, 0xb6, 0x79, 0x80
+    }
 };
 
-#define BOOT_MAGIC_ARR_SZ \
-    (sizeof boot_img_magic / sizeof boot_img_magic[0])
+#else
+const union boot_img_magic_t boot_img_magic = {
+    .align = BOOT_MAX_ALIGN,
+    .magic = {
+        0x2d, 0xe1,
+        0x5d, 0x29, 0x41, 0x0b,
+        0x8d, 0x77, 0x67, 0x9c,
+        0x11, 0x0f, 0x1f, 0x8a
+    }
+};
+#endif
 
 struct boot_swap_table {
     uint8_t magic_primary_slot;
@@ -119,39 +129,12 @@ static const struct boot_swap_table boot_swap_tables[] = {
     (sizeof boot_swap_tables / sizeof boot_swap_tables[0])
 
 static int
-boot_magic_decode(const uint32_t *magic)
-{
-    if (memcmp(magic, boot_img_magic, BOOT_MAGIC_SZ) == 0) {
-        return BOOT_MAGIC_GOOD;
-    }
-    return BOOT_MAGIC_BAD;
-}
-
-static int
 boot_flag_decode(uint8_t flag)
 {
     if (flag != BOOT_FLAG_SET) {
         return BOOT_FLAG_BAD;
     }
     return BOOT_FLAG_SET;
-}
-
-static inline uint32_t
-boot_magic_off(const struct flash_area *fap)
-{
-    return fap->fa_size - BOOT_MAGIC_SZ;
-}
-
-static inline uint32_t
-boot_image_ok_off(const struct flash_area *fap)
-{
-    return boot_magic_off(fap) - BOOT_MAX_ALIGN;
-}
-
-static inline uint32_t
-boot_copy_done_off(const struct flash_area *fap)
-{
-    return boot_image_ok_off(fap) - BOOT_MAX_ALIGN;
 }
 
 uint32_t
@@ -185,25 +168,6 @@ boot_magic_compatible_check(uint8_t tbl_val, uint8_t val)
         return tbl_val == val;
     }
 }
-
-#ifdef MCUBOOT_ENC_IMAGES
-static inline uint32_t
-boot_swap_size_off(const struct flash_area *fap)
-{
-    return boot_swap_info_off(fap) - BOOT_MAX_ALIGN;
-}
-
-static inline uint32_t
-boot_enc_key_off(const struct flash_area *fap, uint8_t slot)
-{
-#if MCUBOOT_SWAP_SAVE_ENCTLV
-    return boot_swap_size_off(fap) - ((slot + 1) *
-            ((((BOOT_ENC_TLV_SIZE - 1) / BOOT_MAX_ALIGN) + 1) * BOOT_MAX_ALIGN));
-#else
-    return boot_swap_size_off(fap) - ((slot + 1) * BOOT_ENC_KEY_SIZE);
-#endif
-}
-#endif
 
 bool bootutil_buffer_is_erased(const struct flash_area *area,
                                const void *buffer, size_t len)
@@ -255,7 +219,7 @@ int
 boot_read_swap_state(const struct flash_area *fap,
                      struct boot_swap_state *state)
 {
-    uint32_t magic[BOOT_MAGIC_ARR_SZ];
+    uint8_t magic[BOOT_MAGIC_SZ];
     uint32_t off;
     uint8_t swap_info;
     int rc;
@@ -315,14 +279,31 @@ int
 boot_write_magic(const struct flash_area *fap)
 {
     uint32_t off;
+    uint32_t pad_off;
     int rc;
+    uint8_t magic[BOOT_MAGIC_ALIGN_SIZE];
+    uint8_t erased_val;
 
     off = boot_magic_off(fap);
+
+    /* image_trailer structure was modified with additional padding such that
+     * the pad+magic ends up in a flash minimum write region. The address
+     * returned by boot_magic_off() is the start of magic which is not the
+     * start of the flash write boundary and thus writes to the magic will fail.
+     * To account for this change, write to magic is first padded with 0xFF
+     * before writing to the trailer.
+     */
+    pad_off = ALIGN_DOWN(off, BOOT_MAX_ALIGN);
+
+    erased_val = flash_area_erased_val(fap);
+
+    memset(&magic[0], erased_val, sizeof(magic));
+    memcpy(&magic[BOOT_MAGIC_ALIGN_SIZE - BOOT_MAGIC_SZ], BOOT_IMG_MAGIC, BOOT_MAGIC_SZ);
 
     BOOT_LOG_DBG("writing magic; fa_id=%d off=0x%lx (0x%lx)",
                  fap->fa_id, (unsigned long)off,
                  (unsigned long)(fap->fa_off + off));
-    rc = flash_area_write(fap, off, boot_img_magic, BOOT_MAGIC_SZ);
+    rc = flash_area_write(fap, pad_off, &magic[0], BOOT_MAGIC_ALIGN_SIZE);
     if (rc != 0) {
         return BOOT_EFLASH;
     }
@@ -335,12 +316,12 @@ boot_write_magic(const struct flash_area *fap)
  *
  * @returns 0 on success, != 0 on error.
  */
-static int
+int
 boot_write_trailer(const struct flash_area *fap, uint32_t off,
         const uint8_t *inbuf, uint8_t inlen)
 {
     uint8_t buf[BOOT_MAX_ALIGN];
-    uint8_t align;
+    uint32_t align;
     uint8_t erased_val;
     int rc;
 
@@ -363,7 +344,7 @@ boot_write_trailer(const struct flash_area *fap, uint32_t off,
     return 0;
 }
 
-static int
+int
 boot_write_trailer_flag(const struct flash_area *fap, uint32_t off,
         uint8_t flag_val)
 {
@@ -444,7 +425,7 @@ boot_swap_type_multi(int image_index)
                 table->image_ok_secondary_slot == secondary_slot.image_ok) &&
             (table->copy_done_primary_slot == BOOT_FLAG_ANY  ||
                 table->copy_done_primary_slot == primary_slot.copy_done)) {
-            BOOT_LOG_INF("Swap type: %s",
+            BOOT_LOG_INF("Image index: %d, Swap type: %s", image_index,
                          table->swap_type == BOOT_SWAP_TYPE_TEST   ? "test"   :
                          table->swap_type == BOOT_SWAP_TYPE_PERM   ? "perm"   :
                          table->swap_type == BOOT_SWAP_TYPE_REVERT ? "revert" :
@@ -458,7 +439,7 @@ boot_swap_type_multi(int image_index)
         }
     }
 
-    BOOT_LOG_INF("Swap type: none");
+    BOOT_LOG_INF("Image index: %d, Swap type: none", image_index);
     return BOOT_SWAP_TYPE_NONE;
 }
 
@@ -601,4 +582,37 @@ boot_set_confirmed(void)
 done:
     flash_area_close(fap);
     return rc;
+}
+
+int
+boot_image_load_header(const struct flash_area *fap,
+                       struct image_header *hdr)
+{
+    uint32_t size;
+    int rc = flash_area_read(fap, 0, hdr, sizeof *hdr);
+
+    if (rc != 0) {
+        rc = BOOT_EFLASH;
+        BOOT_LOG_ERR("Failed reading image header");
+	return BOOT_EFLASH;
+    }
+
+    if (hdr->ih_magic != IMAGE_MAGIC) {
+        BOOT_LOG_ERR("Bad image magic 0x%lx", (unsigned long)hdr->ih_magic);
+
+        return BOOT_EBADIMAGE;
+    }
+
+    if (hdr->ih_flags & IMAGE_F_NON_BOOTABLE) {
+        BOOT_LOG_ERR("Image not bootable");
+
+        return BOOT_EBADIMAGE;
+    }
+
+    if (!boot_u32_safe_add(&size, hdr->ih_img_size, hdr->ih_hdr_size) ||
+        size >= fap->fa_size) {
+        return BOOT_EBADIMAGE;
+    }
+
+    return 0;
 }

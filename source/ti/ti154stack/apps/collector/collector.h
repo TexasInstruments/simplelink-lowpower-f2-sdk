@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -143,46 +143,51 @@ Sensor to poll and get the frame*/
 #define MAX(n,m)   (((n) < (m)) ? (m) : (n))
 #endif
 
+#ifndef MIN
+#define MIN(n,m)   (((n) < (m)) ? (n) : (m))
+#endif
+
+
 #if (CONFIG_PHY_ID == APIMAC_CUSTOM_PHY_ID)
 /* MAC Indirevt Persistent Timeout */
-#define INDIRECT_PERSISTENT_TIME (MAX((5 * 1000 * CONFIG_POLLING_INTERVAL / 2), MIN_PERSISTENCE_TIME_USEC)/ \
+#define INDIRECT_PERSISTENT_TIME (MIN((MAX((5 * 1000 * CONFIG_POLLING_INTERVAL / 2), MIN_PERSISTENCE_TIME_USEC)/ \
                                   (BASE_SUPER_FRAME_DURATION * \
-                                   SYMBOL_DURATION_CUSTOM)) 
+                                   SYMBOL_DURATION_CUSTOM)), 65535))
 
 #elif  ((CONFIG_PHY_ID >= APIMAC_MRFSK_STD_PHY_ID_BEGIN) && (CONFIG_PHY_ID <= APIMAC_MRFSK_GENERIC_PHY_ID_BEGIN))
 
 /* MAC Indirect Persistent Timeout */
-#define INDIRECT_PERSISTENT_TIME (MAX((5 * 1000 * CONFIG_POLLING_INTERVAL / 2), MIN_PERSISTENCE_TIME_USEC)/ \
+#define INDIRECT_PERSISTENT_TIME (MIN((MAX((5 * 1000 * CONFIG_POLLING_INTERVAL / 2), MIN_PERSISTENCE_TIME_USEC)/ \
                                   (BASE_SUPER_FRAME_DURATION * \
-                                   SYMBOL_DURATION_50_kbps))
+                                   SYMBOL_DURATION_50_kbps)), 65535))
 
 #elif ((CONFIG_PHY_ID >= APIMAC_200KBPS_915MHZ_PHY_132) && (CONFIG_PHY_ID <= APIMAC_200KBPS_868MHZ_PHY_133)) || \
        (CONFIG_PHY_ID == APIMAC_200KBPS_920MHZ_PHY_136)
 
 /* MAC Indirect Persistent Timeout */
-#define INDIRECT_PERSISTENT_TIME (MAX((5 * 1000 * CONFIG_POLLING_INTERVAL / 2),MIN_PERSISTENCE_TIME_USEC) / \
+#define INDIRECT_PERSISTENT_TIME (MIN((MAX((5 * 1000 * CONFIG_POLLING_INTERVAL / 2),MIN_PERSISTENCE_TIME_USEC) / \
                                   (BASE_SUPER_FRAME_DURATION * \
-                                   SYMBOL_DURATION_200_kbps))
+                                   SYMBOL_DURATION_200_kbps)), 65535))
 
 #elif (CONFIG_PHY_ID == APIMAC_250KBPS_IEEE_PHY_0)
 
 /* MAC Indirect Persistent Timeout */
 #ifdef FEATURE_SECURE_COMMISSIONING
 /* Increase the persistence time by a factor of 10 */
-#define INDIRECT_PERSISTENT_TIME (MAX((5* 10 * 1000 * CONFIG_POLLING_INTERVAL / 2), MIN_PERSISTENCE_TIME_USEC)/ \
+#define INDIRECT_PERSISTENT_TIME (MIN((MAX((5* 10 * 1000 * CONFIG_POLLING_INTERVAL / 2), MIN_PERSISTENCE_TIME_USEC)/ \
                                   (BASE_SUPER_FRAME_DURATION * \
-                                   SYMBOL_DURATION_250_kbps))
+                                   SYMBOL_DURATION_250_kbps)), 65535))
 #else
-#define INDIRECT_PERSISTENT_TIME (MAX((5 * 1000 * CONFIG_POLLING_INTERVAL / 2), MIN_PERSISTENCE_TIME_USEC)/ \
+#define INDIRECT_PERSISTENT_TIME (MIN((MAX((5 * 1000 * CONFIG_POLLING_INTERVAL / 2), MIN_PERSISTENCE_TIME_USEC)/ \
                                   (BASE_SUPER_FRAME_DURATION * \
-                                   SYMBOL_DURATION_250_kbps))
+                                   SYMBOL_DURATION_250_kbps)), 65535))
 #endif
 
 #else
 /* MAC Indirect Persistent Timeout */
-#define INDIRECT_PERSISTENT_TIME (MAX((5 * 1000 * CONFIG_POLLING_INTERVAL / 2), MIN_PERSISTENCE_TIME_USEC)/ \
+#define INDIRECT_PERSISTENT_TIME (MIN((MAX((5 * 1000 * CONFIG_POLLING_INTERVAL / 2), MIN_PERSISTENCE_TIME_USEC)/ \
                                   (BASE_SUPER_FRAME_DURATION * \
-                                    SYMBOL_DURATION_LRM))
+                                    SYMBOL_DURATION_LRM)), 65535))
 #endif
 
 /******************************************************************************

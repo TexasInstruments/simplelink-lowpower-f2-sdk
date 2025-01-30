@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2023, Texas Instruments Incorporated
+ * Copyright (c) 2020-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -68,11 +68,14 @@ static ITM_Object object = {
 extern void *itmHwAttrs;
 
 /**
+ * This function initializes the ITM hardware.
+ */
+static void ITM_initHw(void);
+
+/**
  * This function will setup the mux to route the TPIU output to the pin(s) that
  * the user has selected in the hwAttrs.
  *
- *  The MSP and CC32xx family do not support flexible pin muxing for the
- *          TPIU. Only the TDO pin can be used for SWO output.
  */
 extern bool ITM_applyPinMux(void);
 /**
@@ -104,31 +107,8 @@ bool ITM_open(void)
             return (bool)false;
         }
 
-        /* Disable ITM and trace h/w as we're about to set it up again */
-        HWREG(ITM_SCS_BASE_ADDR  + CPU_SCS_O_DEMCR) &= (~CPU_SCS_DEMCR_TRCENA_M);
-        HWREG(ITM_BASE_ADDR + CPU_ITM_O_TCR) = 0x00000000;
-
-        /* Enable trace */
-        HWREG(ITM_SCS_BASE_ADDR  + CPU_SCS_O_DEMCR) |= CPU_SCS_DEMCR_TRCENA_M;
-
-        /* Unlock and Setup TPIU for SWO UART mode */
-        HWREG(ITM_TPIU_BASE_ADDR + CPU_TPIU_O_LAR)   = ITM_LAR_UNLOCK;
-        HWREG(ITM_TPIU_BASE_ADDR + CPU_TPIU_O_SPPR)  = hwAttrs->format;
-        HWREG(ITM_TPIU_BASE_ADDR + CPU_TPIU_O_CSPSR) = CPU_TPIU_CSPSR_ONE;
-
-        /* Unlock and enable all ITM stimulus ports with default settings */
-        HWREG(ITM_BASE_ADDR + CPU_ITM_O_LAR) = ITM_LAR_UNLOCK;
-        HWREG(ITM_BASE_ADDR + CPU_ITM_O_TER) = hwAttrs->traceEnable;
-        HWREG(ITM_BASE_ADDR + CPU_ITM_O_TPR) = 0x0000000F;
-
-        /* Program prescaler value which is calculated from syscfg */
-        HWREG(ITM_TPIU_BASE_ADDR + CPU_TPIU_O_ACPR) = hwAttrs->tpiuPrescaler;
-
-        /* Disable formatter */
-        HWREG(ITM_TPIU_BASE_ADDR + CPU_TPIU_O_FFCR) = 0;
-
-        /* Unlock DWT */
-        HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_LAR) = ITM_LAR_UNLOCK;
+        /* Initialize ITM Hardware */
+        ITM_initHw();
 
         /* Store the number of DWT comparators */
         object.numDwtComparators = (HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_CTRL) & CPU_DWT_CTRL_NUMCOMP_M) >>
@@ -147,15 +127,6 @@ bool ITM_open(void)
 
         /* Then multiply this by the length of the FIFO */
         object.fullFIFOInCycles = tpiuFifoSize * (hwAttrs->fullPacketInCycles);
-
-        /* Enable cycle counter, required to ensure proper flush */
-        HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_CTRL) |= CPU_DWT_CTRL_CYCCNTENA_M;
-
-        /* Enable ITM */
-        HWREG(ITM_BASE_ADDR + CPU_ITM_O_TCR) |= CPU_ITM_TCR_ITMENA;
-
-        /* Enable DWT stimulus. This routes DWT packets to the TPIU */
-        HWREG(ITM_BASE_ADDR + CPU_ITM_O_TCR) |= CPU_ITM_TCR_DWTENA_M;
     }
 
     /* Increment is open counter to allow multiple open calls */
@@ -494,10 +465,61 @@ void ITM_commonRestore(void)
     /* Only if currently used ... */
     if (object.numberOfClients != 0)
     {
+
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX)
+        /* For CC27XX devices, the CPU sub-system is reset in standby, and the
+         * ITM must thus be re-initialized.
+         */
+        ITM_initHw();
+#endif
+
         /* Enable ITM */
         HWREG(ITM_BASE_ADDR + CPU_ITM_O_TCR) |= CPU_ITM_TCR_ITMENA;
 
         /* Restore the DWT CTRL register */
         HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_CTRL) |= object.dwtCtrlRegister;
     }
+}
+
+/*
+ *  ======== ITM_initHw ========
+ */
+static void ITM_initHw(void)
+{
+    ITM_HWAttrs *hwAttrs = (ITM_HWAttrs *)itmHwAttrs;
+
+    /* Disable ITM and trace hardware as we're about to set it up again */
+    HWREG(ITM_SCS_BASE_ADDR  + CPU_SCS_O_DEMCR) &= (~CPU_SCS_DEMCR_TRCENA_M);
+    HWREG(ITM_BASE_ADDR + CPU_ITM_O_TCR) = 0x00000000;
+
+    /* Enable trace */
+    HWREG(ITM_SCS_BASE_ADDR  + CPU_SCS_O_DEMCR) |= CPU_SCS_DEMCR_TRCENA_M;
+
+    /* Unlock and Setup TPIU for SWO UART mode */
+    HWREG(ITM_TPIU_BASE_ADDR + CPU_TPIU_O_LAR)   = ITM_LAR_UNLOCK;
+    HWREG(ITM_TPIU_BASE_ADDR + CPU_TPIU_O_SPPR)  = hwAttrs->format;
+    HWREG(ITM_TPIU_BASE_ADDR + CPU_TPIU_O_CSPSR) = CPU_TPIU_CSPSR_ONE;
+
+    /* Unlock and enable all ITM stimulus ports with default settings */
+    HWREG(ITM_BASE_ADDR + CPU_ITM_O_LAR) = ITM_LAR_UNLOCK;
+    HWREG(ITM_BASE_ADDR + CPU_ITM_O_TER) = hwAttrs->traceEnable;
+    HWREG(ITM_BASE_ADDR + CPU_ITM_O_TPR) = 0x0000000F;
+
+    /* Program prescaler value which is calculated from SysConfig */
+    HWREG(ITM_TPIU_BASE_ADDR + CPU_TPIU_O_ACPR) = hwAttrs->tpiuPrescaler;
+
+    /* Disable formatter */
+    HWREG(ITM_TPIU_BASE_ADDR + CPU_TPIU_O_FFCR) = 0;
+
+    /* Unlock DWT */
+    HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_LAR) = ITM_LAR_UNLOCK;
+
+    /* Enable cycle counter, required to ensure proper flush */
+    HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_CTRL) |= CPU_DWT_CTRL_CYCCNTENA_M;
+
+    /* Enable ITM */
+    HWREG(ITM_BASE_ADDR + CPU_ITM_O_TCR) |= CPU_ITM_TCR_ITMENA;
+
+    /* Enable DWT stimulus. This routes DWT packets to the TPIU */
+    HWREG(ITM_BASE_ADDR + CPU_ITM_O_TCR) |= CPU_ITM_TCR_DWTENA_M;
 }

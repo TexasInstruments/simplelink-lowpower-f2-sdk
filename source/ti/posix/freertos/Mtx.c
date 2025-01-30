@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2023 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2017-2024 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -98,8 +98,7 @@ void *Mtx_getTlsPtr(void)
         else
         {
             /* error: out of memory */
-            volatile int spin = 1;
-            while (spin) {}
+            while (1) {}
         }
     }
 
@@ -135,8 +134,7 @@ void Mtx_initLock(void **ptr)
     if (lock == NULL)
     {
         /* error: out of memory */
-        volatile int spin = 1;
-        while (spin) {}
+        while (1) {}
     }
 
     /* create a mutex */
@@ -147,8 +145,7 @@ void Mtx_initLock(void **ptr)
         vPortFree(lock);
 
         /* error: out of memory */
-        volatile int spin = 1;
-        while (spin) {}
+        while (1) {}
     }
 
     /* initialize owner and count */
@@ -223,7 +220,7 @@ void Mtx_releaseLock(void **ptr)
     if (lock->count == 0)
     {
         lock->owner = NULL;
-        xSemaphoreGive(&(lock->mutex));
+        xSemaphoreGive(lock->mutex);
     }
 }
 

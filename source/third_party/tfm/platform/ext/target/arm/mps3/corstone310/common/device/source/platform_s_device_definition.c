@@ -23,7 +23,7 @@
 
 #include "platform_s_device_definition.h"
 #include "platform_base_address.h"
-#include "platform/include/tfm_plat_defs.h"
+#include "tfm_plat_defs.h"
 
 /* UART CMSDK driver structures */
 static const struct uart_cmsdk_dev_cfg_t UART0_CMSDK_DEV_CFG_NS = {
@@ -232,9 +232,9 @@ struct syscounter_armv8_m_cntrl_dev_t SYSCOUNTER_CNTRL_ARMV8_M_DEV_S = {
 
 /* System timers */
 static const struct systimer_armv8_m_dev_cfg_t SYSTIMER0_ARMV8_M_DEV_CFG_S
-#ifdef TEST_NS_SLIH_IRQ
+#ifdef TFM_PARTITION_SLIH_TEST
     TFM_LINK_SET_RO_IN_PARTITION_SECTION("TFM_SP_SLIH_TEST", "APP-ROT")
-#elif defined(TEST_NS_FLIH_IRQ)
+#elif defined(TFM_PARTITION_FLIH_TEST)
     TFM_LINK_SET_RO_IN_PARTITION_SECTION("TFM_SP_FLIH_TEST", "APP-ROT")
 #endif
     = {
@@ -242,18 +242,18 @@ static const struct systimer_armv8_m_dev_cfg_t SYSTIMER0_ARMV8_M_DEV_CFG_S
     .default_freq_hz = SYSTIMER0_ARMV8M_DEFAULT_FREQ_HZ
 };
 static struct systimer_armv8_m_dev_data_t SYSTIMER0_ARMV8_M_DEV_DATA_S
-#ifdef TEST_NS_SLIH_IRQ
+#ifdef TFM_PARTITION_SLIH_TEST
     TFM_LINK_SET_RW_IN_PARTITION_SECTION("TFM_SP_SLIH_TEST", "APP-ROT")
-#elif defined(TEST_NS_FLIH_IRQ)
+#elif defined(TFM_PARTITION_FLIH_TEST)
     TFM_LINK_SET_RW_IN_PARTITION_SECTION("TFM_SP_FLIH_TEST", "APP-ROT")
 #endif
     = {
     .is_initialized = false
 };
 struct systimer_armv8_m_dev_t SYSTIMER0_ARMV8_M_DEV_S
-#ifdef TEST_NS_SLIH_IRQ
+#ifdef TFM_PARTITION_SLIH_TEST
     TFM_LINK_SET_RW_IN_PARTITION_SECTION("TFM_SP_SLIH_TEST", "APP-ROT")
-#elif defined(TEST_NS_FLIH_IRQ)
+#elif defined(TFM_PARTITION_FLIH_TEST)
     TFM_LINK_SET_RW_IN_PARTITION_SECTION("TFM_SP_FLIH_TEST", "APP-ROT")
 #endif
     = {
@@ -566,3 +566,9 @@ static struct mpc_sie_dev_data_t MPC_DDR4_DEV_DATA_S = {
 struct mpc_sie_dev_t MPC_DDR4_DEV_S = {
     &(MPC_DDR4_DEV_CFG_S),
     &(MPC_DDR4_DEV_DATA_S)};
+
+struct ethosu_device NPU0_S = {
+    .reg = (struct NPU_REG *)NPU0_APB_BASE_S,
+    .secure = 0,
+    .privileged = 0,
+};

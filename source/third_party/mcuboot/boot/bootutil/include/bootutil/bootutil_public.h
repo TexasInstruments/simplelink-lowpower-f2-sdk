@@ -3,8 +3,8 @@
  *
  * Copyright (c) 2017-2019 Linaro LTD
  * Copyright (c) 2016-2019 JUUL Labs
- * Copyright (c) 2019-2020 Arm Limited
- * Copyright (c) 2020 Nordic Semiconductor ASA
+ * Copyright (c) 2019-2021 Arm Limited
+ * Copyright (c) 2020-2021 Nordic Semiconductor ASA
  *
  * Original license:
  *
@@ -39,11 +39,22 @@
 #define H_BOOTUTIL_PUBLIC
 
 #include <inttypes.h>
+#include <stdbool.h>
 #include <string.h>
-#include <flash_map_backend/flash_map_backend.h>
+#include "flash_map_backend.h"
+#include "mcuboot_config.h"
+#include <bootutil/image.h>
 
 #ifdef __cplusplus
 extern "C" {
+#endif
+
+#ifndef ALIGN_UP
+#define ALIGN_UP(num, align)    (((num) + ((align) - 1)) & ~((align) - 1))
+#endif
+
+#ifndef ALIGN_DOWN
+#define ALIGN_DOWN(num, align)  ((num) & ~((align) - 1))
 #endif
 
 /** Attempt to boot the contents of the primary slot. */
@@ -70,7 +81,21 @@ extern "C" {
 /** Swapping encountered an unrecoverable error */
 #define BOOT_SWAP_TYPE_PANIC    0xff
 
+#define BOOT_MAGIC_SZ           16
+
+#ifdef MCUBOOT_BOOT_MAX_ALIGN
+
+#if defined(MCUBOOT_SWAP_USING_MOVE) || defined(MCUBOOT_SWAP_USING_SCRATCH)
+_Static_assert(MCUBOOT_BOOT_MAX_ALIGN >= 8 && MCUBOOT_BOOT_MAX_ALIGN <= 32,
+               "Unsupported value for MCUBOOT_BOOT_MAX_ALIGN for SWAP upgrade modes");
+#endif
+
+#define BOOT_MAX_ALIGN          MCUBOOT_BOOT_MAX_ALIGN
+#define BOOT_MAGIC_ALIGN_SIZE   ALIGN_UP(BOOT_MAGIC_SZ, BOOT_MAX_ALIGN)
+#else
 #define BOOT_MAX_ALIGN          8
+#define BOOT_MAGIC_ALIGN_SIZE   BOOT_MAGIC_SZ
+#endif
 
 #define BOOT_MAGIC_GOOD     1
 #define BOOT_MAGIC_BAD      2
@@ -86,7 +111,7 @@ extern "C" {
 #define BOOT_FLAG_UNSET     3
 #define BOOT_FLAG_ANY       4  /* NOTE: control only, not dependent on sector */
 
-#define BOOT_MAGIC_SZ (sizeof boot_img_magic)
+
 
 struct boot_swap_state {
     uint8_t magic;      /* One of the BOOT_MAGIC_[...] values. */
@@ -130,12 +155,23 @@ int boot_swap_type(void);
 int boot_set_pending(int permanent);
 
 /**
- * @brief Marks the image in the primary slot as confirmed.
+ * Marks the image with the given index in the primary slot as confirmed.  The
+ * system will continue booting into the image in the primary slot until told to
+ * boot from a different slot.
  *
- * The system will continue booting into the image in the primary slot until
- * told to boot from a different slot.
+ * @param image_index       Image pair index.
  *
- * @return 0 on success; nonzero on failure.
+ * @return                  0 on success; nonzero on failure.
+ */
+int boot_set_confirmed_multi(int image_index);
+
+/**
+ * Marks the image with index 0 in the primary slot as confirmed.  The system
+ * will continue booting into the image in the primary slot until told to boot
+ * from a different slot.  Note that this API is kept for compatibility. The
+ * boot_set_confirmed_multi() API is recommended.
+ *
+ * @return                  0 on success; nonzero on failure.
  */
 int boot_set_confirmed(void);
 
@@ -164,18 +200,52 @@ int boot_read_image_ok(const struct flash_area *fap, uint8_t *image_ok);
 /**
  * @brief Read the image swap state
  *
- * @param flash_area_id Id of flash parttition from which trailer will be read.
- * @param state Struture for holding swap state.
+ * @param flash_area_id id of flash partition from which state will be read;
+ * @param state pointer to structure for storing swap state.
  *
- * @return 0 on success, nonzero errno code on fail.
+ * @return 0 on success; non-zero error code on failure;
  */
 int
 boot_read_swap_state_by_id(int flash_area_id, struct boot_swap_state *state);
 
-#define BOOT_MAGIC_ARR_SZ \
-    (sizeof boot_img_magic / sizeof boot_img_magic[0])
+/**
+ * @brief Set next image application slot by flash area pointer
+ *
+ * @param fa pointer to flash_area representing image to set for next boot;
+ * @param active should be true if @fa points to currently running image
+ *        slot, false otherwise;
+ * @param confirm confirms image; when @p active is true, this is considered
+ *        true, regardless of passed value.
+ *
+ * It is users responsibility to identify whether @p fa provided as parameter
+ * is currently running/active image and provide proper value to @p active.
+ * Failing to do so may render device non-upgradeable.
+ *
+ * Note that in multi-image setup running/active application is the one
+ * that is currently being executed by any MCU core, from the pair of
+ * slots dedicated to that MCU core. As confirming application currently
+ * running on a given slot should be, preferably, done after functional
+ * tests prove application to function correctly, it may not be a good idea
+ * to cross-confirm running images.
+ * An application should only confirm slots designated to MCU core it is
+ * running on.
+ *
+ * @return 0 on success; non-zero error code on failure.
+ */
+int
+boot_set_next(const struct flash_area *fa, bool active, bool confirm);
 
-extern const uint32_t boot_img_magic[4];
+/**
+ * Attempts to load image header from flash; verifies flash header fields.
+ *
+ * @param[in]   fap    flash area pointer
+ * @param[out]  hdr     buffer for image header
+ *
+ * @return              0 on success, error code otherwise
+ */
+int
+boot_image_load_header(const struct flash_area *fap,
+                       struct image_header *hdr);
 
 #ifdef __cplusplus
 }

@@ -1,0 +1,51 @@
+/*
+ * Copyright (c) 2023 Arm Limited. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+#include "region_defs.h"
+
+do not initialize { section .noinit };
+do not initialize { readwrite };
+
+define block VALUES with fixed order, maximum size = PROVISIONING_BUNDLE_VALUES_SIZE {
+       ro object *provisioning_data.o
+};
+"VALUES": place at address PROVISIONING_BUNDLE_VALUES_START { block VALUES };
+
+define ram region DATA = [from PROVISIONING_BUNDLE_DATA_START size PROVISIONING_BUNDLE_DATA_SIZE];
+
+define block RW_DATA {
+    rw data
+};
+"RW_DATA": place at start of DATA { block RW_DATA };
+
+define block RO_DATA {
+    ro data
+} except  {
+    ro object *provisioning_data.o
+};
+"RO_DATA": place in DATA { block RO_DATA };
+
+define block BSS_DATA {
+    zi section .bss
+};
+"BSS_DATA": place in DATA { block BSS_DATA };
+
+define block CODE with fixed order, alignment = 4, maximum size = PROVISIONING_BUNDLE_CODE_SIZE {
+    ro section DO_PROVISION,
+    ro code,
+};
+"CODE": place at address PROVISIONING_BUNDLE_CODE_START { block CODE };

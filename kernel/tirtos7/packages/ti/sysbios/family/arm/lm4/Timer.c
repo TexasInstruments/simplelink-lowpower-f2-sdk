@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2020, Texas Instruments Incorporated
+ * Copyright (c) 2014-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -88,18 +88,6 @@
 #define SCGCTIMERS  ((volatile uint32_t *)0x400FE704)
 #define DCGCTIMERS  ((volatile uint32_t *)0x400FE804)
 
-/* CC32xx ARCM GPT Clock Gating registers */
-#define GPT_A0_CLK_GATING   (*(volatile uint32_t *)0x44025090)
-#define GPT_A1_CLK_GATING   (*(volatile uint32_t *)0x44025098)
-#define GPT_A2_CLK_GATING   (*(volatile uint32_t *)0x440250A0)
-#define GPT_A3_CLK_GATING   (*(volatile uint32_t *)0x440250A8)
-
-/* CC32xx ARCM GPT Soft Reset registers */
-#define GPT_A0_SOFT_RESET   (*(volatile uint32_t *)0x44025094)
-#define GPT_A1_SOFT_RESET   (*(volatile uint32_t *)0x4402509C)
-#define GPT_A2_SOFT_RESET   (*(volatile uint32_t *)0x440250A4)
-#define GPT_A3_SOFT_RESET   (*(volatile uint32_t *)0x440250AC)
-
 /*
  * CC13/14/26/27 Timer Device Info
  */
@@ -119,28 +107,6 @@ Timer_TimerDevice TimerDevices_CC26XX[4] = {
     {
         .intNum = 37,
         .baseAddr = (void *)0x40013000
-    }
-};
-
-/*
- * CC32XX Timer Device Info
- */
-Timer_TimerDevice TimerDevices_CC32XX[4] = {
-    {
-        .intNum = 35,
-        .baseAddr = (void *)0x40030000
-    },
-    {
-        .intNum = 37,
-        .baseAddr = (void *)0x40031000
-    },
-    {
-        .intNum = 39,
-        .baseAddr = (void *)0x40032000
-    },
-    {
-        .intNum = 51,
-        .baseAddr = (void *)0x40033000
     }
 };
 
@@ -1188,46 +1154,6 @@ void Timer_enableCC26xx(int id)
 #endif // ti_sysbios_family_arm_cc26xx_Boot_driverlibVersion
 
 /*
- *  ======== Timer_enableCC3200 ========
- */
-#if defined(__IAR_SYSTEMS_ICC__)
-__weak void Timer_enableCC3200(int id)
-#elif (defined(__GNUC__) && !defined(__ti__)) || (defined(__GNUC__) && defined(__clang__))
-void __attribute__((weak)) Timer_enableCC3200(int id)
-#else
-#pragma WEAK (Timer_enableCC3200)
-void Timer_enableCC3200(int id)
-#endif
-{
-    unsigned int key;
-
-    key = Hwi_disable();
-
-    switch (id) {
-        case 0: GPT_A0_CLK_GATING |= 0x1;
-                GPT_A0_SOFT_RESET |= 0x1;
-                GPT_A0_SOFT_RESET &= ~(0x1);
-                break;
-        case 1: GPT_A1_CLK_GATING |= 0x1;
-                GPT_A1_SOFT_RESET |= 0x1;
-                GPT_A1_SOFT_RESET &= ~(0x1);
-                break;
-        case 2: GPT_A2_CLK_GATING |= 0x1;
-                GPT_A2_SOFT_RESET |= 0x1;
-                GPT_A2_SOFT_RESET &= ~(0x1);
-                break;
-        case 3: GPT_A3_CLK_GATING |= 0x1;
-                GPT_A3_SOFT_RESET |= 0x1;
-                GPT_A3_SOFT_RESET &= ~(0x1);
-                break;
-        default:
-                break;
-    }
-
-    Hwi_restore(key);
-}
-
-/*
  *  ======== Timer_enableTiva ========
  */
 void Timer_enableTiva(int id)
@@ -1288,38 +1214,6 @@ void __attribute__((weak)) Timer_disableCC26xx(int id)
 void Timer_disableCC26xx(int id)
 #endif
 {
-}
-
-/*
- *  ======== Timer_disableCC3200 ========
- */
-#if defined(__IAR_SYSTEMS_ICC__)
-__weak void Timer_disableCC3200(int id)
-#elif (defined(__GNUC__) && !defined(__ti__)) || (defined(__GNUC__) && defined(__clang__))
-void __attribute__((weak)) Timer_disableCC3200(int id)
-#else
-#pragma WEAK (Timer_disableCC3200)
-void Timer_disableCC3200(int id)
-#endif
-{
-    unsigned int key;
-
-    key = Hwi_disable();
-
-    switch (id) {
-        case 0: GPT_A0_CLK_GATING &= ~(0x1);
-                break;
-        case 1: GPT_A1_CLK_GATING &= ~(0x1);
-                break;
-        case 2: GPT_A2_CLK_GATING &= ~(0x1);
-                break;
-        case 3: GPT_A3_CLK_GATING &= ~(0x1);
-                break;
-        default:
-                break;
-    }
-
-    Hwi_restore(key);
 }
 
 /*

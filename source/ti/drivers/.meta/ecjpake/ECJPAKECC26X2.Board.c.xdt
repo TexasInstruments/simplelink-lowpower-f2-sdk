@@ -60,8 +60,10 @@
 % if (system.modules["/ti/utils/TrustZone"]) {
 #include <ti/drivers/ecjpake/ECJPAKECC26X4_ns.h>
 #include <ti/drivers/ecjpake/ECJPAKECC26X4_s.h>
-/* These object arrays store non-secure copies of the secure callback struct and handle parameters required for
- * Secure/Non-secure driver functionality. The size of the arrays depend on the number of driver instances.
+/* These object arrays store non-secure copies of the secure callback struct and
+ * handle parameters required for Secure/Non-secure driver functionality. The
+ * SECURE_CALLBACK_COUNT is the total number of static and dynamic driver
+ * instances supported by the TF-M.
  */
 ECJPAKE_s_SecureCallback ecjpakeSecureCB_ns[ECJPAKE_SECURE_CALLBACK_COUNT];
 ECJPAKECC26X4_ns_Object ecjpakeObject_ns[ECJPAKE_SECURE_CALLBACK_COUNT];

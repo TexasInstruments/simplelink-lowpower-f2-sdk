@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2019-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -11,6 +11,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "config_spm.h"
+#ifdef TFM_PARTITION_NS_AGENT_MAILBOX
+#include "ffm/agent_api.h"
+#endif
 #include "psa/client.h"
 #include "psa/service.h"
 
@@ -45,9 +48,9 @@
                                             */
 #define INVEC_IDX_BASE                 0   /* Base index of invec. */
 
-#define IOVEC_MAPPED_BIT               (1U << 0)
-#define IOVEC_UNMAPPED_BIT             (1U << 1)
-#define IOVEC_ACCESSED_BIT             (1U << 2)
+#define IOVEC_MAPPED_BIT               (1UL << 0)
+#define IOVEC_UNMAPPED_BIT             (1UL << 1)
+#define IOVEC_ACCESSED_BIT             (1UL << 2)
 
 #define IOVEC_IS_MAPPED(handle, iovec_idx)      \
     ((((handle)->iovec_status) >> ((iovec_idx) * IOVEC_STATUS_BITS)) &  \
@@ -69,6 +72,65 @@
                               ((iovec_idx) * IOVEC_STATUS_BITS)))
 
 #endif /* PSA_FRAMEWORK_HAS_MM_IOVEC */
+
+#ifdef TFM_PARTITION_NS_AGENT_MAILBOX
+/**
+ * \brief handler for \ref agent_psa_call.
+ *
+ * \param[in] handle                 Handle to the service being accessed.
+ * \param[in] control                A composited uint32_t value for controlling purpose,
+ *                                   containing call types, numbers of in/out vectors and
+ *                                   attributes of vectors.
+ * \param[in] params                 Combines the psa_invec and psa_outvec params
+ *                                   for the psa_call() to be made, as well as
+ *                                   NS agent's client identifier, which is ignored
+ *                                   for connection-based services.
+ * \param[in] client_data_stateless  Client data, treated as opaque by SPM.
+ *
+ * \retval PSA_SUCCESS               Success.
+ * \retval "Does not return"         The call is invalid, one or more of the
+ *                                   following are true:
+ * \arg                                An invalid handle was passed.
+ * \arg                                The connection is already handling a request.
+ * \arg                                An invalid memory reference was provided.
+ * \arg                                in_num + out_num > PSA_MAX_IOVEC.
+ * \arg                                The message is unrecognized by the RoT
+ *                                     Service or incorrectly formatted.
+ */
+psa_status_t tfm_spm_agent_psa_call(psa_handle_t handle,
+                                    uint32_t control,
+                                    const struct client_params_t *params,
+                                    const void *client_data_stateless);
+
+#if CONFIG_TFM_CONNECTION_BASED_SERVICE_API == 1
+
+/**
+ * \brief handler for \ref agent_psa_connect.
+ *
+ * \param[in] sid               RoT Service identity.
+ * \param[in] version           The version of the RoT Service.
+ * \param[in] ns_client_id      NS agent's client identifier.
+ * \param[in] client_data       Client data, treated as opaque by SPM.
+ *
+ * \retval PSA_SUCCESS          Success.
+ * \retval PSA_ERROR_CONNECTION_REFUSED The SPM or RoT Service has refused the
+ *                              connection.
+ * \retval PSA_ERROR_CONNECTION_BUSY The SPM or RoT Service cannot make the
+ *                              connection at the moment.
+ * \retval "Does not return"    The RoT Service ID and version are not
+ *                              supported, or the caller is not permitted to
+ *                              access the service.
+ */
+psa_handle_t tfm_spm_agent_psa_connect(uint32_t sid, uint32_t version,
+                                       int32_t ns_client_id,
+                                       const void *client_data);
+#else /* CONFIG_TFM_CONNECTION_BASED_SERVICE_API == 1 */
+#define tfm_spm_agent_psa_connect           NULL
+#endif /* CONFIG_TFM_CONNECTION_BASED_SERVICE_API == 1 */
+#else /* TFM_PARTITION_NS_AGENT_MAILBOX */
+#define tfm_spm_agent_psa_connect           NULL
+#define tfm_spm_agent_psa_call              NULL
+#endif /* TFM_PARTITION_NS_AGENT_MAILBOX */
 
 /**
  * \brief This function handles the specific programmer error cases.
@@ -177,7 +239,9 @@ psa_status_t tfm_spm_client_psa_connect(uint32_t sid, uint32_t version);
  * \arg                           The connection is handling a request.
  */
 psa_status_t tfm_spm_client_psa_close(psa_handle_t handle);
-
+#else
+#define tfm_spm_client_psa_connect      NULL
+#define tfm_spm_client_psa_close        NULL
 #endif /* CONFIG_TFM_CONNECTION_BASED_SERVICE_API */
 
 /* PSA Partition API function body, for privileged use only. */
@@ -284,7 +348,7 @@ size_t tfm_spm_partition_psa_skip(psa_handle_t msg_handle, uint32_t invec_idx,
  * \param[in] num_bytes         Number of bytes to write to the client output
  *                              vector.
  *
- * \retval void                 Success
+ * \retval PSA_SUCCESS          Success.
  * \retval "PROGRAMMER ERROR"   The call is invalid, one or more of the
  *                              following are true:
  * \arg                           msg_handle is invalid.
@@ -296,8 +360,8 @@ size_t tfm_spm_partition_psa_skip(psa_handle_t msg_handle, uint32_t invec_idx,
  * \arg                           The call attempts to write data past the end
  *                                of the client output vector.
  */
-void tfm_spm_partition_psa_write(psa_handle_t msg_handle, uint32_t outvec_idx,
-                                 const void *buffer, size_t num_bytes);
+psa_status_t tfm_spm_partition_psa_write(psa_handle_t msg_handle, uint32_t outvec_idx,
+                                         const void *buffer, size_t num_bytes);
 
 /**
  * \brief Function body of \ref psa_reply.
@@ -323,28 +387,32 @@ int32_t tfm_spm_partition_psa_reply(psa_handle_t msg_handle,
  *
  * \param[in] partition_id      Secure Partition ID of the target partition.
  *
- * \retval void                 Success.
+ * \retval PSA_SUCCESS          Success.
+ * \retval PSA_NEED_SCHEDULE    Require schedule thread.
  * \retval "PROGRAMMER ERROR"   partition_id does not correspond to a Secure
  *                              Partition.
  */
-void tfm_spm_partition_psa_notify(int32_t partition_id);
+psa_status_t tfm_spm_partition_psa_notify(int32_t partition_id);
 
 /**
  * \brief Function body of \ref psa_clear.
  *
- * \retval void                 Success.
+ * \retval PSA_SUCCESS          Success.
  * \retval "PROGRAMMER ERROR"   The Secure Partition's doorbell signal is not
  *                              currently asserted.
  */
-void tfm_spm_partition_psa_clear(void);
+psa_status_t tfm_spm_partition_psa_clear(void);
+#else
+#define tfm_spm_partition_psa_notify    NULL
+#define tfm_spm_partition_psa_clear     NULL
 #endif /* CONFIG_TFM_DOORBELL_API == 1 */
 
 /**
  * \brief Function body of \ref psa_panic.
  *
- * \retval "Does not return"
+ * \retval "Should not return"
  */
-void tfm_spm_partition_psa_panic(void);
+psa_status_t tfm_spm_partition_psa_panic(void);
 
 /* psa_set_rhandle is only needed by connection-based services */
 #if CONFIG_TFM_CONNECTION_BASED_SERVICE_API == 1
@@ -355,13 +423,14 @@ void tfm_spm_partition_psa_panic(void);
  * \param[in] msg_handle        Handle for the client's message.
  * \param[in] rhandle           Reverse handle allocated by the RoT Service.
  *
- * \retval void                 Success, rhandle will be provided with all
+ * \retval PSA_SUCCESS          Success, rhandle will be provided with all
  *                              subsequent messages delivered on this
  *                              connection.
  * \retval "PROGRAMMER ERROR"   msg_handle is invalid.
  */
-void tfm_spm_partition_psa_set_rhandle(psa_handle_t msg_handle, void *rhandle);
-
+psa_status_t tfm_spm_partition_psa_set_rhandle(psa_handle_t msg_handle, void *rhandle);
+#else
+#define tfm_spm_partition_psa_set_rhandle       NULL
 #endif /* CONFIG_TFM_CONNECTION_BASED_SERVICE_API */
 
 #if CONFIG_TFM_FLIH_API == 1 || CONFIG_TFM_SLIH_API == 1
@@ -373,12 +442,12 @@ void tfm_spm_partition_psa_set_rhandle(psa_handle_t msg_handle, void *rhandle);
  *                       signal value for an interrupt in the calling Secure
  *                       Partition.
  *
- * \retval void
+ * \retval PSA_SUCCESS        Success.
  * \retval "PROGRAMMER ERROR" If one or more of the following are true:
  * \arg                       \a irq_signal is not an interrupt signal.
  * \arg                       \a irq_signal indicates more than one signal.
  */
-void tfm_spm_partition_psa_irq_enable(psa_signal_t irq_signal);
+psa_status_t tfm_spm_partition_psa_irq_enable(psa_signal_t irq_signal);
 
 /**
  * \brief Function body of psa_irq_disable.
@@ -397,6 +466,10 @@ void tfm_spm_partition_psa_irq_enable(psa_signal_t irq_signal);
  * \note The current implementation always return 1. Do not use the return.
  */
 psa_irq_status_t tfm_spm_partition_psa_irq_disable(psa_signal_t irq_signal);
+#else /* CONFIG_TFM_FLIH_API == 1 || CONFIG_TFM_SLIH_API == 1 */
+#define tfm_spm_partition_psa_irq_enable     NULL
+#define tfm_spm_partition_psa_irq_disable    NULL
+#endif /* CONFIG_TFM_FLIH_API == 1 || CONFIG_TFM_SLIH_API == 1 */
 
 /* This API is only used for FLIH. */
 #if CONFIG_TFM_FLIH_API == 1
@@ -408,7 +481,7 @@ psa_irq_status_t tfm_spm_partition_psa_irq_disable(psa_signal_t irq_signal);
  *                          currently asserted signal for an interrupt that is
  *                          defined to use FLIH handling.
  *
- * \retval void
+ * \retval PSA_SUCCESS        Success.
  * \retval "Programmer Error" if one or more of the following are true:
  * \arg                       \a irq_signal is not a signal for an interrupt
  *                            that is specified with FLIH handling in the Secure
@@ -416,8 +489,10 @@ psa_irq_status_t tfm_spm_partition_psa_irq_disable(psa_signal_t irq_signal);
  * \arg                       \a irq_signal indicates more than one signal.
  * \arg                       \a irq_signal is not currently asserted.
  */
-void tfm_spm_partition_psa_reset_signal(psa_signal_t irq_signal);
-#endif
+psa_status_t tfm_spm_partition_psa_reset_signal(psa_signal_t irq_signal);
+#else /* CONFIG_TFM_FLIH_API == 1 */
+#define tfm_spm_partition_psa_reset_signal      NULL
+#endif /* CONFIG_TFM_FLIH_API == 1 */
 
 /* This API is only used for SLIH. */
 #if CONFIG_TFM_SLIH_API == 1
@@ -426,7 +501,7 @@ void tfm_spm_partition_psa_reset_signal(psa_signal_t irq_signal);
  *
  * \param[in] irq_signal        The interrupt signal that has been processed.
  *
- * \retval void                 Success.
+ * \retval PSA_SUCCESS          Success.
  * \retval "PROGRAMMER ERROR"   The call is invalid, one or more of the
  *                              following are true:
  * \arg                           irq_signal is not an interrupt signal.
@@ -434,9 +509,10 @@ void tfm_spm_partition_psa_reset_signal(psa_signal_t irq_signal);
  * \arg                           irq_signal is not currently asserted.
  * \arg                           The interrupt is not using SLIH.
  */
-void tfm_spm_partition_psa_eoi(psa_signal_t irq_signal);
-#endif
-#endif /* CONFIG_TFM_FLIH_API == 1 || CONFIG_TFM_SLIH_API == 1 */
+psa_status_t tfm_spm_partition_psa_eoi(psa_signal_t irq_signal);
+#else /* CONFIG_TFM_SLIH_API == 1 */
+#define tfm_spm_partition_psa_eoi       NULL
+#endif /* CONFIG_TFM_SLIH_API == 1 */
 
 #if PSA_FRAMEWORK_HAS_MM_IOVEC
 

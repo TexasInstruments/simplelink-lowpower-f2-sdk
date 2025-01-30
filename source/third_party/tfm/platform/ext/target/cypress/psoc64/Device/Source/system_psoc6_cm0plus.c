@@ -532,5 +532,9 @@ __cy_memory_4_row_size  EQU __cpp(1)
 }
 #endif /* defined (__ARMCC_VERSION) && (__ARMCC_VERSION < 6010050) */
 
+void __WEAK PendSV_Handler(void) __NO_RETURN;
+void PendSV_Handler(void) {
+    while(1);
+}
 
 /* [] END OF FILE */

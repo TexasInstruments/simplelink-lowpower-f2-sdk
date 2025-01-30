@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2023, Texas Instruments Incorporated
+ * Copyright (c) 2017-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 /** ============================================================================
  *  @file       CryptoKeyPlaintext.h
  *
@@ -38,7 +39,7 @@
  *  This file contains the APIs to initialize and access plaintext CryptoKeys.
  *  Plaintext CryptoKeys point to keying material stored in flash or RAM and
  *  are not subject to enforced usage restrictions. That only means that calling
- *  a function that requires an assymmetric public key with a symmetric key will
+ *  a function that requires an asymmetric public key with a symmetric key will
  *  not return an error. It will likely not yield the desired results.
  *
  *  # Usage #
@@ -163,6 +164,38 @@ int_fast16_t CryptoKeyPlaintext_getKeyLength(CryptoKey *keyHandle, size_t *lengt
  *  @return Returns a status code from CryptoKey.h
  */
 int_fast16_t CryptoKeyPlaintext_setKeyLength(CryptoKey *keyHandle, size_t length);
+
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX) || (DeviceFamily_PARENT == DeviceFamily_PARENT_CC35XX)
+/*!
+ *  @brief Initializes a CryptoKey type with HSM
+ *
+ *  @param [in]     keyHandle   Pointer to a CryptoKey which will be initialized
+ *                              to type CryptoKey_PLAINTEXT_HSM
+ *                              and ready for use
+ *
+ *  @param [in]     key         Pointer to keying material
+ *
+ *  @param [in]     keyLength   Length of keying material in bytes
+ *
+ *  @return Returns a status code from CryptoKey.h
+ */
+int_fast16_t CryptoKeyPlaintextHSM_initKey(CryptoKey *keyHandle, uint8_t *key, size_t keyLength);
+
+/*!
+ *  @brief Initializes an empty plaintext CryptoKey type with HSM
+ *
+ *  @param [in]     keyHandle   Pointer to a CryptoKey which will be initialized
+ *                              to type CryptoKey_BLANK_PLAINTEXT_HSM
+ *                              and ready for use
+ *
+ *  @param [in]     key         Pointer to keying material
+ *
+ *  @param [in]     keyLength   Length of keying material in bytes
+ *
+ *  @return Returns a status code from CryptoKey.h
+ */
+int_fast16_t CryptoKeyPlaintextHSM_initBlankKey(CryptoKey *keyHandle, uint8_t *key, size_t keyLength);
+#endif
 
 #ifdef __cplusplus
 }

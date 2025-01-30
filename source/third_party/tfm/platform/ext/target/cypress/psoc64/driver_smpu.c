@@ -20,13 +20,13 @@
 
 #include "driver_smpu.h"
 
+#include "internal_status_code.h"
 #include "flash_layout.h"
 #include "nv_counters.h"
 #include "pc_config.h"
 #include "region_defs.h"
 #include "RTE_Device.h"
 #include "smpu_config.h"
-#include "tfm_api.h"
 #include "tfm_spm_log.h"
 #include "tfm_hal_its.h"
 #ifdef TFM_PARTITION_PROTECTED_STORAGE
@@ -408,7 +408,7 @@ static bool SMPU_Covers_Region(const void *p, size_t s,
     }
 
     /* And the address range */
-    if (check_address_range(p, s, address, size) == TFM_SUCCESS) {
+    if (check_address_range(p, s, address, size) == SPM_SUCCESS) {
         if (pc_mismatch) {
             /* Access denied - PC doesn't match */
             p_attr->is_mpu_enabled = true;

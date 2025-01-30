@@ -31,7 +31,7 @@ Component configuration
    local to a component or externally referenced when components are coupled.
    Options are in C header file. The :ref:`Header_configuration` has more
    details about it.
-   In the :ref:`Base_configuration` table theses options have *Component* type.
+   In the :ref:`Base_configuration` table these options have *Component* type.
 
 .. Note::
    Originally, TF-M used CMake variables for both building and component tuning
@@ -79,7 +79,7 @@ Use :ref:`Kconfig_system`.
 Priorities
 **********
 
-A project configueration performed in multiple steps with priorities.
+A project configuration performed in multiple steps with priorities.
 The list below explains the process but for the details specific to
 :ref:`tfm_cmake_configuration` or :ref:`Header_configuration` please
 check the corresponded document.
@@ -91,7 +91,7 @@ check the corresponded document.
 
 .. Note::
    To ensure a clear intention and conscious choice, all options must be
-   providede explicitly via a project configuration file. Default values
+   provided explicitly via a project configuration file. Default values
    on step 1 will generate warnings which expected to break a build.
 
 .. _Base_configuration:
@@ -100,8 +100,8 @@ check the corresponded document.
 Base Configuration
 ******************
 
-The base configuration is the ground for configuring TF-M providing default
-defined in ``/config/config_base.cmake`` and ``/config/config_base.h``.
+The base configuration is the ground for configuring TF-M, provided defaults
+are defined in ``/config/config_base.cmake`` and ``/config/config_base.h``.
 The base build includes SPM and platform code only.
 
 This table lists the config option categorizations of the SPM and Secure
@@ -256,6 +256,15 @@ Platform Secure Partition
 +-------------------------------------+-----------+------------+
 |PLATFORM_NV_COUNTER_MODULE_DISABLED  | Component |   0        |
 +-------------------------------------+-----------+------------+
+
+NS Agent Mailbox Secure Partition
+=================================
++-------------------------------------+-----------+------------+
+| Options                             | Type      | Base Value |
++=====================================+===========+============+
+|NS_AGENT_MAILBOX_STACK_SIZE          | Component |   0x800    |
++-------------------------------------+-----------+------------+
+
 
 Secure Partition Manager
 ========================

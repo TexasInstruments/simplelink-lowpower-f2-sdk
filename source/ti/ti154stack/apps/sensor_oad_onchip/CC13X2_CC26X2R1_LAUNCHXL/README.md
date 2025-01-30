@@ -37,11 +37,11 @@ In case of On-Chip OAD, there is another "always present/needed" persistent imag
 > The [Example Usage](#ExampleUsage) section of this document explains how to use the user interface, although both the button presses and the UART perform the
 > same actions.
 
-* `CONFIG_GPIO_RLED` - Turns on after the sensor connects to the collector.
-* `CONFIG_GPIO_BTN1` - Press to initialize the sensor application.
-* `CONFIG_GPIO_BTN2` - Press to disassociate from the network.
+* `CONFIG_LED_RED` - Turns on after the sensor connects to the collector.
+* `CONFIG_BTN_LEFT` - Press to initialize the sensor application.
+* `CONFIG_BTN_RIGHT` - Press to disassociate from the network.
 
-> If `CONFIG_GPIO_BTN2` is held while power is applied to the Launchpad, NV Flash will be erased.
+> To erase NV flash, Hold `CONFIG_BTN_RIGHT` down, then press and release the reset button. Wait a second then release BTN-2. You should see a CUI message indicating NV erase. If BTN-2 is not held down constantly during the boot process the NVS flash will not be erased.
 
 ## <a name="Resources&JumperSettings"></a>Resources & Jumper Settings
 
@@ -388,7 +388,7 @@ For OAD applications, the Customer Configuration (CCFG) area must be configured 
 
 ## <a name="RevertingtoPersistentApplication"></a>Reverting to Persistent Application
 
-When the LEFT Button (`CONFIG_GPIO_BTN1`) is held down and a reset occurs (RESET Button or cord unplug/plug in), the user application will enter into the `OAD_markSwitch` function. This invalidates the currently running application image itself as a bootable image and performs a soft reset of the device. This will cause the BIM to boot up like normal. However, the BIM will detect that the user application image is no longer valid. This will cause the BIM to boot into the persistent application.
+When the LEFT Button (`CONFIG_BTN_LEFT`) is held down and a reset occurs (RESET Button or cord unplug/plug in), the user application will enter into the `OAD_markSwitch` function. This invalidates the currently running application image itself as a bootable image and performs a soft reset of the device. This will cause the BIM to boot up like normal. However, the BIM will detect that the user application image is no longer valid. This will cause the BIM to boot into the persistent application.
 
 In The [Example Usage](#ExampleUsage) section, the persistent application is a 15.4 image. However, this image can use any networking stack, such as BLE. The persistent application implements the OAD protocol, so whichever networking is stack used by the persistent application, you will have to perform On-Chip OAD according to the stack protocol.
 

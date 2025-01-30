@@ -23,6 +23,7 @@
 
 #if !PLATFORM_NV_COUNTER_MODULE_DISABLED
 #define NV_COUNTER_ID_SIZE  sizeof(enum tfm_nv_counter_t)
+#define NV_COUNTER_SIZE     4
 #endif /* !PLATFORM_NV_COUNTER_MODULE_DISABLED */
 
 typedef enum tfm_platform_err_t (*plat_func_t)(const psa_msg_t *msg);
@@ -85,7 +86,7 @@ static psa_status_t platform_sp_nv_read_psa_api(const psa_msg_t *msg)
     size_t in_len = PSA_MAX_IOVEC, out_len = PSA_MAX_IOVEC, num = 0;
 
     enum tfm_nv_counter_t counter_id;
-    uint8_t counter_val = 0;
+    uint8_t counter_val[NV_COUNTER_SIZE] = {0};
 
     /* Check the number of in_vec filled */
     while ((in_len > 0) && (msg->in_size[in_len - 1] == 0)) {
@@ -117,13 +118,13 @@ static psa_status_t platform_sp_nv_read_psa_api(const psa_msg_t *msg)
     }
 
     err = tfm_plat_read_nv_counter(counter_id,  msg->out_size[0],
-                                   &counter_val);
+                                   counter_val);
 
     if (err != TFM_PLAT_ERR_SUCCESS) {
        return TFM_PLATFORM_ERR_SYSTEM_ERROR;
     }
 
-    psa_write(msg->handle, 0, &counter_val, msg->out_size[0]);
+    psa_write(msg->handle, 0, counter_val, msg->out_size[0]);
 
     return TFM_PLATFORM_ERR_SUCCESS;
 }

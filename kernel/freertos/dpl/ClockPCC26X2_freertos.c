@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2022, Texas Instruments Incorporated
+ * Copyright (c) 2020-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -87,11 +87,18 @@ static ClockP_Params ClockP_defaultParams = {
     .arg       = 0,
 };
 
+/* Upper 32 bits of the 64-bit SysTickCount */
+static uint32_t upperSystemTicks64      = 0;
+static bool isUpperSystemTicks64Updated = false;
+
 void ClockP_workFuncDynamic(uintptr_t arg0, uintptr_t arg1);
 void ClockP_doTick(uintptr_t arg0);
 
 static void sleepTicks(uint32_t ticks);
 static void sleepClkFxn(uintptr_t arg0);
+
+/* Callback function to increment 64-bit counter on 32-bit counter overflow */
+static void systemTicks64Callback(uintptr_t arg);
 
 /* This ClockP implementation uses the RTC timer. The raw RTC timer increments
  * by 2^32 per second (32-bit register AON_RTC.SUBSEC wraps once per second).
@@ -548,6 +555,21 @@ void ClockP_stop(ClockP_Handle handle)
 }
 
 /*
+ *  ======== ClockP_setFunc ========
+ */
+void ClockP_setFunc(ClockP_Handle handle, ClockP_Fxn clockFxn, uintptr_t arg)
+{
+    ClockP_Obj *obj = (ClockP_Obj *)handle;
+
+    uintptr_t key = HwiP_disable();
+
+    obj->fxn = clockFxn;
+    obj->arg = arg;
+
+    HwiP_restore(key);
+}
+
+/*
  *  ======== ClockP_setTimeout ========
  */
 void ClockP_setTimeout(ClockP_Handle handle, uint32_t timeout)
@@ -628,6 +650,124 @@ uint32_t ClockP_getSystemTicks(void)
     HwiP_restore(key);
 
     return (ticks);
+}
+
+static void systemTicks64Callback(uintptr_t arg)
+{
+    /* Disable interrupts while updating upper global upperSystemTicks64 */
+    uintptr_t key = HwiP_disable();
+
+    if (isUpperSystemTicks64Updated == false)
+    {
+        /* Callback has occurred shortly after 32 bits overflow. Increment the
+         * upper 32 bits and set the updated flag (isUpperSystemTicks64Updated).
+         */
+        upperSystemTicks64++;
+        isUpperSystemTicks64Updated = true;
+    }
+    else
+    {
+        /* Callback has occurred shortly after the midway between two 32 bits
+         * overflows. Clear the updated flag (isUpperSystemTicks64Updated) so
+         * the upperSystemTicks64 will be updated on the next callback.
+         */
+        isUpperSystemTicks64Updated = false;
+    }
+
+    HwiP_restore(key);
+}
+
+/*
+ *  ======== ClockP_getSystemTicks64 ========
+ */
+uint64_t ClockP_getSystemTicks64(void)
+{
+    static ClockP_Struct systemTicks64Clock;
+    static bool systemTicks64Initialised = false;
+    ClockP_Params params;
+    uint32_t lowerSystemTicks64;
+    uintptr_t key;
+    uint64_t tickValue;
+
+    key = HwiP_disable();
+
+    /* Initialise clock needed to maintain 64-bit SystemTicks when function
+     * is called for the first time.
+     */
+    if (!systemTicks64Initialised)
+    {
+        ClockP_Params_init(&params);
+
+        /* Start clock immediately when created */
+        params.startFlag = true;
+        /* Configure the clock to trigger with double the frequency as 32-bit
+         * overflow. When the callback function is called just after the 32-bit
+         * counter overflows, it will clear the isUpperSystemTicks64Updated
+         * flag. When the callback function is called halfway between the
+         * previous overflow and the next one, it will clear the
+         * isUpperSystemTicks64Updated flag.
+         */
+        params.period    = ((uint64_t)UINT32_MAX + 1) / 2;
+
+        uint32_t currentTick = ClockP_getSystemTicks();
+
+        /* The clock must be synchronized with the overflow event.
+         * Calculate ticks until next overflow.
+         */
+        uint32_t delayedStart = ((uint64_t)UINT32_MAX + 1) - currentTick;
+
+        /* Ensure the delayed start is non-zero and less than (or equal to) the
+         * period, and set the initial state of isUpperSystemTicks64Updated
+         * accordingly.
+         */
+        if ((delayedStart > params.period) || (delayedStart == 0))
+        {
+            delayedStart -= params.period;
+
+            /* The first callback will be at the midpoint between the next
+             * overflow and the previous overflow. Meaning the first time the
+             * callback function is called, the isUpperSystemTicks64Updated flag
+             * should be cleared and upperSystemTicks64 should not be
+             * incremented. Setting the isUpperSystemTicks64Updated flag will
+             * also prevent upperSystemTicks64Temp from being artificially
+             * incremented below.
+             */
+            isUpperSystemTicks64Updated = true;
+        }
+        else
+        {
+            /* The first callback will be at the overflow, meaning the first
+             * time the callback function is called, upperSystemTicks64 should
+             * be incremented and the isUpperSystemTicks64Updated flag should be
+             * set.
+             */
+            isUpperSystemTicks64Updated = false;
+        }
+
+        /* Construct and start the clock */
+        ClockP_construct(&systemTicks64Clock, systemTicks64Callback, delayedStart, &params);
+
+        systemTicks64Initialised = true;
+    }
+
+    lowerSystemTicks64              = ClockP_getSystemTicks();
+    uint32_t upperSystemTicks64Temp = upperSystemTicks64;
+
+    /* If the lower 32 bits have recently overflowed, but the upper 32 bits
+     * have not yet been incremented (i.e. systemTicks64Callback() has not yet
+     * executed) then artificially increment the upper 32 bits here.
+     */
+    if ((lowerSystemTicks64 < (((uint64_t)UINT32_MAX + 1) / 2)) && (isUpperSystemTicks64Updated == false))
+    {
+        upperSystemTicks64Temp++;
+    }
+
+    /* Return the upper 32 bits + lower 32 bits as is */
+    tickValue = ((uint64_t)upperSystemTicks64Temp << 32) | lowerSystemTicks64;
+
+    HwiP_restore(key);
+
+    return tickValue;
 }
 
 /*

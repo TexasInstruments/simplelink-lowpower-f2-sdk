@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2016-2024 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,32 +45,7 @@
 
 #include <ti/drivers/dpl/HwiP.h>
 
-/*
- *  The maximum number of ticks before the tick count rolls over.  We use
- *  0xFFFFFFFF instead of 0x100000000 to avoid 64-bit math.
- */
-#define CLOCK_MAX_TICKS 0xFFFFFFFF
-
-/* The integral number of seconds in a period of CLOCK_MAX_TICKS */
-#define CLOCK_MAX_SECONDS (CLOCK_MAX_TICKS / configTICK_RATE_HZ)
-
-/* The total number of system ticks in CLOCK_MAX_SECONDS seconds */
-#define CLOCK_MAX_SECONDS_TICKS (CLOCK_MAX_SECONDS * configTICK_RATE_HZ)
-
-/*
- *  CLOCK_MAX_TICKS - CLOCK_MAX_SECONDS_TICKS is the number of ticks left over that
- *  don't make up a whole second.  We add 1 to get the remaining number
- *  of ticks when the tick count wraps back to 0.  REM_TICKS could
- *  theoritically be equivalent to 1 second (when the tick period divides
- *  0x100000000 evenly), so it is not really a "remainder", since it ranges
- *  from 1 to configTICK_RATE_HZ, instead of from 0 to configTICK_RATE_HZ - 1.
- *  However, this will not affect the seconds calculation in clock_gettime(),
- *  so we can ignore this special case.
- */
-#define REM_TICKS ((CLOCK_MAX_TICKS - CLOCK_MAX_SECONDS_TICKS) + 1)
-
-/* number of seconds from 1900 (TI Epoch) to 1970 (POSIX Epoch) */
-#define TI_EPOCH_OFFSET 2208988800
+#include "time_defines.h"
 
 int _clock_abstime2ticks(clockid_t clockId, const struct timespec *abstime, TickType_t *ticks);
 
@@ -104,17 +79,17 @@ int clock_gettime(clockid_t clockId, struct timespec *ts)
     /* CLOCK_REALTIME */
     if (ts->tv_nsec < refTS.tv_nsec)
     {
-        ts->tv_nsec += 1000000000;
+        ts->tv_nsec += NSEC_PER_SEC;
         ts->tv_sec--;
     }
 
     ts->tv_sec  = ts->tv_sec - refTS.tv_sec + setTS.tv_sec;
     ts->tv_nsec = ts->tv_nsec - refTS.tv_nsec + setTS.tv_nsec;
 
-    if (ts->tv_nsec >= 1000000000)
+    if (ts->tv_nsec >= NSEC_PER_SEC)
     {
         ts->tv_sec++;
-        ts->tv_nsec -= 1000000000;
+        ts->tv_nsec -= NSEC_PER_SEC;
     }
 
     return (0);
@@ -153,7 +128,7 @@ int clock_nanosleep(clockid_t clock_id, int flags, const struct timespec *rqtp, 
     else
     {
         /* max interval, needs to be fixed: TIRTOS-1314 */
-        if (rqtp->tv_sec >= CLOCK_MAX_SECONDS)
+        if (rqtp->tv_sec >= FREERTOS_MAX_SECONDS)
         {
             return (EINVAL);
         }
@@ -169,7 +144,7 @@ int clock_nanosleep(clockid_t clock_id, int flags, const struct timespec *rqtp, 
          *  Take the ceiling.  The remaining nanoseconds will count as an
          *  entire tick.
          */
-        xDelay += (rqtp->tv_nsec + (1000000000 / configTICK_RATE_HZ) - 1) / (1000000000 / configTICK_RATE_HZ);
+        xDelay += (rqtp->tv_nsec + (NSEC_PER_SEC / configTICK_RATE_HZ) - 1) / (NSEC_PER_SEC / configTICK_RATE_HZ);
 
         /*
          *  Add one tick to ensure the timeout is not less than the
@@ -198,7 +173,8 @@ int clock_settime(clockid_t clock_id, const struct timespec *ts)
         return (-1);
     }
 
-    if ((ts->tv_nsec < 0) || (ts->tv_nsec >= 1000000000))
+    /* Number of nanoseconds in a timespec struct should always be in the range [0,1000000000) */
+    if ((ts->tv_nsec < 0) || (ts->tv_nsec >= NSEC_PER_SEC))
     {
         errno = EINVAL;
         return (-1);
@@ -257,7 +233,8 @@ int _clock_abstime2ticks(clockid_t clockId, const struct timespec *abstime, Tick
     long nsecs  = 0;
     time_t secs = 0;
 
-    if ((abstime->tv_nsec < 0) || (1000000000 <= abstime->tv_nsec))
+    /* Number of nanoseconds in a timespec struct should always be in the range [0,1000000000) */
+    if ((abstime->tv_nsec < 0) || (NSEC_PER_SEC <= abstime->tv_nsec))
     {
         return (-1);
     }
@@ -274,12 +251,12 @@ int _clock_abstime2ticks(clockid_t clockId, const struct timespec *abstime, Tick
 
         if (nsecs < 0)
         {
-            nsecs += 1000000000;
+            nsecs += NSEC_PER_SEC;
             secs--;
         }
 
         timeout = secs * configTICK_RATE_HZ;
-        timeout += (nsecs + (1000000000 / configTICK_RATE_HZ) - 1) / (1000000000 / configTICK_RATE_HZ);
+        timeout += (nsecs + (NSEC_PER_SEC / configTICK_RATE_HZ) - 1) / (NSEC_PER_SEC / configTICK_RATE_HZ);
 
         /*
          *  Add one tick to ensure the timeout is not less than the
@@ -298,12 +275,14 @@ int _clock_abstime2ticks(clockid_t clockId, const struct timespec *abstime, Tick
 /*
  *  ======== _clock_timespecToTicks ========
  */
-TickType_t _clock_timespecToTicks(const struct timespec *ts)
+uint64_t _clock_timespecToTicks(const struct timespec *ts)
 {
     uint64_t ticks;
 
-    ticks = ts->tv_sec * configTICK_RATE_HZ + ts->tv_nsec * (uint64_t)configTICK_RATE_HZ / 1000000000L;
-    return ((TickType_t)ticks);
+    /* Calculate total amount of ticks from both seconds and nanoseconds in the timespec */
+    ticks = ts->tv_sec * configTICK_RATE_HZ + ts->tv_nsec * (uint64_t)configTICK_RATE_HZ / NSEC_PER_SEC;
+
+    return ticks;
 }
 
 /*
@@ -340,11 +319,11 @@ static void _clock_gettimeMono(struct timespec *ts)
     remTicks = ticks - (secs * configTICK_RATE_HZ);
 
     /* Add contribution of remaining ticks from tick count rollovers */
-    remTicks = remTicks + (REM_TICKS * numRollovers);
+    remTicks = remTicks + (FREERTOS_REM_TICKS * numRollovers);
 
     remSecs  = remTicks / configTICK_RATE_HZ;
     remTicks = remTicks - (remSecs * configTICK_RATE_HZ);
 
-    ts->tv_sec  = (time_t)secs + remSecs + (CLOCK_MAX_SECONDS * numRollovers);
-    ts->tv_nsec = (unsigned long)(remTicks * (1000000000 / configTICK_RATE_HZ));
+    ts->tv_sec  = (time_t)secs + remSecs + (FREERTOS_MAX_SECONDS * numRollovers);
+    ts->tv_nsec = (unsigned long)(remTicks * (NSEC_PER_SEC / configTICK_RATE_HZ));
 }

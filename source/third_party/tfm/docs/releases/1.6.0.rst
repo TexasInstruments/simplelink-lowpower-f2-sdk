@@ -1,3 +1,5 @@
+:orphan:
+
 *************
 Version 1.6.0
 *************
@@ -35,7 +37,7 @@ New security advisories
 New platforms supported
 =======================
 
-  - :doc:`AN552. </platform/arm/mps3/an552/README>`
+  - :doc:`AN552. </platform/arm/mps3/corstone300/README>`
 
 Deprecated platforms
 ====================
@@ -94,10 +96,10 @@ Reference
 
 .. [1] `PSA Unified Driver spec <https://github.com/Mbed-TLS/mbedtls/blob/development/docs/proposed/psa-driver-interface.md>`_
 
-.. [2] `Arm Compiler 6.18 release note: <https://developer.arm.com/-/media/Arm%20Developer%20Community/Downloads/Arm%20Compiler%20for%20Embedded/6-18/Release%20notes%20for%20Arm%20Compiler%20for%20Embedded%206.pdf>`_
+.. [2] `Arm Compiler 6.18 release note: <https://developer.arm.com/documentation/107814/latest/>`_
 
 .. [3] `PSA Arch framework test failures <https://developer.trustedfirmware.org/w/tf_m/release/psa_arch_ff_test_result_in_tf-m_v1.6_release/>`_
 
 --------------
 
-*Copyright (c) 2022, Arm Limited. All rights reserved.*
+*Copyright (c) 2022-2023, Arm Limited. All rights reserved.*

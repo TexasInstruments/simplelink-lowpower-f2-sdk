@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2023-2024 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,9 +49,9 @@
  *  @endcode
  *
  *  This module implements two functions that are required by the Log API:
- *   - printf(const Log_Module *handle, uint32_t header, uint32_t index,
+ *   - printf(const Log_Module *handle, uint32_t header, uint32_t headerPtr,
  *     uint32_t numArgs, ...);
- *   - buf(const Log_Module *handle, uint32_t header, uint32_t index,
+ *   - buf(const Log_Module *handle, uint32_t header, uint32_t headerPtr,
  *     uint8_t *data, size_t size);
  *
  *  Whenever a log statement that uses LogSinkUART as its sink is called, the
@@ -66,12 +66,13 @@
  *
  *  At the log-site the sink separates the generation of the log record from the
  *  transportation of the record off the device. Deferring the transportation to
- *  a later point of the program execution is done to minimze the runtime
- *  intrusion that would be caused by synchronously outputing the log statements
- *  through the relatively slow UART. The first part generates and stores the
- *  log statements into an intermediate storage synchronously. The second part
- *  uses the idle task of the OS, executed when no other tasks or interrupts are
- *  running, to move the data stored in the intermediate storage off the device.
+ *  a later point of the program execution is done to minimize the runtime
+ *  intrusion that would be caused by synchronously outputting the log
+ *  statements through the relatively slow UART. The first part generates and
+ *  stores the log statements into an intermediate storage synchronously. The
+ *  second part uses the idle task of the OS, executed when no other tasks or
+ *  interrupts are running, to move the data stored in the intermediate storage
+ *  off the device.
  *
  *  By transmitting messages asynchronously the readout at the host-side is
  *  also asynchronous. As a consequence, the receiving of log statements at the
@@ -105,6 +106,8 @@
  *        the device.
  *      - When a UART instance is consumed for a sink it can not be used for
  *        other operations.
+ *      - When a single UART LogSink instance is used, an optimised printf is
+ *        used that reduces the footprint of each #Log_printf statement.
  *      - Each UART LogSink will create its own Ring Buffer.
  *      - If any part of the transmission is lost/not received by the
  *        logging-tool, the rest of the data might not be interpreted correctly.
@@ -120,7 +123,7 @@
  *        software is always doing something then nothing will ever be output.
  *      - SRAM requirements scale with the number of log records to store in
  *        between flushing the buffer.
- *      - A Log_printf call has an execution time of 20 us to 27.8 us depending
+ *      - A #Log_printf call has an execution time of 20 us to 27.8 us depending
  *        on the number of arguments.
  *      - A Log_buf call has a minimum execution time of 32.8 us and an
  *        approximate increase of 0.183 us per byte in the buffer.
@@ -176,8 +179,8 @@
  *  an overflow message, indicating that at least that message would have
  *  overflowed. When this is observed, it is recommended to either resize the
  *  ring buffer or disable some log statements.
- *  @note If the intermediate ring buffer is full no new oveflow or log packets
- *  will be stored.
+ *  @note If the intermediate ring buffer is full, no new overflow or log
+ *  packets will be stored.
  *
  *  Each log statement used will occupy the following amount of SRAM:
  *
@@ -188,36 +191,14 @@
  *  Overflow           | 4                           |
  *
  *  ## Packet Framing
- *  The host-side must receive and properly handle a continuous stream of
- *  in-phase, uncorrupted packets. Starting decoding in the middle of a packet
- *  would lead to incorrect synchronisation and decoding. This is solved by
- *  sending an initial 64-bit reset-frame. The reset-frame consists of a
- *  pre-determined 32-bit sequence followed by 32 bits indicating how the
- *  timestamp is formatted. After receiving the reset-frame, the host-side tool
- *  knows that the next 32 bits will be a metadata-pointer followed by a
- *  timestamp. The number of arguments for each frame is extracted from the
- *  .out file. This determines the length of the current packet and when the
- *  metadata pointer from the next packet is expected.
- *
- *  @startuml
- *  skinparam useBetaStyle true
- *
- *  <style>
- *  timingDiagram {
- *      LineColor #065959
- *  }
- *  </style>
- *
- *  concise "Reset-frame packet" as RP
- *  hide time-axis
- *
- *  scale 1 as 50 pixels
- *
- *  @RP
- *  0 is 0xBBBBBBBB: 0:31
- *  +4 is Timestamp_format: 32:63
- *  +4 is {-}
- *  @enduml
+ *  The host-side must receive and properly handle a continuous stream of packets.
+ *  It is able to decode and synchronize packets. If the first 32 bits is not a
+ *  valid metadata-pointer address, it will left-shift byte-by-byte until it detects
+ *  a valid one. Once a metadata-pointer address is verified, the host-side tool
+ *  knows that it is followed by a timestamp. The number of arguments for each
+ *  frame is extracted from the .out file. This determines the length of the
+ *  current packet and when the metadata-pointer address from the next packet is
+ *  expected.
  *
  *  ## Flushing the data
  *  A hook function installed in the Idle-loop/task is run when no other tasks
@@ -308,7 +289,7 @@
  *  Logs can end up ordered out as a consequence of a log call being preempted
  *  by a higher priority task with other log statements. The following example
  *  shows how a log statement can be protected to ensure that the execution
- *  sequence is mantained in the ordering on the host-side.
+ *  sequence is maintained in the ordering on the host-side.
  *
  *  @code
  *  #include <ti/drivers/dpl/HwiP.h>
@@ -350,7 +331,7 @@
  *
  *  To automatically initialize a UART sink when initializing the board,
  *  LogSinkUART_init() is called inside Board_init() in ti_drivers_config.c. To
- *  have acces to the function and get the expansion of the sink name, include
+ *  have access to the function and get the expansion of the sink name, include
  *  the following libraries:
  *
  *  @code
@@ -454,8 +435,7 @@ extern void LogSinkUART_flush(void);
  *
  *  Function to initialize a given LogSinkUART sink specified by the
  *  particular index value. It constructs a ring buffer, sets up the
- *  UART2 attributes, opens the given UART peripheral and sends a reset frame
- *  over UART.
+ *  UART2 attributes and opens the given UART peripheral
  *
  *  @param[in]  index     Logical sink number for the LogSinkUART indexed into
  *                        the LogSinkUART_config table
@@ -487,11 +467,18 @@ extern void LogSinkUART_finalize(uint_least8_t index);
 
 /*!
  *  @cond NODOC
- *  @brief  Marshall and store a log_printf statement into a ring buffer.
+ *  @brief  Marshal and store a #Log_printf statement into a ring buffer.
  *
- *  Function to marshall a log_printf statement into a packet
+ *  Function to marshal a #Log_printf statement into a packet
  *  and store it into a ring buffer. If the packet would overflow
  *  the ring buffer it stores an overflow packet instead.
+ *
+ *  This implementation is optimised for use with LTO when there is only a
+ *  single UART LogSink instance to reduce the footprint of #Log_printf
+ *  statements.
+ *
+ *  It should not be used when multiple UART LogSink instances are present
+ *  within the system.
  *
  *  @note Applications must not call this function directly. This is a helper
  *  function to implement #Log_printf
@@ -500,61 +487,121 @@ extern void LogSinkUART_finalize(uint_least8_t index);
  *
  *  @param[in]  header     Metadata pointer
  *
- *  @param[in]  index      Log string reference
+ *  @param[in]  headerPtr  Pointer to metadata pointer
  *
  *  @param[in]  numArgs    Number of arguments
  *
  *  @param[in]  ...        Variable amount of arguments
  */
-extern void ti_log_LogSinkUART_printf(const Log_Module *handle, uint32_t header, uint32_t index, uint32_t numArgs, ...);
-/*! @endcond */
+extern void LogSinkUART_printfSingleton(const Log_Module *handle,
+                                        uint32_t header,
+                                        uint32_t headerPtr,
+                                        uint32_t numArgs,
+                                        ...);
+
+extern void LogSinkUART_printfSingleton0(const Log_Module *handle, uint32_t header, uint32_t headerPtr, ...);
+
+extern void LogSinkUART_printfSingleton1(const Log_Module *handle, uint32_t header, uint32_t headerPtr, ...);
+
+extern void LogSinkUART_printfSingleton2(const Log_Module *handle, uint32_t header, uint32_t headerPtr, ...);
+
+extern void LogSinkUART_printfSingleton3(const Log_Module *handle, uint32_t header, uint32_t headerPtr, ...);
+/*! @endcond NODOC */
 
 /*!
  *  @cond NODOC
- *  @brief  Marshall and store a log_buf statement into a ring buffer.
+ *  @brief  Marshal and store a #Log_printf statement into a ring buffer.
  *
- *  Function to marshall a log_buf statement into a packet
+ *  Function to marshal a #Log_printf statement into a packet
  *  and store it into a ring buffer. If the packet would overflow
  *  the ring buffer it stores an overflow packet instead.
+ *
+ *  This is a dependency injection implementation. It is able to support an
+ *  arbitrary number of LogSinkUART_Instance instances by passing in the sink
+ *  state though @c handle. This requires additional flash to load @c handle in
+ *  each #Log_printf though.
+ *
+ *  @note Applications must not call this function directly. This is a helper
+ *  function to implement #Log_printf
+ *
+ *  @param[in]  handle     LogSinkUART sink handle
+ *
+ *  @param[in]  header     Metadata pointer
+ *
+ *  @param[in]  headerPtr  Pointer to metadata pointer
+ *
+ *  @param[in]  numArgs    Number of arguments
+ *
+ *  @param[in]  ...        Variable amount of arguments
+ */
+extern void LogSinkUART_printfDepInjection(const Log_Module *handle,
+                                           uint32_t header,
+                                           uint32_t headerPtr,
+                                           uint32_t numArgs,
+                                           ...);
+
+extern void LogSinkUART_printfDepInjection0(const Log_Module *handle, uint32_t header, uint32_t headerPtr, ...);
+
+extern void LogSinkUART_printfDepInjection1(const Log_Module *handle, uint32_t header, uint32_t headerPtr, ...);
+
+extern void LogSinkUART_printfDepInjection2(const Log_Module *handle, uint32_t header, uint32_t headerPtr, ...);
+
+extern void LogSinkUART_printfDepInjection3(const Log_Module *handle, uint32_t header, uint32_t headerPtr, ...);
+/*! @endcond NODOC */
+
+/*!
+ *  @cond NODOC
+ *  @brief  Marshal and store a #Log_buf statement into a ring buffer.
+ *
+ *  Function to marshal a #Log_buf statement into a packet
+ *  and store it into a ring buffer. If the packet would overflow
+ *  the ring buffer it stores an overflow packet instead.
+ *
+ *  This is a dependency injection implementation. It is able to support an
+ *  arbitrary number of LogSinkUART_Instance instances by passing in the sink
+ *  state though @c handle.
  *
  *  @note Applications must not call this function directly. This is a helper
  *  function to implement #Log_buf
  *
  *  @param[in]  handle     LogSinkUART sink handle
  *
- *  @param[in]  header     Metadata pointer
+ *  @param[in]  header     Unused metadata pointer
  *
- *  @param[in]  index      Log string reference
+ *  @param[in]  headerPtr  Pointer to metadata pointer
  *
  *  @param[in]  data       Data buffer to log
  *
  *  @param[in]  size       Size in bytes of array to store
  */
-extern void ti_log_LogSinkUART_buf(const Log_Module *handle,
-                                   uint32_t header,
-                                   uint32_t index,
-                                   uint8_t *data,
-                                   size_t size);
-/*! @endcond */
+extern void LogSinkUART_bufDepInjection(const Log_Module *handle,
+                                        uint32_t header,
+                                        uint32_t headerPtr,
+                                        uint8_t *data,
+                                        size_t size);
+/*! @endcond NODOC */
 
 /*!
- * @brief Create a LogsinkUART instance called \a name
+ * @brief Create a LogSinkUART instance called @c name
  */
 #define Log_SINK_UART_DEFINE(name) LogSinkUART_Instance LogSinkUART_##name##_Config = {.index = name}
 
 /*!
- * @brief Use a LogSinkUART instance called \a name when not created in the same
+ * @brief Use a LogSinkUART instance called @c name when not created in the same
     file
  */
 #define Log_SINK_UART_USE(name) extern LogSinkUART_Instance LogSinkUART_##name##_Config
 
 /*!
- * @brief Initialize a LogSinkUART instance called \a name with log \a _levels
+ * @brief Initialize a LogSinkUART instance called @c name with log @c _levels ,
+ * printf delegate function @c printfDelegate , buf delegate function @c bufDelegate
+ * and dynamic log level @c _dynamicLevelsPtr
  */
-#define Log_MODULE_INIT_SINK_UART(name, _levels)                                         \
-    {                                                                                    \
-        .sinkConfig = &LogSinkUART_##name##_Config, .printf = ti_log_LogSinkUART_printf, \
-        .buf = ti_log_LogSinkUART_buf, .levels = _levels,                                \
+#define Log_MODULE_INIT_SINK_UART(name, _levels, printfDelegate, bufDelegate, _dynamicLevelsPtr)                      \
+    {                                                                                                                 \
+        .sinkConfig = &LogSinkUART_##name##_Config, .printf = printfDelegate, .printf0 = printfDelegate##0,           \
+        .printf1 = printfDelegate##1, .printf2 = printfDelegate##2, .printf3 = printfDelegate##3, .buf = bufDelegate, \
+        .levels = _levels, .dynamicLevelsPtr = _dynamicLevelsPtr,                                                     \
     }
 
 /*!
@@ -565,7 +612,7 @@ extern void ti_log_LogSinkUART_buf(const Log_Module *handle,
  *  function.
  */
 _Log_DEFINE_LOG_VERSION(LogSinkUART, Log_TI_LOG_SINK_UART_VERSION);
-/*! @endcond */
+/*! @endcond NODOC */
 
 #if defined(__cplusplus)
 }

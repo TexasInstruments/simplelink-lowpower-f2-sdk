@@ -8,6 +8,9 @@
 config MBEDCRYPTO_BUILD_TYPE
     default "relwithdebinfo"
 
+config BL1_2_BUILD_TYPE
+    default "relwithdebinfo"
+
 config CONFIG_TFM_HALT_ON_CORE_PANIC
     default y
 

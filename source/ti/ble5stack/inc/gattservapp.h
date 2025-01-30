@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2024, Texas Instruments Incorporated
+ Copyright (c) 2009-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -748,13 +748,13 @@ extern uint8 GATTServApp_WriteAttr( uint16 connHandle, uint16 handle,
  * @param   connHandle - connection read request was received on
  * @param   pValue - pointer to data to be read (to be returned)
  * @param   pLen - length of data (to be returned)
- * @param   offset - offset of the first octet to be read
+ * @param   attrHandle - attribute handle read
  *
  * @return  @ref SUCCESS : Read was successfully added to response.
  * @return  @ref bleNotConnected : Connection associated with read req is down.
  */
 extern bStatus_t GATTServApp_ReadRsp( uint16 connHandle, uint8 *pValue,
-                                      uint16 pLen, uint16 offset );
+                                      uint16 pLen, uint16 attrHandle );
 
 /**
  * @brief   Set a GATT Server Application Parameter value. Use this

@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2010-2024, Texas Instruments Incorporated
+ Copyright (c) 2010-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -514,6 +514,8 @@ extern "C"
 #define GAP_BOND_REC_IDS                    6
 
 // Bonded State Flags
+#define GAP_BONDED_STATE_NO_RECORD                      0xFF
+#define GAP_BONDED_STATE_UNAUTHENTICATED                0x00
 #define GAP_BONDED_STATE_AUTHENTICATED                  0x01
 #define GAP_BONDED_STATE_SERVICE_CHANGED                0x02
 #define GAP_BONDED_STATE_CAR                            0x04

@@ -7,20 +7,80 @@
 #
 #-------------------------------------------------------------------------------
 
-set(INSTALL_MEMORY_LAYOUT_DIR    ${TFM_INSTALL_PATH}/memory_layout)
+install(FILES       ${TARGET_PLATFORM_PATH}/Device/Config/device_cfg.h
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/include)
 
-install(FILES       ${CMAKE_CURRENT_LIST_DIR}/mailbox/platform_multicore.c
-                    ${CMAKE_CURRENT_LIST_DIR}/mailbox/platform_ns_mailbox.c
-        DESTINATION ${INSTALL_INTERFACE_SRC_DIR})
-
-install(FILES       ${CMAKE_CURRENT_LIST_DIR}/mailbox/platform_multicore.h
-                    ${CMAKE_CURRENT_LIST_DIR}/mailbox/ns_ipc_config.h
-                    ${CMAKE_CURRENT_LIST_DIR}/Device/Config/device_cfg.h
-        DESTINATION ${INSTALL_INTERFACE_INC_DIR})
-
-install(FILES       ${CMAKE_CURRENT_LIST_DIR}/partition/flash_layout.h
-                    ${CMAKE_CURRENT_LIST_DIR}/partition/region_defs.h
-        DESTINATION ${INSTALL_MEMORY_LAYOUT_DIR})
-
-install(FILES       ${CMAKE_CURRENT_LIST_DIR}/security/policy/policy_multi_CM0_CM4_tfm_dev_certs.json
+install(FILES       ${TARGET_PLATFORM_PATH}/security/policy/policy_multi_CM0_CM4_tfm_dev_certs.json
         DESTINATION ${INSTALL_IMAGE_SIGNING_DIR})
+
+install(FILES       ${CMAKE_CURRENT_SOURCE_DIR}/Device/Source/armclang/psoc6_ns.sct
+                    ${CMAKE_CURRENT_SOURCE_DIR}/Device/Source/gcc/psoc6_ns.ld
+                    ${CMAKE_CURRENT_SOURCE_DIR}/Device/Source/iar/psoc6_ns.icf
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/linker_scripts)
+
+install(FILES       ${CMAKE_CURRENT_SOURCE_DIR}/Device/Source/armclang/startup_psoc64_ns.s
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/Device/Source/armclang)
+
+install(FILES       ${CMAKE_CURRENT_SOURCE_DIR}/Device/Source/gcc/startup_psoc64_ns.S
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/Device/Source/gcc)
+
+install(FILES       ${CMAKE_CURRENT_SOURCE_DIR}/Device/Source/iar/startup_psoc64_ns.s
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/Device/Source/iar)
+
+install(FILES       ${TARGET_PLATFORM_PATH}/ns/cpuarch_ns.cmake
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}
+        RENAME      cpuarch.cmake)
+
+install(FILES       ${TARGET_PLATFORM_PATH}/ns/CMakeLists.txt
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+install(FILES       ${TARGET_PLATFORM_PATH}/mailbox/platform_ns_mailbox.c
+                    ${TARGET_PLATFORM_PATH}/mailbox/platform_multicore.c
+                    ${TARGET_PLATFORM_PATH}/mailbox/ns_ipc_config.h
+                    ${TARGET_PLATFORM_PATH}/mailbox/platform_multicore.h
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/mailbox)
+
+install(FILES       ${TARGET_PLATFORM_PATH}/Device/Source/system_psoc6_cm4.c
+                    ${TARGET_PLATFORM_PATH}/Device/Source/psoc6_system_init_cm4.c
+                    ${TARGET_PLATFORM_PATH}/Device/Source/device_definition.c
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/Device/Source)
+
+install(DIRECTORY   ${TARGET_PLATFORM_PATH}/Device/Config
+                    ${TARGET_PLATFORM_PATH}/Device/Include
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/Device)
+
+install(DIRECTORY   ${TARGET_PLATFORM_PATH}/partition
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+install(FILES       ${PLATFORM_DIR}/ext/cmsis/cmsis_armclang.h
+                    ${PLATFORM_DIR}/ext/cmsis/cmsis_compiler.h
+                    ${PLATFORM_DIR}/ext/cmsis/cmsis_gcc.h
+                    ${PLATFORM_DIR}/ext/cmsis/cmsis_iccarm.h
+                    ${PLATFORM_DIR}/ext/cmsis/cmsis_version.h
+                    ${PLATFORM_DIR}/ext/cmsis/core_cm4.h
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/cmsis)
+
+install(DIRECTORY   ${TARGET_PLATFORM_PATH}/Native_Driver/generated_source
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/Native_Driver)
+
+install(DIRECTORY   ${TARGET_PLATFORM_PATH}/CMSIS_Driver
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+file(GLOB ext_driver_header "${PLATFORM_DIR}/ext/driver/*.h")
+install(FILES       ${ext_driver_header}
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+install(FILES       ${TARGET_PLATFORM_PATH}/target_cfg.h
+                    ${TARGET_PLATFORM_PATH}/tfm_peripherals_def.h
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+if(TFM_PARTITION_PLATFORM)
+install(FILES       ${TARGET_PLATFORM_PATH}/plat_test.c
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+endif()
+
+install(DIRECTORY   ${TARGET_PLATFORM_PATH}/libs
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})
+
+install(FILES       ${TARGET_PLATFORM_PATH}/config.cmake
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR})

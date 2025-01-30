@@ -15,7 +15,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2012-2024, Texas Instruments Incorporated
+ Copyright (c) 2012-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,7 @@
 #include <stdbool.h>
 
 #include "ti/common/cc26xx/ecc/ECDSACC26X4_driverlib.h"
+#include "mcuboot_config.h"
 
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(inc/hw_memmap.h)
@@ -108,11 +109,82 @@ static bool periphPwrRequired;
 static uint32_t resultAddress;
 static uint32_t scratchBuffer0Size = SCRATCH_BUFFER_SIZE;
 static uint32_t scratchBuffer1Size = SCRATCH_BUFFER_SIZE;
+static uint32_t resultPKAMemAddr;
 
 
 /*
  *  ======== CryptoUtils_reverseCopyPad ========
  */
+/*
+*  ======== CryptoUtils_copyPad ========
+*/
+#ifndef ECDH_BIG_ENDIAN_KEY
+static void CryptoUtils_copyPad(const void *source, uint32_t *destination, size_t sourceLength)
+{
+    uint32_t i;
+    uint8_t remainder;
+    uint32_t temp;
+    uint8_t *tempBytePointer;
+    const uint8_t *sourceBytePointer;
+
+    remainder         = sourceLength % sizeof(uint32_t);
+    temp              = 0;
+    tempBytePointer   = (uint8_t *)&temp;
+    sourceBytePointer = (uint8_t *)source;
+
+    /* Copy source to destination starting at the end of source and the
+     * beginning of destination.
+     * We assemble each word in normal order and write one word at a
+     * time since the PKA_RAM requires word-aligned reads and writes.
+     */
+
+    for (i = 0; i < sourceLength / sizeof(uint32_t); i++)
+    {
+        uint32_t sourceOffset = sizeof(uint32_t) * i;
+
+        tempBytePointer[0] = sourceBytePointer[sourceOffset + 0];
+        tempBytePointer[1] = sourceBytePointer[sourceOffset + 1];
+        tempBytePointer[2] = sourceBytePointer[sourceOffset + 2];
+        tempBytePointer[3] = sourceBytePointer[sourceOffset + 3];
+
+        *(destination + i) = temp;
+    }
+
+    /* Reset to 0 so we do not have to zero-out individual bytes */
+    temp = 0;
+
+    /* If sourceLength is not a word-multiple, we need to copy over the
+     * remaining bytes and zero pad the word we are writing to PKA_RAM.
+     */
+    if (remainder == 1)
+    {
+
+        tempBytePointer[0] = sourceBytePointer[0];
+
+        /* i is reused from the loop above. This write zero-pads the
+         * destination buffer to word-length.
+         */
+        *(destination + i) = temp;
+    }
+    else if (remainder == 2)
+    {
+
+        tempBytePointer[0] = sourceBytePointer[0];
+        tempBytePointer[1] = sourceBytePointer[1];
+
+        *(destination + i) = temp;
+    }
+    else if (remainder == 3)
+    {
+
+        tempBytePointer[0] = sourceBytePointer[0];
+        tempBytePointer[1] = sourceBytePointer[1];
+        tempBytePointer[2] = sourceBytePointer[2];
+
+        *(destination + i) = temp;
+    }
+}
+#endif
 static void CryptoUtils_reverseCopyPad(const void *source,
                                        uint32_t *destination,
                                        size_t sourceLength)
@@ -218,6 +290,132 @@ static inline bool CryptoUtils_buffersMatchWordAligned(const volatile uint32_t *
     }
 
     return tempResult == 0;
+}
+
+#ifdef ECDH_BIG_ENDIAN_KEY
+/*
+ *  ======== CryptoUtils_reverseBufferBytewise ========
+ */
+void CryptoUtils_reverseBufferBytewise(void *buffer, size_t bufferByteLength)
+{
+    uint8_t *bufferLow  = buffer;
+    uint8_t *bufferHigh = bufferLow + bufferByteLength - 1;
+    uint8_t tmp;
+
+    while (bufferLow < bufferHigh)
+    {
+        tmp         = *bufferLow;
+        *bufferLow  = *bufferHigh;
+        *bufferHigh = tmp;
+        bufferLow++;
+        bufferHigh--;
+    }
+}
+#endif
+/*
+ *  ======== ECDHCC26X2_getKeyResult ========
+ */
+static int_fast16_t ECDHCC26X2_getKeyResult(CryptoKey_Plaintext *key,
+                                            const ECCParams_CurveParams *curve,
+                                            ECDH_OperationType opType)
+{
+    uint8_t *keyMaterial;
+    uint8_t *xCoordinate;
+    uint8_t *yCoordinate;
+    size_t keyLength;
+    size_t bytesToBeWritten;
+
+    /* Keep track of number of bytes of key written using driverlib function and check if it does not exceed the length
+     * of the keyMaterial provided in CryptoKey
+     */
+    bytesToBeWritten = 0;
+
+    /* Initialize the coordinates to NULL */
+    xCoordinate = NULL;
+    yCoordinate = NULL;
+
+
+    /*
+     * Support for both Plaintext and KeyStore keys for myPrivateKey
+     */
+    keyMaterial = key->keyMaterial;
+    keyLength   = key->keyLength;
+
+    bytesToBeWritten += 2 * curve->length;
+#ifdef ECDH_BIG_ENDIAN_KEY
+    if(opType == ECDH_OPERATION_TYPE_GENERATE_PUBLIC_KEY)
+    {
+        keyMaterial[0] = 0x04;
+    }
+    bytesToBeWritten += OCTET_STRING_OFFSET;
+#endif
+
+    if(bytesToBeWritten != keyLength)
+    {
+        return -1;
+    }
+
+
+    xCoordinate = keyMaterial;
+    yCoordinate = keyMaterial + curve->length;
+
+    PKAEccMultiplyGetResult(xCoordinate, yCoordinate, resultPKAMemAddr, curve->length);
+
+#ifdef ECDH_BIG_ENDIAN_KEY
+    /* Byte-reverse integer X coordinate for octet string format */
+    CryptoUtils_reverseBufferBytewise(xCoordinate, curve->length);
+
+    /* curve type = ECCParams_CURVE_TYPE_SHORT_WEIERSTRASS_AN3 */
+    /* Byte-reverse integer Y coordinate for octet string format */
+    CryptoUtils_reverseBufferBytewise(yCoordinate, curve->length);
+#endif
+    return ECDH_STATUS_SUCCESS;
+
+
+
+}
+static inline int_fast16_t ECDH_computeSharedSecretPolling(ECDH_OperationComputeSharedSecret *operation) {
+
+    uint32_t pkaResult;
+
+    /*MULT_PRIVATE_KEY_BY_PUB_KEY*/
+    while (PKAGetOpsStatus() == PKA_STATUS_OPERATION_BUSY) {}
+
+    /* If we are using a short Weierstrass curve, we need to validate the public key */
+    pkaResult = PKAEccVerifyPublicKeyWeierstrassStart((uint8_t *)SCRATCH_PUBLIC_X,
+                                                      (uint8_t *)SCRATCH_PUBLIC_Y,
+                                                      operation->curve->prime,
+                                                      operation->curve->a,
+                                                      operation->curve->b,
+                                                      operation->curve->order,
+                                                      operation->curve->length);
+
+    if (pkaResult != PKA_STATUS_SUCCESS)
+    {
+        return ECDH_STATUS_PUBLIC_KEY_NOT_ON_CURVE;
+    }
+
+    /* Perform an elliptic curve multiplication on a short Weierstrass curve */
+    PKAEccMultiplyStart((uint8_t *)SCRATCH_PRIVATE_KEY,
+                        (uint8_t *)SCRATCH_PUBLIC_X,
+                        (uint8_t *)SCRATCH_PUBLIC_Y,
+                        operation->curve->prime,
+                        operation->curve->a,
+                        operation->curve->b,
+                        operation->curve->length,
+                        &resultPKAMemAddr);
+
+    while (PKAGetOpsStatus() == PKA_STATUS_OPERATION_BUSY) {}
+
+    /*MULT_PRIVATE_KEY_BY_PUB_KEY_RESULT*/
+    ECDHCC26X2_getKeyResult(operation->sharedSecret,
+                                     operation->curve,
+                                     ECDH_OPERATION_TYPE_COMPUTE_SHARED_SECRET);
+
+    while (PKAGetOpsStatus() == PKA_STATUS_OPERATION_BUSY) {}
+
+    /*RETURN*/
+    return ECDH_STATUS_SUCCESS;
 }
 
 /*
@@ -628,6 +826,70 @@ void ECDSA_close(void)
     PRCMPeripheralRunDisable(PRCM_PERIPH_PKA);
     PRCMLoadSet();
     while (!PRCMLoadGet()) {}
+}
+
+
+/*
+ *  ======== ECDH_computeSharedSecret ========
+ */
+int_fast16_t ECDH_computeSharedSecret(ECDH_OperationComputeSharedSecret *operation) {
+
+    int_fast16_t status;
+    uint8_t *myPrivateKeyMaterial;
+    size_t myPrivateKeyLength;
+    uint8_t *theirPublicKeyMaterial;
+    size_t theirPublicKeyLength;
+    size_t sharedSecretKeyLength;
+
+    myPrivateKeyMaterial = operation->myPrivateKey->keyMaterial;
+    myPrivateKeyLength   = operation->myPrivateKey->keyLength;
+
+    theirPublicKeyMaterial = operation->theirPublicKey->keyMaterial;
+    theirPublicKeyLength   = operation->theirPublicKey->keyLength;
+
+    sharedSecretKeyLength = operation->sharedSecret->keyLength;
+
+#ifdef ECDH_BIG_ENDIAN_KEY
+    if ((myPrivateKeyLength != operation->curve->length) ||
+            (theirPublicKeyLength != 2 * operation->curve->length + OCTET_STRING_OFFSET) ||
+            (theirPublicKeyMaterial[0] != 0x04) ||
+            (sharedSecretKeyLength != 2 * operation->curve->length + OCTET_STRING_OFFSET))
+    {
+        return ECDH_STATUS_INVALID_KEY_SIZE;
+    }
+#else
+    if ((myPrivateKeyLength != operation->curve->length) ||
+            (theirPublicKeyLength != 2 * operation->curve->length) ||
+            (sharedSecretKeyLength != 2 * operation->curve->length))
+    {
+        return ECDH_STATUS_INVALID_KEY_SIZE;
+    }
+#endif
+
+#ifdef ECDH_BIG_ENDIAN_KEY
+    CryptoUtils_reverseCopyPad(myPrivateKeyMaterial, SCRATCH_PRIVATE_KEY, operation->curve->length);
+
+    CryptoUtils_reverseCopyPad(theirPublicKeyMaterial + OCTET_STRING_OFFSET,
+                               SCRATCH_PUBLIC_X,
+                               operation->curve->length);
+
+    CryptoUtils_reverseCopyPad(theirPublicKeyMaterial + OCTET_STRING_OFFSET + operation->curve->length,
+                               SCRATCH_PUBLIC_Y,
+                               operation->curve->length);
+#else
+    CryptoUtils_copyPad(myPrivateKeyMaterial, SCRATCH_PRIVATE_KEY, operation->curve->length);
+
+    CryptoUtils_copyPad(theirPublicKeyMaterial, SCRATCH_PUBLIC_X, operation->curve->length);
+
+    CryptoUtils_copyPad(theirPublicKeyMaterial + operation->curve->length,
+                        SCRATCH_PUBLIC_Y,
+                        operation->curve->length);
+#endif
+    status = ECDH_computeSharedSecretPolling(operation);
+
+    PKAClearPkaRam();
+
+    return status;
 }
 
 

@@ -33,6 +33,8 @@
 #ifndef __TI_CRYPTO_H__
 #define __TI_CRYPTO_H__
 
+#include <stddef.h>
+
   /*********************************************************************
  * GLOBAL VARIABLES
  */
@@ -61,6 +63,8 @@ extern uint32_t NIST_Curve_P256_Gy;
 /*********************************************************************
  * MACROS
  */
+
+#define AES_CTR_KEY_SIZE        (16)
 
 /* ECC Window Size.  Determines speed and workzone size of ECC operations.
  Recommended setting is 3. */
@@ -105,6 +109,12 @@ extern uint32_t NIST_Curve_P256_Gy;
 /* Key size in uint32_t blocks */
 #define SECURE_FW_ECC_UINT32_BLK_LEN(len)        (((len) + 3) / 4)
 
+#define NUM_ECC_BYTES (256 / 8)
+
+
+/*
+ *  ======== SHA2 & HMAC ========
+ */
 void SlCrypto_sha256_init(void);
 
 void SlCrypto_sha256_drop(void);
@@ -114,6 +124,15 @@ int SlCrypto_sha256_update(const void *data,
 
 int SlCrypto_sha256_final(uint8_t *output);
 
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
+int SlCrypto_sha256_setupHmac(const uint8_t *key, unsigned int key_size);
+
+int SlCrypto_sha256_finalizeHmac(uint8_t *tag);
+#endif
+
+/*
+ *  ======== ECDSA & ECDH ========
+ */
 void SlCrypto_ecdsa_p256_init(void);
 
 void SlCrypto_ecdsa_p256_drop(void);
@@ -121,6 +140,23 @@ void SlCrypto_ecdsa_p256_drop(void);
 int SlCrypto_ecdsa_p256_verify(const uint8_t *pk,
                                const uint8_t *hash,
                                const uint8_t *sig);
+
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
+int SlCrypto_ecdh_p256_computeSharedSecret(const uint8_t *pk, const uint8_t *sk, uint8_t *z);
+
+/*
+ *  ======== AESCTR ========
+ */
+void SlCrypto_aesctr_init(void);
+
+void SlCrypto_aesctr_drop(void);
+
+int SlCrypto_aesctr_setKey(const uint8_t *keyingMaterial);
+
+int SlCrypto_aesctr_encrypt(uint8_t *counter, const uint8_t *m, uint32_t mlen, size_t blk_off, uint8_t *c);
+
+int SlCrypto_aesctr_decrypt(uint8_t *counter, const uint8_t *c, uint32_t clen, size_t blk_off, uint8_t *m);
+#endif
 
 
 #endif /* __TI_CRYPTO_H__ */

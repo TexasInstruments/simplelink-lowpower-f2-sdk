@@ -5,12 +5,12 @@
  *
  */
 #include <string.h>
+#include "tfm_builtin_key_loader.h"
 #if defined(TFM_BUILTIN_KEY_LOADER_DERIVE_KEY_USING_PSA)
 #include "tfm_mbedcrypto_include.h"
 #else
 #include "mbedtls/hkdf.h"
 #endif /* TFM_BUILTIN_KEY_LOADER_DERIVE_KEY_USING_PSA */
-#include "tfm_builtin_key_loader.h"
 #include "psa_manifest/pid.h"
 #include "tfm_plat_crypto_keys.h"
 #include "crypto_library.h"

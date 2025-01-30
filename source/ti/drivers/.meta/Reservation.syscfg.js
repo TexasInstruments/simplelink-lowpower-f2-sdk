@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -112,11 +112,6 @@ function getTimerInstParams(timerId)
     };
 
     switch (family) {
-        case "CC32XX": {
-            timerArgs.resourceType = "Timer";
-            timerArgs.resourceName = "Timer";
-            break;
-        }
         case "CC26XX":
         case "CC26X2": {
             timerArgs.resourceType = "GPTM";

@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Copyright (c) 2021-2022, Arm Limited. All rights reserved.
+# Copyright (c) 2021-2023, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -12,6 +12,8 @@ target_include_directories(bl1_1_shared_lib_interface
     INTERFACE
         interface
         $<$<BOOL:${TFM_BL1_DEFAULT_OTP}>:${CMAKE_CURRENT_SOURCE_DIR}/otp>
+        $<$<BOOL:${TFM_BL1_PQ_CRYPTO}>:${MBEDCRYPTO_PATH}/include>
+        $<$<BOOL:${TFM_BL1_PQ_CRYPTO}>:${CMAKE_CURRENT_SOURCE_DIR}/pq_crypto>
 )
 
 target_link_libraries(bl1_1_shared_lib_interface
@@ -26,16 +28,20 @@ target_sources(bl1_1_shared_lib
         $<$<BOOL:${TFM_BL1_DUMMY_TRNG}>:trng/trng_dummy.c>
         ./util.c
         $<$<BOOL:${TFM_BL1_DEFAULT_OTP}>:./otp/otp_default.c>
+        $<$<BOOL:${TFM_BL1_PQ_CRYPTO}>:./pq_crypto/pq_crypto_psa.c>
+        $<$<BOOL:${TFM_BL1_PQ_CRYPTO}>:${MBEDCRYPTO_PATH}/library/lms.c>
+        $<$<BOOL:${TFM_BL1_PQ_CRYPTO}>:${MBEDCRYPTO_PATH}/library/lmots.c>
+        $<$<BOOL:${TFM_BL1_PQ_CRYPTO}>:${MBEDCRYPTO_PATH}/library/platform_util.c>
+        $<$<BOOL:${TFM_BL1_PQ_CRYPTO}>:${MBEDCRYPTO_PATH}/library/psa_util.c>
 )
 
 target_link_libraries(bl1_1_shared_lib
     PUBLIC
         bl1_1_shared_lib_interface
-        platform_region_defs
         tfm_fih
     PRIVATE
+        platform_bl1_1
         $<$<BOOL:${TFM_BL1_SOFTWARE_CRYPTO}>:bl1_1_crypto_mbedcrypto>
-        $<$<AND:$<NOT:$<BOOL:${TFM_BL1_SOFTWARE_CRYPTO}>>,$<BOOL:${CRYPTO_HW_ACCELERATOR}>>:bl1_crypto_hw>
 )
 
 target_compile_options(bl1_1_shared_lib_interface
@@ -48,6 +54,7 @@ target_compile_definitions(bl1_1_shared_lib_interface
     INTERFACE
         $<$<BOOL:${TEST_BL1_1}>:TEST_BL1_1>
         MCUBOOT_FIH_PROFILE_HIGH
+        $<$<BOOL:${TFM_BL1_PQ_CRYPTO}>:MBEDTLS_CONFIG_FILE="mbedtls-pq-cfg.h">
 )
 
 if(TFM_BL1_SOFTWARE_CRYPTO)

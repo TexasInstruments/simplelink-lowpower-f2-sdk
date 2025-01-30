@@ -12,16 +12,16 @@
 extern "C" {
 #endif
 
-#ifdef PROJECT_CONFIG_HEADER_FILE
-#include PROJECT_CONFIG_HEADER_FILE
-#endif
-
 /*
  * Platform defined header file for TF-M configs.
  * Path: ${TARGET_PLATFORM_PATH}/config_tfm_target.h
  */
 #ifdef TARGET_CONFIG_HEADER_FILE
 #include TARGET_CONFIG_HEADER_FILE
+#endif
+
+#ifdef PROJECT_CONFIG_HEADER_FILE
+#include PROJECT_CONFIG_HEADER_FILE
 #endif
 
 #include "config_base.h"

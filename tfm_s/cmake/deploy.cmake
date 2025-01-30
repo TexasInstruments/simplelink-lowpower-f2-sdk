@@ -7,4 +7,4 @@ install(FILES ${GENERATED_FLASH_LAYOUT_DIR}/flash_layout.h DESTINATION export/tf
 install(FILES ${CMAKE_BINARY_DIR}/generated/interface/include/config_impl.h DESTINATION export/tfm/inc)
 
 # Install SysConfig module used by Code Composer Studio to load the native C Runtime Object Viewer (ROV) capsules
-install(FILES ${SOURCE_REPO}/ti/tfm/syscfg_c.rov.xs DESTINATION outputs)
+install(FILES ${CMAKE_SOURCE_DIR}/../../ti/tfm/rov_theia/syscfg_c.rov.xs DESTINATION bin)

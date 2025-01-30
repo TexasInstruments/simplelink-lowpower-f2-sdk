@@ -19,7 +19,7 @@
 
 #include "cmsis.h"
 #include "utilities.h"
-#include "target_cfg.h"
+#include "common_target_cfg.h"
 #include "Driver_PPC.h"
 #include "Driver_MPC.h"
 #include "region_defs.h"
@@ -455,7 +455,7 @@ enum tfm_plat_err_t ppc_init_cfg(void)
     return TFM_PLAT_ERR_SUCCESS;
 }
 
-void ppc_configure_to_secure(enum ppc_bank_e bank, uint32_t pos)
+void ppc_configure_to_secure(ppc_bank_t bank, uint32_t pos)
 {
     DRIVER_PPC_RSS *ppc_driver;
 
@@ -469,7 +469,7 @@ void ppc_configure_to_secure(enum ppc_bank_e bank, uint32_t pos)
     }
 }
 
-void ppc_configure_to_non_secure(enum ppc_bank_e bank, uint32_t pos)
+void ppc_configure_to_non_secure(ppc_bank_t bank, uint32_t pos)
 {
     DRIVER_PPC_RSS *ppc_driver;
 
@@ -483,7 +483,7 @@ void ppc_configure_to_non_secure(enum ppc_bank_e bank, uint32_t pos)
     }
 }
 
-void ppc_en_secure_unpriv(enum ppc_bank_e bank, uint32_t pos)
+void ppc_en_secure_unpriv(ppc_bank_t bank, uint32_t pos)
 {
     DRIVER_PPC_RSS *ppc_driver;
 
@@ -499,7 +499,7 @@ void ppc_en_secure_unpriv(enum ppc_bank_e bank, uint32_t pos)
     }
 }
 
-void ppc_clr_secure_unpriv(enum ppc_bank_e bank, uint32_t pos)
+void ppc_clr_secure_unpriv(ppc_bank_t bank, uint32_t pos)
 {
     DRIVER_PPC_RSS *ppc_driver;
 

@@ -11,10 +11,12 @@
 #include "config_impl.h"
 #include "config_tfm.h"
 
+#ifdef CONFIG_TFM_CONNECTION_POOL_ENABLE
 /* The maximal number of secure services that are connected or requested at the same time */
 #ifndef CONFIG_TFM_CONN_HANDLE_MAX_NUM
 #pragma message("CONFIG_TFM_CONN_HANDLE_MAX_NUM is defaulted to 8. Please check and set it explicitly.")
 #define CONFIG_TFM_CONN_HANDLE_MAX_NUM 8
+#endif
 #endif
 
 /* Set the doorbell APIs */

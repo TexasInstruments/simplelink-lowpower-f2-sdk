@@ -30,8 +30,8 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "mcuboot_config/mcuboot_config.h"
-#include "flash_map_backend/flash_map_backend.h"
+#include "mcuboot_config.h"
+#include "flash_map_backend.h"
 #include <sysflash/sysflash.h>
 
 #include "bootutil/bootutil_log.h"
@@ -44,7 +44,7 @@
 #endif
 
 #ifdef TI_BOOT_USE_EXTERNAL_FLASH
-#include <ext_flash.h>
+#include <ti/common/flash/no_rtos/extFlash/ext_flash.h>
 #endif /* TI_BOOT_USE_EXTERNAL_FLASH */
 
 #define FLASH_BASE_ADDRESS          0
@@ -57,6 +57,12 @@
 #endif
 
 #define FLASH_ERASE_VALUE           0xFF
+
+#if defined(__GNUC__)
+#if defined(assert)
+#undef assert
+#endif
+#endif
 
 #define assert(x) if(x) {BOOT_LOG_ERR("assert: %s line %d", __FILE__, __LINE__);}
 

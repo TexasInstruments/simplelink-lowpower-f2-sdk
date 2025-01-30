@@ -31,22 +31,26 @@ Building TF-M on nRF5340 Application MCU
 To build an S and NS application image for the nRF5340 Application MCU run the
 following commands:
 
-    **Note**: On OS X change ``readlink`` to ``greadlink``, available by
-    running ``brew install coreutils``.
 
-.. code:: bash
+.. code-block:: bash
 
-    $ mkdir build && cd build
-    $ cmake -DTFM_PLATFORM=nordic_nrf/nrf5340dk_nrf5340_cpuapp \
-            -DTFM_TOOLCHAIN_FILE=../toolchain_GNUARM.cmake \
-            -G"Unix Makefiles" ../
-    $ make install
+   cmake -S <TF-M base folder> -B build_spe \
+           -DTFM_PLATFORM=nordic_nrf/nrf9160dk_nrf9160 \
+           -DTFM_TOOLCHAIN_FILE=../toolchain_GNUARM.cmake \
+   cmake --build build_spe -- install
 
-    **Note**: Currently, applications can only be built using GCC
-    (GNU ARM Embedded toolchain).
+   cmake -S <Application base folder> -B build_app \
+           -DCONFIG_SPE_PATH<Absolute path to TF-M base folder>/build_spe/api_ns
+           -DTFM_TOOLCHAIN_FILE=cmake/toolchain_ns_GNUARM.cmake
+   cmake --build
 
-    **Note**: For BL2 (MCUBoot) logging output to be available, the project needs
-    to be built with Debug configuration (CMAKE_BUILD_TYPE=Debug).
+.. note::
+   Currently, applications can only be built using GCC (GNU ARM Embedded
+   toolchain).
+
+.. note::
+   BL2 (MCUBoot) logging output to be available, the project needs to be built
+   with Debug configuration (CMAKE_BUILD_TYPE=Debug).
 
 Flashing and debugging with Nordic nRF Segger J-Link
 -----------------------------------------------------
@@ -94,7 +98,8 @@ Generate Intel hex files from the output binary (bin) files as follows:
 
 .. code-block:: console
 
-   srec_cat install/outputs/NORDIC_NRF/NRF5340DK_NRF5340_CPUAPP/tfm_s_ns_signed.bin -binary --offset=0x10000 -o install/outputs/NORDIC_NRF/NRF5340DK_NRF5340_CPUAPP/tfm_s_ns_signed.hex -intel
+   srec_cat build_app/tfm_s_ns_signed.bin -binary --offset 0x10000 \
+         -o build_app/tfm_s_ns_signed.hex -intel
 
 * Connect the micro-USB cable to the nRF5340 DK and to your computer
 * Erase the flash memory in the nRF5340 IC:
@@ -103,12 +108,19 @@ Generate Intel hex files from the output binary (bin) files as follows:
 
    nrfjprog --eraseall -f nrf53
 
+* (Optionally) Erase the flash memory and reset flash protection and disable
+   the read back protection mechanism if enabled.
+
+.. code-block:: console
+
+   nrfjprog --recover -f nrf91
+
 * Flash the BL2 and the TF-M image binaries from the sample folder of your choice:
 
 .. code-block:: console
 
-   nrfjprog --program <sample folder>/install/outputs/NORDIC_NRF/NRF5340DK_NRF5340_CPUAPP/bl2.hex -f nrf53 --sectorerase
-   nrfjprog --program <sample folder>/install/outputs/NORDIC_NRF/NRF5340DK_NRF5340_CPUAPP/tfm_s_ns_signed.hex -f nrf53 --sectorerase
+   nrfjprog --program build_spe/bin/bl2.hex -f nrf91 --sectorerase
+   nrfjprog --program build_app/tfm_s_ns_signed.hex -f nrf91 --sectorerase
 
 * Reset and start TF-M:
 
@@ -126,7 +138,8 @@ and RxD (pins P0.25 and P0.26) to RxD and TxD pins on the DK.
 
 Non-Secure console output is available via USART0.
 
-    **Note**: By default USART0 and USART1 outputs are routed to separate serial ports.
+.. note::
+   By default USART0 and USART1 outputs are routed to separate serial ports.
 
 .. _nRF Command-Line Tools: https://www.nordicsemi.com/Software-and-Tools/Development-Tools/nRF-Command-Line-Tools
 

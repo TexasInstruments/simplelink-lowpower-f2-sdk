@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2019-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -10,10 +10,20 @@
 #include "tfm_protected_storage.h"
 #include "ps_object_system.h"
 #include "tfm_ps_defs.h"
+#ifndef TFM_PARTITION_INTERNAL_TRUSTED_STORAGE
+#include "tfm_internal_trusted_storage.h"
+#endif /* !TFM_PARTITION_INTERNAL_TRUSTED_STORAGE */
 
 psa_status_t tfm_ps_init(void)
 {
     psa_status_t err;
+
+#ifndef TFM_PARTITION_INTERNAL_TRUSTED_STORAGE
+    err = tfm_its_init();
+    if (err != PSA_SUCCESS) {
+        return err;
+    }
+#endif /* !TFM_PARTITION_INTERNAL_TRUSTED_STORAGE */
 
     err = ps_system_prepare();
 #if PS_CREATE_FLASH_LAYOUT

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2023, Texas Instruments Incorporated
+ * Copyright (c) 2017-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,6 +45,10 @@
 
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
 #include <ti/devices/DeviceFamily.h>
+
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX)
+    #include <ti/drivers/cryptoutils/ecc/ECCParamsLPF3HSM.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -180,6 +184,13 @@ typedef struct ECCParams_ns_CurveParams
 
 /*!
  *
+ *  @brief The NISTP192 curve in short Weierstrass form.
+ *
+ */
+extern const ECCParams_CurveParams ECCParams_NISTP192;
+
+/*!
+ *
  *  @brief The NISTP224 curve in short Weierstrass form.
  *
  */
@@ -252,7 +263,8 @@ extern const ECCParams_CurveParams ECCParams_Ed25519;
  */
 #define ECC_LENGTH_PREFIX_BYTES 4
 
-#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0) || (DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX)
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0) || (DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX) || \
+    (DeviceFamily_PARENT == DeviceFamily_PARENT_CC35XX)
 
     /*!
      *  @defgroup nistp256_params NIST P256 curve params to be used with ECC SW library
@@ -406,6 +418,9 @@ extern const ECC_NISTP224_Param ECC_NISTP224_b_mont;
     /* Octet string format requires an extra byte at the start of the public key */
     #define OCTET_STRING_OFFSET 1
 
+    /* Octet string format requires this value in the first byte of the public key */
+    #define OCTET_STRING_PREFIX 0x04
+
     /* Length of offset in bytes */
     #define ECC_LENGTH_OFFSET_BYTES 4
 
@@ -421,7 +436,8 @@ typedef union
     uint8_t byte[ECC_PARAM_LENGTH_WITH_OFFSET_BYTES];
 } ECC_Param;
 
-#endif /* DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0 */
+#endif /* (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0) || (DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX) \
+          || (DeviceFamily_PARENT == DeviceFamily_PARENT_CC35XX) */
 
 /*!
  *  @brief Length of Curve25519 curve parameters in bytes

@@ -16,6 +16,7 @@
  */
 #include "6LoWPAN/ND/nd_defines.h"
 #include "net_6lowpan_parameter_api.h"
+#include "Common_Protocols/icmpv6.h"
 
 #ifndef ND_ROUTER_OBJECT_H_
 #define ND_ROUTER_OBJECT_H_

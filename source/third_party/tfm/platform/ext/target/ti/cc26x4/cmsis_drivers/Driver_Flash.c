@@ -238,8 +238,7 @@ static int32_t ARM_Flash_ProgramData(uint32_t addr, const void *data, uint32_t c
     /* Conversion between data items and bytes */
     cnt *= data_width_byte[DriverCapabilities.data_width];
 
-    /*
-     * CMSIS -> HAPI (Secure ROM) -> FAPI (Secure ROM)
+    /* CMSIS -> HAPI (Secure ROM) -> FAPI (Secure ROM)
      * CC26x4 HapiProgramFlash handles VIMS cache and line buffer disable/restore
      * automatically. The underlying Flash API performs write verification so it
      * is not necessary to check that the flash area is erased prior to
@@ -266,8 +265,7 @@ static int32_t ARM_Flash_EraseSector(uint32_t addr)
     uint32_t status;
     uintptr_t key;
 
-    /*
-     * CMSIS -> HAPI (Secure ROM) -> FAPI (Secure ROM)
+    /* CMSIS -> HAPI (Secure ROM) -> FAPI (Secure ROM)
      * CC26x4 HapiEraseSector handles VIMS cache and line buffer disable/restore
      * automatically.
      */
@@ -280,23 +278,10 @@ static int32_t ARM_Flash_EraseSector(uint32_t addr)
 
 static int32_t ARM_Flash_EraseChip(void)
 {
-#if 0  /* HapiEraseBank is not currently exposed in rom.h */
-    uint32_t status;
-    uintptr_t key;
-
-    /*
-     * CMSIS -> HAPI (Secure ROM) -> FAPI (Secure ROM)
-     * CC26x4 HapiEraseBank handles VIMS cache and line buffer disable/restore
-     * automatically. Both 512KB flash banks will be erased.
+    /* Erasing the entire on-chip flash cannot be done while executing from it.
+     * Furthermore, HapiEraseBank() is not currently exposed in rom.h
      */
-    key = HwiP_disable();
-    status = HapiEraseBank();
-    HwiP_restore(key);
-
-    return translateFAPIStatus(status);
-#else
     return ARM_DRIVER_ERROR_UNSUPPORTED;
-#endif
 }
 
 static ARM_FLASH_STATUS ARM_Flash_GetStatus(void)

@@ -41,7 +41,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2018-2024, Texas Instruments Incorporated
+ Copyright (c) 2018-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -83,8 +83,8 @@ define symbol FLASH_BASE            = 0x00000000;
 define symbol RAM_BASE              = 0x20000000;
 define symbol ROM_BASE              = 0x10000000;
 
-define symbol RAM_SIZE            = 0x00024000; // 144K
-define symbol FLASH_SIZE          = 0x000B0000; // 704K
+define symbol RAM_SIZE            = 0x00014000; // 80K
+define symbol FLASH_SIZE          = 0x00058000; // 352K
 define symbol ROM_SIZE            = 0x00040000; // 256K
 
 ////////////////////////////////////////////////////////////////////////////////

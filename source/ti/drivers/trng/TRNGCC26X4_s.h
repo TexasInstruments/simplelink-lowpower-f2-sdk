@@ -67,7 +67,7 @@ extern "C" {
  * by the non-secure client using TRNG_construct().
  */
 #ifndef CONFIG_TRNG_S_CONFIG_POOL_SIZE
-    #define CONFIG_TRNG_S_CONFIG_POOL_SIZE 1
+    #define CONFIG_TRNG_S_CONFIG_POOL_SIZE 2 /* One instance used for ECDSA */
 #endif
 
 #define TRNG_SECURE_CALLBACK_COUNT (CONFIG_TI_DRIVERS_TRNG_COUNT + CONFIG_TRNG_S_CONFIG_POOL_SIZE)

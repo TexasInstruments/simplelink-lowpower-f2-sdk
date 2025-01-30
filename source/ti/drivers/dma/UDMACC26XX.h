@@ -71,7 +71,7 @@
  * | API function             | Description                                                    |
  * |------------------------- |----------------------------------------------------------------|
  * | UDMACC26XX_open()        | Initialize and enable the uDMA HW and set system dependencies. |
- * | UDMACC26XX_close()       | Disable uUDMA HW and release system dependencies               |
+ * | UDMACC26XX_close()       | Disable uDMA HW and release system dependencies                |
  *
  * @note These functions should not be called by code. These functions are called
  *       by drivers who're using the DMA.
@@ -87,7 +87,7 @@
  * of the DMA control table in RAM. (Default value is 0x2000_0400)
  * Remember it must be 1024 bytes aligned.
  * @code
- * #define UDMACC26XX_CONFIG_BASE 0x2000_0400
+ * #define UDMACC26XX_CONFIG_BASE 0x20000400
  * @endcode
  *
  * - If only SSI0 is used, this will allocate 2*16=32 RAM bytes at address:\n
@@ -219,7 +219,7 @@ typedef struct
  */
 typedef struct
 {
-    uint32_t baseAddr;                /*!< Base adddress for UDMACC26XX */
+    uint32_t baseAddr;                /*!< Base address for UDMACC26XX */
     PowerCC26XX_Resource powerMngrId; /*!< UDMACC26XX Peripheral's power manager ID */
     uint8_t intNum;                   /*!< UDMACC26XX error interrupt number */
     /*! @brief UDMACC26XX error interrupt priority.
@@ -313,7 +313,7 @@ extern UDMACC26XX_Handle UDMACC26XX_open(void);
  *
  *  @param  handle  A UDMACC26XX_Handle returned from UDMACC26XX_open()
  *
- *  @param  params  A 32-bit bitmask of the channels to enable.
+ *  @param  channelBitMask  A 32-bit bitmask of the channels to enable.
  *
  *  @sa     UDMACC26XX_channelDisable
  */
@@ -340,7 +340,7 @@ __STATIC_INLINE void UDMACC26XX_channelEnable(UDMACC26XX_Handle handle, uint32_t
  *
  *  @param  handle  A UDMACC26XX_Handle returned from UDMACC26XX_open()
  *
- *  @param  params  A 32-bit bitmask of the channels to check for if are done.
+ *  @param  channelBitMask  A 32-bit bitmask of the channels to check for if are done.
  *
  *  @return True if the channels are done, false otherwise.
  *
@@ -368,8 +368,6 @@ __STATIC_INLINE bool UDMACC26XX_channelDone(UDMACC26XX_Handle handle, uint32_t c
  *
  *  @param  handle  A UDMACC26XX_Handle returned from UDMACC26XX_open()
  *
- *  @param  params  A 32-bit bitmask of the channels to check for if are done.
- *
  *  @param  channelBitMask  A 32-bit bitmask of the channels to clear interrupts for.
  *
  *  @return none
@@ -396,7 +394,7 @@ __STATIC_INLINE void UDMACC26XX_clearInterrupt(UDMACC26XX_Handle handle, uint32_
  *
  *  @param  handle  A UDMACC26XX_Handle returned from UDMACC26XX_open()
  *
- *  @param  params  A 32-bit bitmask of the channels to disable.
+ *  @param  channelBitMask  A 32-bit bitmask of the channels to disable.
  *
  *  @return none
  *

@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2024, Texas Instruments Incorporated
+ Copyright (c) 2015-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -1080,6 +1080,9 @@ volatile uint8_t rxcomplete = 0;
 static void NPITask_transportDoneCallBack(uint16_t sizeRx, uint16_t sizeTx)
 {
     _npiFrame_t *pMsg = NULL;
+#ifndef ICALL_EVENTS
+    _npiCSKey_t key;
+#endif //!ICALL_EVENTS
 
     if (sizeRx != 0)
     {
@@ -1100,8 +1103,11 @@ static void NPITask_transportDoneCallBack(uint16_t sizeRx, uint16_t sizeTx)
                                        NPITASK_SYNC_FRAME_RX_EVENT,
                                        (unsigned char *) pMsg);
 #else //!ICALL_EVENTS
-                    tlDoneISRFlag |= NPITASK_SYNC_FRAME_RX_EVENT;
                     NPIUtil_enqueueMsg(npiSyncRxQueue, npiSem, (unsigned char *) pMsg);
+                    key = NPIUtil_EnterCS();
+                    tlDoneISRFlag |= NPITASK_SYNC_FRAME_RX_EVENT;
+                    Semaphore_post(npiSem);
+                    NPIUtil_ExitCS(key);
 #endif //ICALL_EVENTS
                     break;
                 }
@@ -1112,8 +1118,11 @@ static void NPITask_transportDoneCallBack(uint16_t sizeRx, uint16_t sizeTx)
                                        NPITASK_FRAME_RX_EVENT,
                                        (unsigned char *) pMsg);
 #else //!ICALL_EVENTS
-                    tlDoneISRFlag |= NPITASK_FRAME_RX_EVENT;
+                    key = NPIUtil_EnterCS();
                     NPIUtil_enqueueMsg(npiRxQueue, npiSem, (unsigned char *) pMsg);
+                    tlDoneISRFlag |= NPITASK_FRAME_RX_EVENT;
+                    Semaphore_post(npiSem);
+                    NPIUtil_ExitCS(key);
 #endif //ICALL_EVENTS
                     break;
                 }
@@ -1133,8 +1142,10 @@ static void NPITask_transportDoneCallBack(uint16_t sizeRx, uint16_t sizeTx)
 #ifdef ICALL_EVENTS
       Event_post(syncEvent, NPITASK_TX_DONE_EVENT);
 #else //!ICALL_EVENTS
+      key = NPIUtil_EnterCS();
       tlDoneISRFlag |= NPITASK_TX_DONE_EVENT;
       Semaphore_post(npiSem);
+      NPIUtil_ExitCS(key);
 #endif //ICALL_EVENTS
     }
 
@@ -1148,8 +1159,10 @@ static void NPITask_transportDoneCallBack(uint16_t sizeRx, uint16_t sizeTx)
 #ifdef ICALL_EVENTS
         Event_post(syncEvent, NPITASK_TX_READY_EVENT);
 #else //!ICALL_EVENTS
+        key = NPIUtil_EnterCS();
         tlDoneISRFlag |= NPITASK_TX_READY_EVENT;
         Semaphore_post(npiSem);
+        NPIUtil_ExitCS(key);
 #endif //ICALL_EVENTS
     }
 }
@@ -1171,8 +1184,11 @@ static void NPITask_RemRdyEventCB(uint8_t state)
 #ifdef ICALL_EVENTS
     Event_post(syncEvent, NPITASK_REM_RDY_EVENT);
 #else //!ICALL_EVENTS
+    _npiCSKey_t key;
+    key = NPIUtil_EnterCS();
     remRdyISRFlag = NPITASK_REM_RDY_EVENT;
     Semaphore_post(npiSem);
+    NPIUtil_ExitCS(key);
 #endif //ICALL_EVENTS
   }
 #ifdef NPI_MASTER

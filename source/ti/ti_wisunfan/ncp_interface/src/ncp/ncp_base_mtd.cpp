@@ -110,6 +110,11 @@
 #include "ti_radio_config.h"
 #include "6LoWPAN/ws/ws_common_defines.h"
 
+#ifdef FEATURE_TEST_INVALID_FRAME
+#include "mac_security_pib.h"
+#include "timac_api.h"
+#endif
+
 #ifdef WISUN_TRX
 #include <ti/trx/TRX.h>
 #endif // WISUN_TRX
@@ -448,7 +453,7 @@ template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_NET_STACK_UP>(void)
     if(true == enable)
     {
     	//if net stack not already brought up
-		if(!is_net_stack_up())
+        if(get_current_net_state() == 0)
 		{
 
 #ifdef SWITCH_NCP_TO_TRACE
@@ -801,30 +806,68 @@ exit:
     return error;
 }
 
+#ifdef FEATURE_TEST_EAPOL_ACTIVE_MAX
+extern "C" uint8_t test_eapol_active_max;
+extern "C" uint16_t num_eapol_active_max_rejections;
+#endif
 #ifdef FEATURE_EDFE_TEST_MODE
 extern "C" uint8_t switchToEDFE;
 #endif
+#ifdef FEATURE_TEST_INVALID_FRAME
+extern "C" macSecurityPib_t macSecurityPib;
+uint8_t testInvalidFrame = false;
+uint8_t prevKey[MAC_KEY_MAX_LEN] = {0};
+uint32_t prevFrameCount = 0;
+#endif
+
 template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_TEST_COMMAND>(void)
 {
     otError error = OT_ERROR_NONE;
-    bool enable = false;
-#ifdef FEATURE_EDFE_TEST_MODE
-    enable = switchToEDFE;
+    uint8_t value = 0;
+
+#ifdef FEATURE_TEST_EAPOL_ACTIVE_MAX
+    value = num_eapol_active_max_rejections;
 #endif
-    SuccessOrExit(error = mEncoder.WriteBool(enable));
+#ifdef FEATURE_EDFE_TEST_MODE
+    value = switchToEDFE;
+#endif
+#ifdef FEATURE_TEST_INVALID_FRAME
+    value = testInvalidFrame;
+#endif
+    SuccessOrExit(error = mEncoder.WriteUint8(value));
 exit:
     return error;
 }
 
-
 template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_TEST_COMMAND>(void)
 {
     otError error = OT_ERROR_NONE;
-    bool enable = false;
+    uint8_t value = 0;
 
-    SuccessOrExit(error = mDecoder.ReadBool(enable));
+    SuccessOrExit(error = mDecoder.ReadUint8(value));
+#ifdef FEATURE_TEST_EAPOL_ACTIVE_MAX
+    test_eapol_active_max = value;
+#endif
 #ifdef FEATURE_EDFE_TEST_MODE
-    switchToEDFE = enable;
+    switchToEDFE = value;
+#endif
+#ifdef FEATURE_TEST_INVALID_FRAME
+    if (value == true && testInvalidFrame == false)
+    {
+        // Store old key/frame count and change current key/frame count to test values
+        memcpy(prevKey, macSecurityPib.macKeyTable[0].key, MAC_KEY_MAX_LEN);
+        prevFrameCount = macSecurityPib.macKeyTable[0].frameCounter;
+
+        memset(macSecurityPib.macKeyTable[0].key, 0xAB, MAC_KEY_MAX_LEN);
+        macSecurityPib.macKeyTable[0].frameCounter = 0;
+    }
+    else if (value == false && testInvalidFrame == true)
+    {
+        // Restore old key/frame count
+        memcpy(macSecurityPib.macKeyTable[0].key, prevKey, MAC_KEY_MAX_LEN);
+        macSecurityPib.macKeyTable[0].frameCounter = prevFrameCount;
+    }
+    testInvalidFrame = value;
 #endif
 exit:
     return error;
@@ -1109,6 +1152,37 @@ exit:
     return error;
 }
 
+template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_EXTERNAL_DHCP_SERVER_ENABLED>(void)
+{
+    otError error = OT_ERROR_NONE;
+    SuccessOrExit(error = mEncoder.WriteUint8(ti_br_config.use_external_dhcp_server));
+exit:
+    return error;
+}
+
+template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_EXTERNAL_DHCP_SERVER_ADDRESS>(void)
+{
+    otError error = OT_ERROR_NONE;
+    SuccessOrExit(error = mEncoder.WriteIp6Address(ti_br_config.external_dhcp_server_addr));
+exit:
+    return error;
+}
+
+template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_EXTERNAL_AUTH_SERVER_ENABLED>(void)
+{
+    otError error = OT_ERROR_NONE;
+    SuccessOrExit(error = mEncoder.WriteUint8(ti_br_config.use_external_radius_server));
+exit:
+    return error;
+}
+
+template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_EXTERNAL_AUTH_SERVER_ADDRESS>(void)
+{
+    otError error = OT_ERROR_NONE;
+    SuccessOrExit(error = mEncoder.WriteIp6Address(ti_br_config.external_radius_server_addr));
+exit:
+    return error;
+}
 
 extern "C" bool macRx_insertAddrIntoList(uint8_t* euiAddress);
 extern "C" bool macRx_removeAddrFromList(uint8_t* euiAddress);
@@ -1540,11 +1614,11 @@ template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_DODAG_ROUTE>(void)
 {
 #ifdef HAVE_RPL_ROOT
     otError error = OT_ERROR_NONE;
-    struct rpl_instance *instance;
+    struct rpl_instance *instance = NULL;
     bool connected = false;
-    uint8_t *route_list;
-    rpl_dao_target_t *dao_target;
-    uint16_t max_targets;
+    uint8_t *route_list = NULL;
+    rpl_dao_target_t *dao_target = NULL;
+    uint16_t max_targets = 0;
     uint8_t path_cost = 0;
     uint16_t curr_target_index = 0;
 

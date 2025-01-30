@@ -23,7 +23,6 @@
 #include <hal/nrf_gpio.h>
 #include <hal/nrf_timer.h>
 #include <helpers/nrfx_reset_reason.h>
-#include <nrf_board.h>
 #include <region_defs.h>
 
 #if defined(PSA_API_TEST_NS) && !defined(PSA_API_TEST_IPC)

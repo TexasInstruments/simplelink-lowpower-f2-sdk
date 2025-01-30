@@ -73,6 +73,11 @@ for (let i in clusters) {
       }
     }
   }
+
+  if (tempServerAttributeOptions.length == 0) {
+    rcmaServerAlwaysHidden.push(cluster._id + "rcmaServer");
+    tempServerAttributeOptions.push({name: "dummy", displayName: "dummy"});
+  }
   rcmaModule.config.push({
     name: cluster._id + "rcmaServer",
     displayName: cluster._name + " Server Attributes",
@@ -85,7 +90,6 @@ for (let i in clusters) {
     onChange: bdbScript.bdbOnChange
   })
   rcmaServerDropDowns.push(cluster._id + "rcmaServer");
-  if (tempServerAttributeOptions.length == 0) { rcmaServerAlwaysHidden.push(cluster._id + "rcmaServer"); }
 
   let tempClientAttributeDefault = [];
   let tempClientAttributeOptions = [];
@@ -97,6 +101,11 @@ for (let i in clusters) {
         tempClientAttributeOptions.push({name: attribute._id, displayName: attribute._name});
       }
     }
+  }
+
+  if (tempClientAttributeOptions.length == 0) {
+    rcmaClientAlwaysHidden.push(cluster._id + "rcmaClient");
+    tempClientAttributeOptions.push({name: "dummy", displayName: "dummy"});
   }
   rcmaModule.config.push({
     name: cluster._id + "rcmaClient",
@@ -110,7 +119,6 @@ for (let i in clusters) {
     onChange: bdbScript.bdbOnChange
   })
   rcmaClientDropDowns.push(cluster._id + "rcmaClient");
-  if (tempClientAttributeOptions.length == 0) { rcmaClientAlwaysHidden.push(cluster._id + "rcmaClient"); }
 }
 
 /* Function to handle changes in the recommended server clusters */

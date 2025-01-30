@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2022-2024, Texas Instruments Incorporated
+ Copyright (c) 2022-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -171,7 +171,13 @@ typedef enum
  * A generic external control response command
  * Most commands simply return a status, this will cover those commands
  */
+
+// Temporary workaround needed due to a collision on the __packed definition.
+#ifdef __IAR_SYSTEMS_ICC__
+typedef struct __attribute__((__packed__))
+#else
 PACKED_TYPEDEF_STRUCT
+#endif
 {
     uint8       cmdID;            //!< Ext Ctrl Op-code
     uint8       status;           //!< Status of command
@@ -180,7 +186,12 @@ PACKED_TYPEDEF_STRUCT
 /*!
  * Response to a @ref OAD_REQ_GET_BLK_SZ command
  */
+// Temporary workaround needed due to a collision on the __packed definition.
+#ifdef __IAR_SYSTEMS_ICC__
+typedef struct __attribute__((__packed__))
+#else
 PACKED_TYPEDEF_STRUCT
+#endif
 {
     uint8     cmdID;          //!< Ext Ctrl Op-code
     uint16    oadBlkSz;       //!< OAD block size
@@ -189,7 +200,12 @@ PACKED_TYPEDEF_STRUCT
 /*!
  * Block request payload
  */
+// Temporary workaround needed due to a collision on the __packed definition.
+#ifdef __IAR_SYSTEMS_ICC__
+typedef struct __attribute__((__packed__))
+#else
 PACKED_TYPEDEF_STRUCT
+#endif
 {
     uint8              cmdID;            //!< External control op-code
     uint8              prevBlkStat;      //!< Status of previous block write
@@ -199,7 +215,12 @@ PACKED_TYPEDEF_STRUCT
 /*!
  * Response to a @ref OAD_REQ_GET_SW_VER command
  */
+// Temporary workaround needed due to a collision on the __packed definition.
+#ifdef __IAR_SYSTEMS_ICC__
+typedef struct __attribute__((__packed__))
+#else
 PACKED_TYPEDEF_STRUCT
+#endif
 {
     uint8       cmdID;                     //!< Ctrl Op-code
     uint8       swVer[MCUBOOT_SW_VER_LEN]; //!< App version

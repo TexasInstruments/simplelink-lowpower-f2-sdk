@@ -33,6 +33,8 @@
 import enum
 import inspect
 import logging
+import copy
+
 logger = logging.getLogger('unpiparser')
 
 from dataclasses import dataclass, field
@@ -292,7 +294,8 @@ class NpiSubSystem(metaclass=SubSysMeta):
         # We don't want to pass this on at this point. Why is it even there after parsing is done?
         def delete_io_recursive(container):
             if hasattr(container, 'keys'):
-                for k in filter(lambda x: x[0] == '_', filter(lambda x: x[:2] != '__', container.keys())):
+                kk = list(filter(lambda x: x[0] == '_', filter(lambda x: x[:2] != '__', container.keys())))
+                for k in kk:
                     container.pop(k)  # delete all "special" keys starting with _Xxx
                 for k, v in container.items():
                     if type(v) == Container:

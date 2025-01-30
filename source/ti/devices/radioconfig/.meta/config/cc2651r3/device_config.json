@@ -12,12 +12,12 @@
             {
                 "_file": "device_description.json",
                 "_phy": "ieee_15_4",
-                "$": ".\/..\/config\/cc2652r_ieee_15_4_pg21"
+                "$": ".\/..\/config\/cc2651r3_ieee_15_4_pg10"
             },
             {
                 "_file": "device_description.json",
                 "_phy": "prop",
-                "$": ".\/..\/config\/cc2652r_prop_pg21"
+                "$": ".\/..\/config\/cc2651r3_prop_pg10"
             },
             {
                 "_file": "io_register_definition.json",

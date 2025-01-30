@@ -19,14 +19,14 @@
 #
 
 XDC_INSTALL_DIR        ?= /home/username/ti/xdctools_3_62_01_15_core
-SYSCONFIG_TOOL         ?= /home/username/ti/ccs1230/ccs/utils/sysconfig_1.18.1/sysconfig_cli.sh
+SYSCONFIG_TOOL         ?= /home/username/ti/ccs1270/ccs/utils/sysconfig_1.21.1/sysconfig_cli.sh
 
 CMAKE                  ?= /home/username/cmake-3.21.3/bin/cmake
 PYTHON                 ?= python3
 
-TICLANG_ARMCOMPILER    ?= /home/username/ti/ccs1230/ccs/tools/compiler/ti-cgt-armllvm_3.2.0.LTS-0
-GCC_ARMCOMPILER        ?= /home/username/arm-none-eabi-gcc/9.2019.q4.major-0
-IAR_ARMCOMPILER        ?= /home/username/iar9.40.2
+TICLANG_ARMCOMPILER    ?= /home/username/ti/ccs1270/ccs/tools/compiler/ti-cgt-armllvm_3.2.2.LTS-0
+GCC_ARMCOMPILER        ?= /home/username/arm-none-eabi-gcc/12.3.Rel1-0
+IAR_ARMCOMPILER        ?= /home/username/iar9.50.2
 
 # Uncomment this to enable the TFM build
 # ENABLE_TFM_BUILD=1

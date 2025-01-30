@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, Texas Instruments Incorporated
+ * Copyright (c) 2022-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -68,7 +68,7 @@ REGION_ALIAS("REGION_ARM_EXTAB", FLASH);
 
 
 SECTIONS {
-    /* Place initial vector table and NS entry point at 256-byte boundry closest
+    /* Place initial vector table and NS entry point at 256-byte boundary closest
      * to NS flash start.
      */
     .resetVecs (0x00038100) : AT (0x00038100) {

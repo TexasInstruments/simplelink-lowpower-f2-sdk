@@ -11,22 +11,21 @@
 #include "bootutil/fault_injection_hardening.h"
 #include <stdint.h>
 
-#define TFM_BOOT_NV_COUNTER_0    PLAT_NV_COUNTER_BL2_0   /* NV counter of Image 0 */
-#define TFM_BOOT_NV_COUNTER_1    PLAT_NV_COUNTER_BL2_1   /* NV counter of Image 1 */
-#define TFM_BOOT_NV_COUNTER_2    PLAT_NV_COUNTER_BL2_2   /* NV counter of Image 2 */
-#define TFM_BOOT_NV_COUNTER_3    PLAT_NV_COUNTER_BL2_3   /* NV counter of Image 3 */
-#define TFM_BOOT_NV_COUNTER_MAX  PLAT_NV_COUNTER_BL2_3 + 1
+#define TFM_BOOT_NV_COUNTER_FIRST    PLAT_NV_COUNTER_BL2_0
+#define TFM_BOOT_NV_COUNTER_MAX      (TFM_BOOT_NV_COUNTER_FIRST + \
+                                        MCUBOOT_IMAGE_NUMBER)
 
 static enum tfm_nv_counter_t get_nv_counter_from_image_id(uint32_t image_id)
 {
     uint32_t nv_counter;
 
     /* Avoid integer overflow */
-    if ((UINT32_MAX - TFM_BOOT_NV_COUNTER_0) < image_id) {
+    /* Assumes BL2 NV counters are contiguous */
+    if ((UINT32_MAX - TFM_BOOT_NV_COUNTER_FIRST) < image_id) {
         return TFM_BOOT_NV_COUNTER_MAX;
     }
 
-    nv_counter = TFM_BOOT_NV_COUNTER_0 + image_id;
+    nv_counter = TFM_BOOT_NV_COUNTER_FIRST + image_id;
 
     /* Check the existence of the enumerated counter value */
     if (nv_counter >= TFM_BOOT_NV_COUNTER_MAX) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -125,14 +125,14 @@
  *
  * The Load module is dependent on the timestamp timer, thus the latter must
  * continue to run during idle, in order to accurately measure idle and non-idle
- * time. On platforms where the timestamp timer is halted during sleep
- * (e.g. CC32XX), the Load module can only report correct numbers when power
- * management is disabled. On other platforms where the timer continues to run
- * during sleep, the best way to get CPU load is to make sure that
- * Load_taskEnabled is set to true.  Then the CPU load will be calculated as
- * 100 - the idle task load.  However, for BIOS in ROM builds, this method will
- * not work, as Task hooks are not allowed. So to use Load for any devices that
- * support BIOS in ROM builds, make sure the ROM build is disabled.
+ * time. On platforms where the timestamp timer is halted during sleep, the Load
+ * module can only report correct numbers when power management is disabled. On
+ * other platforms where the timer continues to run during sleep, the best way
+ * to get CPU load is to make sure that Load_taskEnabled is set to true.  Then
+ * the CPU load will be calculated as 100 - the idle task load.  However, for
+ * BIOS in ROM builds, this method will not work, as Task hooks are not allowed.
+ * So to use Load for any devices that support BIOS in ROM builds, make sure the
+ * ROM build is disabled.
  *
  * <h3>Caveats</h3>
  *
@@ -273,7 +273,7 @@ typedef struct {
 typedef struct {
     Queue_Elem qElem;        /*! Queue element */
     uint32_t totalTimeElapsed; /*! Total amount of time elapsed */
-    uint32_t totalTime;        /*! time spent in thread */ 
+    uint32_t totalTime;        /*! time spent in thread */
     uint32_t nextTotalTime;    /*! working counter of time spent in thread */
     uint32_t timeOfLastUpdate; /*! time when update was last called */
     void * threadHandle;        /*! handle to thread whose context this is */
@@ -317,7 +317,7 @@ extern void Load_init(void);
  * @param task Handle of the Task which time we are interested in.
  *
  * @param stat Load and time statistics info
- * 
+ *
  *@retval true if success, false if failure
  */
 extern bool Load_getTaskLoad(Task_Handle task, Load_Stat *stat);
@@ -374,7 +374,7 @@ extern void Load_reset();
  * Timestamp counts.
  *
  * @param stat Load and time statistics info
- * 
+ *
  *@retval true if success, false if failure
  */
 extern bool Load_getGlobalSwiLoad(Load_Stat *stat);
@@ -386,7 +386,7 @@ extern bool Load_getGlobalSwiLoad(Load_Stat *stat);
  * Timestamp counts.
  *
  * @param stat Load and time statistics info
- * 
+ *
  *@retval true if success, false if failure
  */
 extern bool Load_getGlobalHwiLoad(Load_Stat *stat);
@@ -402,7 +402,7 @@ extern bool Load_getGlobalHwiLoad(Load_Stat *stat);
  *
  * Note: Time spent in kernel while switching to a Hwi/Swi/Task is considered
  * non-idle time.
- * 
+ *
  *@retval CPU load in %
  */
 extern uint32_t Load_getCPULoad();
@@ -410,7 +410,7 @@ extern uint32_t Load_getCPULoad();
  * @brief Compute total CPU load from a Load_Stat structure
  *
  * This function computes percent load from the values in a Load_Stat structure.
- * 
+ *
  *@retval Load value of a Load_Stat structure in %.
  */
 extern uint32_t Load_calculateLoad(Load_Stat *stat);

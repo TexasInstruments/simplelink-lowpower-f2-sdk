@@ -1,0 +1,12 @@
+[
+    {
+        "files": [
+            "+../../README_TFM.md -> README_TFM.md",
+            "+../../README_TFM.html -> README_TFM.html",
+            "+../../application/sensor/advanced_config.h -> application/sensor/advanced_config.h",
+            "+../../application/defines/sensor.opt -> application/defines/sensor.opt",
+            "+../sensor.syscfg -> sensor.syscfg",
+            "+cc13x4_cc26x4_ns.cmd -> cc13x4_cc26x4_ns.cmd"
+        ]
+    }
+]

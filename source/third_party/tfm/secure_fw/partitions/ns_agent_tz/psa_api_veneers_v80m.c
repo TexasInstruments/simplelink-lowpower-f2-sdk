@@ -12,9 +12,10 @@
 #include "config_impl.h"
 #include "security_defs.h"
 #include "svc_num.h"
+#include "tfm_psa_call_pack.h"
 #include "utilities.h"
-
 #include "psa/client.h"
+#include "psa/service.h"
 
 /*
  * This is the veneers of FF-M Client APIs for Armv8.0-m.
@@ -34,9 +35,8 @@
 
 #if defined(__ICCARM__)
 
-#include "tfm_psa_call_pack.h"
-
 #pragma required = psa_framework_version
+#pragma required = psa_panic
 #pragma required = psa_version
 #pragma required = tfm_psa_call_pack
 /* Following PSA APIs are only needed by connection-based services */
@@ -51,7 +51,7 @@ __attribute__((naked, used))
 static void clear_caller_context(void)
 {
     __ASM volatile(
-#if (CONFIG_TFM_FP >= 1)
+#if (CONFIG_TFM_FLOAT_ABI >= 1)
         "   vmov.f32   s0, #1.0                               \n"
         "   vmov.f32   s1, #1.0                               \n"
         "   vmov.f32   s2, #1.0                               \n"
@@ -84,10 +84,7 @@ __tz_naked_veneer
 uint32_t tfm_psa_framework_version_veneer(void)
 {
     __ASM volatile(
-#if !defined(__ICCARM__)
-        ".syntax unified                                      \n"
-#endif
-
+        SYNTAX_UNIFIED
         "   ldr    r2, [sp]                                   \n"
         "   ldr    r3, ="M2S(STACK_SEAL_PATTERN)"             \n"
         "   cmp    r2, r3                                     \n"
@@ -101,8 +98,7 @@ uint32_t tfm_psa_framework_version_veneer(void)
         "   bxns   lr                                         \n"
 
         "reent_panic1:                                        \n"
-        "   svc    "M2S(TFM_SVC_PSA_PANIC)"                   \n"
-        "   b      .                                          \n"
+        "   bl     psa_panic                                  \n"
     );
 }
 
@@ -110,10 +106,7 @@ __tz_naked_veneer
 uint32_t tfm_psa_version_veneer(uint32_t sid)
 {
     __ASM volatile(
-#if !defined(__ICCARM__)
-        ".syntax unified                                      \n"
-#endif
-
+        SYNTAX_UNIFIED
         "   ldr    r2, [sp]                                   \n"
         "   ldr    r3, ="M2S(STACK_SEAL_PATTERN)"             \n"
         "   cmp    r2, r3                                     \n"
@@ -128,8 +121,7 @@ uint32_t tfm_psa_version_veneer(uint32_t sid)
         "   bxns   lr                                         \n"
 
         "reent_panic2:                                        \n"
-        "   svc    "M2S(TFM_SVC_PSA_PANIC)"                   \n"
-        "   b      .                                          \n"
+        "   bl     psa_panic                                  \n"
     );
 }
 
@@ -140,15 +132,14 @@ psa_status_t tfm_psa_call_veneer(psa_handle_t handle,
                                  psa_outvec *out_vec)
 {
     __ASM volatile(
-#if !defined(__ICCARM__)
-        ".syntax unified                                      \n"
-#endif
-
+        SYNTAX_UNIFIED
         "   push   {r2, r3}                                   \n"
         "   ldr    r2, [sp, #8]                               \n"
         "   ldr    r3, ="M2S(STACK_SEAL_PATTERN)"             \n"
         "   cmp    r2, r3                                     \n"
         "   bne    reent_panic4                               \n"
+        "   ldr    r3, ="M2S(NS_VEC_DESC_BIT)"                \n"
+        "   orrs   r1, r3                                     \n"
         "   pop    {r2, r3}                                   \n"
         "   push   {r4, lr}                                   \n"
         "   bl     "M2S(tfm_psa_call_pack)"                   \n"
@@ -159,8 +150,7 @@ psa_status_t tfm_psa_call_veneer(psa_handle_t handle,
         "   bxns   lr                                         \n"
 
         "reent_panic4:                                        \n"
-        "   svc    "M2S(TFM_SVC_PSA_PANIC)"                   \n"
-        "   b      .                                          \n"
+        "   bl     psa_panic                                  \n"
     );
 }
 
@@ -171,10 +161,7 @@ __tz_naked_veneer
 psa_handle_t tfm_psa_connect_veneer(uint32_t sid, uint32_t version)
 {
     __ASM volatile(
-#if !defined(__ICCARM__)
-        ".syntax unified                                      \n"
-#endif
-
+        SYNTAX_UNIFIED
         "   ldr    r2, [sp]                                   \n"
         "   ldr    r3, ="M2S(STACK_SEAL_PATTERN)"             \n"
         "   cmp    r2, r3                                     \n"
@@ -188,8 +175,7 @@ psa_handle_t tfm_psa_connect_veneer(uint32_t sid, uint32_t version)
         "   bxns   lr                                         \n"
 
         "reent_panic3:                                        \n"
-        "   svc    "M2S(TFM_SVC_PSA_PANIC)"                   \n"
-        "   b      .                                          \n"
+        "   bl     psa_panic                                  \n"
     );
 }
 
@@ -197,10 +183,7 @@ __tz_naked_veneer
 void tfm_psa_close_veneer(psa_handle_t handle)
 {
     __ASM volatile(
-#if !defined(__ICCARM__)
-        ".syntax unified                                      \n"
-#endif
-
+        SYNTAX_UNIFIED
         "   ldr    r2, [sp]                                   \n"
         "   ldr    r3, ="M2S(STACK_SEAL_PATTERN)"             \n"
         "   cmp    r2, r3                                     \n"
@@ -215,8 +198,7 @@ void tfm_psa_close_veneer(psa_handle_t handle)
         "   bxns   lr                                         \n"
 
         "reent_panic5:                                        \n"
-        "   svc    "M2S(TFM_SVC_PSA_PANIC)"                   \n"
-        "   b      .                                          \n"
+        "   bl     psa_panic                                  \n"
     );
 }
 
@@ -236,10 +218,7 @@ __tz_naked_veneer
 psa_handle_t tfm_psa_connect_veneer(uint32_t sid, uint32_t version)
 {
     __ASM volatile(
-#if !defined(__ICCARM__)
-        ".syntax unified                                      \n"
-#endif
-
+        SYNTAX_UNIFIED
         "   ldr    r2, [sp]                                   \n"
         "   ldr    r3, ="M2S(STACK_SEAL_PATTERN)"             \n"
         "   cmp    r2, r3                                     \n"
@@ -250,8 +229,7 @@ psa_handle_t tfm_psa_connect_veneer(uint32_t sid, uint32_t version)
         "   bxns   lr                                         \n"
 
         "reent_panic3:                                        \n"
-        "   svc    "M2S(TFM_SVC_PSA_PANIC)"                   \n"
-        "   b      .                                          \n"
+        "   bl     psa_panic                                  \n"
     );
 }
 
@@ -259,10 +237,7 @@ __tz_naked_veneer
 void tfm_psa_close_veneer(psa_handle_t handle)
 {
     __ASM volatile(
-#if !defined(__ICCARM__)
-        ".syntax unified                                      \n"
-#endif
-
+        SYNTAX_UNIFIED
         "   ldr    r2, [sp]                                   \n"
         "   ldr    r3, ="M2S(STACK_SEAL_PATTERN)"             \n"
         "   cmp    r2, r3                                     \n"
@@ -271,8 +246,7 @@ void tfm_psa_close_veneer(psa_handle_t handle)
         "   bxns   lr                                         \n"
 
         "reent_panic5:                                        \n"
-        "   svc    "M2S(TFM_SVC_PSA_PANIC)"                   \n"
-        "   b      .                                          \n"
+        "   bl     psa_panic                                  \n"
     );
 }
 

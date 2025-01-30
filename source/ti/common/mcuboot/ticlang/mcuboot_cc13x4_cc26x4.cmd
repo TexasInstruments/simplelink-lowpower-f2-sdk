@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,6 +30,8 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "ti_utils_build_linker.cmd.genmap"
+
 --stack_size=1024   /* C stack is also used for ISR stack */
 
 --heap_size=16384
@@ -58,7 +60,8 @@
 
 /* The starting address of the application.  Normally the interrupt vectors  */
 /* must be located at the beginning of the application.                      */
-#define FLASH_SIZE              0x5800
+#define FLASH_BASE              ti_utils_build_GenMap_MCUBOOT_FLASH_BASE
+#define FLASH_SIZE              ti_utils_build_GenMap_MCUBOOT_FLASH_SIZE
 #define RAM_BASE                0x20000000
 #define RAM_SIZE                0x40000
 #define GPRAM_BASE              0x11000000
@@ -66,11 +69,7 @@
 #define CCFG_BASE               0x50000000
 #define CCFG_SIZE               0x800
 
-#ifdef DUAL_SLOT
-#define FLASH_BASE  0x800
-#else
-#define FLASH_BASE  0x000
-#endif
+
 
 /* System memory map */
 

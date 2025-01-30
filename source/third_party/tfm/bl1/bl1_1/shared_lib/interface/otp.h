@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2021-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -40,23 +40,6 @@ extern "C" {
 enum tfm_bl1_nv_counter_id_t {
     BL1_NV_COUNTER_ID_BL2_IMAGE,
 };
-
-/* Initialise OTP system */
-fih_int bl1_otp_init(void);
-
-/* Get hash of OTP bootloader image */
-fih_int bl1_otp_read_bl1_2_image_hash(uint8_t *hash);
-
-/* Get hash of OTP bootloader image */
-fih_int bl1_otp_read_bl2_image_hash(uint8_t *hash);
-
-/* Gets value of NV counter */
-fih_int bl1_otp_read_nv_counter(enum tfm_bl1_nv_counter_id_t counter_id,
-                                uint32_t *count);
-
-/* Sets value of NV counter, if greater than current */
-fih_int bl1_otp_write_nv_counter(enum tfm_bl1_nv_counter_id_t counter_id,
-                                 uint32_t count);
 
 /* Load the key with the given ID into the key buf */
 fih_int bl1_otp_read_key(enum tfm_bl1_key_id_t key_id, uint8_t *key_buf);

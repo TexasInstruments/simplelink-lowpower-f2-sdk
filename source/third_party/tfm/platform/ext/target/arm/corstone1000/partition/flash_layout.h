@@ -89,7 +89,7 @@
 #endif
 
 /* Static Configurations of the Flash */
-#define SE_BL2_PARTITION_SIZE           (0x18800)    /* 98 KB */
+#define SE_BL2_PARTITION_SIZE           (0x18000)    /* 96 KB */
 #define SE_BL2_BANK_0_OFFSET            (0x9000)  /* 72nd LBA */
 #define SE_BL2_BANK_1_OFFSET            (0x1002000)  /* 32784th LBA */
 

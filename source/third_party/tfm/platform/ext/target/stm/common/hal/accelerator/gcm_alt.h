@@ -50,14 +50,14 @@ typedef struct mbedtls_gcm_context
     CRYP_HandleTypeDef hcryp_gcm;         /* HW driver handle                    */
     uint32_t ctx_save_cr;                 /* Saved HW context for multi-instance */
     uint64_t len;                         /* total length of the encrypted data. */
-
+#if defined(HW_CRYPTO_DPA_GCM)
     uint64_t HL[16];                   /*!< Precalculated HTable low. */
     uint64_t HH[16];                   /*!< Precalculated HTable high. */
     uint64_t add_len;                  /*!< The total length of the additional data. */
     unsigned char base_ectr[16];       /*!< The first ECTR for tag. */
     unsigned char y[16];               /*!< The Y working value. */
     unsigned char buf[16];             /*!< The buf working value. */
-
+#endif
     int mode;                             /* The operation to perform:
                                                #MBEDTLS_GCM_ENCRYPT or
                                                #MBEDTLS_GCM_DECRYPT.             */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Texas Instruments Incorporated
+ * Copyright (c) 2023-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,17 +55,19 @@ int_fast16_t CANMCAN_setBitTimingRaw(const CAN_BitRateTimingRaw *rawTiming)
     int_fast16_t status            = CAN_STATUS_SUCCESS;
     MCAN_BitTimingParams bitTiming = {0U};
 
-    bitTiming.nomRatePrescalar  = rawTiming->nbrp;
+    bitTiming.nomRatePrescaler  = rawTiming->nbrp;
     bitTiming.nomTimeSeg1       = rawTiming->ntSeg1;
     bitTiming.nomTimeSeg2       = rawTiming->ntSeg2;
     bitTiming.nomSynchJumpWidth = rawTiming->nsjw;
 
     if (rawTiming->dataTiming != NULL)
     {
-        bitTiming.dataRatePrescalar  = rawTiming->dataTiming->dbrp;
+        bitTiming.dataRatePrescaler  = rawTiming->dataTiming->dbrp;
         bitTiming.dataTimeSeg1       = rawTiming->dataTiming->dtSeg1;
         bitTiming.dataTimeSeg2       = rawTiming->dataTiming->dtSeg2;
         bitTiming.dataSynchJumpWidth = rawTiming->dataTiming->dsjw;
+        bitTiming.tdcConfig.tdco     = rawTiming->dataTiming->tdcOffset;
+        bitTiming.tdcConfig.tdcf     = rawTiming->dataTiming->tdcFilterWinLen;
     }
 
     if (MCAN_setBitTime(&bitTiming) != MCAN_STATUS_SUCCESS)
@@ -76,7 +78,7 @@ int_fast16_t CANMCAN_setBitTimingRaw(const CAN_BitRateTimingRaw *rawTiming)
     return status;
 }
 
-/*  ======== CANMCAN_configMsgRAM ========
+/*  ======== CANMCAN_configMsgRam ========
  *   Message RAM sections are configured in this order:
  *     - Standard ID filters
  *     - Extended ID filters
@@ -87,21 +89,21 @@ int_fast16_t CANMCAN_setBitTimingRaw(const CAN_BitRateTimingRaw *rawTiming)
  *     - TX Buffers
  *     - TX FIFO (or TX Queue)
  */
-int_fast16_t CANMCAN_configMsgRAM(const CAN_MsgRAMConfig *config, uint32_t msgRAMSize, bool enableCANFD)
+int_fast16_t CANMCAN_configMsgRam(const CAN_MsgRamConfig *config, uint32_t msgRamSize, bool enableCANFD)
 {
     int_fast16_t status = CAN_STATUS_SUCCESS;
-    MCAN_MsgRAMConfig msgRAMConfig;
+    MCAN_MsgRamConfig msgRamConfig;
     uint_fast8_t i;
     uint32_t addr = 0U;
     uint32_t payloadSize;
-    uint32_t msgRAMUsage;
+    uint32_t msgRamUsage;
     uint32_t totalTxBufCnt;
 
-    totalTxBufCnt = config->txBufNum + config->txFIFOQNum;
+    totalTxBufCnt = config->txBufNum + config->txFifoQNum;
 
     /* Validate the configuration */
     if ((MCAN_STD_FILTER_ELEM_MAX < config->stdFilterNum) || (MCAN_EXT_FILTER_ELEM_MAX < config->extFilterNum) ||
-        (MCAN_RX_FIFO_ELEM_MAX < config->rxFIFONum[0]) || (MCAN_RX_FIFO_ELEM_MAX < config->rxFIFONum[1]) ||
+        (MCAN_RX_FIFO_ELEM_MAX < config->rxFifoNum[0]) || (MCAN_RX_FIFO_ELEM_MAX < config->rxFifoNum[1]) ||
         (MCAN_RX_BUFFERS_ELEM_MAX < config->rxBufNum) || (MCAN_TX_BUFFERS_ELEM_MAX < totalTxBufCnt))
     {
         return CAN_STATUS_ERROR;
@@ -110,71 +112,72 @@ int_fast16_t CANMCAN_configMsgRAM(const CAN_MsgRAMConfig *config, uint32_t msgRA
     /* Set common element size for all sections */
     if (enableCANFD)
     {
-        msgRAMConfig.rxBufElemSize   = MCAN_ELEM_SIZE_64BYTES;
-        msgRAMConfig.rxFIFO0ElemSize = MCAN_ELEM_SIZE_64BYTES;
-        msgRAMConfig.rxFIFO1ElemSize = MCAN_ELEM_SIZE_64BYTES;
-        msgRAMConfig.txBufElemSize   = MCAN_ELEM_SIZE_64BYTES;
+        msgRamConfig.rxBufElemSize   = MCAN_ELEM_SIZE_64BYTES;
+        msgRamConfig.rxFifo0ElemSize = MCAN_ELEM_SIZE_64BYTES;
+        msgRamConfig.rxFifo1ElemSize = MCAN_ELEM_SIZE_64BYTES;
+        msgRamConfig.txBufElemSize   = MCAN_ELEM_SIZE_64BYTES;
         payloadSize                  = MCAN_MAX_PAYLOAD_SIZE;
     }
     else
     {
-        msgRAMConfig.rxBufElemSize   = MCAN_ELEM_SIZE_8BYTES;
-        msgRAMConfig.rxFIFO0ElemSize = MCAN_ELEM_SIZE_8BYTES;
-        msgRAMConfig.rxFIFO1ElemSize = MCAN_ELEM_SIZE_8BYTES;
-        msgRAMConfig.txBufElemSize   = MCAN_ELEM_SIZE_8BYTES;
+        msgRamConfig.rxBufElemSize   = MCAN_ELEM_SIZE_8BYTES;
+        msgRamConfig.rxFifo0ElemSize = MCAN_ELEM_SIZE_8BYTES;
+        msgRamConfig.rxFifo1ElemSize = MCAN_ELEM_SIZE_8BYTES;
+        msgRamConfig.txBufElemSize   = MCAN_ELEM_SIZE_8BYTES;
         payloadSize                  = 8U;
     }
 
     /* SID filters */
-    msgRAMConfig.sidFilterStartAddr = 0U;
-    msgRAMConfig.sidFilterListSize  = config->stdFilterNum;
+    msgRamConfig.sidFilterStartAddr = 0U;
+    msgRamConfig.sidFilterListSize  = config->stdFilterNum;
     addr += MCAN_STD_ID_FILTER_ELEM_SIZE * config->stdFilterNum;
 
     /* XID filters */
-    msgRAMConfig.xidFilterStartAddr = addr;
-    msgRAMConfig.xidFilterListSize  = config->extFilterNum;
+    msgRamConfig.xidFilterStartAddr = addr;
+    msgRamConfig.xidFilterListSize  = config->extFilterNum;
     addr += MCAN_EXT_ID_FILTER_ELEM_SIZE * config->extFilterNum;
 
     /* Rx FIFO 0 */
-    msgRAMConfig.rxFIFO0StartAddr = addr;
-    msgRAMConfig.rxFIFO0Size      = config->rxFIFONum[0];
-    msgRAMConfig.rxFIFO0Watermark = 0U;
-    msgRAMConfig.rxFIFO0OpMode    = 0U; /* 0 = blocking mode */
-    addr += config->rxFIFONum[0] * (MCAN_TX_RX_ELEMENT_HEADER_SIZE + payloadSize);
+    msgRamConfig.rxFifo0StartAddr = addr;
+    msgRamConfig.rxFifo0Size      = config->rxFifoNum[0];
+    msgRamConfig.rxFifo0Watermark = 0U; /* 0 = watermark interrupt disabled */
+    msgRamConfig.rxFifo0OpMode    = 0U; /* 0 = blocking mode */
+    addr += config->rxFifoNum[0] * (MCAN_TX_RX_ELEMENT_HEADER_SIZE + payloadSize);
 
     /* Rx FIFO 1 */
-    msgRAMConfig.rxFIFO1StartAddr = addr;
-    msgRAMConfig.rxFIFO1Size      = config->rxFIFONum[1];
-    msgRAMConfig.rxFIFO1Watermark = 0U;
-    msgRAMConfig.rxFIFO1OpMode    = 0U; /* 0 = blocking mode */
-    addr += config->rxFIFONum[1] * (MCAN_TX_RX_ELEMENT_HEADER_SIZE + payloadSize);
+    msgRamConfig.rxFifo1StartAddr = addr;
+    msgRamConfig.rxFifo1Size      = config->rxFifoNum[1];
+    msgRamConfig.rxFifo1Watermark = 0U; /* 0 = watermark interrupt disabled */
+    msgRamConfig.rxFifo1OpMode    = 0U; /* 0 = blocking mode */
+    addr += config->rxFifoNum[1] * (MCAN_TX_RX_ELEMENT_HEADER_SIZE + payloadSize);
 
     /* Rx Buffers */
-    msgRAMConfig.rxBufStartAddr = addr;
+    msgRamConfig.rxBufStartAddr = addr;
     addr += config->rxBufNum * (MCAN_TX_RX_ELEMENT_HEADER_SIZE + payloadSize);
 
-    /* Tx Event FIFO - not currently supported */
-    msgRAMConfig.txEventFIFOStartAddr = addr;
-    msgRAMConfig.txEventFIFOSize      = 0U;
-    addr += 0U * MCAN_TX_EVENT_ELEM_SIZE;
+    /* Tx Event FIFO */
+    msgRamConfig.txEventFifoStartAddr = addr;
+    msgRamConfig.txEventFifoSize      = config->txEventFifoNum;
+    msgRamConfig.txEventFifoWatermark = 0U; /* 0 = watermark interrupt disabled */
+    addr += config->txEventFifoNum * MCAN_TX_EVENT_ELEM_SIZE;
 
     /* Tx Buffers */
-    msgRAMConfig.txBufStartAddr = addr;
-    msgRAMConfig.txBufNum       = config->txBufNum;
+    msgRamConfig.txBufStartAddr = addr;
+    msgRamConfig.txBufNum       = config->txBufNum;
 
     /* Tx FIFO/Q */
-    msgRAMConfig.txFIFOQSize = config->txFIFOQNum;
-    msgRAMConfig.txFIFOQMode = config->txFIFOQMode;
+    msgRamConfig.txFifoQSize = config->txFifoQNum;
+    msgRamConfig.txFifoQMode = config->txFifoQMode;
 
-    msgRAMUsage = addr + ((config->txBufNum + config->txFIFOQNum) * (MCAN_TX_RX_ELEMENT_HEADER_SIZE + payloadSize));
+    msgRamUsage = addr + ((config->txBufNum + config->txFifoQNum) * (MCAN_TX_RX_ELEMENT_HEADER_SIZE + payloadSize));
 
-    if (msgRAMUsage > msgRAMSize)
+    if (msgRamUsage > msgRamSize)
     {
         status = CAN_STATUS_ERROR;
     }
     else
     {
-        MCAN_configMsgRAM(&msgRAMConfig);
+        MCAN_configMsgRam(&msgRamConfig);
 
         for (i = 0U; i < config->stdFilterNum; i++)
         {
@@ -206,6 +209,16 @@ uint32_t CANMCAN_getInterruptMask(uint32_t eventMask)
     if ((eventMask & CAN_EVENT_TX_FINISHED) != 0U)
     {
         intMask |= (uint32_t)MCAN_INT_SRC_TRANS_COMPLETE;
+    }
+
+    if ((eventMask & CAN_EVENT_TX_EVENT_AVAIL) != 0U)
+    {
+        intMask |= (uint32_t)MCAN_INT_SRC_TX_EVT_FIFO_NEW_ENTRY;
+    }
+
+    if ((eventMask & CAN_EVENT_TX_EVENT_LOST) != 0U)
+    {
+        intMask |= (uint32_t)MCAN_INT_SRC_TX_EVT_FIFO_ELEM_LOST;
     }
 
     if ((eventMask & (CAN_EVENT_ERR_PASSIVE | CAN_EVENT_ERR_ACTIVE)) != 0U)

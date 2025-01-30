@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2020 ARM Limited
+ * Copyright (c) 2017-2023 ARM Limited
  *
  * Licensed under the Apace License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,8 @@ int stdio_output_string(const unsigned char *str, uint32_t len)
 {
     int32_t ret;
 
+    /* Add a busy wait before sending. */
+    while (STDIO_DRIVER.GetStatus().tx_busy);
     ret = STDIO_DRIVER.Send(str, len);
     if (ret != ARM_DRIVER_OK) {
         return 0;
@@ -53,6 +55,7 @@ int stdio_output_string(const unsigned char *str, uint32_t len)
  * STDIO_DRIVER
  */
 FILE __stdout;
+FILE __stderr;
 /* __ARMCC_VERSION is only defined starting from Arm compiler version 6 */
 int fputc(int ch, FILE *f)
 {
@@ -93,7 +96,7 @@ void stdio_init(void)
     ret = STDIO_DRIVER.PowerControl(ARM_POWER_FULL);
     ASSERT_HIGH(ret);
 
-    ret = STDIO_DRIVER.Control(ARM_USART_MODE_ASYNCHRONOUS,
+    ret = STDIO_DRIVER.Control(DEFAULT_UART_CONTROL | ARM_USART_MODE_ASYNCHRONOUS,
                                DEFAULT_UART_BAUDRATE);
     ASSERT_HIGH(ret);
     (void)ret;

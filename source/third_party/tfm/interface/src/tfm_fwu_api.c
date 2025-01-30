@@ -8,7 +8,6 @@
 #include "psa/client.h"
 #include "psa/update.h"
 #include "psa_manifest/sid.h"
-#include "tfm_api.h"
 
 psa_status_t psa_fwu_start(psa_fwu_component_t component,
                            const void *manifest,

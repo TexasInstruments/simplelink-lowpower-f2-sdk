@@ -20,14 +20,15 @@
 #include "cmsis.h"
 #include "device_definition.h"
 #include "RTE_Device.h"
+#include "host_cmsis_driver_config.h"
+#ifdef RSS_HAS_EXPANSION_PERIPHERALS
+#include "rss_expansion_cmsis_driver_config.h"
+#endif /* RSS_HAS_EXPANSION_PERIPHERALS */
 
-#ifndef RSS_DEBUG_UART
-#define UART0_DEV                    UART0_PL011_DEV_NS
-#else
+
+#ifdef RSS_DEBUG_UART
 #define UART0_DEV                    UART0_CMSDK_DEV_NS
-#endif /* !RSS_DEBUG_UART */
-
-#define FLASH0_DEV                   SPI_STRATAFLASHJ3_DEV
+#endif /* RSS_DEBUG_UART */
 
 #define MPC_VM0_DEV                  MPC_VM0_DEV_S
 #define MPC_VM1_DEV                  MPC_VM1_DEV_S

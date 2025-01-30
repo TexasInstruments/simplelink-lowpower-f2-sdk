@@ -157,7 +157,7 @@ fhss_api_t *ns_fhss_ws_create(const fhss_ws_configuration_t *fhss_configuration,
 int ns_fhss_ws_set_parent(const fhss_api_t *fhss_api, const uint8_t eui64[8], const broadcast_timing_info_t *bc_timing_info, const bool force_synch)
 {
     /* Set Parent to track broadcast schedule */
-    timacSetTrackParent(eui64);
+    timacSetTrackParent((uint8_t *) eui64);
     (void) fhss_api;
     (void) bc_timing_info;
     (void) force_synch;

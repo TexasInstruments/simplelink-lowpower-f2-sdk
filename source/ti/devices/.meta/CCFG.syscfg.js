@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -66,10 +66,8 @@ headers will be generated inside the ti_drivers_config.h file.
                 && key !== "ccfgTemplate"));
 
             // Hide module configs if code generation is disabled
-            configs.forEach((cfgName) =>
-            {
-                if(cfgName === "enableCodeGeneration")
-                {
+            configs.forEach((cfgName) => {
+                if (cfgName === "enableCodeGeneration") {
                     const readOnly = "The CCFG area cannot be configured "
                         + "through SysConfig for this example. Refer to "
                         + "the ccfg.c source file in order to overwrite the "
@@ -78,8 +76,7 @@ headers will be generated inside the ti_drivers_config.h file.
                     ui[cfgName].hidden = inst.enableCodeGeneration;
                     ui[cfgName].readOnly = inst.enableCodeGeneration ? false : readOnly;
                 }
-                else
-                {
+                else {
                     const cfg = inst.$module.$configByName[cfgName];
                     // Reset config visibility if code generation is enabled
                     ui[cfgName].hidden = inst.enableCodeGeneration ? cfg.hidden : true;
@@ -94,7 +91,7 @@ let base = {
     displayName: "Device Configuration",
     description: "Customer Configuration",
     defaultInstanceName: "CONFIG_CCFG_",
-    alwaysShowLongDescription : true,
+    alwaysShowLongDescription: true,
     maxInstances: 1,
     moduleStatic: {
         moduleInstances: () => { return templateModuleInstance; },
@@ -106,4 +103,4 @@ let base = {
 /* get family-specific CCFG module */
 let devCCFG = system.getScript("/ti/devices/CCFG/CCFG" + family);
 
-exports     = devCCFG.extend(base);
+exports = devCCFG.extend(base);

@@ -47,9 +47,28 @@ SECTIONS
 
         *(.text*)
 
+        /* .copy.table */
+        . = ALIGN(4);
+        __copy_table_start__ = .;
+#ifdef CODE_SHARING
+        LONG (LOADADDR(.tfm_shared_symbols))
+        LONG (ADDR(.tfm_shared_symbols))
+        LONG (SIZEOF(.tfm_shared_symbols) / 4)
+#endif
+        LONG (LOADADDR(.data))
+        LONG (ADDR(.data))
+        LONG (SIZEOF(.data) / 4)
+        __copy_table_end__ = .;
+
+        /* .zero.table */
+        . = ALIGN(4);
+        __zero_table_start__ = .;
+        LONG (ADDR(.bss))
+        LONG (SIZEOF(.bss) / 4)
+        __zero_table_end__ = .;
+
         KEEP(*(.init))
         KEEP(*(.fini))
-
 
         /* .ctors */
         *crtbegin.o(.ctors)
@@ -81,30 +100,6 @@ SECTIONS
         *(.ARM.exidx* .gnu.linkonce.armexidx.*)
     } > FLASH
     __exidx_end = .;
-
-    .copy.table :
-    {
-        . = ALIGN(4);
-        __copy_table_start__ = .;
-#ifdef CODE_SHARING
-        LONG (LOADADDR(.tfm_shared_symbols))
-        LONG (ADDR(.tfm_shared_symbols))
-        LONG (SIZEOF(.tfm_shared_symbols) / 4)
-#endif
-        LONG (LOADADDR(.data))
-        LONG (ADDR(.data))
-        LONG (SIZEOF(.data) / 4)
-        __copy_table_end__ = .;
-    } > FLASH
-
-    .zero.table :
-    {
-        . = ALIGN(4);
-        __zero_table_start__ = .;
-        LONG (ADDR(.bss))
-        LONG (SIZEOF(.bss) / 4)
-        __zero_table_end__ = .;
-    } > FLASH
 
 #ifdef CODE_SHARING
     /* The code sharing between bootloader and runtime firmware requires to

@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2020-2024, Texas Instruments Incorporated
+ Copyright (c) 2020-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -2026,7 +2026,7 @@ void RemoteDisplay_bleFastStateUpdateCb(uint32_t StackRole, uint32_t stackState)
 
 
 //! Naming discrepancy between ble5stack and ble5stack_flash
-#ifdef DeviceFamily_CC13X4
+#if defined (DeviceFamily_CC13X4) || defined (DeviceFamily_CC26X4)
     if( !(prevStackState & LL_TASK_ID_PERIPHERAL) && (stackState & LL_TASK_ID_PERIPHERAL))
 #else
     if( !(prevStackState & LL_TASK_ID_SLAVE) && (stackState & LL_TASK_ID_SLAVE))

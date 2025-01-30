@@ -1,0 +1,12 @@
+[
+    {
+        "files": [
+            "+../../README_MCUboot.md -> README_MCUboot.md",
+            "+../../README_MCUboot.html -> README_MCUboot.html",
+            "+../../application/sensor/advanced_config.h -> application/sensor/advanced_config.h",
+            "+../../application/defines/sensor_oad_onchip.opt -> application/defines/sensor_oad_onchip.opt",
+            "+../sensor.syscfg -> sensor.syscfg",
+            "+cc13x4_cc26x4_oad.cmd -> cc13x4_cc26x4_oad.cmd"
+        ]
+    }
+]

@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -410,6 +410,8 @@ typedef struct {
     uint32_t ch0;
     uint8_t channelSpacing; //0:200kHz, 1:400kHz, 2:600kHz
     uint16_t noOfChannels;
+    /* default exclusion channel list based on regulatory domain and operating class */
+    uint8_t regChannelList[MAX_NO_OF_CHANNELS];
 } FHIE_channelPlan_t;
 
 typedef struct {

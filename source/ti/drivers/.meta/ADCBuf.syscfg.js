@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@
 
 "use strict";
 
-/* get Common /ti/drivers utility functions */
+/* Get Common /ti/drivers utility functions */
 let Common = system.getScript("/ti/drivers/Common.js");
 
 /* get /ti/drivers family name from device object */

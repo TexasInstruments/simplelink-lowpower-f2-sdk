@@ -131,7 +131,7 @@ extern void Cy_Platform_Init(void);
 void platform_init(void)
 {
     cy_en_sysclk_status_t clk_rc;
-#if defined(TEST_NS_SLIH_IRQ) || defined(TEST_NS_FLIH_IRQ)
+#if defined(TFM_PARTITION_SLIH_TEST) || defined(TFM_PARTITION_FLIH_TEST)
     cy_en_sysint_status_t int_rc;
 #endif
 
@@ -172,12 +172,12 @@ void platform_init(void)
 
     Cy_Platform_Init();
 
-#if defined(TEST_NS_SLIH_IRQ) || defined(TEST_NS_FLIH_IRQ)
+#if defined(TFM_PARTITION_SLIH_TEST) || defined(TFM_PARTITION_FLIH_TEST)
     int_rc = Cy_SysInt_Init(&CY_TCPWM_NVIC_CFG_S, TFM_TIMER0_IRQ_Handler);
     if (int_rc != CY_SYSINT_SUCCESS) {
         SPMLOG_INFMSG("WARNING: Fail to initialize timer interrupt (IRQ TEST might fail)!\r\n");
     }
-#endif /* TEST_NS_SLIH_IRQ */
+#endif /* TFM_PARTITION_SLIH_TEST */
 
     /* make sure CM4 is disabled */
     if (CY_SYS_CM4_STATUS_ENABLED == Cy_SysGetCM4Status()) {

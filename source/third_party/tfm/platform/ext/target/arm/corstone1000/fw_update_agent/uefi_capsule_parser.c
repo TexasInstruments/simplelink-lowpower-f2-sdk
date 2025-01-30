@@ -102,10 +102,8 @@ enum uefi_capsule_error_t uefi_capsule_retrieve_images(void* capsule_ptr,
     }
 
     capsule_header = (efi_capsule_header_t*)ptr;
-    ptr += sizeof(efi_capsule_header_t) + sizeof(uint32_t);
+    ptr += sizeof(efi_capsule_header_t);
     fmp_capsule_header = (efi_firmware_management_capsule_header_t*)ptr;
-
-    fmp_payload_header = fmp_capsule_header + sizeof(*fmp_capsule_header);
 
     total_size = capsule_header->capsule_image_size;
     image_count = fmp_capsule_header->payload_item_count;
@@ -119,22 +117,20 @@ enum uefi_capsule_error_t uefi_capsule_retrieve_images(void* capsule_ptr,
     }
 
     for (int i = 0; i < image_count; i++) {
-
         image_header = (efi_firmware_management_capsule_image_header_t*)(ptr +
                                 fmp_capsule_header->item_offset_list[i]);
 
         images_info->size[i] = image_header->update_image_size;
-        images_info->version[i] = fmp_payload_header->fw_version;
-        FWU_LOG_MSG("%s: image %i version = %u\n\r", __func__, i,
-                                images_info->version[i]);
+
 #ifdef AUTHENTICATED_CAPSULE
         image_auth = (efi_firmware_image_authentication_t*)(
                         (char*)image_header +
                         sizeof (efi_firmware_management_capsule_image_header_t)
                      );
         auth_size = sizeof(uint64_t) /* monotonic_count */  +
-                    image_auth->auth_info.hdr.dwLength /* WIN_CERTIFICATE + cert_data */ +
-                    sizeof(struct efi_guid) /* cert_type */;
+                    image_auth->auth_info.hdr.dwLength/* WIN_CERTIFICATE + cert_data + cert_type */;
+
+        fmp_payload_header = (fmp_payload_header_t*)((char*)image_auth + auth_size);
 
         FWU_LOG_MSG("%s: auth size = %u\n\r", __func__, auth_size);
 
@@ -143,15 +139,24 @@ enum uefi_capsule_error_t uefi_capsule_retrieve_images(void* capsule_ptr,
         images_info->image[i] = (
                 (char*)image_header +
                 sizeof(efi_firmware_management_capsule_image_header_t) +
-                auth_size);
+                auth_size +
+                sizeof(*fmp_payload_header));
 #else
         images_info->image[i] = (
                 (char*)image_header +
                 sizeof(efi_firmware_management_capsule_image_header_t) +
                 sizeof(*fmp_payload_header));
+
+        fmp_payload_header = (fmp_payload_header_t*)((char*)image_header +
+                sizeof(efi_firmware_management_capsule_image_header_t));
+
 #endif
         memcpy(&images_info->guid[i], &(image_header->update_image_type_id),
                                                         sizeof(struct efi_guid));
+
+        images_info->version[i] = fmp_payload_header->fw_version;
+        FWU_LOG_MSG("%s: image %i version = %d\n\r", __func__, i,
+                                images_info->version[i]);
 
         FWU_LOG_MSG("%s: image %d at %p, size=%u\n\r", __func__, i,
                         images_info->image[i], images_info->size[i]);

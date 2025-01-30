@@ -70,6 +70,11 @@ set(CMAKE_CXX_COMPILER_ID_RUN TRUE CACHE PATH "" FORCE)
 set(CMAKE_CXX_COMPILER_FORCED TRUE CACHE PATH "" FORCE)
 set(CMAKE_CXX_COMPILER_WORKS TRUE CACHE PATH "" FORCE)
 
+# Ensure that cmake doesn't try to run ranlib on archives from TICLANG
+# This can avoid a situation where the host's ranlib is invoked on ARM compiled binaries
+set(CMAKE_C_ARCHIVE_FINISH "")
+set(CMAKE_CXX_ARCHIVE_FINISH "")
+
 if(NOT TARGET TOOLCHAIN_ticlang)
     add_library(TOOLCHAIN_ticlang INTERFACE IMPORTED)
     target_compile_options(

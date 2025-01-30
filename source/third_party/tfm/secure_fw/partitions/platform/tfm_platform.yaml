@@ -20,8 +20,8 @@
       "non_secure_clients": true,
       "connection_based": false,
       "stateless_handle": 6,
-      "minor_version": 1,
-      "minor_policy": "STRICT"
+      "version": 1,
+      "version_policy": "STRICT"
     },
   ],
 }

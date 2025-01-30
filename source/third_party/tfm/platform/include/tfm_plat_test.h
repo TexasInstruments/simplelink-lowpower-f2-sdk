@@ -18,9 +18,9 @@
  * the timer should be long enough so that the test service can go to the state
  * where it starts waiting for the interrupt.
  */
-#ifdef TEST_NS_SLIH_IRQ
+#ifdef TFM_PARTITION_SLIH_TEST
 TFM_LINK_SET_RO_IN_PARTITION_SECTION("TFM_SP_SLIH_TEST", "APP-ROT")
-#elif defined(TEST_NS_FLIH_IRQ)
+#elif defined(TFM_PARTITION_FLIH_TEST)
 TFM_LINK_SET_RO_IN_PARTITION_SECTION("TFM_SP_FLIH_TEST", "APP-ROT")
 #endif
 void tfm_plat_test_secure_timer_start(void);
@@ -29,9 +29,9 @@ void tfm_plat_test_secure_timer_start(void);
 /**
  * \brief Clears Secure timer interrupt
  */
-#ifdef TEST_NS_SLIH_IRQ
+#ifdef TFM_PARTITION_SLIH_TEST
 TFM_LINK_SET_RO_IN_PARTITION_SECTION("TFM_SP_SLIH_TEST", "APP-ROT")
-#elif TEST_NS_FLIH_IRQ
+#elif TFM_PARTITION_FLIH_TEST
 TFM_LINK_SET_RO_IN_PARTITION_SECTION("TFM_SP_FLIH_TEST", "APP-ROT")
 #endif
 void tfm_plat_test_secure_timer_clear_intr(void);
@@ -39,9 +39,9 @@ void tfm_plat_test_secure_timer_clear_intr(void);
 /**
  * \brief Stops the Secure timer and clears the timer interrupt.
  */
-#ifdef TEST_NS_SLIH_IRQ
+#ifdef TFM_PARTITION_SLIH_TEST
 TFM_LINK_SET_RO_IN_PARTITION_SECTION("TFM_SP_SLIH_TEST", "APP-ROT")
-#elif defined(TEST_NS_FLIH_IRQ)
+#elif defined(TFM_PARTITION_FLIH_TEST)
 TFM_LINK_SET_RO_IN_PARTITION_SECTION("TFM_SP_FLIH_TEST", "APP-ROT")
 #endif
 void tfm_plat_test_secure_timer_stop(void);

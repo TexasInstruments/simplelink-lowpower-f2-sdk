@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2022, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,9 @@ let family   = Common.device2Family(system.deviceData, "TRNG");
 
 let config = [];
 
+/* get device ID */
+let deviceId = system.deviceData.deviceId;
+
 /*
  *  ======== validate ========
  */
@@ -73,6 +76,7 @@ private or symmetric keys.
 * [Usage Synopsis][2]
 * [Examples][3]
 * [Configuration Options][4]
+
 [1]: /drivers/doxygen/html/_t_r_n_g_8h.html#details "C API reference"
 [2]: /drivers/doxygen/html/_t_r_n_g_8h.html#ti_drivers_TRNG_Synopsis "Basic C usage summary"
 [3]: /drivers/doxygen/html/_t_r_n_g_8h.html#ti_drivers_TRNG_Examples "C usage examples"
@@ -80,7 +84,16 @@ private or symmetric keys.
 `,
     defaultInstanceName : "CONFIG_TRNG_",
     config              : Common.addNameConfig(config, "/ti/drivers/TRNG", "CONFIG_TRNG_"),
-    modules             : Common.autoForceModules(["Board", "Power"]),
+    modules: (inst) => {
+        let forcedModules = ["Board", "Power"];
+
+        if (deviceId.match(/CC27/)) {
+            /* HSM library requires Key Store module */
+            forcedModules.push("CryptoKeyKeyStore_PSA");
+        }
+
+        return Common.autoForceModules(forcedModules)();
+    },
     validate            : validate
 };
 

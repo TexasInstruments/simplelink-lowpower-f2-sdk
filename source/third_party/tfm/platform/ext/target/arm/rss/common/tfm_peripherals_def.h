@@ -1,6 +1,7 @@
 /*
- * Copyright (c) 2019-2022, Arm Limited. All rights reserved.
- * Copyright (c) 2020, Cypress Semiconductor Corporation. All rights reserved.
+ * Copyright (c) 2019-2023, Arm Limited. All rights reserved.
+ * Copyright (c) 2020-2023 Cypress Semiconductor Corporation (an Infineon company)
+ * or an affiliate of Cypress Semiconductor Corporation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -10,7 +11,7 @@
 #define __TFM_PERIPHERALS_DEF_H__
 
 #include "platform_irq.h"
-#include "target_cfg.h"
+#include "common_target_cfg.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,6 +33,25 @@ extern struct platform_data_t tfm_peripheral_dma0_ch0;
 #define TFM_PERIPHERAL_STD_UART  (&tfm_peripheral_std_uart)
 #define TFM_PERIPHERAL_TIMER0    (&tfm_peripheral_timer0)
 #define TFM_PERIPHERAL_DMA0_CH0  (&tfm_peripheral_dma0_ch0)
+
+/* AP to RSS MHU receiver interrupt */
+#define MAILBOX_IRQ CMU_MHU0_Receiver_IRQn
+
+/* Append RSS-specific static MPU regions to the standard ones in
+ * tfm_hal_isolation_v8m.c.
+ */
+#define PLATFORM_STATIC_MPU_REGIONS \
+    /* Keep ROM as no-execute, and prevent unpriv from accessing */ \
+    { \
+        ARM_MPU_RBAR(ROM_BASE_S, \
+                     ARM_MPU_SH_NON, \
+                     ARM_MPU_READ_ONLY, \
+                     ARM_MPU_PRIVILEGED, \
+                     ARM_MPU_EXECUTE_NEVER), \
+        ARM_MPU_RLAR_PXN(ROM_BASE_S + ROM_SIZE - 1, \
+                         ARM_MPU_PRIVILEGE_EXECUTE_NEVER, \
+                         0), \
+    },
 
 #ifdef __cplusplus
 }

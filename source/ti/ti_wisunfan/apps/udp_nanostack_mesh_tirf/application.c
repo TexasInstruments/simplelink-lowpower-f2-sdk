@@ -241,19 +241,24 @@ uint8_t get_current_net_state(void);
 ti_wisun_config_t ti_wisun_config =
 {
     .rapid_join = FEATURE_RAPID_JOIN_ENABLE,
+    .network_size_config = FEATURE_NETWORK_PROFILE,
     .mpl_low_latency = FEATURE_MPL_LOW_LATENCY_ENABLE,
     .rapid_disconnect_detect_br = FEATURE_RAPID_DISCONNECT_DETECT_BR_SEC,
     .rapid_disconnect_detect_rn = FEATURE_RAPID_DISCONNECT_DETECT_RN_SEC,
     .auth_type  = NETWORK_AUTH_TYPE,
     .use_fixed_gtk_keys = false,
     .force_star_topology = FEATURE_FORCE_STAR_TOPOLOGY,
+    .use_dhcp_solicit_for_renew = true,
     .fixed_gtk_keys = {
         FIXED_GTK_KEY_1,
         FIXED_GTK_KEY_2,
         FIXED_GTK_KEY_3,
         FIXED_GTK_KEY_4,
-    },
+    }
 };
+
+// Unused by non-border routers
+ti_br_config_t ti_br_config = {};
 
 configurable_props_t cfg_props = { .phyTxPower = CONFIG_TRANSMIT_POWER, \
                                    .ccaDefaultdBm = CONFIG_CCA_THRESHOLD, \
@@ -550,7 +555,6 @@ mesh_error_t nanostack_wisunInterface_configure(void)
     if (ret < 0) {
         return MESH_ERROR_PARAM;
     }
-
 
     ret = ws_management_network_size_set(interface_id, MBED_CONF_MBED_MESH_APP_WISUN_NETWORK_SIZE);
     if (ret < 0) {

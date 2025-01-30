@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -97,11 +97,11 @@
 #define MAP_LL_Disconnect                                            LL_Disconnect
 #define MAP_LL_DisconnectCback                                       LL_DisconnectCback
 #define MAP_LL_ENC_Init                                              LL_ENC_Init
-#define MAP_LL_ENC_AES128_Decrypt                                    LL_ENC_AES128_Decrypt
-#define MAP_LL_ENC_AES128_Encrypt                                    LL_ENC_AES128_Encrypt
-#define MAP_LL_ENC_Decrypt                                           LL_ENC_Decrypt
+#define MAP_LL_ENC_AES128_Decrypt                                    LL_ENC_AES128_Decrypt_sPatch
+#define MAP_LL_ENC_AES128_Encrypt                                    LL_ENC_AES128_Encrypt_sPatch
+#define MAP_LL_ENC_Decrypt                                           LL_ENC_Decrypt_sPatch
 #define MAP_LL_ENC_DecryptMsg                                        LL_ENC_DecryptMsg
-#define MAP_LL_ENC_Encrypt                                           LL_ENC_Encrypt
+#define MAP_LL_ENC_Encrypt                                           LL_ENC_Encrypt_sPatch
 #define MAP_LL_ENC_EncryptMsg                                        LL_ENC_EncryptMsg
 #define MAP_LL_ENC_GenDeviceIV                                       LL_ENC_GenDeviceIV
 #define MAP_LL_ENC_GenDeviceSKD                                      LL_ENC_GenDeviceSKD
@@ -297,7 +297,7 @@
 #define MAP_llDynamicAlloc                                           llDynamicAlloc
 #define MAP_llDynamicFree                                            llDynamicFree
 #define MAP_llEnableRfInts                                           llEnableRfInts
-#define MAP_llEnqueueCtrlPkt                                         llEnqueueCtrlPkt
+#define MAP_llEnqueueCtrlPkt                                         llEnqueueCtrlPkt_sPatch
 #define MAP_llEqAlreadyValidAddr                                     llEqAlreadyValidAddr
 #define MAP_llEqSynchWord                                            llEqSynchWord
 #define MAP_llEqualBytes                                             llEqualBytes
@@ -624,7 +624,7 @@
 #define MAP_LE_ReadMaxAdvDataLen                                     LE_ReadMaxAdvDataLen
 #define MAP_LE_ReadNumSupportedAdvSets                               LE_ReadNumSupportedAdvSets
 #define MAP_LE_AE_SetData                                            LE_AE_SetData
-#define MAP_LE_SetExtScanParams                                      LE_SetExtScanParams
+#define MAP_LE_SetExtScanParams                                      LE_SetExtScanParams_sPatch
 #define MAP_LE_SetExtScanEnable                                      LE_SetExtScanEnable
 #define MAP_LE_ExtCreateConn                                         LE_ExtCreateConn
 #define MAP_LE_ReadTxPowerCmd                                        LE_ReadTxPowerCmd
@@ -1412,6 +1412,7 @@ extern void   MAP_llDmmDynamicFree(void);
 extern uint8  MAP_llDmmDynamicAlloc(void);
 extern uint32_t MAP_LL_AbortedCback( uint8 preempted );
 extern uint8  MAP_llSetStarvationMode(uint16 connId, uint8 setOnOffValue);
+extern uint8  MAP_llGetStarvationMode(uint16 connId);
 
 
 /*******************************************************************************
@@ -1559,6 +1560,7 @@ extern void MAP_llSetRxCfg(void);
 #else
 #define MAP_LL_Is_SDAA_Enable( void ) FALSE
 #endif //SDAA_ENABLE
+
 extern void MAP_LL_SDAA_Init( void );
 extern void MAP_LL_SDAA_HandleSDAALastCmdDone( void );
 extern void MAP_LL_SDAA_AddDwtRecord( uint32 dwT, uint8 task, uint8 index );
@@ -1566,7 +1568,8 @@ extern void MAP_LL_SDAA_RecordTxUsage( uint16 numOfBytes, uint8 phyType, uint8 p
 extern void MAP_LL_SDAA_SampleRXWindow( void );
 extern uint16 MAP_LL_SDAA_GetRXWindowDuration( void );
 extern void MAP_LL_SDAA_SetChannelInSample( uint8 channel );
-extern uint8 MAP_llSDAASetupRXWindowCmd(void);
+extern uint8 MAP_llSDAASetupRXWindowCmd( void );
+extern void MAP_llHandleSDAALastCmdDone( void );
 extern uint8 MAP_llHandleSDAAControlTX(void            *nextConnPtr,
                                        void            *secTask,
                                        uint8           startTaskType);

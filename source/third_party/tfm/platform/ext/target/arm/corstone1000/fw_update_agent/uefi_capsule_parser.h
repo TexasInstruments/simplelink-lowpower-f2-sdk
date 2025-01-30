@@ -12,6 +12,8 @@
 #include "fip_parser/external/uuid.h"
 #include "flash_layout.h"
 
+#define AUTHENTICATED_CAPSULE 1
+
 enum uefi_capsule_error_t {
     UEFI_CAPSULE_PARSER_SUCCESS = 0,
     UEFI_CAPSULE_PARSER_ERROR = (-1)

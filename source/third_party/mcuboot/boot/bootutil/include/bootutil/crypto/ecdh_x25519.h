@@ -10,7 +10,7 @@
 #ifndef __BOOTUTIL_CRYPTO_ECDH_X25519_H_
 #define __BOOTUTIL_CRYPTO_ECDH_X25519_H_
 
-#include "mcuboot_config/mcuboot_config.h"
+#include "mcuboot_config.h"
 
 #if (defined(MCUBOOT_USE_MBED_TLS) + \
      defined(MCUBOOT_USE_TINYCRYPT)) != 1

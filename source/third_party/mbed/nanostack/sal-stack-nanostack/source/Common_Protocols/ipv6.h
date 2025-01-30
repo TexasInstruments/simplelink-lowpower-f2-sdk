@@ -35,6 +35,7 @@ typedef enum ipv6_exthdr_stage {
 } ipv6_exthdr_stage_t;
 
 #define IPV6_EXTHDR_MODIFY_TUNNEL 1
+#define IPV6_ADDRESS_SIZE 16
 
 /* Hooks for routing code to insert/modify IPv6 extension headers.
  *

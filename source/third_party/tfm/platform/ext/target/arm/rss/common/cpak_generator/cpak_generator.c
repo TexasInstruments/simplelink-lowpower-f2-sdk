@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
  */
 
 #include "psa/crypto.h"
-#include "mbedtls/aes.h"
+#include "mbedtls/cmac.h"
 
 #include <stdint.h>
 #include <stdio.h>
@@ -52,69 +52,53 @@ int load_guk(uint8_t *guk)
     return 0;
 }
 
-
-int generate_seed(uint8_t *bl1_2_hash, uint8_t *guk, uint8_t *seed_buf)
+int generate_boot_state(uint8_t *bl1_2_hash, uint8_t *boot_state)
 {
-    uint8_t label[] = "BL1_CPAK_SEED_DERIVATION";
-    uint8_t context[32 + sizeof(uint32_t) * 2] = {0};
-    uint8_t state[sizeof(context) + sizeof(label) + sizeof(uint8_t)
-                  + sizeof(uint32_t) * 2];
-    uint8_t state_hash[PSA_HASH_LENGTH(PSA_ALG_SHA_256)];
-    mbedtls_aes_context ctx;
+    uint8_t context[PSA_HASH_LENGTH(PSA_ALG_SHA_256) + 2 * sizeof(uint32_t)];
     uint32_t reprovisioning_bits = 0;
     uint32_t lcs = 3;
+
+    memcpy(context, &lcs, sizeof(uint32_t));
+
+    memcpy(context + sizeof(uint32_t), &reprovisioning_bits, sizeof(uint32_t));
+
+    memcpy(context + (2 * sizeof(uint32_t)), bl1_2_hash, 32);
+
+    return mbedtls_sha256(context, sizeof(context), boot_state, 0);
+}
+
+int generate_seed(uint8_t *boot_state, uint8_t *guk, uint8_t *seed_buf)
+{
+    uint8_t label[] = "BL1_CPAK_SEED_DERIVATION";
+    uint8_t state[PSA_HASH_LENGTH(PSA_ALG_SHA_256) + sizeof(label) + sizeof(uint8_t)
+                  + (sizeof(uint32_t) * 2)];
     uint32_t seed_output_length = 32;
     uint32_t block_index = 1;
-    size_t state_hash_len;
     psa_status_t status;
     int rc;
 
-    memcpy(context, bl1_2_hash, 32);
-
-    memcpy(context + 32, &lcs, sizeof(uint32_t));
-
-    memcpy(context + 32 + sizeof(uint32_t), &reprovisioning_bits,
-           sizeof(uint32_t));
-
+    memcpy(state, &block_index, sizeof(uint32_t));
     memcpy(state + sizeof(uint32_t), label, sizeof(label));
     memset(state + sizeof(uint32_t) + sizeof(label), 0, sizeof(uint8_t));
     memcpy(state + sizeof(uint32_t) + sizeof(label) + sizeof(uint8_t),
-           context, sizeof(context));
-    memcpy(state + sizeof(uint32_t) + sizeof(label) + sizeof(uint8_t) +
-           sizeof(context), &seed_output_length, sizeof(uint32_t));
+           boot_state, 32);
+    memcpy(state + sizeof(uint32_t) + sizeof(label) + sizeof(uint8_t) + 32,
+           &seed_output_length, sizeof(uint32_t));
 
-    status = psa_hash_compute(PSA_ALG_SHA_256, state, sizeof(state),
-                              state_hash, sizeof(state_hash), &state_hash_len);
-    if (status != PSA_SUCCESS) {
-        return 1;
+    rc = mbedtls_cipher_cmac(mbedtls_cipher_info_from_type(MBEDTLS_CIPHER_AES_256_ECB),
+                             guk, 256, state, sizeof(state), seed_buf);
+    if (rc) {
+        return rc;
     }
 
+    block_index += 1;
     memcpy(state, &block_index, sizeof(uint32_t));
 
-    status = psa_hash_compute(PSA_ALG_SHA_256, state, sizeof(state),
-                              state_hash, sizeof(state_hash), &state_hash_len);
-    if (status != PSA_SUCCESS) {
-        return 1;
-    }
-
-    mbedtls_aes_init(&ctx);
-    rc = mbedtls_aes_setkey_enc(&ctx, guk, 256);
+    rc = mbedtls_cipher_cmac(mbedtls_cipher_info_from_type(MBEDTLS_CIPHER_AES_256_ECB),
+                             guk, 256, state, sizeof(state), seed_buf + 16);
     if (rc) {
         return rc;
     }
-
-    rc = mbedtls_aes_crypt_ecb(&ctx, MBEDTLS_AES_ENCRYPT, state_hash, seed_buf);
-    if (rc) {
-        return rc;
-    }
-
-    rc = mbedtls_aes_crypt_ecb(&ctx, MBEDTLS_AES_ENCRYPT, state_hash + 16,
-                               seed_buf + 16);
-    if (rc) {
-        return rc;
-    }
-
-    mbedtls_aes_free(&ctx);
 
     return 0;
 }
@@ -218,7 +202,8 @@ int export_pubkey(psa_key_handle_t cpak_handle)
 int main (int argc, char *argv[])
 {
     int rc;
-    uint8_t bl1_2_hash[32];
+    uint8_t bl1_2_hash[PSA_HASH_LENGTH(PSA_ALG_SHA_256)];
+    uint8_t boot_state[PSA_HASH_LENGTH(PSA_ALG_SHA_256)];
     uint8_t guk[32];
     uint8_t seed_buf[32];
     psa_key_handle_t cpak_handle;
@@ -241,7 +226,13 @@ int main (int argc, char *argv[])
         return rc;
     }
 
-    rc = generate_seed(bl1_2_hash, guk, seed_buf);
+    rc = generate_boot_state(bl1_2_hash, boot_state);
+    if (rc) {
+        printf("boot state generation failed\r\n");
+        return rc;
+    }
+
+    rc = generate_seed(boot_state, guk, seed_buf);
     if (rc) {
         printf("cpak seed generation failed\r\n");
         return rc;

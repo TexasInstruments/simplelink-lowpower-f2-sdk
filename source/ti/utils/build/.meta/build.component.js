@@ -46,6 +46,11 @@ let templates = [
         "alwaysRun": true /* so make can _always_ add this to link line */
     },
     {
+        "name": "/ti/utils/build/GenMap.cmd.xdt",
+        "outputPath": "ti_utils_build_linker.cmd.genmap",
+        "alwaysRun": true /* so users can _always_ include this file */
+    },
+    {
         "name": "/ti/utils/build/GenOpts.opt.xdt",
         "outputPath": "ti_utils_build_compiler.opt",
         "alwaysRun": true /* so make can _always_ add this to compile line */

@@ -1,12 +1,17 @@
 # SimpleLink&trade; CC2652RB LaunchPad&trade; Settings & Resources
 
-The [__SimpleLink&trade; CC2652RB LaunchPad&trade;__][launchpad] contains a
+The [__SimpleLink&trade; CC2652RB LaunchPad&trade;__][board] contains a
 [__CC2652RB1FRGZR__][device] device.
 
 ## Jumper Settings
 
-* Close the __`LEDs`__ jumper to enable the on-board LEDs.
+* Close the __`LEDs`__ jumpers to enable the on-board LEDs.
 * Close the __`RXD<<`__ and __`TXD>>`__ jumpers to enable UART via the XDS110 on-board USB debugger.
+* In order to get the lowest shutdown current (see the
+  `gpioshutdown` example), remove the jumpers for the __`TCK`__ and __`TMS`__
+  JTAG pins. TMS and TCK have internal pull-up and are driven low when
+  inactive from the emulator, hence after programming the device these jumpers
+  should be removed to avoid the extra leakage current.
 
 ## SysConfig Board File
 
@@ -53,7 +58,7 @@ Place the BoosterPack directly atop the LaunchPad.
 * No modifications are needed.
 
 [device]: https://www.ti.com/product/CC2652RB
-[launchpad]: https://www.ti.com/tool/LP-CC2652RB
+[board]: https://www.ti.com/tool/LP-CC2652RB
 [boostxl-canfd-lin]: https://www.ti.com/tool/BOOSTXL-CANFD-LIN
 [boostxl-sharp128]: https://www.ti.com/tool/BOOSTXL-SHARP128
 [bp-bassensorsmkii]: https://www.ti.com/tool/BP-BASSENSORSMKII

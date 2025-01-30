@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -197,6 +197,24 @@ function addTasksFromListObj(view, listObj, state, currentTask, makeDetailed){
 
         taskInfo.Address  = helperGetHexString(taskAddress);
         taskInfo.TaskName = helperGetNameOfTaskByTCBObj(task);
+
+        /*
+         * pthreads don't support names, however FreeRTOS requires all tasks to
+         * have a valid name.  The pthread implementation uses a fixed, single
+         * character name 'x' for all pthreads.  Whilst we don't have a name, we
+         * can extract the pthread entry point, which is stored inside
+         * pthread_Obj, which is itself found in the FreeRTOS task 'tag'.  Here,
+         * we create a more descriptive name.
+         */
+        if (taskInfo.TaskName == "x") {
+            /* at least report that it's a "ti-pthread... */
+            taskInfo.TaskName = "[ti-pthread]";
+            if (task.pxTaskTag) {
+                /* ... and if possible, add the function entry point */
+                let pthreadObj = Program.fetchFromAddr(task.pxTaskTag, "pthread_Obj");
+                taskInfo.TaskName += ":" + Program.lookupFuncName(Number(pthreadObj.fxn));
+            }
+        }
 
         taskInfo.BasePriority = task.uxBasePriority;
         if (Number(taskAddress) == Number(currentTask)) {

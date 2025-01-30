@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, Texas Instruments Incorporated
+ * Copyright (c) 2022-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,11 +43,13 @@
 /* driverlib header files */
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(inc/hw_types.h)
-#include DeviceFamily_constructPath(inc/hw_cpu_scs.h)
 #include DeviceFamily_constructPath(inc/hw_ints.h)
-#include DeviceFamily_constructPath(driverlib/cpu.h)
 #include DeviceFamily_constructPath(driverlib/interrupt.h)
-#include DeviceFamily_constructPath(driverlib/rom.h)
+
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+#define IntClearPend IntPendClear
+#define IntSetPend IntPendSet
+#endif
 
 typedef struct _HwiP_Obj
 {
@@ -56,89 +58,11 @@ typedef struct _HwiP_Obj
     uintptr_t arg;
 } HwiP_Obj;
 
-typedef struct _Hwi_NVIC
-{
-    uint32_t RES_00;
-    uint32_t ICTR;
-    uint32_t RES_08;
-    uint32_t RES_0C;
-    uint32_t STCSR;
-    uint32_t STRVR;
-    uint32_t STCVR;
-    uint32_t STCALIB;
-    uint32_t RES_20[56];
-    uint32_t ISER[8];
-    uint32_t RES_120[24];
-    uint32_t ICER[8];
-    uint32_t RES_1A0[24];
-    uint32_t ISPR[8];
-    uint32_t RES_220[24];
-    uint32_t ICPR[8];
-    uint32_t RES_2A0[24];
-    uint32_t IABR[8];
-    uint32_t RES_320[56];
-    uint8_t IPR[240];
-    uint32_t RES_4F0[516];
-    uint32_t CPUIDBR;
-    uint32_t ICSR;
-    uint32_t VTOR;
-    uint32_t AIRCR;
-    uint32_t SCR;
-    uint32_t CCR;
-    uint8_t SHPR[12];
-    uint32_t SHCSR;
-    uint8_t MMFSR;
-    uint8_t BFSR;
-    uint16_t UFSR;
-    uint32_t HFSR;
-    uint32_t DFSR;
-    uint32_t MMAR;
-    uint32_t BFAR;
-    uint32_t AFSR;
-    uint32_t PFR0;
-    uint32_t PFR1;
-    uint32_t DFR0;
-    uint32_t AFR0;
-    uint32_t MMFR0;
-    uint32_t MMFR1;
-    uint32_t MMFR2;
-    uint32_t MMFR3;
-    uint32_t ISAR0;
-    uint32_t ISAR1;
-    uint32_t ISAR2;
-    uint32_t ISAR3;
-    uint32_t ISAR4;
-    uint32_t RES_D74[5];
-    uint32_t CPACR;
-    uint32_t RES_D8C[93];
-    uint32_t STI;
-    uint32_t RES_F04[12];
-    uint32_t FPCCR;
-    uint32_t FPCAR;
-    uint32_t FPDSCR;
-    uint32_t MVFR0;
-    uint32_t MVFR1;
-    uint32_t RES_F48[34];
-    uint32_t PID4;
-    uint32_t PID5;
-    uint32_t PID6;
-    uint32_t PID7;
-    uint32_t PID0;
-    uint32_t PID1;
-    uint32_t PID2;
-    uint32_t PID3;
-    uint32_t CID0;
-    uint32_t CID1;
-    uint32_t CID2;
-    uint32_t CID3;
-} Hwi_NVIC;
-
-static Hwi_NVIC *Hwi_nvic = (Hwi_NVIC *)0xE000E000;
-
 static HwiP_Obj *HwiP_dispatchTable[NUM_INTERRUPTS] = {0};
 
 int HwiP_swiPIntNum = INT_PENDSV;
 
+/* Custom offset to store the 1-bit NS primask along with the S primask */
 #define PRIMASK_NS_OFFSET 8UL
 
 /*
@@ -146,7 +70,7 @@ int HwiP_swiPIntNum = INT_PENDSV;
  */
 void HwiP_enable(void)
 {
-    IntMasterEnable();
+     __enable_irq();
 }
 
 /*
@@ -155,18 +79,24 @@ void HwiP_enable(void)
 uintptr_t HwiP_disable(void)
 {
     uintptr_t primask_ns;
+    uintptr_t primask_s;
 
-    /* Store the non-secure primask */
+    /* Read the non-secure primask */
     primask_ns = __TZ_get_PRIMASK_NS();
+
+    /* Read the secure primask */
+    primask_s = __get_PRIMASK();
 
     /* Write 1 to non-secure primask to disable non-secure interrupts */
     __TZ_set_PRIMASK_NS(1UL);
 
-    /*
-     * Disable secure interrupts and return key necessary to restore secure and
-     * non-secure interrupts using HwiP_restore()
+    /* Disable secure interrupts */
+    __disable_irq();
+
+    /* Return key necessary to restore secure and non-secure interrupts using
+     * HwiP_restore()
      */
-    return (IntMasterDisable() | (primask_ns << PRIMASK_NS_OFFSET));
+    return (primask_s | (primask_ns << PRIMASK_NS_OFFSET));
 }
 
 /*
@@ -177,7 +107,7 @@ void HwiP_restore(uintptr_t key)
     /* Restore secure interrupts */
     if ((key & 1UL) == 0UL)
     {
-        IntMasterEnable();
+        __enable_irq();
     }
 
     /* Restore non-secure interrupts */
@@ -189,7 +119,7 @@ void HwiP_restore(uintptr_t key)
  */
 void HwiP_clearInterrupt(int interruptNum)
 {
-    IntPendClear((uint32_t)interruptNum);
+    IntClearPend((uint32_t)interruptNum);
 }
 
 /*
@@ -238,7 +168,7 @@ bool HwiP_interruptsEnabled(void)
 {
     uint32_t priMask;
 
-    priMask = CPUprimask();
+    priMask = __get_PRIMASK();
 
     return (priMask == 0);
 }
@@ -336,7 +266,7 @@ void HwiP_setFunc(HwiP_Handle hwiP, HwiP_Fxn fxn, uintptr_t arg)
  */
 void HwiP_post(int interruptNum)
 {
-    IntPendSet((uint32_t)interruptNum);
+    IntSetPend((uint32_t)interruptNum);
 }
 
 /*
@@ -346,7 +276,7 @@ bool HwiP_inISR(void)
 {
     bool stat;
 
-    if ((Hwi_nvic->ICSR & CPU_SCS_ICSR_VECTACTIVE_M) == 0)
+    if ((SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) == 0)
     {
         stat = false;
     }
@@ -363,7 +293,8 @@ bool HwiP_inISR(void)
  */
 bool HwiP_inSwi(void)
 {
-    uint32_t intNum = Hwi_nvic->ICSR & 0x000000ff;
+    uint32_t intNum = SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk;
+
     if (intNum == HwiP_swiPIntNum)
     {
         /* Currently in a Swi */
@@ -378,10 +309,9 @@ bool HwiP_inSwi(void)
  */
 void HwiP_setPriority(int interruptNum, uint32_t priority)
 {
-    /*
-     * Do nothing. It is possible to call tfm_spm_hal_set_secure_irq_priority
+    /* Do nothing. It is possible to call tfm_spm_hal_set_secure_irq_priority
      * here to change the secure IRQ priority but secure IRQs have a smaller
-     * range of valid priorities than can be selected via Sysconfig. Per the
+     * range of valid priorities than can be selected via SysConfig. Per the
      * standard TF-M software, we will use the secure partition's YAML file
      * to configure secure IRQ priorities.
      */

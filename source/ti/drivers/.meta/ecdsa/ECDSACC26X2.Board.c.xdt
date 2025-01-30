@@ -1,6 +1,6 @@
 %%{
 /*
- * Copyright (c) 2018-2020, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,6 +55,19 @@
 #include <ti/drivers/ecdsa/ECDSACC26X2.h>
 
 #define `countDef` `instances.length`
+
+% if (system.modules["/ti/utils/TrustZone"]) {
+#include <ti/drivers/ecdsa/ECDSACC26X4_ns.h>
+#include <ti/drivers/ecdsa/ECDSACC26X4_s.h>
+/* These object arrays store non-secure copies of the secure callback struct and
+ * handle parameters required for Secure/Non-secure driver functionality. The
+ * SECURE_CALLBACK_COUNT is the total number of static and dynamic driver
+ * instances supported by the TF-M.
+ */
+ECDSA_s_SecureCallback ecdsaSecureCB_ns[ECDSA_SECURE_CALLBACK_COUNT];
+ECDSACC26X4_ns_Object ecdsaObject_ns[ECDSA_SECURE_CALLBACK_COUNT];
+% }
+
 ECDSACC26X2_Object ecdsaCC26X2Objects[`countDef`];
 
 /*

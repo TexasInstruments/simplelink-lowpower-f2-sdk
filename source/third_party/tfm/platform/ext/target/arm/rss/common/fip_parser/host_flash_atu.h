@@ -56,13 +56,16 @@ int host_flash_atu_get_fip_offsets(bool fip_found[2], uint64_t fip_offsets[2]);
  *                                    This is required because images may not be
  *                                    aligned to the ATU page size.
  *
+ * \param[out] atu_slot_size          The size of the mapped image.
+ *
  * \return                            0 on success, non-zero on failure.
  */
 int host_flash_atu_setup_image_input_slots_from_fip(uint64_t fip_offset,
                                                     uint32_t slot,
                                                     uintptr_t logical_address,
                                                     uuid_t image_uuid,
-                                                    uint32_t *logical_address_offset);
+                                                    uint32_t *logical_address_offset,
+                                                    size_t *atu_slot_size);
 
 /**
  * \brief                             Setup the input and output slots for a

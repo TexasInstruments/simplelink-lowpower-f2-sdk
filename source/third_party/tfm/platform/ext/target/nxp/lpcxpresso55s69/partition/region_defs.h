@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2017-2023 Arm Limited. All rights reserved.
- * Copyright 2019-2020 NXP. All rights reserved.
+ * Copyright 2019-2023 NXP. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,11 +32,6 @@
 
 #define NS_HEAP_SIZE            (0x0001000)
 #define NS_STACK_SIZE           (0x00001E0)
-
-/* This size of buffer is big enough to store an attestation
- * token produced by initial attestation service
- */
-#define PSA_INITIAL_ATTEST_TOKEN_MAX_SIZE   (0x250)
 
 /* eFlash MPC granularity is 4 KB on Musca_B1. Alignment
  * of partitions is defined in accordance with this constraint.

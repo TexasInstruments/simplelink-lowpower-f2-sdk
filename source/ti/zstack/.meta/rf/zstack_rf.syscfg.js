@@ -381,7 +381,6 @@ const rfModule = {
     },
 };
 
-
 /* RadioConfig module definition and default configurations */
 function moduleInstances(inst)
 {
@@ -539,13 +538,19 @@ function getRfDesignOptions()
     }
     else if(deviceId === "CC2674P10RGZ")
     {
-        newRfDesignOptions = [{name: "LP_CC2674P10_RGZ"}];
+        newRfDesignOptions = [{name: "LP_EM_CC2674P10"}];
+    }
+    else if(deviceId == "CC1354P10RGZ"){
+        newRfDesignOptions = [{name: "LP_CC1354P10_1_RGZ"}];
+    }
+    else if(deviceId == "CC1354R10RGZ"){
+        newRfDesignOptions = [{name: "LP_CC1354R10_RGZ"}];
     }
     else
     {
         throw new Error("Unknown deviceId " + deviceId + ".");
     }
-
+    
     return(newRfDesignOptions);
 }
 

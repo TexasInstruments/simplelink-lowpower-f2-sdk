@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,9 +43,8 @@
 #include <ti/drivers/tfm/SecureCallback.h>
 
 #include <third_party/tfm/secure_fw/include/security_defs.h> /* __tz_c_veneer */
-#include <psa_manifest/crypto_sp.h>                          /* Auto-generated header */
 
-#include <third_party/tfm/interface/include/tfm_api.h>
+#include <third_party/tfm/secure_fw/spm/core/spm.h>
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
@@ -501,7 +500,7 @@ static inline psa_status_t TRNG_s_construct(psa_msg_t *msg)
             configPtr_s->object = NULL;
         }
     }
-    else if (TFM_CLIENT_ID_IS_S(msg->client_id))
+    else if (!TFM_CLIENT_ID_IS_NS(msg->client_id))
     {
         /*
          * Return the pointer to the secure config struct provided by the
@@ -736,7 +735,7 @@ static inline psa_status_t TRNG_s_cancelOperation(psa_msg_t *msg)
     int_fast16_t ret;
 
     /* Cancellation is only supported for non-secure clients */
-    if (TFM_CLIENT_ID_IS_S(msg->client_id))
+    if (!TFM_CLIENT_ID_IS_NS(msg->client_id))
     {
         return PSA_ERROR_PROGRAMMER_ERROR;
     }

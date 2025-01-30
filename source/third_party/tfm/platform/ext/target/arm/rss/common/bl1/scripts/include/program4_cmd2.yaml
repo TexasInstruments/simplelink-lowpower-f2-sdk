@@ -1,0 +1,55 @@
+#-------------------------------------------------------------------------------
+# Copyright (c) 2023, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+#-------------------------------------------------------------------------------
+
+# Copy 3 words from the end of this command into the ICDA, ICDL, and ICEVA
+# registers of the integrity checker.
+
+Header:
+  - REGCLEAR: 0
+  - Reserved: 0
+  - INTREN: 0
+  - CTRL: 1
+  - SRCADDR: 1
+  - SRCADDRHI: 0
+  - DESADDR: 1
+  - DESADDRHI: 0
+  - XSIZE: 1
+  - XSIZEHI: 0
+  - SRCTRANSCFG: 1
+  - DESTRANSCFG: 1
+  - XADDRINC: 0
+  - YADDRSTRIDE: 0
+  - FILLVAL: 0
+  - YSIZE: 0
+  - TMPLTCFG: 0
+  - SRCTMPLT: 0
+  - DESTMPLT: 0
+  - SRCTRIGINCFG: 0
+  - DESTRIGINCFG: 0
+  - TRIGOUTCFG: 0
+  - GPOEN0: 0
+  - Reserved: 0
+  - GPOVAL0: 1
+  - Reserved: 0
+  - STREAMINTCFG: 0
+  - Reserved: 0
+  - LINKATTR: 0
+  - AUTOCFG: 0
+  - LINKADDR: 1
+  - LINKADDRHI: 0
+CTRL: 0x10000202
+SRCADDR: 'program4_cmd2_store_addr + program4_cmd2_size - 0xC'
+DESADDR: 'integrity_checker_base_address + 0x18'
+XSIZE: 0x00030003
+SRCTRANSCFG: 0x000F0044
+DESTRIGINCFG: 0x00000000
+GPOVAL0: 0x00000003
+LINKADDR: "program4_cmd3_exec_addr"
+execute_link: false
+ICDA: 'vm0_base_address + 0x4' # The program to be measured starts after the integrity value word
+ICDL: 'otp_size - 0x1' # This is measured in words
+ICEVA: 'vm0_base_address' # The first word in VM0 is the integrity value

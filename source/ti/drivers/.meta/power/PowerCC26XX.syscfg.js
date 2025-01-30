@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -212,6 +212,14 @@ When a connected TCXO xtal is supported on the board and CCFG is configured
 `,
         placeholder : "Enter a function name to enable",
         default     : ""
+    },
+
+    {
+        name: "loggingEnabled",
+        displayName: "Enable Logging",
+        hidden : false,
+        description: `This setting will enable logging for the Power module.`,
+        default: false
     }
 ];
 
@@ -223,6 +231,7 @@ let devSpecific = {
     getClockFrequencies : getClockFrequencies,
     moduleStatic        : {
         config   : config,
+        moduleInstances: moduleInstances,
         validate : validate,
         modules: Common.autoForceModules(["Board", "ti/devices/CCFG"])
     },
@@ -287,6 +296,40 @@ function isExtTcxoSelected()
         return (true);
     }
     return (false);
+}
+
+/*
+ *  ======== moduleInstances ========
+ *  returns Power instances
+ */
+function moduleInstances(inst)
+{
+    let powerInstances = new Array();
+
+    /* If logging is enabled, push a dependency on a log module */
+    if (inst.loggingEnabled) {
+        powerInstances.push(
+            {
+                name: "LogModule",
+                displayName: "Power Log Configuration",
+                moduleName: "/ti/log/LogModule",
+                collapsed: true,
+                requiredArgs: {
+                    $name: "LogModule_Power"
+                },
+                args: {
+                    enable_DEBUG: false,
+                    enable_INFO: false,
+                    enable_VERBOSE: false,
+                    // Only enable WARNING and ERROR enabled by default
+                    enable_WARNING: true,
+                    enable_ERROR: true
+                }
+            }
+        );
+    }
+
+    return (powerInstances);
 }
 
 /*

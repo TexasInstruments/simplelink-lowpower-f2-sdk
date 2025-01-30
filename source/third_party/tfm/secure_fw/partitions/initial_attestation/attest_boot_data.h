@@ -18,22 +18,6 @@ extern "C" {
 #endif
 
 /*!
- * \brief Function to look up specific claim belongs to SW_GENERAL module
- *
- * \param[in]   claim    The claim ID to look for
- * \param[out]  tlv_len  Length of the shared data entry
- * \param[out]  tlv_ptr  Pointer to a shared data entry which belongs to the
- *                       SW_GENERAL module.
- *
- * \retval    -1          Error, boot status is malformed
- * \retval     0          Entry not found
- * \retval     1          Entry found
- */
-int32_t attest_get_tlv_by_id(uint8_t    claim,
-                             uint16_t  *tlv_len,
-                             uint8_t  **tlv_ptr);
-
-/*!
  * \brief  Function to encode all the software components
  *
  * The function creates a CBOR array in which 1 item is a SW component. The

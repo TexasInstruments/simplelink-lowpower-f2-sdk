@@ -301,7 +301,7 @@ extern uint8_t `ble["advSet"+i]["scanRes"+i].name`[`common.advDataTotalLength(sc
 %}
 
 // SDAA parameters
-% if(ble.sdaa)
+% if(ble.adaptivity)
 % {
 #define SDAA_MAX_THRESHOLD                  `ble.txUsageThresh`
 #define SDAA_RX_WINDOW_DURATION             `ble.rxWindowDuration`

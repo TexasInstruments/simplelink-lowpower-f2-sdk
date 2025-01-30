@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,6 +61,29 @@ let config_instance = [
         name: "numEntries",
         displayName: "Number of Entries",
         default: 100
+    },
+    {
+        name: "printfDelegate",
+        displayName: "Printf Delegate Function",
+        default: "LogSinkBuf_printfDepInjection",
+        readOnly: true,
+        /* getValue is evaluated every time printfDelgate is read in either a configurable or a template. */
+        getValue: () => {
+            /* Only return the singleton function if we have one instance named CONFIG_ti_log_LogSinkBuf_0 */
+            if (system.modules["/ti/log/LogSinkBuf"].$instances.length == 1) {
+                if (system.modules["/ti/log/LogSinkBuf"].$instances[0].$name === "CONFIG_ti_log_LogSinkBuf_0") {
+                    return "LogSinkBuf_printfSingleton";
+                }
+            }
+            /* Return the regular dependency injection implementation by default. */
+            return "LogSinkBuf_printfDepInjection";
+        }
+    },
+    {
+        name: "bufDelegate",
+        displayName: "Buf Delegate Function",
+        default: "LogSinkBuf_bufDepInjection",
+        readOnly: true
     }
 ];
 
@@ -75,6 +98,46 @@ function modules(inst)
     return (modules);
 }
 
+function getLibs()
+{
+    /* Get device ID to select appropriate libs */
+    let devId = system.deviceData.deviceId;
+
+    /* Get device information from DriverLib */
+    var DriverLib = system.getScript("/ti/devices/DriverLib");
+    let family = DriverLib.getAttrs(devId).libName;
+
+    /* Get toolchain specific information from GenLibs */
+    let GenLibs = system.getScript("/ti/utils/build/GenLibs");
+    let getToolchainDir = GenLibs.getToolchainDir;
+    let getDeviceIsa = GenLibs.getDeviceIsa;
+
+    let libs = [];
+    libs.push("ti/log/lib/" + getToolchainDir() + "/" + getDeviceIsa() + "/log_" + family + ".a");
+
+    /* Create a default GenLibs input argument */
+    var linkOpts = {
+        name: "/ti/log/LogSinkBuf",
+        vers: "1.0.0.0",
+        deps: [],
+        libs: libs
+    };
+
+    if (system.getRTOS() == "nortos" && system.compiler == "gcc") {
+        /* Workaround to handle circular dependencies between the NoRTOS DPL lib
+         * and the log lib. This is only needed for GCC.
+         */
+        linkOpts = {
+            name: "/ti/log/LogSinkBuf",
+            vers: "1.0.0.0",
+            deps: ["/nortos/dpl"],
+            libs: libs
+        };
+    }
+
+    return linkOpts;
+}
+
 /*
  *  ======== base ========
  *  Module definition object
@@ -86,6 +149,12 @@ let base = {
 The [__LogSinkBuf__][1] provides a log sink that stores log output in RAM on target,
 which can be read by ROV or other host-side tools capable of reading target-memory.
 
+When only using a single instance, an LTO-optimised implementation is used as
+long as the instance is named CONFIG_ti_log_LogSinkBuf_0. This implementation
+uses a singleton design pattern to allow the compiler to forgo loading one of
+the function arguments to the delegate function when LTO is enabled but requires
+linking against a known LogSinkBuf_Instance symbol name.
+
 * [Log API][2]
 * [Log Tools][3]
 
@@ -96,7 +165,6 @@ which can be read by ROV or other host-side tools capable of reading target-memo
     config: config_instance,
     defaultInstanceName: "CONFIG_ti_log_LogSinkBuf_",
     modules: modules,
-
     templates: {
         "/ti/log/templates/ti_log_config.c.xdt":
             "/ti/log/templates/LogSinkBuf.Config.c.xdt",
@@ -105,7 +173,9 @@ which can be read by ROV or other host-side tools capable of reading target-memo
         "/ti/utils/rov/syscfg_c.rov.xs.xdt":
             "/ti/log/LogSinkBuf.rov.js",
         "/ti/log/templates/rov.js.xdt":
-            "/ti/log/LogSinkBuf.rov.js.xdt"
+            "/ti/log/LogSinkBuf.rov.js.xdt",
+        "/ti/utils/build/GenLibs.cmd.xdt":
+            { modName: "/ti/log/LogSinkBuf", getLibs: getLibs }
     }
 };
 

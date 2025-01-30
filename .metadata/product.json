@@ -1,7 +1,7 @@
 {
     "name": "simplelink_cc13xx_cc26xx_sdk",
     "displayName": "SimpleLink Low Power F2 SDK",
-    "version": "7.41.00.17",
+    "version": "8.30.01.01",
     "documentationPath": "../docs",
     "includePaths": [
         "../source",
@@ -15,6 +15,7 @@
         "/ti/ti154stack/ti154stack.component.js",
         "/ti/zstack/zstack.component.js",
         "/ti/dmm/dmm.component.js",
+        "/ti/common/common.component.js",
         "/ti/common/migration.component.js",
         "/ti/devices/devices.component.js",
         "/ti/devices/radioconfig/radioconfig.component.js",
@@ -41,5 +42,5 @@
         "nortos",
         "tirtos7"
     ],
-    "minToolVersion": "1.18.1"
+    "minToolVersion": "1.21.1"
 }

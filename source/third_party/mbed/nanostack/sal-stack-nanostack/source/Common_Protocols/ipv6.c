@@ -48,9 +48,40 @@
 
 #ifdef WISUN_NCP_ENABLE
 #include "openthread/error.h"
+extern void nanostack_process_stream_net_from_stack(buffer_t* buf);
 extern protocol_interface_info_entry_t *global_interface_ptr;
 #endif
 extern void ws_bootstrap_add_locallink(protocol_interface_info_entry_t *cur, const uint8_t *mac64);
+
+// Workaround for not wanting to create a whole new interface for packets destined to the host
+bool ipv6_packet_go_to_host(buffer_t *buf)
+{
+    if(!buf)
+    {
+        return false;
+    }
+
+    // only bother to check when running as border router and one of the external server options is enabled
+    protocol_interface_info_entry_t *cur = buf->interface;
+    if (cur->bootsrap_mode == ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER && 
+        ((ti_br_config.use_external_dhcp_server || ti_br_config.use_external_radius_server)))
+    {
+        if( (memcmp(buf->dst_sa.address, ti_br_config.external_dhcp_server_addr, IPV6_ADDRESS_SIZE) == 0) ||
+            (memcmp(buf->dst_sa.address, ti_br_config.external_radius_server_addr, IPV6_ADDRESS_SIZE) == 0) )
+        {
+            tr_info("Sending packet up to host! Destination port: %d", buf->dst_sa.port);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    else
+    {
+        return false;
+    }
+}
 
 static buffer_t *ipv6_consider_forwarding_multicast_packet(buffer_t *buf, protocol_interface_info_entry_t *cur, bool for_us);
 
@@ -469,8 +500,6 @@ drop:
     memcpy(ptr, buf->src_sa.address, 16);
     ptr += 16;
 
-    // Copy the destination address (IPv6), either modified by routing, or
-    // the original final destination.
     memcpy(ptr, buf->route->ip_dest ? buf->route->ip_dest : buf->dst_sa.address, 16);
 
     // Last-minute enforcement of a couple of rules on destination from RFC 4291
@@ -684,6 +713,17 @@ buffer_t *ipv6_forwarding_down(buffer_t *buf)
         buf->info = (buffer_info_t)(B_DIR_DOWN | B_FROM_IPV6_FWD | B_TO_IPV6);
         return buf;
     }
+
+#ifdef WISUN_NCP_ENABLE
+    if(ipv6_packet_go_to_host(buf))
+    {
+        uint8_t *ptr = buffer_data_pointer(buf);
+        buffer_ip_pointer_set(buf, ptr);
+        nanostack_process_stream_net_from_stack(buf);
+        buffer_free(buf);
+        return NULL;
+    }
+#endif
 
     buf->info = (buffer_info_t)(B_DIR_DOWN | B_FROM_IPV6 | B_TO_IPV6_TXRX);
     return buf;

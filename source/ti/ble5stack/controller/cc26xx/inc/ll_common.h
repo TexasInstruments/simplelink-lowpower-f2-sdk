@@ -11,7 +11,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2024, Texas Instruments Incorporated
+ Copyright (c) 2009-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -985,6 +985,7 @@ extern char *llCtrl_BleLogStrings[];
  */
 #define LL_CONN_IND_HEADER_OFFSET            0     // 0-1   (2 octets)
 #define LL_CONN_IND_INITIATOR_ADDRESS_OFFSET 2     // 2-7   (6 octets)
+#define LL_CONN_IND_ADV_ADDRESS_OFFSET       8     // 8-13  (6 octets)
 #define LL_CONN_IND_ACCESS_ADDRESS_OFFSET    14    // 14-17 (4 octets)
 #define LL_CONN_IND_TRANSMIT_WINDOW_OFFSET   22    // 22-23 (2 octets)
 #define LL_CONN_IND_INTERVAL_OFFSET          24    // 24-25 (2 octets)
@@ -2040,7 +2041,8 @@ extern uint8                llSetupLenCtrlPkt( llConnState_t *, uint8 );        
 extern uint8                llSetupCte( llConnState_t *, uint8 );               // M, S
 
 // Control Procedure Management
-extern void                 llEnqueueCtrlPkt( llConnState_t *, uint8 );
+void                        llEnqueueCtrlPkt( llConnState_t *, uint8 );
+extern void                 llEnqueueCtrlPkt_sPatch( llConnState_t *, uint8 );
 extern void                 llDequeueCtrlPkt( llConnState_t * );
 extern void                 llReplaceCtrlPkt( llConnState_t *, uint8, uint8);
 extern uint8                llMoveCtrlPkt( llConnState_t *, uint8 *, uint8 * );
@@ -2081,6 +2083,7 @@ extern uint16               llFindNextActiveConnId( uint16 );
 extern uint8                llGetNextConn( void );
 extern uint16               llGetLstoNumOfEventsLeftMargin( uint16 );
 extern uint8                llSetStarvationMode( uint16 , uint8 );
+extern uint8                llGetStarvationMode( uint16 );
 extern void                 llRealignConn( llConnState_t *, uint32 );
 extern void                 llSortActiveConns( uint8 *, uint8 );
 extern void                 llShellSortActiveConns(uint8 *activeConns, uint8 numActiveConns);

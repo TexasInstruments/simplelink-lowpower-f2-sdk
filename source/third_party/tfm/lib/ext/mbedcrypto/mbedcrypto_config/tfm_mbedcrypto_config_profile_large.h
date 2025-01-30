@@ -164,21 +164,6 @@
 #define MBEDTLS_PK_PARSE_EC_EXTENDED
 
 /**
- * \def MBEDTLS_ERROR_STRERROR_DUMMY
- *
- * Enable a dummy error function to make use of mbedtls_strerror() in
- * third party libraries easier when MBEDTLS_ERROR_C is disabled
- * (no effect when MBEDTLS_ERROR_C is enabled).
- *
- * You can safely disable this if MBEDTLS_ERROR_C is enabled, or if you're
- * not using mbedtls_strerror() or error_strerror() in your application.
- *
- * Disable if you run into name conflicts and want to really remove the
- * mbedtls_strerror()
- */
-#define MBEDTLS_ERROR_STRERROR_DUMMY
-
-/**
  * \def MBEDTLS_NO_PLATFORM_ENTROPY
  *
  * Do not use built-in platform entropy functions.
@@ -316,7 +301,7 @@
  *
  * This module provides the CTR_DRBG AES random number generator.
  */
-#define MBEDTLS_CTR_DRBG_C
+//#define MBEDTLS_CTR_DRBG_C
 
 /**
  * \def MBEDTLS_ENTROPY_C
@@ -333,18 +318,6 @@
 #define MBEDTLS_ENTROPY_C
 
 /**
- * \def MBEDTLS_ERROR_C
- *
- * Enable error code to error string conversion.
- *
- * Module:  library/error.c
- * Caller:
- *
- * This module enables mbedtls_strerror().
- */
-#define MBEDTLS_ERROR_C
-
-/**
  * \def MBEDTLS_HKDF_C
  *
  * Enable the HKDF algorithm (RFC 5869).
@@ -357,7 +330,7 @@
  * This module adds support for the Hashed Message Authentication Code
  * (HMAC)-based key derivation function (HKDF).
  */
-#define MBEDTLS_HKDF_C /* Used for HUK deriviation */
+//#define MBEDTLS_HKDF_C /* Used for HUK deriviation */
 
 /**
  * \def MBEDTLS_MEMORY_BUFFER_ALLOC_C

@@ -13,7 +13,6 @@
 #include "tfm_bootloader_fwu_abstraction.h"
 #include "psa/update.h"
 #include "service_api.h"
-#include "tfm_api.h"
 #include "psa/service.h"
 #include "psa_manifest/tfm_firmware_update.h"
 #include "compiler_ext_defs.h"

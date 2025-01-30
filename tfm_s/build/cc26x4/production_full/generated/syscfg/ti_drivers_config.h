@@ -133,6 +133,15 @@ extern const uint_least8_t                  CONFIG_ECJPAKE_0_CONST;
 
 
 /*
+ *  ======== EDDSA ========
+ */
+
+extern const uint_least8_t                  CONFIG_EDDSA_0_CONST;
+#define CONFIG_EDDSA_0                      0
+#define CONFIG_TI_DRIVERS_EDDSA_COUNT       1
+
+
+/*
  *  ======== GPIO ========
  */
 /* The range of pins available on this device */

@@ -20,6 +20,7 @@
  */
 #define TFM_STACK_SEALED_SIZE           8
 #define TFM_STACK_SEAL_VALUE            STACK_SEAL_PATTERN
+#define TFM_STACK_SEAL_VALUE_64         (uint64_t)0xFEF5EDA5FEF5EDA5
 
 /*
  * The numbers in 32bit words while basic FP involved in preempted context:

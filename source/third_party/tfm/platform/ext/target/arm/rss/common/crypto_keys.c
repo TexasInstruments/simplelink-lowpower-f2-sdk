@@ -96,7 +96,13 @@ static enum tfm_plat_err_t tfm_plat_get_iak(uint8_t *buf, size_t buf_len,
     }
 
     *key_bits = ATTEST_KEY_BITS;
+#if (ATTEST_KEY_BITS == 256)
+    *algorithm = PSA_ALG_ECDSA(PSA_ALG_SHA_256);
+#elif (ATTEST_KEY_BITS == 384)
     *algorithm = PSA_ALG_ECDSA(PSA_ALG_SHA_384);
+#else
+#error "Unsupported IAK size"
+#endif
     *type = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1);
 
     psa_set_key_type(&transient_attr, *type);
@@ -232,6 +238,7 @@ static enum tfm_plat_err_t tfm_plat_get_host_cca_rotpk(uint8_t *buf, size_t buf_
  *
  */
 static const tfm_plat_builtin_key_per_user_policy_t g_iak_per_user_policy[] = {
+#ifdef TFM_PARTITION_INITIAL_ATTESTATION
     {.user = TFM_SP_INITIAL_ATTESTATION,
 #ifdef SYMMETRIC_INITIAL_ATTESTATION
         .usage = PSA_KEY_USAGE_SIGN_HASH | PSA_KEY_USAGE_EXPORT,
@@ -239,12 +246,16 @@ static const tfm_plat_builtin_key_per_user_policy_t g_iak_per_user_policy[] = {
         .usage = PSA_KEY_USAGE_SIGN_HASH,
 #endif /* SYMMETRIC_INITIAL_ATTESTATION */
     },
+#endif /* TFM_PARTITION_INITIAL_ATTESTATION */
 #ifdef TEST_S_ATTESTATION
     {.user = TFM_SP_SECURE_TEST_PARTITION, .usage = PSA_KEY_USAGE_VERIFY_HASH},
 #endif /* TEST_S_ATTESTATION */
 #ifdef TEST_NS_ATTESTATION
     {.user = TFM_NS_PARTITION_ID, .usage = PSA_KEY_USAGE_VERIFY_HASH},
 #endif /* TEST_NS_ATTESTATION */
+#ifdef TFM_PARTITION_DPE
+    {.user = TFM_SP_DPE, .usage = PSA_KEY_USAGE_SIGN_HASH},
+#endif /* TFM_PARTITION_DPE */
 };
 
 #ifdef TFM_PARTITION_DELEGATED_ATTESTATION

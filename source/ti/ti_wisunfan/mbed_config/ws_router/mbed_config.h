@@ -24,9 +24,9 @@
 #define MBED_CONF_MBED_MESH_API_HEAP_STAT_INFO                                NULL
 #define MBED_CONF_MBED_MESH_API_USE_MALLOC_FOR_HEAP                           0
 
-#define MBED_CONF_NANOSTACK_HAL_CRITICAL_SECTION_USABLE_FROM_INTERRUPT        0
+// #define MBED_CONF_NANOSTACK_HAL_CRITICAL_SECTION_USABLE_FROM_INTERRUPT        0
 #define MBED_CONF_NANOSTACK_HAL_EVENT_LOOP_DISPATCH_FROM_APPLICATION          0
-#define MBED_CONF_NANOSTACK_HAL_EVENT_LOOP_THREAD_STACK_SIZE                  6144
+// #define MBED_CONF_NANOSTACK_HAL_EVENT_LOOP_THREAD_STACK_SIZE                  6144
 
 #define MBED_CONF_MBED_MESH_API_WISUN_DEVICE_TYPE                             MESH_DEVICE_TYPE_WISUN_ROUTER
 
@@ -37,7 +37,7 @@
 
 #define MEM_ALLOC                                                             malloc
 #define MEM_FREE                                                              free
-#define MBED_CONF_MBED_MESH_APP_WISUN_NETWORK_SIZE                            1
+// #define MBED_CONF_MBED_MESH_APP_WISUN_NETWORK_SIZE                            1
 // Macros
 #define MBEDTLS_CIPHER_MODE_CTR                                                                                                                                                // defined by library:SecureStore
 #define MBEDTLS_CMAC_C                                                                                                                                                         // defined by library:SecureStore

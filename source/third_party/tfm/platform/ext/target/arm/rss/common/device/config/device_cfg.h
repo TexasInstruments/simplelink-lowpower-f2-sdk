@@ -17,14 +17,25 @@
 #ifndef __DEVICE_CFG_H__
 #define __DEVICE_CFG_H__
 
-#include "host_device_cfg.h"
-
 /**
  * \file device_cfg.h
  * \brief
  * This is the device configuration file with only used peripherals
  * defined and configured via the secure and/or non-secure base address.
  */
+
+#include "host_device_cfg.h"
+#ifdef RSS_HAS_EXPANSION_PERIPHERALS
+#include "rss_expansion_device_cfg.h"
+#endif /* RSS_HAS_EXPANSION_PERIPHERALS */
+
+#ifdef RSS_DEBUG_UART
+/* ARM UART CMSDK */
+#define DEFAULT_UART_CONTROL 0
+#define DEFAULT_UART_BAUDRATE  115200
+#define UART0_CMSDK_S
+#define UART0_CMSDK_NS
+#endif /* RSS_DEBUG_UART */
 
 /* ARM Memory Protection Controller (MPC) */
 #define MPC_VM0_S
@@ -71,12 +82,6 @@
 #define SYSTIMER0_ARMV8_M_S
 
 #define SYSTIMER0_ARMV8M_DEFAULT_FREQ_HZ    (32000000ul)
-
-/* MHU */
-#define MHU_AP_TO_RSS
-#define MHU_RSS_TO_AP
-#define MHU_SCP_TO_RSS
-#define MHU_RSS_TO_SCP
 
 /* Arm KMU */
 #define KMU_S

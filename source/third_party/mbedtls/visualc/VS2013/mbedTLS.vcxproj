@@ -90,6 +90,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>bcrypt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -104,6 +105,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>bcrypt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -121,6 +123,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>bcrypt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -156,6 +159,12 @@
     <ClInclude Include="..\..\include\mbedtls\cipher.h" />
     <ClInclude Include="..\..\include\mbedtls\cmac.h" />
     <ClInclude Include="..\..\include\mbedtls\compat-2.x.h" />
+    <ClInclude Include="..\..\include\mbedtls\config_adjust_legacy_crypto.h" />
+    <ClInclude Include="..\..\include\mbedtls\config_adjust_legacy_from_psa.h" />
+    <ClInclude Include="..\..\include\mbedtls\config_adjust_psa_from_legacy.h" />
+    <ClInclude Include="..\..\include\mbedtls\config_adjust_psa_superset_legacy.h" />
+    <ClInclude Include="..\..\include\mbedtls\config_adjust_ssl.h" />
+    <ClInclude Include="..\..\include\mbedtls\config_adjust_x509.h" />
     <ClInclude Include="..\..\include\mbedtls\config_psa.h" />
     <ClInclude Include="..\..\include\mbedtls\constant_time.h" />
     <ClInclude Include="..\..\include\mbedtls\ctr_drbg.h" />
@@ -171,7 +180,6 @@
     <ClInclude Include="..\..\include\mbedtls\gcm.h" />
     <ClInclude Include="..\..\include\mbedtls\hkdf.h" />
     <ClInclude Include="..\..\include\mbedtls\hmac_drbg.h" />
-    <ClInclude Include="..\..\include\mbedtls\legacy_or_psa.h" />
     <ClInclude Include="..\..\include\mbedtls\lms.h" />
     <ClInclude Include="..\..\include\mbedtls\mbedtls_config.h" />
     <ClInclude Include="..\..\include\mbedtls\md.h" />
@@ -195,6 +203,7 @@
     <ClInclude Include="..\..\include\mbedtls\rsa.h" />
     <ClInclude Include="..\..\include\mbedtls\sha1.h" />
     <ClInclude Include="..\..\include\mbedtls\sha256.h" />
+    <ClInclude Include="..\..\include\mbedtls\sha3.h" />
     <ClInclude Include="..\..\include\mbedtls\sha512.h" />
     <ClInclude Include="..\..\include\mbedtls\ssl.h" />
     <ClInclude Include="..\..\include\mbedtls\ssl_cache.h" />
@@ -208,21 +217,29 @@
     <ClInclude Include="..\..\include\mbedtls\x509_crl.h" />
     <ClInclude Include="..\..\include\mbedtls\x509_crt.h" />
     <ClInclude Include="..\..\include\mbedtls\x509_csr.h" />
+    <ClInclude Include="..\..\include\psa\build_info.h" />
     <ClInclude Include="..\..\include\psa\crypto.h" />
+    <ClInclude Include="..\..\include\psa\crypto_adjust_auto_enabled.h" />
+    <ClInclude Include="..\..\include\psa\crypto_adjust_config_key_pair_types.h" />
+    <ClInclude Include="..\..\include\psa\crypto_adjust_config_synonyms.h" />
     <ClInclude Include="..\..\include\psa\crypto_builtin_composites.h" />
+    <ClInclude Include="..\..\include\psa\crypto_builtin_key_derivation.h" />
     <ClInclude Include="..\..\include\psa\crypto_builtin_primitives.h" />
     <ClInclude Include="..\..\include\psa\crypto_compat.h" />
     <ClInclude Include="..\..\include\psa\crypto_config.h" />
     <ClInclude Include="..\..\include\psa\crypto_driver_common.h" />
     <ClInclude Include="..\..\include\psa\crypto_driver_contexts_composites.h" />
+    <ClInclude Include="..\..\include\psa\crypto_driver_contexts_key_derivation.h" />
     <ClInclude Include="..\..\include\psa\crypto_driver_contexts_primitives.h" />
     <ClInclude Include="..\..\include\psa\crypto_extra.h" />
+    <ClInclude Include="..\..\include\psa\crypto_legacy.h" />
     <ClInclude Include="..\..\include\psa\crypto_platform.h" />
     <ClInclude Include="..\..\include\psa\crypto_se_driver.h" />
     <ClInclude Include="..\..\include\psa\crypto_sizes.h" />
     <ClInclude Include="..\..\include\psa\crypto_struct.h" />
     <ClInclude Include="..\..\include\psa\crypto_types.h" />
     <ClInclude Include="..\..\include\psa\crypto_values.h" />
+    <ClInclude Include="..\..\tests\include\test\arguments.h" />
     <ClInclude Include="..\..\tests\include\test\asn1_helpers.h" />
     <ClInclude Include="..\..\tests\include\test\bignum_helpers.h" />
     <ClInclude Include="..\..\tests\include\test\certs.h" />
@@ -250,6 +267,7 @@
     <ClInclude Include="..\..\library\aesce.h" />
     <ClInclude Include="..\..\library\aesni.h" />
     <ClInclude Include="..\..\library\alignment.h" />
+    <ClInclude Include="..\..\library\base64_internal.h" />
     <ClInclude Include="..\..\library\bignum_core.h" />
     <ClInclude Include="..\..\library\bignum_mod.h" />
     <ClInclude Include="..\..\library\bignum_mod_raw.h" />
@@ -258,26 +276,30 @@
     <ClInclude Include="..\..\library\check_crypto_config.h" />
     <ClInclude Include="..\..\library\cipher_wrap.h" />
     <ClInclude Include="..\..\library\common.h" />
+    <ClInclude Include="..\..\library\constant_time_impl.h" />
     <ClInclude Include="..\..\library\constant_time_internal.h" />
-    <ClInclude Include="..\..\library\constant_time_invasive.h" />
     <ClInclude Include="..\..\library\ecp_internal_alt.h" />
     <ClInclude Include="..\..\library\ecp_invasive.h" />
     <ClInclude Include="..\..\library\entropy_poll.h" />
-    <ClInclude Include="..\..\library\hash_info.h" />
     <ClInclude Include="..\..\library\lmots.h" />
+    <ClInclude Include="..\..\library\md_psa.h" />
     <ClInclude Include="..\..\library\md_wrap.h" />
     <ClInclude Include="..\..\library\mps_common.h" />
     <ClInclude Include="..\..\library\mps_error.h" />
     <ClInclude Include="..\..\library\mps_reader.h" />
     <ClInclude Include="..\..\library\mps_trace.h" />
     <ClInclude Include="..\..\library\padlock.h" />
+    <ClInclude Include="..\..\library\pk_internal.h" />
     <ClInclude Include="..\..\library\pk_wrap.h" />
     <ClInclude Include="..\..\library\pkwrite.h" />
     <ClInclude Include="..\..\library\psa_crypto_aead.h" />
     <ClInclude Include="..\..\library\psa_crypto_cipher.h" />
     <ClInclude Include="..\..\library\psa_crypto_core.h" />
+    <ClInclude Include="..\..\library\psa_crypto_core_common.h" />
     <ClInclude Include="..\..\library\psa_crypto_driver_wrappers.h" />
+    <ClInclude Include="..\..\library\psa_crypto_driver_wrappers_no_static.h" />
     <ClInclude Include="..\..\library\psa_crypto_ecp.h" />
+    <ClInclude Include="..\..\library\psa_crypto_ffdh.h" />
     <ClInclude Include="..\..\library\psa_crypto_hash.h" />
     <ClInclude Include="..\..\library\psa_crypto_invasive.h" />
     <ClInclude Include="..\..\library\psa_crypto_its.h" />
@@ -288,6 +310,7 @@
     <ClInclude Include="..\..\library\psa_crypto_se.h" />
     <ClInclude Include="..\..\library\psa_crypto_slot_management.h" />
     <ClInclude Include="..\..\library\psa_crypto_storage.h" />
+    <ClInclude Include="..\..\library\psa_util_internal.h" />
     <ClInclude Include="..\..\library\rsa_alt_helpers.h" />
     <ClInclude Include="..\..\library\ssl_client.h" />
     <ClInclude Include="..\..\library\ssl_debug_helpers.h" />
@@ -328,11 +351,11 @@
     <ClCompile Include="..\..\library\ecjpake.c" />
     <ClCompile Include="..\..\library\ecp.c" />
     <ClCompile Include="..\..\library\ecp_curves.c" />
+    <ClCompile Include="..\..\library\ecp_curves_new.c" />
     <ClCompile Include="..\..\library\entropy.c" />
     <ClCompile Include="..\..\library\entropy_poll.c" />
     <ClCompile Include="..\..\library\error.c" />
     <ClCompile Include="..\..\library\gcm.c" />
-    <ClCompile Include="..\..\library\hash_info.c" />
     <ClCompile Include="..\..\library\hkdf.c" />
     <ClCompile Include="..\..\library\hmac_drbg.c" />
     <ClCompile Include="..\..\library\lmots.c" />
@@ -361,8 +384,9 @@
     <ClCompile Include="..\..\library\psa_crypto_aead.c" />
     <ClCompile Include="..\..\library\psa_crypto_cipher.c" />
     <ClCompile Include="..\..\library\psa_crypto_client.c" />
-    <ClCompile Include="..\..\library\psa_crypto_driver_wrappers.c" />
+    <ClCompile Include="..\..\library\psa_crypto_driver_wrappers_no_static.c" />
     <ClCompile Include="..\..\library\psa_crypto_ecp.c" />
+    <ClCompile Include="..\..\library\psa_crypto_ffdh.c" />
     <ClCompile Include="..\..\library\psa_crypto_hash.c" />
     <ClCompile Include="..\..\library\psa_crypto_mac.c" />
     <ClCompile Include="..\..\library\psa_crypto_pake.c" />
@@ -377,6 +401,7 @@
     <ClCompile Include="..\..\library\rsa_alt_helpers.c" />
     <ClCompile Include="..\..\library\sha1.c" />
     <ClCompile Include="..\..\library\sha256.c" />
+    <ClCompile Include="..\..\library\sha3.c" />
     <ClCompile Include="..\..\library\sha512.c" />
     <ClCompile Include="..\..\library\ssl_cache.c" />
     <ClCompile Include="..\..\library\ssl_ciphersuites.c" />
@@ -401,6 +426,7 @@
     <ClCompile Include="..\..\library\x509_crl.c" />
     <ClCompile Include="..\..\library\x509_crt.c" />
     <ClCompile Include="..\..\library\x509_csr.c" />
+    <ClCompile Include="..\..\library\x509write.c" />
     <ClCompile Include="..\..\library\x509write_crt.c" />
     <ClCompile Include="..\..\library\x509write_csr.c" />
     <ClCompile Include="..\..\tests\src\asn1_helpers.c" />

@@ -15,7 +15,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2012-2024, Texas Instruments Incorporated
+ Copyright (c) 2012-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -115,6 +115,7 @@ extern "C" {
  * successfully.
  */
 #define ECDSA_STATUS_SUCCESS         (0)
+#define ECDH_STATUS_SUCCESS          (0)
 
 /*!
  * @brief   Generic error status code.
@@ -169,6 +170,14 @@ extern "C" {
 #define ECDSA_STATUS_PUBLIC_KEY_LARGER_THAN_PRIME (-6)
 
 /*!
+  * @brief   The public key of the other party does not lie upon the curve.
+  *
+  * The public key received from the other party does not lie upon the agreed upon
+  * curve.
+  */
+#define ECDH_STATUS_PUBLIC_KEY_NOT_ON_CURVE (-6)
+
+/*!
  * @brief   The public key to verify against is the point at infinity.
  *
  * The point at infinity is not a valid input.
@@ -179,6 +188,16 @@ extern "C" {
  *  @brief  The ongoing operation was canceled.
  */
 #define ECDSA_STATUS_CANCELED (-8)
+
+ /*!
+  *  @brief  The provided CryptoKey does not match the expected size
+  *
+  *  The driver expects the private key to have the same length as other curve
+  *  parameters and the public key to have a length of twice that plus one.
+  *  If the provided CryptoKeys for the public and private keys do not match this
+  *  scheme, this error will be returned.
+  */
+ #define ECDH_STATUS_INVALID_KEY_SIZE (-9)
 
 /*!
  *  @brief  The provided CryptoKey does not match the expected size
@@ -191,17 +210,6 @@ extern "C" {
 #define ECDSA_STATUS_INVALID_KEY_SIZE (-10)
 
 /*!
- *  @brief  Plaintext CryptoKey structure.
- *
- * This structure contains all the information necessary to access keying material stored
- * in plaintext form in flash or RAM.
- */
-typedef struct {
-    uint8_t *keyMaterial;
-    uint32_t keyLength;
-} CryptoKey_Plaintext;
-
-/*!
  *  @brief Enumeration of curve equations supported.
  *
  *  | Name              | Equation                      |
@@ -211,6 +219,17 @@ typedef struct {
 typedef uint32_t ECCParams_CurveType;
 
 #define ECCParams_CURVE_TYPE_SHORT_WEIERSTRASS_AN3 1U
+
+/*!
+ *  @brief  Plaintext CryptoKey structure.
+ *
+ * This structure contains all the information necessary to access keying material stored
+ * in plaintext form in flash or RAM.
+ */
+typedef struct {
+    uint8_t *keyMaterial;
+    uint32_t keyLength;
+} CryptoKey_Plaintext;
 
 /*!
  *
@@ -234,6 +253,15 @@ typedef struct ECCParams_CurveParams
     const size_t                length;
     uint8_t                     cofactor;
 } ECCParams_CurveParams;
+
+/*!
+ *  @brief  Enum for the operation types supported by the driver.
+ */
+typedef enum
+{
+    ECDH_OPERATION_TYPE_GENERATE_PUBLIC_KEY   = 1,
+    ECDH_OPERATION_TYPE_COMPUTE_SHARED_SECRET = 2,
+} ECDH_OperationType;
 
 /*!
  *
@@ -267,6 +295,27 @@ typedef struct {
                                                          *   as other params of the curve used.
                                                          */
 } ECDSA_OperationVerify;
+
+/*!
+ *  @brief  Struct containing the parameters required to compute the shared secret.
+ */
+typedef struct
+{
+    const ECCParams_CurveParams *curve;               /*!< A pointer to the elliptic curve parameters for myPrivateKey.
+                                                       *   If ECDH_generateKey() was used, this should be the same private key.
+                                                       */
+    const CryptoKey_Plaintext *myPrivateKey;          /*!< A pointer to the private ECC key which will be used in to
+                                                       *   compute the shared secret.
+                                                       */
+    const CryptoKey_Plaintext *theirPublicKey;        /*!< A pointer to the public key of the party with whom the
+                                                       *   shared secret will be generated.
+                                                       */
+    CryptoKey_Plaintext *sharedSecret;                /*!< A pointer to a CryptoKey which has been initialized blank.
+                                                       *   The shared secret will be placed here.
+                                                       *   The formatting byte will be filled in by the driver if the
+                                                       *   keyMaterialEndianness requires it.
+                                                       */
+} ECDH_OperationComputeSharedSecret;
 
 /*!
  *  @brief  Opens the ECDSA driver
@@ -304,6 +353,22 @@ void ECDSA_close(void);
  *  @retval #ECDSA_STATUS_POINT_AT_INFINITY             The public key to verify against is the point at infinity.
  */
 int_fast16_t ECDSA_verify(ECDSA_OperationVerify *operation);
+
+/*!
+ *  @brief Computes a shared secret
+ *
+ *  This secret can be used to generate shared keys for encryption and authentication.
+ *
+ *  @param      handle              A ECDH handle returned from ECDH_open()
+ *
+ *  @param      operation       A pointer to a struct containing the requisite
+ *
+ *  @pre Call ECDH_OperationComputeSharedSecret_init() on \c operation.
+ *       Generate a shared secret off-chip or using ECDH_generatePublicKey()
+ *
+ *  @retval #ECDH_STATUS_SUCCESS                        The operation succeeded.
+ */
+int_fast16_t ECDH_computeSharedSecret(ECDH_OperationComputeSharedSecret *operation);
 
 /*!
  *  @brief Initializes a plaintext CryptoKey

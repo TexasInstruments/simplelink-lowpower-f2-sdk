@@ -244,6 +244,84 @@ OSCClockLossEventDisable( void )
 
 //*****************************************************************************
 //
+//! \brief Enables OSC SCLK_LF clock loss event detection.
+//!
+//! Enables the clock loss event flag to be raised if a SCLK_LF clock loss is
+//! detected. Unlike the clock loss detection enabled by
+//! \ref OSCClockLossEventEnable(), the clock loss detection enabled by this
+//! function works in standby. It is recommended only to have it enabled while
+//! in standby, if needed at all. In active/idle mode it is recommended to use
+//! the normal clock loss detection enabled by \ref OSCClockLossEventEnable().
+//!
+//! \note The clock loss detection works by comparing SCLK_LF against RCOSC_LF,
+//! meaning two things:
+//!  - RCOSC_LF needs to be enabled.
+//!    - This function ensures this by forcing the RCOSC_LF to be enabled
+//!      (by setting the DDI_0_OSC.CTL1.FORCE_RCOSC_LF bit)
+//!  - It doesn't make much sense to enable SCLK_LF clock loss detection if
+//!    SCLK_LF is RCOSC_LF because it would be compared against itself.
+//!    - It is up to the user to ensure that the SCLK_LF clock loss detection is
+//!      only used when it makes sense to use.
+//!
+//! \note OSC SCLK_LF clock loss event must be disabled before SCLK_LF clock
+//! source is changed (by calling \ref OSCClockSourceSet()) and remain disabled
+//! until the change is confirmed (by calling \ref OSCClockSourceGet()).
+//!
+//! \return None
+//!
+//! \sa \ref OSCLfClockLossEventDisable()
+//
+//*****************************************************************************
+__STATIC_INLINE void
+OSCLfClockLossEventEnable( void )
+{
+    // Force RCOSC_LF to be enabled.
+    // The RCOSC_LF is required for LF clock loss detection in standby
+    DDI16BitfieldWrite( AUX_DDI0_OSC_BASE, DDI_0_OSC_O_CTL1,
+        DDI_0_OSC_CTL1_FORCE_RCOSC_LF_M,
+        DDI_0_OSC_CTL1_FORCE_RCOSC_LF_S, 1 );
+
+    // Enable LF clock loss detection
+    DDI16BitfieldWrite( AUX_DDI0_OSC_BASE, DDI_0_OSC_O_CTL1,
+        DDI_0_OSC_CTL1_CLK_LF_LOSS_EN_M,
+        DDI_0_OSC_CTL1_CLK_LF_LOSS_EN_S, 1 );
+}
+
+//*****************************************************************************
+//
+//! \brief Disables OSC SCLK_LF clock loss event detection.
+//!
+//! This disables the SCLK_LF clock loss detection which is enabled by
+//! \ref OSCLfClockLossEventEnable().
+//!
+//! \note After calling this function, RCOSC_LF is no longer forcefully enabled
+//! (the DDI_0_OSC.CTL1.FORCE_RCOSC_LF bit is cleared).
+//!
+//! \note OSC SCLK_LF clock loss event must be disabled before SCLK_LF clock
+//! source is changed (by calling \ref OSCClockSourceSet()) and remain disabled
+//! until the change is confirmed (by calling \ref OSCClockSourceGet()).
+//!
+//! \return None
+//!
+//! \sa \ref OSCLfClockLossEventEnable()
+//
+//*****************************************************************************
+__STATIC_INLINE void
+OSCLfClockLossEventDisable( void )
+{
+    // Disable LF clock loss detection
+    DDI16BitfieldWrite( AUX_DDI0_OSC_BASE, DDI_0_OSC_O_CTL1,
+        DDI_0_OSC_CTL1_CLK_LF_LOSS_EN_M,
+        DDI_0_OSC_CTL1_CLK_LF_LOSS_EN_S, 0 );
+
+    // Do not force RCOSC_LF to be enabled anymore.
+    DDI16BitfieldWrite( AUX_DDI0_OSC_BASE, DDI_0_OSC_O_CTL1,
+        DDI_0_OSC_CTL1_FORCE_RCOSC_LF_M,
+        DDI_0_OSC_CTL1_FORCE_RCOSC_LF_S, 0 );
+}
+
+//*****************************************************************************
+//
 //! \brief Configure the oscillator input to the a source clock.
 //!
 //! Use this function to set the oscillator source for one or more of the

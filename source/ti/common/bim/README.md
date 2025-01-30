@@ -88,3 +88,7 @@ know the specific location of your U-App or P-App before launching the product
 into the field. By defining `PERSIST_HDR_LOC`, you will also see improved BIM
 boot up times as the BIM no longer needs to search through the internal flash
 for the P-App header.
+
+Optionally, `OAD_IMG_ID_VAL` can be added as a predefined symbol in the project properties, 
+which will override the original `OAD_IMG_ID_VAL` value. Note that the length of `OAD_IMG_ID_VAL`
+must be 8 bytes, as stated by `OAD_IMG_ID_LEN`.

@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -244,7 +244,7 @@ extern uint8_t GP_Offset;
 /******************************************************************************
  Local variables
  *****************************************************************************/
-static ApiMac_subAttribute_t subAttributeReadId = 0;
+static ApiMac_subAttribute_t subAttributeReadId = ApiMac_subAttribute_stopScan;
 
 /*! Semaphore used to post events to the application thread */
 static sem_t appSemHandle;
@@ -578,11 +578,41 @@ ApiMac_status_t ApiMac_mlmeGetReqArrayLen(ApiMac_attribute_array_t pibAttribute,
             pValue += sizeof(ti154stack_version_t);
             memcpy(pValue, &ti154stack_core_version, sizeof(ti154stack_core_version_t));
         }
+#ifdef MAC_RADIO_USE_CSF
+        else if(subAttributeReadId == ApiMac_subAttribute_getMacStatistics)
+        {
+            extern macStatisticsStruct_t threadMacStats;
+
+            macStatisticsStruct_t combinedStatsBuffer;
+
+            memcpy(&combinedStatsBuffer, &macStatistics, sizeof(macStatisticsStruct_t));
+
+            combinedStatsBuffer.pta_lo_pri_req += threadMacStats.pta_lo_pri_req;
+            combinedStatsBuffer.pta_hi_pri_req += threadMacStats.pta_hi_pri_req;
+            combinedStatsBuffer.pta_lo_pri_denied += threadMacStats.pta_lo_pri_denied;
+            combinedStatsBuffer.pta_hi_pri_denied += threadMacStats.pta_hi_pri_denied;
+            combinedStatsBuffer.cca_retries += threadMacStats.cca_retries;
+            combinedStatsBuffer.cca_failures += threadMacStats.cca_failures;
+            combinedStatsBuffer.mac_tx_ucast_retry += threadMacStats.mac_tx_ucast_retry;
+            combinedStatsBuffer.mac_tx_ucast_fail += threadMacStats.mac_tx_ucast_fail;
+
+            /* Calculate MAC+Thread  denied rate */
+            combinedStatsBuffer.pta_denied_rate =
+                (((macStatistics.pta_hi_pri_denied + macStatistics.pta_lo_pri_denied +
+                threadMacStats.pta_hi_pri_denied + threadMacStats.pta_lo_pri_denied) * 100) /
+                (macStatistics.pta_hi_pri_req + macStatistics.pta_lo_pri_req +
+                threadMacStats.pta_hi_pri_req + threadMacStats.pta_lo_pri_req));
+
+            *pLen = sizeof(macStatisticsStruct_t);
+            memcpy(pValue, &combinedStatsBuffer, sizeof(macStatisticsStruct_t));
+        }
+#else
         else if(subAttributeReadId == ApiMac_subAttribute_getMacStatistics)
         {
             *pLen = sizeof(macStatisticsStruct_t);
             memcpy(pValue, &macStatistics, sizeof(macStatisticsStruct_t));
         }
+#endif
         else
         {
             return ApiMac_status_unsupportedAttribute;
@@ -964,7 +994,7 @@ ApiMac_status_t ApiMac_mlmeSetReqArray(ApiMac_attribute_array_t pibAttribute,
         uint8_t *value = pValue + 1;
         if (subAttribute == ApiMac_subAttribute_setReadId)
         {
-            subAttributeReadId = *value;
+            subAttributeReadId = (ApiMac_subAttribute_t) *value;
         }
         else if (subAttribute == ApiMac_subAttribute_stopScan)
         {
@@ -1163,8 +1193,9 @@ ApiMac_status_t ApiMac_mlmeConfigCoex(uint16_t* coexEnableBitmap)
     coexOverrideUseCases.ieeeConnectedRx.defaultPriority        = (ieeeCoexBitmap & APIMAC_COEX_PRI_CONN_RX) ? RF_PriorityCoexHigh : RF_PriorityCoexLow;
     coexOverrideUseCases.ieeeConnectedRx.assertRequestForRx     = (ieeeCoexBitmap & APIMAC_COEX_RX_REQ_CONN_RX) ? RF_RequestCoexAssertRx : RF_RequestCoexNoAssertRx;
 #endif
+    // Forcing RX command resubmit through panID update
     ApiMac_mlmeGetReqUint16(ApiMac_attribute_panId, &panID);
-    ApiMac_updatePanId(panID);
+    MAC_MlmeSetReq(ApiMac_attribute_panId, &panID);
 
     return ApiMac_status_success;
 }

@@ -70,31 +70,8 @@ endmenu
 
 ################################# Manifest #####################################
 
-menu "TF-M manifest"
-
 config TFM_MANIFEST_LIST
     string "TF-M native Secure Partition manifests list file"
     default "$(TFM_SOURCE_DIR)/tools/tfm_manifest_list.yaml"
     help
       TF-M native Secure Partition manifests list file
-
-config TFM_EXTRA_MANIFEST_LIST_FILES
-    string "Extra manifest list file(s)"
-    default ""
-    help
-      Used to list extra Secure Partition manifests.
-
-config TFM_EXTRA_GENERATED_FILE_LIST_PATH
-    string "Path to extra generated file list."
-    default ""
-    help
-      Appended to stardard TFM generated file list
-
-config TFM_EXTRA_PARTITION_PATHS
-    string "List of extra Secure Partitions directories."
-    default ""
-    help
-      An extra Secure Parition folder contains source code, CMakeLists.txt and
-      manifest files
-
-endmenu

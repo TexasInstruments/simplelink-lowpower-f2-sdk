@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -443,7 +443,8 @@ void rfSelect(uint16_t phyId)
     defined(LP_CC2651P3_10DBM) || \
     defined(LP_CC2651R3SIPA) ||defined(LP_CC2653P10) || \
     defined (LP_CC2674R10_RGZ) || defined (LP_EM_CC2674R10_RSK) || \
-    defined (LP_CC2674P10_RGZ) || defined (LP_EM_CC2674P10_RSK)
+    defined (LP_CC2674P10_RGZ) || defined (LP_EM_CC2674P10_RSK) || \
+    defined(LP_EM_CC2674P10)
 void rfSelect(uint16_t phyId)
 {
     (void)phyId;

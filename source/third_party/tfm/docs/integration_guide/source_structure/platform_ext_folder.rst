@@ -129,8 +129,17 @@ of the target.
   target has, if it has one. This maps exactly to the subdirectories of
   ``platform/ext/accelerator``
 
-- ``CONFIG_TFM_FP_ARCH_ASM``: The FPU architecture used by the target. For more details,
-  please refer to :doc:`Floating-Point Support </integration_guide/tfm_fpu_support>`.
+- ``CONFIG_TFM_FP_ARCH``: The "FPU architecture" (Armclang) or "FP hardware"
+  (GNU) used by the target for compiling C source files. The value will be
+  transferred to ``-mfpu`` argument of GNUARM or ARMCLANG
+
+- ``CONFIG_TFM_FP_ARCH_ASM``: The "FPU architecture" (Armclang) used by the
+  target for assembling ASM source files. This value will be transferred to the
+  ``--fpu`` argument of ARMCLANG. This value is not used by GNUARM.
+
+For more details on ``CONFIG_TFM_FP_ARCH`` and ``CONFIG_TFM_FP_ARCH_ASM``,
+please refer to
+:doc:`Floating-Point Support </integration_guide/tfm_fpu_support>`.
 
 Other than these particular cmake variables, it is permissible for the
 ``preload.cmake`` file to contain ``add_definitions`` statements, in order for

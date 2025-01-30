@@ -25,6 +25,7 @@ Notes for building with IARARM
 
 Example: building TF-M for AN521 platform using IAR:
 ====================================================
+
 .. code-block:: bash
 
     cd <TF-M base folder>
@@ -60,4 +61,4 @@ Alternately using traditional cmake syntax
     cmake .. -DTFM_PLATFORM=arm/mps2/an521 -DTFM_TOOLCHAIN_FILE=../toolchain_IARARM.cmake -DTEST_S=ON -DTEST_NS=ON
     make install
 
- *Copyright (c) 2020-2021, Arm Limited. All rights reserved.*
+*Copyright (c) 2020-2021, Arm Limited. All rights reserved.*

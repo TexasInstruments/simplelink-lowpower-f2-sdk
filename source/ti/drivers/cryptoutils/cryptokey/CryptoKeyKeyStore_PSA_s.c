@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_helpers.h>
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_s.h>
 
-#include <third_party/tfm/interface/include/tfm_api.h>
+#include <third_party/tfm/secure_fw/spm/core/spm.h>
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
 #include <third_party/tfm/secure_fw/spm/include/utilities.h>
@@ -231,60 +231,11 @@ psa_status_t KeyStore_s_importKey(psa_msg_t *msg)
 }
 
 /*
- *  ======== KeyStore_s_importCertificate ========
+ *  ======== KeyStore_s_destroyPurgeKey ========
  */
-psa_status_t KeyStore_s_importCertificate(psa_msg_t *msg)
+psa_status_t KeyStore_s_destroyPurgeKey(psa_msg_t *msg, int32_t msgType)
 {
-    KeyStore_s_ImportCertificateMsg importCertificateMsg;
-    int_fast16_t ret                         = KEYSTORE_PSA_STATUS_RESOURCE_UNAVAILABLE;
-    KeyStore_PSA_KeyAttributes keyAttributes = KEYSTORE_PSA_KEY_ATTRIBUTES_INIT;
-    KeyStore_PSA_KeyFileId keyID;
-
-    if ((msg->in_size[0] != sizeof(importCertificateMsg)) || (msg->out_size[0] != sizeof(ret)))
-    {
-        return PSA_ERROR_PROGRAMMER_ERROR;
-    }
-
-    psa_read(msg->handle, 0, &importCertificateMsg, sizeof(importCertificateMsg));
-
-    if (TFM_CLIENT_ID_IS_NS(msg->client_id))
-    {
-        /* Validate input address range */
-        if ((cmse_has_unpriv_nonsecure_rw_access(importCertificateMsg.key, sizeof(KeyStore_PSA_KeyFileId)) == NULL) ||
-            (cmse_has_unpriv_nonsecure_read_access(importCertificateMsg.attributes,
-                                                   sizeof(KeyStore_PSA_KeyAttributes)) == NULL) ||
-            (cmse_has_unpriv_nonsecure_read_access(importCertificateMsg.data, importCertificateMsg.dataLength) == NULL))
-        {
-            return PSA_ERROR_PROGRAMMER_ERROR;
-        }
-    }
-
-    /* Copy keyID from application for certificates */
-    KeyStore_s_copyKeyIDFromClient(&keyID, msg->client_id, importCertificateMsg.key);
-
-    ret = KeyStore_s_copyKeyAttributesFromClient((struct psa_client_key_attributes_s *)importCertificateMsg.attributes,
-                                                 msg->client_id,
-                                                 &keyAttributes);
-
-    if (ret == PSA_SUCCESS)
-    {
-        ret = KeyStore_PSA_importCertificate(&keyAttributes,
-                                             &keyID,
-                                             importCertificateMsg.data,
-                                             importCertificateMsg.dataLength);
-    }
-
-    psa_write(msg->handle, 0, &ret, sizeof(ret));
-
-    return PSA_SUCCESS;
-}
-
-/*
- *  ======== KeyStore_s_destroyCertificateKey ========
- */
-psa_status_t KeyStore_s_destroyCertificateKey(psa_msg_t *msg, int32_t msgType)
-{
-    KeyStore_s_DestroyPurgeKeyCertificateMsg destroyMsg;
+    KeyStore_s_DestroyPurgeKeyMsg destroyMsg;
     int_fast16_t ret = PSA_ERROR_PROGRAMMER_ERROR;
     KeyStore_PSA_KeyFileId keyID;
 
@@ -297,11 +248,7 @@ psa_status_t KeyStore_s_destroyCertificateKey(psa_msg_t *msg, int32_t msgType)
 
     KeyStore_s_copyKeyIDFromClient(&keyID, msg->client_id, &destroyMsg.key);
 
-    if (msgType == KEYSTORE_PSA_S_MSG_TYPE_DESTROY_CERTIFICATE)
-    {
-        ret = KeyStore_PSA_destroyCertificate(keyID);
-    }
-    else if (msgType == KEYSTORE_PSA_S_MSG_TYPE_DESTROY_KEY)
+    if (msgType == KEYSTORE_PSA_S_MSG_TYPE_DESTROY_KEY)
     {
         ret = KeyStore_PSA_destroyKey(keyID);
     }
@@ -316,9 +263,9 @@ psa_status_t KeyStore_s_destroyCertificateKey(psa_msg_t *msg, int32_t msgType)
 }
 
 /*
- *  ======== KeyStore_s_exportCertificateKey ========
+ *  ======== KeyStore_s_exportKey ========
  */
-psa_status_t KeyStore_s_exportCertificateKey(psa_msg_t *msg, int32_t msgType)
+psa_status_t KeyStore_s_exportKey(psa_msg_t *msg, int32_t msgType)
 {
     KeyStore_s_ExportMsg exportMsg;
     int_fast16_t ret = PSA_ERROR_PROGRAMMER_ERROR;
@@ -342,11 +289,7 @@ psa_status_t KeyStore_s_exportCertificateKey(psa_msg_t *msg, int32_t msgType)
 
     KeyStore_s_copyKeyIDFromClient(&keyID, msg->client_id, &exportMsg.key);
 
-    if (msgType == KEYSTORE_PSA_S_MSG_TYPE_EXPORT_CERTIFICATE)
-    {
-        ret = KeyStore_PSA_exportCertificate(keyID, exportMsg.data, exportMsg.dataSize, exportMsg.dataLength);
-    }
-    else if (msgType == KEYSTORE_PSA_S_MSG_TYPE_EXPORT_KEY)
+    if (msgType == KEYSTORE_PSA_S_MSG_TYPE_EXPORT_KEY)
     {
         ret = KeyStore_PSA_exportKey(keyID, exportMsg.data, exportMsg.dataSize, exportMsg.dataLength);
     }
@@ -435,19 +378,14 @@ psa_status_t KeyStore_s_handlePsaMsg(psa_msg_t *msg)
             status = KeyStore_s_getKey(msg);
             break;
         /* Fall through for exporting */
-        case KEYSTORE_PSA_S_MSG_TYPE_EXPORT_CERTIFICATE:
         case KEYSTORE_PSA_S_MSG_TYPE_EXPORT_PUBLIC_KEY:
         case KEYSTORE_PSA_S_MSG_TYPE_EXPORT_KEY:
-            status = KeyStore_s_exportCertificateKey(msg, msg->type);
+            status = KeyStore_s_exportKey(msg, msg->type);
             break;
         /* Fall through for destroying */
-        case KEYSTORE_PSA_S_MSG_TYPE_DESTROY_CERTIFICATE:
         case KEYSTORE_PSA_S_MSG_TYPE_DESTROY_KEY:
         case KEYSTORE_PSA_S_MSG_TYPE_PURGE_KEY:
-            status = KeyStore_s_destroyCertificateKey(msg, msg->type);
-            break;
-        case KEYSTORE_PSA_S_MSG_TYPE_IMPORT_CERTIFICATE:
-            status = KeyStore_s_importCertificate(msg);
+            status = KeyStore_s_destroyPurgeKey(msg, msg->type);
             break;
         case KEYSTORE_PSA_S_MSG_TYPE_IMPORT_KEY:
             status = KeyStore_s_importKey(msg);

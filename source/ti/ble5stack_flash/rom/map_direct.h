@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -155,7 +155,6 @@
 #define MAP_LL_EXT_SetSCA                                            LL_EXT_SetSCA
 #define MAP_LL_EXT_SetPeripheralLatencyOverride                      LL_EXT_SetPeripheralLatencyOverride
 #define MAP_LL_EXT_SetTxPower                                        LL_EXT_SetTxPower
-#define MAP_LL_EXT_SetTxPowerDbm                                     LL_EXT_SetTxPowerDbm
 #define MAP_LL_EXT_SetTxPowerCback                                   LL_EXT_SetTxPowerCback
 #define MAP_LL_EXT_GetRxStats                                        LL_EXT_GetRxStats
 #define MAP_LL_EXT_GetRxStatsCback                                   LL_EXT_GetRxStatsCback
@@ -444,6 +443,9 @@
 #define MAP_ll_eccInit                                               ll_eccInit
 #define MAP_ll_ReadLocalP256PublicKey                                ll_ReadLocalP256PublicKey
 #define MAP_ll_GenerateDHKey                                         ll_GenerateDHKey
+#define MAP_LL_IsRandomAddressConfigured                             LL_IsRandomAddressConfigured
+#define MAP_LL_GetCurrConnId                                         LL_GetCurrConnId
+#define MAP_LL_IsWaitingFirstPacket                                  LL_IsWaitingFirstPacket
 
 // V5.0
 #define MAP_LL_ReadPhy                                               LL_ReadPhy
@@ -497,7 +499,6 @@
 #define MAP_HCI_EXT_SetSCACmd                                        HCI_EXT_SetSCACmd
 #define MAP_HCI_EXT_SetPeripheralLatencyOverrideCmd                  HCI_EXT_SetPeripheralLatencyOverrideCmd
 #define MAP_HCI_EXT_SetTxPowerCmd                                    HCI_EXT_SetTxPowerCmd
-#define MAP_HCI_EXT_SetTxPowerDbmCmd                                 HCI_EXT_SetTxPowerDbmCmd
 #define MAP_HCI_EXT_SetVirtualAdvAddrCmd                             HCI_EXT_SetVirtualAdvAddrCmd
 #define MAP_HCI_EXT_ReadRandAddr                                     HCI_EXT_ReadRandAddr
 #define MAP_HCI_EXT_SetExtScanChannels                               HCI_EXT_SetExtScanChannels
@@ -647,10 +648,6 @@
 #define MAP_llEndExtScanTask                                         llEndExtScanTask
 #define MAP_llEndExtInitTask                                         llEndExtInitTask
 #define MAP_llRclPrepareAndUpdateAlEntry                             llRclPrepareAndUpdateAlEntry
-// RF Post Processing
-#define MAP_llExtAdv_PostProcess                                     llExtAdv_PostProcess
-#define MAP_llExtScan_PostProcess                                    llExtScan_PostProcess
-#define MAP_llExtInit_PostProcess                                    llExtInit_PostProcess
 // RF Event Processing
 #define MAP_llSendAdvSetTermEvent                                    llSendAdvSetTermEvent
 #define MAP_llSendAdvSetEndEvent                                     llSendAdvSetEndEvent
@@ -688,12 +685,9 @@
 #define MAP_L2CAP_CmdReject                                          L2CAP_CmdReject
 #define MAP_L2CAP_ConnParamUpdateReq                                 L2CAP_ConnParamUpdateReq
 #define MAP_L2CAP_ConnParamUpdateRsp                                 L2CAP_ConnParamUpdateRsp
-#define MAP_L2CAP_DisconnectReq                                      L2CAP_DisconnectReq
 #define MAP_L2CAP_GetMTU                                             L2CAP_GetMTU
 #define MAP_L2CAP_GetParamValue                                      L2CAP_GetParamValue
 #define MAP_L2CAP_HostNumCompletedPkts                               L2CAP_HostNumCompletedPkts
-#define MAP_L2CAP_ParseConnectReq                                    L2CAP_ParseConnectReq
-#define MAP_L2CAP_ParseFlowCtrlCredit                                L2CAP_ParseFlowCtrlCredit
 #define MAP_L2CAP_ParseParamUpdateReq                                L2CAP_ParseParamUpdateReq
 #define MAP_L2CAP_RegisterApp                                        L2CAP_RegisterApp
 #define MAP_L2CAP_SendData                                           L2CAP_SendData
@@ -706,30 +700,23 @@
 #define MAP_l2capAllocPsm                                            l2capAllocPsm
 #define MAP_l2capBuildConnectRsp                                     l2capBuildConnectRsp
 #define MAP_l2capBuildDisconnectReq                                  l2capBuildDisconnectReq
-#define MAP_l2capBuildDisconnectRsp                                  l2capBuildDisconnectRsp
 #define MAP_l2capBuildFlowCtrlCredit                                 l2capBuildFlowCtrlCredit
 #define MAP_l2capBuildInfoReq                                        l2capBuildInfoReq
 #define MAP_l2capBuildInfoRsp                                        l2capBuildInfoRsp
 #define MAP_l2capBuildParamUpdateReq                                 l2capBuildParamUpdateReq
 #define MAP_l2capBuildSignalHdr                                      l2capBuildSignalHdr
 #define MAP_l2capDisconnectAllChannels                               l2capDisconnectAllChannels
-#define MAP_l2capDisconnectChannel                                   l2capDisconnectChannel
 #define MAP_l2capEncapSendData                                       l2capEncapSendData
-#define MAP_l2capFindLocalCID                                        l2capFindLocalCID
 #define MAP_l2capFindLocalId                                         l2capFindLocalId
 #define MAP_l2capFindNextSegment                                     l2capFindNextSegment
 #define MAP_l2capFindPsm                                             l2capFindPsm
-#define MAP_l2capFindRemoteCID                                       l2capFindRemoteCID
 #define MAP_l2capFindRemoteId                                        l2capFindRemoteId
 #define MAP_l2capFlowCtrlCredit                                      l2capFlowCtrlCredit
 #define MAP_l2capFreeChannel                                         l2capFreeChannel
 #define MAP_l2capFreePendingPkt                                      l2capFreePendingPkt
 #define MAP_l2capFreeTxSDU                                           l2capFreeTxSDU
-#define MAP_l2capGetCoChannelInfo                                    l2capGetCoChannelInfo
 #define MAP_l2capHandleTimerCB                                       l2capHandleTimerCB
 #define MAP_l2capHandleRxError                                       l2capHandleRxError
-#define MAP_l2capNotifyChannelEstEvt                                 l2capNotifyChannelEstEvt
-#define MAP_l2capNotifyChannelTermEvt                                l2capNotifyChannelTermEvt
 #define MAP_l2capNotifyCreditEvt                                     l2capNotifyCreditEvt
 #define MAP_l2capNotifyData                                          l2capNotifyData
 #define MAP_l2capNotifyEvent                                         l2capNotifyEvent
@@ -737,23 +724,17 @@
 #define MAP_l2capNotifySignal                                        l2capNotifySignal
 #define MAP_l2capNumActiveChannnels                                  l2capNumActiveChannnels
 #define MAP_l2capParseCmdReject                                      l2capParseCmdReject
-#define MAP_l2capParseConnectRsp                                     l2capParseConnectRsp
-#define MAP_l2capParseDisconnectReq                                  l2capParseDisconnectReq
-#define MAP_l2capParseDisconnectRsp                                  l2capParseDisconnectRsp
 #define MAP_l2capParsePacket                                         l2capParsePacket
 #define MAP_l2capParseParamUpdateRsp                                 l2capParseParamUpdateRsp
 #define MAP_l2capParseSignalHdr                                      l2capParseSignalHdr
-#define MAP_l2capProcessConnectReq                                   l2capProcessConnectReq
 #define MAP_l2capProcessOSALMsg                                      l2capProcessOSALMsg
 #define MAP_l2capProcessReq                                          l2capProcessReq
 #define MAP_l2capProcessRsp                                          l2capProcessRsp
 #define MAP_l2capProcessRxData                                       l2capProcessRxData
 #define MAP_l2capProcessSignal                                       l2capProcessSignal
-#define MAP_l2capReassembleSegment                                   l2capReassembleSegment
 #define MAP_l2capSendCmd                                             l2capSendCmd
 #define MAP_l2capSendConnectRsp                                      l2capSendConnectRsp
 #define MAP_l2capSendFCPkt                                           l2capSendFCPkt
-#define MAP_l2capSendNextSegment                                     l2capSendNextSegment
 #define MAP_l2capSendPkt                                             l2capSendPkt
 #define MAP_l2capSendReq                                             l2capSendReq
 #define MAP_l2capSendSegment                                         l2capSendSegment
@@ -929,7 +910,6 @@
 // GAP API
 #define MAP_GAP_Authenticate                                         GAP_Authenticate
 #define MAP_GAP_Bond                                                 GAP_Bond
-#define MAP_gap_CentConnRegister                                     gap_CentConnRegister
 #define MAP_GAP_CentDevMgrInit                                       GAP_CentDevMgrInit
 #ifdef GAP_BOND_MGR
 #define MAP_GAP_DeviceInit                                           GAP_DeviceInit
@@ -944,7 +924,6 @@
 #define MAP_gap_ParamsInit                                           gap_ParamsInit
 #define MAP_GAP_PasscodeUpdate                                       GAP_PasscodeUpdate
 #define MAP_GAP_PasskeyUpdate                                        GAP_PasskeyUpdate
-#define MAP_gap_PeriConnRegister                                     gap_PeriConnRegister
 #define MAP_gap_PrivacyInit                                          gap_PrivacyInit
 #define MAP_GAP_ProcessEvent                                         GAP_ProcessEvent
 #define MAP_GAP_RegisterBondMgrCBs                                   GAP_RegisterBondMgrCBs
@@ -1010,7 +989,6 @@
 #define MAP_gapFindADType                                            gapFindADType
 #define MAP_gapIsAdvertising                                         gapIsAdvertising
 #define MAP_gapIsScanning                                            gapIsScanning
-#define MAP_gapIsInitiating                                          gapIsInitiating
 #define MAP_gapSetState                                              gapSetState
 #define MAP_gapValidADType                                           gapValidADType
 
@@ -1022,7 +1000,6 @@
 #define MAP_gapPeriProcessSignalEvt                                  gapPeriProcessSignalEvt
 
 // GAP Advertiser Module
-#define MAP_gapAdv_init                                              gapAdv_init
 #define MAP_GapAdv_create                                            GapAdv_create
 #define MAP_GapAdv_destroy                                           GapAdv_destroy
 #define MAP_GapAdv_enable                                            GapAdv_enable
@@ -1041,7 +1018,6 @@
 #define MAP_GapAdv_setVirtualAdvAddr                                 GapAdv_setVirtualAdvAddr
 
 // GAP Scanner Module
-#define MAP_gapScan_init                                             gapScan_init
 #define MAP_GapScan_registerCb                                       GapScan_registerCb
 #define MAP_GapScan_setPhyParams                                     GapScan_setPhyParams
 #define MAP_GapScan_getPhyParams                                     GapScan_getPhyParams
@@ -1060,7 +1036,6 @@
 #define MAP_gapScan_processAdvRptCb                                  gapScan_processAdvRptCb
 #define MAP_gapScan_processStartEndCb                                gapScan_processStartEndCb
 #define MAP_gapScan_processErrorCb                                   gapScan_processErrorCb
-#define MAP_gapScan_processSessionEndEvt                             gapScan_processSessionEndEvt
 
 // GAP Initiator Module
 #define MAP_GapInit_setPhyParam                                      GapInit_setPhyParam
@@ -1068,9 +1043,6 @@
 #define MAP_gapInit_connect_internal                                 gapInit_connect_internal
 #define MAP_GapInit_connect                                          GapInit_connect
 #define MAP_GapInit_connectAl                                        GapInit_connectAl
-#define MAP_GapInit_cancelConnect                                    GapInit_cancelConnect
-#define MAP_gapInit_sendConnCancelledEvt                             gapInit_sendConnCancelledEvt
-#define MAP_gapInit_initiatingEnd                                    gapInit_initiatingEnd
 
 // GAP Central Link Mgr
 #define MAP_gapCentProcessConnEvt                                    gapCentProcessConnEvt
@@ -1084,10 +1056,8 @@
 #define MAP_SM_GetEccKeys                                            SM_GetEccKeys
 #define MAP_SM_GetDHKey                                              SM_GetDHKey
 #define MAP_SM_GetScConfirmOob                                       SM_GetScConfirmOob
-#define MAP_SM_InitiatorInit                                         SM_InitiatorInit
 #define MAP_SM_StartPairing                                          SM_StartPairing
 #define MAP_SM_StartEncryption                                       SM_StartEncryption
-#define MAP_SM_ResponderInit                                         SM_ResponderInit
 #define MAP_SM_NewRandKey                                            SM_NewRandKey
 #define MAP_SM_Encrypt                                               SM_Encrypt
 #define MAP_SM_GenerateAuthenSig                                     SM_GenerateAuthenSig
@@ -1453,6 +1423,7 @@ extern uint8  MAP_llDmmSetAdvHandle(uint8 handle, uint8 clear);
 extern void   MAP_llDmmDynamicFree(void);
 extern uint8  MAP_llDmmDynamicAlloc(void);
 extern uint8  MAP_llSetStarvationMode(uint16 connId, uint8 setOnOffValue);
+extern uint8  MAP_llGetStarvationMode(uint16 connId);
 
 
 /*******************************************************************************
@@ -1462,6 +1433,11 @@ extern void MAP_llCoexSetParams(uint16 cmdNum, void *pCmdParams);
 extern void MAP_llCoexInit(uint8 enable);
 extern void MAP_llCoexUpdateCounters(uint8 grant);
 extern uint8 MAP_LL_EXT_CoexEnable(uint8 enable);
+
+/*******************************************************************************
+ * Osprey Coex hooks
+ */
+extern void MAP_llCoexSetHighPriorityGroup(uint16 cmdNum);
 
 /*******************************************************************************
  * Periodic Adv hooks
@@ -1577,6 +1553,56 @@ extern uint8_t MAP_checkVsEventsStatus(void);
 extern uint8 MAP_llAddExtAlAndSetIgnBit(void *extAdvRpt, uint8 ignoreBit);
 extern uint8 MAP_llFlushIgnoredRxEntry(uint8 ignoreBit);
 extern void MAP_llSetRxCfg(void);
+
+/*******************************************************************************
+ * Link time configuration functions
+ */
+
+// (CENTRAL_CFG | OBSERVER_CFG) functions
+extern uint8 MAP_gapScan_init( void );
+extern uint8 MAP_SM_InitiatorInit( void );
+extern void  MAP_gap_CentConnRegister( void );
+extern void  MAP_gapScan_processSessionEndEvt( void* pSession, uint8_t status );
+
+// (PERIPHERAL_CFG | BROADCASTER_CFG) functions
+extern uint8 MAP_gapAdv_init( void );
+extern uint8 MAP_SM_ResponderInit( void );
+extern void  MAP_gap_PeriConnRegister( void );
+
+// (ADV_CONN_CFG) functions
+extern void  MAP_llExtAdv_PostProcess( void );
+
+// (SCAN_CFG) functions
+extern void  MAP_llExtScan_PostProcess( void );
+
+// (INIT_CFG) functions
+extern void  MAP_llExtInit_PostProcess( void );
+
+// (L2CAP_COC_CFG) functions
+extern uint8  MAP_l2capSendNextSegment( void );
+extern uint8  MAP_l2capReassembleSegment( uint16 connHandle, void *pPkt );
+extern uint8  MAP_L2CAP_ParseConnectReq( void *pCmd, uint8 *pData, uint16 len );
+extern uint8  MAP_l2capParseConnectRsp( void *pCmd, uint8 *pData, uint16 len );
+extern uint8  MAP_L2CAP_ParseFlowCtrglCredit( void *pCmd, uint8 *pData, uint16 len );
+extern uint8  MAP_l2capParseDisconnectReq( void *pCmd, uint8 *pData, uint16 len );
+extern uint8  MAP_l2capParseDisconnectRsp( void *pCmd, uint8 *pData, uint16 len );
+extern uint8  MAP_L2CAP_DisconnectReq( uint16 CID );
+extern uint16 MAP_l2capBuildDisconnectRsp( uint8 *pBuf, uint8 *pData );
+extern void   MAP_l2capProcessConnectReq( uint16 connHandle, uint8 id, void *pConnReq );
+extern void   MAP_l2capGetCoChannelInfo( void *pCoC, void *pInfo );
+extern void   MAP_l2capNotifyChannelEstEvt( void *pChannel, uint8 status, uint16 result );
+extern void  *MAP_l2capFindRemoteCID( uint16 connHandle, uint16 CID );
+extern void   MAP_l2capNotifyChannelTermEvt( void *pChannel, uint8 status, uint16 reason );
+extern void  *MAP_l2capFindLocalCID( uint16 CID );
+extern void   MAP_l2capDisconnectChannel( void *pChannel, uint16 reason );
+extern uint8  MAP_L2CAP_ParseFlowCtrlCredit( void *pCmd, uint8 *pData, uint16 len );
+
+// (CENTRAL_CFG) functions
+extern uint8 MAP_gapIsInitiating( void );
+extern uint8 MAP_GapInit_cancelConnect( void );
+extern uint8 MAP_smpInitiatorContProcessPairingPubKey( void );
+extern void  MAP_gapInit_initiatingEnd( void );
+extern void  MAP_gapInit_sendConnCancelledEvt( void );
 /*******************************************************************************
  * SDAA module
  */
@@ -1592,7 +1618,8 @@ extern void MAP_LL_SDAA_RecordTxUsage( uint16 numOfBytes, uint8 phyType, uint8 p
 extern void MAP_LL_SDAA_SampleRXWindow( void );
 extern uint16 MAP_LL_SDAA_GetRXWindowDuration( void );
 extern void MAP_LL_SDAA_SetChannelInSample( uint8 channel );
-extern uint8 MAP_llSDAASetupRXWindowCmd(void);
+extern uint8 MAP_llSDAASetupRXWindowCmd( void );
+extern void MAP_llHandleSDAALastCmdDone( void );
 extern uint8 MAP_llHandleSDAAControlTX(void            *nextConnPtr,
                                        void            *secTask,
                                        uint8           startTaskType);

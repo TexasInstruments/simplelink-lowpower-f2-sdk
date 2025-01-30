@@ -27,7 +27,7 @@ void common_sfn_thread(void *param)
     meta = PART_METADATA();
     sfn_init = (sfn_init_fn_t)meta->entry;
     p_sfn_table = (service_fn_t *)meta->sfn_table;
-    signal_mask = (1 << meta->n_sfn) - 1;
+    signal_mask = (1UL << meta->n_sfn) - 1;
 
     if (sfn_init && sfn_init(param) != PSA_SUCCESS) {
         psa_panic();
@@ -37,7 +37,7 @@ void common_sfn_thread(void *param)
         sig_asserted = psa_wait(signal_mask, PSA_BLOCK);
         /* Handle signals */
         for (int i = 0; sig_asserted != 0 && i < meta->n_sfn; i++) {
-            sig = 1 << i;
+            sig = 1UL << i;
             if (sig_asserted & sig) {
                 /* The i bit signal asserted, index of SFN is i as well */
                 if (!p_sfn_table[i]) {

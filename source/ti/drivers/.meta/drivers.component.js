@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2023, Texas Instruments Incorporated - https://www.ti.com
+ * Copyright (c) 2018-2024, Texas Instruments Incorporated - https://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,43 +50,67 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
             description: description,
             modules: [
                 "/ti/display/Display",
-                "/ti/drivers/ADC",
-                "/ti/drivers/ADCBuf",
-                "/ti/drivers/AESCBC",
-                "/ti/drivers/AESCCM",
-                "/ti/drivers/AESCMAC",
-                "/ti/drivers/AESCTR",
-                "/ti/drivers/AESCTRDRBG",
-                "/ti/drivers/AESECB",
-                "/ti/drivers/AESGCM",
-                "/ti/drivers/ANSIX936KDF",
                 "/ti/drivers/Board",
-                //"/ti/drivers/CryptoKey", // unused - no configuration currently required for CC26X4 family
-                "/ti/drivers/DAC",
                 "/ti/drivers/DMA",
-                "/ti/drivers/ECDH",
-                "/ti/drivers/ECDSA",
-                "/ti/drivers/ECJPAKE",
-                "/ti/drivers/EDDSA",
                 "/ti/drivers/GPIO",
-                "/ti/drivers/I2C",
-                "/ti/drivers/I2S",
-                "/ti/drivers/ITM",
-                "/ti/drivers/NVS",
                 "/ti/drivers/Power",
                 "/ti/drivers/PWM",
                 "/ti/drivers/RNG",
-                "/ti/drivers/SD",
-                "/ti/drivers/SHA2",
-                "/ti/drivers/SPI",
                 "/ti/drivers/Temperature",
                 "/ti/drivers/Timer",
                 "/ti/drivers/timer/GPTimerCC26XX",
                 "/ti/drivers/TRNG",
-                "/ti/drivers/UART2",
                 "/ti/drivers/Watchdog"
             ],
             "categories": [
+                {
+                    "displayName": "Serial Interfaces",
+                    "description": "Data Transmission on a Wire",
+                    "modules": [
+                        "/ti/drivers/I2C",
+                        "/ti/drivers/I2S",
+                        "/ti/drivers/ITM",
+                        "/ti/drivers/SPI",
+                        "/ti/drivers/UART2"
+                    ]
+                },
+                {
+                    "displayName": "Analog/Digital Conversion",
+                    "description": "Signal Transformation",
+                    "modules": [
+                        "/ti/drivers/ADC",
+                        "/ti/drivers/ADCBuf",
+                        "/ti/drivers/DAC"
+                    ]
+                },
+                {
+                    "displayName": "Storage Interfaces",
+                    "description": "Permanent Data Storage",
+                    "modules": [
+                        "/ti/drivers/NVS",
+                        "/ti/drivers/SD"
+                    ]
+                },
+                {
+                    "displayName": "Crypto Drivers",
+                    "description": "Encryption, Decryption and Authentication",
+                    "modules": [
+                        "/ti/drivers/AESCBC",
+                        "/ti/drivers/AESCCM",
+                        "/ti/drivers/AESCMAC",
+                        "/ti/drivers/AESCTR",
+                        "/ti/drivers/AESCTRDRBG",
+                        "/ti/drivers/AESECB",
+                        "/ti/drivers/AESGCM",
+                        "/ti/drivers/ANSIX936KDF",
+                        //"/ti/drivers/CryptoKey", // unused - no configuration currently required for CC26X4 family
+                        "/ti/drivers/ECDH",
+                        "/ti/drivers/ECDSA",
+                        "/ti/drivers/ECJPAKE",
+                        "/ti/drivers/EDDSA",
+                        "/ti/drivers/SHA2"
+                    ]
+                },
                 {
                     "displayName": "TI Driver Apps",
                     "description": "TI Drivers Apps Configuration",
@@ -106,43 +130,67 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
             description: description,
             modules: [
                 "/ti/display/Display",
-                "/ti/drivers/ADC",
-                "/ti/drivers/ADCBuf",
-                "/ti/drivers/AESCBC",
-                "/ti/drivers/AESCCM",
-                "/ti/drivers/AESCMAC",
-                "/ti/drivers/AESCTR",
-                "/ti/drivers/AESCTRDRBG",
-                "/ti/drivers/AESGCM",
-                "/ti/drivers/AESECB",
-                "/ti/drivers/ANSIX936KDF",
                 "/ti/drivers/Board",
-                "/ti/drivers/CAN",
-                "/ti/drivers/DAC",
                 "/ti/drivers/DMA",
-                "/ti/drivers/ECDH",
-                "/ti/drivers/ECDSA",
-                "/ti/drivers/ECJPAKE",
-                "/ti/drivers/EDDSA",
                 "/ti/drivers/GPIO",
-                "/ti/drivers/I2C",
-                "/ti/drivers/I2S",
-                "/ti/drivers/ITM",
-                "/ti/drivers/NVS",
                 "/ti/drivers/Power",
                 "/ti/drivers/PWM",
                 "/ti/drivers/RNG",
-                "/ti/drivers/SD",
-                "/ti/drivers/SHA2",
-                "/ti/drivers/SPI",
                 "/ti/drivers/Temperature",
                 "/ti/drivers/Timer",
                 "/ti/drivers/timer/GPTimerCC26XX",
                 "/ti/drivers/TRNG",
-                "/ti/drivers/UART2",
                 "/ti/drivers/Watchdog"
             ],
             "categories": [
+                {
+                    "displayName": "Serial Interfaces",
+                    "description": "Data Transmission on a Wire",
+                    "modules": [
+                        "/ti/drivers/CAN",
+                        "/ti/drivers/I2C",
+                        "/ti/drivers/I2S",
+                        "/ti/drivers/ITM",
+                        "/ti/drivers/SPI",
+                        "/ti/drivers/UART2"
+                    ]
+                },
+                {
+                    "displayName": "Analog/Digital Conversion",
+                    "description": "Signal Transformation",
+                    "modules": [
+                        "/ti/drivers/ADC",
+                        "/ti/drivers/ADCBuf",
+                        "/ti/drivers/DAC"
+                    ]
+                },
+                {
+                    "displayName": "Storage Interfaces",
+                    "description": "Permanent Data Storage",
+                    "modules": [
+                        "/ti/drivers/NVS",
+                        "/ti/drivers/SD"
+                    ]
+                },
+                {
+                    "displayName": "Crypto Drivers",
+                    "description": "Encryption, Decryption and Authentication",
+                    "modules": [
+                        "/ti/drivers/AESCBC",
+                        "/ti/drivers/AESCCM",
+                        "/ti/drivers/AESCMAC",
+                        "/ti/drivers/AESCTR",
+                        "/ti/drivers/AESCTRDRBG",
+                        "/ti/drivers/AESECB",
+                        "/ti/drivers/AESGCM",
+                        "/ti/drivers/ANSIX936KDF",
+                        "/ti/drivers/ECDH",
+                        "/ti/drivers/ECDSA",
+                        "/ti/drivers/ECJPAKE",
+                        "/ti/drivers/EDDSA",
+                        "/ti/drivers/SHA2"
+                    ]
+                },
                 {
                     "displayName": "TI Driver Apps",
                     "description": "TI Drivers Apps Configuration",
@@ -162,39 +210,64 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
             description: description,
             modules: [
                 "/ti/display/Display",
-                "/ti/drivers/ADC",
-                "/ti/drivers/ADCBuf",
-                "/ti/drivers/AESCBC",
-                "/ti/drivers/AESCCM",
-                "/ti/drivers/AESCMAC",
-                "/ti/drivers/AESCTR",
-                "/ti/drivers/AESCTRDRBG",
-                "/ti/drivers/AESECB",
-                "/ti/drivers/ANSIX936KDF",
                 "/ti/drivers/Board",
-                "/ti/drivers/CAN",
-                "/ti/drivers/DAC",
                 "/ti/drivers/DMA",
-                "/ti/drivers/ECDH",
-                "/ti/drivers/ECDSA",
                 "/ti/drivers/GPIO",
-                "/ti/drivers/I2C",
-                "/ti/drivers/I2S",
-                "/ti/drivers/NVS",
                 "/ti/drivers/Power",
                 "/ti/drivers/PWM",
                 "/ti/drivers/RNG",
-                "/ti/drivers/SD",
-                "/ti/drivers/SHA2",
-                "/ti/drivers/SPI",
                 "/ti/drivers/Temperature",
                 "/ti/drivers/Timer",
                 "/ti/drivers/timer/GPTimerCC26XX",
                 "/ti/drivers/TRNG",
-                "/ti/drivers/UART2",
                 "/ti/drivers/Watchdog"
             ],
             "categories": [
+                {
+                    "displayName": "Serial Interfaces",
+                    "description": "Data Transmission on a Wire",
+                    "modules": [
+                        "/ti/drivers/CAN",
+                        "/ti/drivers/I2C",
+                        "/ti/drivers/I2S",
+                        "/ti/drivers/ITM",
+                        "/ti/drivers/SPI",
+                        "/ti/drivers/UART2"
+                    ]
+                },
+                {
+                    "displayName": "Analog/Digital Conversion",
+                    "description": "Signal Transformation",
+                    "modules": [
+                        "/ti/drivers/ADC",
+                        "/ti/drivers/ADCBuf",
+                        "/ti/drivers/DAC"
+                    ]
+                },
+                {
+                    "displayName": "Storage Interfaces",
+                    "description": "Permanent Data Storage",
+                    "modules": [
+                        "/ti/drivers/NVS",
+                        "/ti/drivers/SD"
+                    ]
+                },
+                {
+                    "displayName": "Crypto Drivers",
+                    "description": "Encryption, Decryption and Authentication",
+                    "modules": [
+                        "/ti/drivers/AESCBC",
+                        "/ti/drivers/AESCCM",
+                        "/ti/drivers/AESCMAC",
+                        "/ti/drivers/AESCTR",
+                        "/ti/drivers/AESCTRDRBG",
+                        "/ti/drivers/AESECB",
+                        "/ti/drivers/ANSIX936KDF",
+                        "/ti/drivers/ECDH",
+                        "/ti/drivers/ECDSA",
+                        "/ti/drivers/SHA2"
+                    ]
+                },
                 {
                     "displayName": "TI Driver Apps",
                     "description": "TI Drivers Apps Configuration",
@@ -214,45 +287,69 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
             description: description,
             modules: [
                 "/ti/display/Display",
-                "/ti/drivers/ADC",
-                // "/ti/drivers/ADCBuf",
-                "/ti/drivers/AESCBC",
-                "/ti/drivers/AESCCM",
-                "/ti/drivers/AESCMAC",
-                "/ti/drivers/AESCTR",
-                "/ti/drivers/AESCTRDRBG",
-                "/ti/drivers/AESECB",
-                "/ti/drivers/ANSIX936KDF",
                 "/ti/drivers/BatteryMonitor",
                 "/ti/drivers/Board",
-                "/ti/drivers/CAN",
-                "/ti/drivers/Comparator",
                 "/ti/drivers/DMA",
-                "/ti/drivers/ECDH",
-                "/ti/drivers/ECDSA",
-                "/ti/drivers/ECIES",
                 "/ti/drivers/GPIO",
-                "/ti/drivers/I2C",
-                "/ti/drivers/I2CTarget",
-                "/ti/drivers/NVS",
+                "/ti/drivers/LGPTimer",
                 "/ti/drivers/Power",
                 "/ti/drivers/PWM",
                 "/ti/drivers/RNG",
-                "/ti/drivers/SD",
-                "/ti/drivers/SHA2",
-                "/ti/drivers/SPI",
                 "/ti/drivers/Temperature",
-                "/ti/drivers/LGPTimer",
-                "/ti/drivers/UART2",
                 "/ti/drivers/Watchdog"
             ],
             "categories": [
                 {
+                    "displayName": "Serial Interfaces",
+                    "description": "Data Transmission on a Wire",
+                    "modules": [
+                        "/ti/drivers/CAN",
+                        "/ti/drivers/I2C",
+                        "/ti/drivers/I2CTarget",
+                        "/ti/drivers/SPI",
+                        "/ti/drivers/UART2"
+                    ]
+                },
+                {
+                    "displayName": "Analog/Digital Conversion",
+                    "description": "Signal Transformation",
+                    "modules": [
+                        "/ti/drivers/ADC",
+                        "/ti/drivers/ADCBuf",
+                        "/ti/drivers/Comparator"
+                    ]
+                },
+                {
+                    "displayName": "Storage Interfaces",
+                    "description": "Permanent Data Storage",
+                    "modules": [
+                        "/ti/drivers/NVS",
+                        "/ti/drivers/SD"
+                    ]
+                },
+                {
+                    "displayName": "Crypto Drivers",
+                    "description": "Encryption, Decryption and Authentication",
+                    "modules": [
+                        "/ti/drivers/AESCBC",
+                        "/ti/drivers/AESCCM",
+                        "/ti/drivers/AESCMAC",
+                        "/ti/drivers/AESCTR",
+                        "/ti/drivers/AESCTRDRBG",
+                        "/ti/drivers/AESECB",
+                        "/ti/drivers/ANSIX936KDF",
+                        "/ti/drivers/ECDH",
+                        "/ti/drivers/ECDSA",
+                        "/ti/drivers/ECIES",
+                        "/ti/drivers/SHA2"
+                    ]
+                },
+                {
                     "displayName": "TI Driver Apps",
                     "description": "TI Drivers Apps Configuration",
                     "modules": [
-                        "/ti/drivers/apps/Button"
-                        // "/ti/drivers/apps/LED"
+                        "/ti/drivers/apps/Button",
+                        "/ti/drivers/apps/LED"
                     ]
                 }
             ]
@@ -266,75 +363,67 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
             description: description,
             modules: [
                 "/ti/display/Display",
-                "/ti/drivers/ADC",
-                // "/ti/drivers/ADCBuf",
-                // "/ti/drivers/AESCBC",
-                // "/ti/drivers/AESCCM",
-                // "/ti/drivers/AESCMAC",
-                // "/ti/drivers/AESCTR",
-                // "/ti/drivers/AESCTRDRBG",
-                // "/ti/drivers/AESECB",
                 "/ti/drivers/BatteryMonitor",
                 "/ti/drivers/Board",
-                "/ti/drivers/CAN",
-                "/ti/drivers/Comparator",
                 "/ti/drivers/DMA",
-                "/ti/drivers/ECDH",
-                // "/ti/drivers/ECDSA",
                 "/ti/drivers/GPIO",
-                "/ti/drivers/I2C",
-                "/ti/drivers/I2CTarget",
-                "/ti/drivers/I2S",
-                "/ti/drivers/NVS",
+                "/ti/drivers/LGPTimer",
                 "/ti/drivers/Power",
                 "/ti/drivers/PWM",
                 "/ti/drivers/RNG",
-                "/ti/drivers/SD",
-                "/ti/drivers/SHA2",
-                "/ti/drivers/SPI",
+                "/ti/drivers/TRNG",
                 "/ti/drivers/Temperature",
-                "/ti/drivers/LGPTimer",
-                "/ti/drivers/UART2"
-                // "/ti/drivers/Watchdog"
-            ],
-            "categories": [
-                {
-                    "displayName" : "TI Driver Apps",
-                    "description" : "TI Drivers Apps Configuration",
-                    "modules" : [
-                        "/ti/drivers/apps/Button"
-                        // "/ti/drivers/apps/LED"
-                    ]
-                }
-            ]
-        }
-    ];
-} else if (deviceId.match(/CC32.*/)) {
-    /* CC32XX */
-    topModules = [
-        {
-            displayName: displayName,
-            description: description,
-            modules: [
-                "/ti/display/Display",
-                "/ti/drivers/ADC",
-                "/ti/drivers/Capture",
-                "/ti/drivers/Crypto",
-                "/ti/drivers/DMA",
-                "/ti/drivers/GPIO",
-                "/ti/drivers/I2C",
-                "/ti/drivers/I2S",
-                "/ti/drivers/ITM",
-                "/ti/drivers/NVS",
-                "/ti/drivers/Power",
-                "/ti/drivers/PWM",
-                "/ti/drivers/SD",
-                "/ti/drivers/SPI",
-                "/ti/drivers/Timer",
-                "/ti/drivers/UART2",
+                "/ti/drivers/VCE",
                 "/ti/drivers/Watchdog"
             ],
             "categories": [
+                {
+                    "displayName": "Serial Interfaces",
+                    "description": "Data Transmission on a Wire",
+                    "modules": [
+                        "/ti/drivers/CAN",
+                        "/ti/drivers/I2C",
+                        "/ti/drivers/I2CTarget",
+                        "/ti/drivers/I2S",
+                        "/ti/drivers/ITM",
+                        "/ti/drivers/SPI",
+                        "/ti/drivers/UART2"
+                    ]
+                },
+                {
+                    "displayName": "Analog/Digital Conversion",
+                    "description": "Signal Transformation",
+                    "modules": [
+                        "/ti/drivers/ADC",
+                        "/ti/drivers/ADCBuf",
+                        "/ti/drivers/Comparator"
+                    ]
+                },
+                {
+                    "displayName": "Storage Interfaces",
+                    "description": "Permanent Data Storage",
+                    "modules": [
+                        "/ti/drivers/NVS",
+                        "/ti/drivers/SD"
+                    ]
+                },
+                {
+                    "displayName": "Crypto Drivers",
+                    "description": "Encryption, Decryption and Authentication",
+                    "modules": [
+                        "/ti/drivers/AESCBC",
+                        "/ti/drivers/AESCCM",
+                        "/ti/drivers/AESCMAC",
+                        "/ti/drivers/AESCTR",
+                        // "/ti/drivers/AESCTRDRBG",
+                        "/ti/drivers/AESECB",
+                        "/ti/drivers/AESGCM",
+                        "/ti/drivers/CryptoKeyKeyStore_PSA",
+                        "/ti/drivers/ECDH",
+                        "/ti/drivers/ECDSA",
+                        "/ti/drivers/SHA2"
+                    ]
+                },
                 {
                     "displayName": "TI Driver Apps",
                     "description": "TI Drivers Apps Configuration",
@@ -354,31 +443,45 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
             description: description,
             modules: [
                 // "/ti/display/Display",
-                // "/ti/drivers/ADC",
                 "/ti/drivers/Board",
                 // "/ti/drivers/Capture",
-                // "/ti/drivers/Crypto",
-                // "/ti/drivers/DMA",
+                "/ti/drivers/DMA",
                 "/ti/drivers/GPIO",
-                // "/ti/drivers/I2C",
-                // "/ti/drivers/I2S",
-                // "/ti/drivers/ITM",
-                // "/ti/drivers/NVS",
-                "/ti/drivers/Power"
-                // "/ti/drivers/PWM",
-                // "/ti/drivers/SD",
-                // "/ti/drivers/SPI",
-                // "/ti/drivers/Timer",
-                // "/ti/drivers/UART2",
+                "/ti/drivers/GPTimer",
+                "/ti/drivers/Power",
+                "/ti/drivers/PWM"
                 // "/ti/drivers/Watchdog"
             ],
             "categories": [
                 {
+                    "displayName": "Serial Interfaces",
+                    "description": "Data Transmission on a Wire",
+                    "modules": [
+                        "/ti/drivers/I2C",
+                        // "/ti/drivers/I2S",
+                        // "/ti/drivers/ITM",
+                        "/ti/drivers/SPI",
+                        "/ti/drivers/UART2"
+                    ]
+                },
+                {
+                    "displayName": "Crypto Drivers",
+                    "description": "Encryption, Decryption and Authentication",
+                    "modules": [
+                        // "/ti/drivers/Crypto",
+                        "/ti/drivers/AESCBC",
+                        "/ti/drivers/AESCCM",
+                        "/ti/drivers/AESGCM",
+                        "/ti/drivers/ECDSA",
+                        "/ti/drivers/SHA2"
+                    ]
+                },
+                {
                     "displayName": "TI Driver Apps",
                     "description": "TI Drivers Apps Configuration",
                     "modules": [
-                        "/ti/drivers/apps/Button"
-                        // "/ti/drivers/apps/LED" /* Disable because there is no PWM module yet */
+                        "/ti/drivers/apps/Button",
+                        "/ti/drivers/apps/LED"
                     ]
                 }
             ]

@@ -33,13 +33,13 @@ enum psa_drv_slot_number_t {
  *         core subsystem
  */
 #define PSA_CRYPTO_DRIVER_TFM_BUILTIN_KEY_LOADER
+#endif /* __DOXYGEN_ONLY__ */
 
 /**
  * \brief Configures the tfm_builtin_key_loader driver to perform the key
  *        derivation required to produce platform keys using PSA Crypto APIs
  */
 #define TFM_BUILTIN_KEY_LOADER_DERIVE_KEY_USING_PSA
-#endif /* __DOXYGEN_ONLY__ */
 
 /**
  * \brief The PSA driver location for TF-M builtin keys. Arbitrary within the

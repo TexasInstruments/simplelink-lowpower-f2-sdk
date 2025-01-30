@@ -8,12 +8,11 @@
 #
 #-------------------------------------------------------------------------------
 
-set(PLATFORM_SLIH_IRQ_TEST_SUPPORT)
-set(PLATFORM_FLIH_IRQ_TEST_SUPPORT)
-
 set(HAL_NORDIC_PATH "DOWNLOAD" CACHE PATH "Path to the Nordic HAL (or DOWNLOAD to fetch automatically)")
-set(HAL_NORDIC_VERSION "nrfx-2.10.0" CACHE STRING "Version of the Nordic HAL to download")
+set(HAL_NORDIC_VERSION "nrfx-3.0.0" CACHE STRING "Version of the Nordic HAL to download")
 set(HAL_NORDIC_REMOTE "https://github.com/zephyrproject-rtos/hal_nordic" CACHE STRING "Remote of the Nordic HAL to download")
+# Set to FALSE if HAL_NORDIC_VERSION is a SHA.
+set(HAL_NORDIC_SHALLOW_FETCH CACHE BOOL TRUE "Use shallow fetch to download Nordic HAL.")
 
 set(NULL_POINTER_EXCEPTION_DETECTION    FALSE       CACHE BOOL
   "Enable null-pointer dereference detection for \

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,8 @@
 #include "CryptoCC26X4_s.h"
 #include <third_party/tfm/interface/include/psa/service.h>
 #include <psa_manifest/crypto_sp.h> /* Auto-generated header */
-#ifdef ENABLE_ITS_LOCAL_INTEGRATION
+
+#ifdef TI_CRYPTO_ITS_INTEGRATION
     #include <third_party/tfm/secure_fw/partitions/internal_trusted_storage/tfm_internal_trusted_storage.h>
 #endif
 
@@ -49,7 +50,7 @@
 #include <ti/drivers/ecdh/ECDHCC26X4_s.h>
 #include <ti/drivers/ecdsa/ECDSACC26X4_s.h>
 #include <ti/drivers/ecjpake/ECJPAKECC26X4_s.h>
-// #include <ti/drivers/eddsa/EDDSACC26X4_s.h>
+#include <ti/drivers/eddsa/EDDSACC26X4_s.h>
 #include <ti/drivers/sha2/SHA2CC26X4_s.h>
 #include <ti/drivers/trng/TRNGCC26X4_s.h>
 
@@ -152,9 +153,9 @@ static psa_status_t Crypto_s_handlePsaMsg(psa_msg_t *msg)
             status = ECJPAKE_s_handlePsaMsg(msg);
             break;
 
-            //        case CRYPTO_S_MSG_TYPE_INDEX_EDDSA:
-            //            status = EDDSA_s_handlePsaMsg(msg);
-            //            break;
+        case CRYPTO_S_MSG_TYPE_INDEX_EDDSA:
+            status = EDDSA_s_handlePsaMsg(msg);
+            break;
 
         case CRYPTO_S_MSG_TYPE_INDEX_SHA2:
             status = SHA2_s_handlePsaMsg(msg);
@@ -188,11 +189,11 @@ static psa_status_t Crypto_s_handlePsaMsg(psa_msg_t *msg)
  *  ======== Crypto_sp_main ========
  *  Crypto Secure Partition entry point
  */
-void Crypto_sp_main(void *param)
+void Crypto_sp_main(void)
 {
     uint32_t signals;
 
-#if defined(ENABLE_ITS_LOCAL_INTEGRATION) || defined(ENABLE_ITS_IPC_INTEGRATION)
+#if defined(TI_CRYPTO_ITS_INTEGRATION) || defined(ENABLE_ITS_IPC_INTEGRATION)
     /* Initialize ITS */
     if (tfm_its_init() != PSA_SUCCESS)
     {
@@ -216,7 +217,7 @@ void Crypto_sp_main(void *param)
     ECDH_s_init();
     ECDSA_s_init();
     ECJPAKE_s_init();
-    //    EDDSA_s_init();
+    EDDSA_s_init();
 
     SHA2_s_init();
 

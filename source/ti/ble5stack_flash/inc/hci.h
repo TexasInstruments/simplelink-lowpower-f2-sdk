@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2024, Texas Instruments Incorporated
+ Copyright (c) 2009-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -337,10 +337,6 @@
  *   <td>HCI Extension Set Max Data Length</td>
  * </tr>
  * <tr>
- *   <td>@ref HCI_EXT_SetMaxDtmTxPowerCmd</td>
- *   <td>HCI Extension Set Max DTM Transmitter Power</td>
- * </tr>
- * <tr>
  *   <td>@ref HCI_EXT_SetRxGainCmd</td>
  *   <td>HCI Extension Set Receiver Gain</td>
  * </tr>
@@ -351,10 +347,6 @@
  * <tr>
  *   <td>@ref HCI_EXT_SetTxPowerCmd</td>
  *   <td>HCI Extension Set Transmitter Power</td>
- * </tr>
- * <tr>
- *   <td>@ref HCI_EXT_SetTxPowerDbmCmd</td>
- *   <td>HCI Extension Set Transmitter Power in dBm</td>
  * </tr>
  * <tr>
  *   <td>@ref HCI_EXT_SetDtmTxPktCntCmd</td>
@@ -3278,19 +3270,6 @@ extern hciStatus_t HCI_EXT_SetRxGainCmd( uint8 rxGain );
  */
 extern hciStatus_t HCI_EXT_SetTxPowerCmd( uint8 txPower );
 
-/**
- * Set the transmit power in dBm.
- *
- * The 'txPower' input parameter in dBm.
- *
- * The default system value for this feature is 0 dBm
- *
- * @par Corresponding Events
- * @ref hciEvt_VSCmdComplete_t with cmdOpcode @ref HCI_EXT_SET_TX_POWER_DBM
- *
- * @return @ref HCI_SUCCESS
- */
-extern hciStatus_t HCI_EXT_SetTxPowerDbmCmd( int8 txPower, uint8 fraction );
 
 /**
  * Set whether a connection will be limited to one packet per event.
@@ -3739,27 +3718,6 @@ extern hciStatus_t HCI_EXT_SaveFreqTuneCmd( void );
  */
 extern hciStatus_t HCI_EXT_SetMaxDtmTxPowerCmd( uint8 txPower );
 
-/**
- * Set the maximum transmit output power for DTM (in dBm).
- *
- * This command is used to override the RF transmitter output power used by the
- * Direct Test Mode (DTM). Normally, the maximum transmitter output power
- * setting used by DTM is the maximum transmitter output power setting for the
- * device. This command will change the value used by DTM.
- *
- * @note When DTM is ended by a call to @ref HCI_LE_TestEndCmd, or a
- * @ref HCI_ResetCmd is used, the transmitter output power setting is restored
- * to the default value of @ref HCI_EXT_TX_POWER_0_DBM
- *
- * @par Corresponding Events
- * @ref hciEvt_VSCmdComplete_t with cmdOpcode @ref HCI_EXT_SET_MAX_DTM_TX_POWER_DBM
- *
- * @param txPower @ref TX_Power_Index
- *
- * @return @ref HCI_SUCCESS
- */
-extern hciStatus_t HCI_EXT_SetMaxDtmTxPowerDbmCmd( int8   txPowerDbm,
-                                                   uint8  fraction );
 /// @cond CC254X
 
 /**

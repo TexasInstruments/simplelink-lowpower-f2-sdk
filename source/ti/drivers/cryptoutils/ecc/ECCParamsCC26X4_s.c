@@ -163,15 +163,15 @@ static const PKA_EccParam256 Ed25519_d = {.byte = {0xa3, 0x78, 0x59, 0x13, 0xca,
                                                    0x41, 0x4d, 0x0a, 0x70, 0x00, 0x98, 0xe8, 0x79, 0x77, 0x79, 0x40,
                                                    0xc7, 0x8c, 0x73, 0xfe, 0x6f, 0x2b, 0xee, 0x6c, 0x03, 0x52}};
 
-static const ECCParams_CurveParams ECCParams_s_Ed25519 = {.curveType  = ECCParams_CURVE_TYPE_EDWARDS,
-                                                          .length     = 32,
-                                                          .prime      = Ed25519_prime.byte,
-                                                          .order      = Ed25519_order.byte,
-                                                          .a          = Ed25519_a.byte,
-                                                          .b          = Ed25519_d.byte,
-                                                          .generatorX = Ed25519_generator.x.byte,
-                                                          .generatorY = Ed25519_generator.y.byte,
-                                                          .cofactor   = 8};
+const ECCParams_CurveParams ECCParams_s_Ed25519 = {.curveType  = ECCParams_CURVE_TYPE_EDWARDS,
+                                                   .length     = 32,
+                                                   .prime      = Ed25519_prime.byte,
+                                                   .order      = Ed25519_order.byte,
+                                                   .a          = Ed25519_a.byte,
+                                                   .b          = Ed25519_d.byte,
+                                                   .generatorX = Ed25519_generator.x.byte,
+                                                   .generatorY = Ed25519_generator.y.byte,
+                                                   .cofactor   = 8};
 
 /*
  * Wei25519 constants in little endian format. byte[0] is the least
@@ -201,15 +201,15 @@ static const PKA_EccParam256 Wei25519_b = {.byte = {0x64, 0xc8, 0x10, 0x77, 0x9c
                                                     0x5e, 0x42, 0x7b, 0x09, 0xed, 0x25, 0xb4, 0x97, 0xd0, 0x5e, 0x42,
                                                     0x7b, 0x09, 0xed, 0x25, 0xb4, 0x97, 0xd0, 0x5e, 0x42, 0x7b}};
 
-static const ECCParams_CurveParams ECCParams_s_Wei25519 = {.curveType  = ECCParams_CURVE_TYPE_SHORT_WEIERSTRASS_GEN,
-                                                           .length     = 32,
-                                                           .prime      = Wei25519_prime.byte,
-                                                           .order      = Wei25519_order.byte,
-                                                           .a          = Wei25519_a.byte,
-                                                           .b          = Wei25519_b.byte,
-                                                           .generatorX = Wei25519_generator.x.byte,
-                                                           .generatorY = Wei25519_generator.y.byte,
-                                                           .cofactor   = 8};
+const ECCParams_CurveParams ECCParams_s_Wei25519 = {.curveType  = ECCParams_CURVE_TYPE_SHORT_WEIERSTRASS_GEN,
+                                                    .length     = 32,
+                                                    .prime      = Wei25519_prime.byte,
+                                                    .order      = Wei25519_order.byte,
+                                                    .a          = Wei25519_a.byte,
+                                                    .b          = Wei25519_b.byte,
+                                                    .generatorX = Wei25519_generator.x.byte,
+                                                    .generatorY = Wei25519_generator.y.byte,
+                                                    .cofactor   = 8};
 
 /* Curve param pointer table indexed by the ECCParams_SecureCurve enum value */
 static const ECCParams_CurveParams *const ECCParams_s_curveParamTable[ECCParams_SecureCurve_COUNT] =

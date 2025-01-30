@@ -7,6 +7,9 @@
 
 cmake_policy(SET CMP0076 NEW)
 
+if(POLICY CMP0115)
+    cmake_policy(SET CMP0115 OLD)
+endif()
 set(B_U585I_IOT02A_DIR ${CMAKE_CURRENT_LIST_DIR})
 set(STM_COMMON_DIR ${B_U585I_IOT02A_DIR}/../common)
 
@@ -29,12 +32,37 @@ if(STSAFEA)
     include(${STM_COMMON_DIR}/secure_element/CMakeLists.txt)
 endif()
 
-if(NS)
-    target_sources(tfm_ns
-        PRIVATE
-            ${STM_COMMON_DIR}/stm32u5xx/Device/Source/startup_stm32u5xx_ns.c
-    )
-endif()
+# cpuarch.cmake is used to set things that related to the platform that are both
+install(FILES
+    ${TARGET_PLATFORM_PATH}/cpuarch.cmake
+    DESTINATION ${INSTALL_PLATFORM_NS_DIR}
+)
+
+install(FILES
+    ${STM_COMMON_DIR}/stm32u5xx/Device/Source/startup_stm32u5xx_ns.c
+    DESTINATION ${INSTALL_PLATFORM_NS_DIR}/Device/Source
+)
+
+install(DIRECTORY
+    ${TARGET_PLATFORM_PATH}/ns/
+    DESTINATION ${INSTALL_PLATFORM_NS_DIR}
+)
+
+install(DIRECTORY
+    ${TARGET_PLATFORM_PATH}/include
+    DESTINATION ${INSTALL_PLATFORM_NS_DIR}
+)
+
+install(FILES
+    ${TARGET_PLATFORM_PATH}//accelerator/crypto_accelerator_config.h
+    DESTINATION ${INSTALL_PLATFORM_NS_DIR}/include
+)
+
+install(FILES
+    ${B_U585I_IOT02A_DIR}/partition/flash_layout.h
+    ${B_U585I_IOT02A_DIR}/partition/region_defs.h
+    DESTINATION ${INSTALL_PLATFORM_NS_DIR}/partition
+)
 
 if(BL2)
     target_sources(bl2
@@ -46,11 +74,16 @@ if(BL2)
             ${B_U585I_IOT02A_DIR}/src/b_u585i_iot02a_ospi.c
     )
 endif()
-
-install(FILES ${B_U585I_IOT02A_DIR}/include/flash_layout.h
-              ${B_U585I_IOT02A_DIR}/include/region_defs.h
-        DESTINATION  ${CMAKE_BINARY_DIR} )
+#install flash layout for postbuild.sh
+install(FILES
+    ${B_U585I_IOT02A_DIR}/partition/flash_layout.h
+    ${B_U585I_IOT02A_DIR}/partition/region_defs.h
+    DESTINATION ${CMAKE_INSTALL_PREFIX}
+)
 set (BL2_FILE_TO_PREPROCESS ${CMAKE_CURRENT_BINARY_DIR}/image_macros_to_preprocess_bl2.c)
 file(WRITE ${BL2_FILE_TO_PREPROCESS} ${BL2_PREPROCESSING})
-install(FILES ${BL2_FILE_TO_PREPROCESS}
-        DESTINATION ${CMAKE_BINARY_DIR} )
+
+install(FILES
+    ${BL2_FILE_TO_PREPROCESS}
+    DESTINATION ${CMAKE_INSTALL_PREFIX}
+)

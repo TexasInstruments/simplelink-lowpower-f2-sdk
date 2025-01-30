@@ -15,7 +15,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -218,6 +218,7 @@ void *HEAPMGR_MALLOC(uint32_t size)
 {
   Header_Custom *tmp;
   uint_least16_t hwikey;
+  uint32_t allocSize = size;
 
   // return NULL if size is 0
   if (size == 0)
@@ -227,6 +228,13 @@ void *HEAPMGR_MALLOC(uint32_t size)
 
   /* Add room for the "malloc" like header */
   size += sizeof(Header_Custom);
+
+  // If 'size' is very large and it will overflow, the result will be
+  // smaller than 'allocSize'. In this case, don't try to allocate.
+  if ( size < allocSize )
+  {
+    return (NULL);
+  }
 
   /* Protect since HeapMem_allocUnprotected does not */
   hwikey = (uint_least16_t)Hwi_disable();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Texas Instruments Incorporated
+ * Copyright (c) 2023-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -71,14 +71,14 @@ int_fast16_t CANMCAN_setBitTimingRaw(const CAN_BitRateTimingRaw *rawTiming);
  *  to support a max payload size of 64-bytes. Otherwise, the buffers are
  *  configured to support a max payload size of 8-bytes for classic CAN.
  *
- *  @param  config       A pointer to CAN_MsgRAMConfig.
- *  @param  msgRAMSize   Size of the message RAM in bytes.
+ *  @param  config       A pointer to CAN_MsgRamConfig.
+ *  @param  msgRamSize   Size of the message RAM in bytes.
  *  @param  enableCANFD  Set to true if CAN FD is enabled, false otherwise.
  *
  *  @retval CAN_STATUS_SUCCESS if successful.
  *  @retval CAN_STATUS_ERROR if the message RAM config is invalid.
  */
-int_fast16_t CANMCAN_configMsgRAM(const CAN_MsgRAMConfig *config, uint32_t msgRAMSize, bool enableCANFD);
+int_fast16_t CANMCAN_configMsgRam(const CAN_MsgRamConfig *config, uint32_t msgRamSize, bool enableCANFD);
 
 /*!
  *  @brief  Returns the MCAN interrupt mask based on the CAN event mask.

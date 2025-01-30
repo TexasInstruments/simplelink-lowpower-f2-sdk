@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2018 ARM Limited
+ * Copyright (c) 2016-2023 ARM Limited
  *
  * Licensed under the Apache License Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,20 +135,20 @@ extern struct ppc_sse200_dev_t APB_PPCEXP3_DEV_S;
 
 /* CMSDK Timer driver structures */
 #ifdef CMSDK_TIMER0_S
-#include "timer_cmsdk/timer_cmsdk.h"
+#include "timer_cmsdk.h"
 extern struct cmsdk_timer_dev_t CMSDK_TIMER0_DEV_S;
 #endif
 #ifdef CMSDK_TIMER0_NS
-#include "timer_cmsdk/timer_cmsdk.h"
+#include "timer_cmsdk.h"
 extern struct cmsdk_timer_dev_t CMSDK_TIMER0_DEV_NS;
 #endif
 
 #ifdef CMSDK_TIMER1_S
-#include "timer_cmsdk/timer_cmsdk.h"
+#include "timer_cmsdk.h"
 extern struct cmsdk_timer_dev_t CMSDK_TIMER1_DEV_S;
 #endif
 #ifdef CMSDK_TIMER1_NS
-#include "timer_cmsdk/timer_cmsdk.h"
+#include "timer_cmsdk.h"
 extern struct cmsdk_timer_dev_t CMSDK_TIMER1_DEV_NS;
 #endif
 

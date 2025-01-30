@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,16 +60,13 @@
  */
 #define KEYSTORE_PSA_S_MSG_TYPE_GET_KEY              KEYSTORE_PSA_S_MSG_TYPE(0U)
 #define KEYSTORE_PSA_S_MSG_TYPE_GENERATE_KEY         KEYSTORE_PSA_S_MSG_TYPE(1U)
-#define KEYSTORE_PSA_S_MSG_TYPE_EXPORT_CERTIFICATE   KEYSTORE_PSA_S_MSG_TYPE(2U)
-#define KEYSTORE_PSA_S_MSG_TYPE_EXPORT_PUBLIC_KEY    KEYSTORE_PSA_S_MSG_TYPE(3U)
-#define KEYSTORE_PSA_S_MSG_TYPE_EXPORT_KEY           KEYSTORE_PSA_S_MSG_TYPE(4U)
-#define KEYSTORE_PSA_S_MSG_TYPE_DESTROY_CERTIFICATE  KEYSTORE_PSA_S_MSG_TYPE(5U)
-#define KEYSTORE_PSA_S_MSG_TYPE_DESTROY_KEY          KEYSTORE_PSA_S_MSG_TYPE(6U)
-#define KEYSTORE_PSA_S_MSG_TYPE_IMPORT_CERTIFICATE   KEYSTORE_PSA_S_MSG_TYPE(7U)
-#define KEYSTORE_PSA_S_MSG_TYPE_IMPORT_KEY           KEYSTORE_PSA_S_MSG_TYPE(8U)
-#define KEYSTORE_PSA_S_MSG_TYPE_PURGE_KEY            KEYSTORE_PSA_S_MSG_TYPE(9U)
-#define KEYSTORE_PSA_S_MSG_TYPE_GET_KEY_ATTRIBUTES   KEYSTORE_PSA_S_MSG_TYPE(10U)
-#define KEYSTORE_PSA_S_MSG_TYPE_RESET_KEY_ATTRIBUTES KEYSTORE_PSA_S_MSG_TYPE(11U)
+#define KEYSTORE_PSA_S_MSG_TYPE_EXPORT_PUBLIC_KEY    KEYSTORE_PSA_S_MSG_TYPE(2U)
+#define KEYSTORE_PSA_S_MSG_TYPE_EXPORT_KEY           KEYSTORE_PSA_S_MSG_TYPE(3U)
+#define KEYSTORE_PSA_S_MSG_TYPE_DESTROY_KEY          KEYSTORE_PSA_S_MSG_TYPE(4U)
+#define KEYSTORE_PSA_S_MSG_TYPE_IMPORT_KEY           KEYSTORE_PSA_S_MSG_TYPE(5U)
+#define KEYSTORE_PSA_S_MSG_TYPE_PURGE_KEY            KEYSTORE_PSA_S_MSG_TYPE(6U)
+#define KEYSTORE_PSA_S_MSG_TYPE_GET_KEY_ATTRIBUTES   KEYSTORE_PSA_S_MSG_TYPE(7U)
+#define KEYSTORE_PSA_S_MSG_TYPE_RESET_KEY_ATTRIBUTES KEYSTORE_PSA_S_MSG_TYPE(8U)
 
 /*
  * ============ KeyStore driver Secure Message Structs =========
@@ -96,7 +93,7 @@ typedef struct
     KeyStore_PSA_KeyFileId *key;
 } KeyStore_s_GenerateKeyMsg;
 
-/* Msg for KeyStore_PSA_exportKey(), KeyStore_PSA_exportCertificate(), and KeyStore_PSA_exportPublicKey() */
+/* Msg for KeyStore_PSA_exportKey() and KeyStore_PSA_exportPublicKey() */
 typedef struct
 {
     uint32_t key;
@@ -108,24 +105,16 @@ typedef struct
 typedef struct
 {
     struct psa_client_key_attributes_s *attributes;
-    uint32_t *key;
-    uint8_t *data;
-    size_t dataLength;
-} KeyStore_s_ImportCertificateMsg;
-
-typedef struct
-{
-    struct psa_client_key_attributes_s *attributes;
     uint8_t *data;
     size_t dataLength;
     uint32_t *key;
 } KeyStore_s_ImportKeyMsg;
 
-/* Msg for KeyStore_PSA_destroyKey(), KeyStore_PSA_destroyCertificate(), and KeyStore_PSA_purgeKey() */
+/* Msg for KeyStore_PSA_destroyKey() and KeyStore_PSA_purgeKey() */
 typedef struct
 {
     uint32_t key;
-} KeyStore_s_DestroyPurgeKeyCertificateMsg;
+} KeyStore_s_DestroyPurgeKeyMsg;
 
 typedef struct
 {

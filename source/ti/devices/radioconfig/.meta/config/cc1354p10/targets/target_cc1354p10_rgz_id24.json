@@ -1,0 +1,13 @@
+{
+    "target": {
+        "Name": "CC1354P10_RGZ_ID24",
+        "Revision": [],
+        "Description": "CC1354P10 RGZ on RF Designs with Internal Bias and Differential front end on the 2.4 GHz RF port",
+        "DeviceName": "CC1354P10",
+        "DevicePackage": "RGZ 7x7",
+        "FrontEnd": "ID",
+        "PaSettings": "pasettings.json",
+        "RfDesign": "CC2674R10-7x7-ID24",
+        "DefaultCategory": "Settings"
+    }
+}

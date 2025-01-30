@@ -1,0 +1,84 @@
+/*
+ * Copyright (c) 2024, Texas Instruments Incorporated - http://www.ti.com
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * *  Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * *  Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * *  Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+/*
+ *  ======== BP_EM_CS.syscfg.json ========
+ */
+
+{
+    "name": "BP_EM_CS",
+    "displayName": "BP-EM-CS",
+    "description": "Channel Sounding TI BoosterPack",
+    "headerType": "BoosterPack 40 pin",
+    "components": {
+        "antennaSelect": {
+            "displayName" : "Channel Sounding antenna select",
+            "description" : "Select different antennas on the boosterpack with the VC pins for the device you are using.",
+            "longDescription" : "A different antenna is selected depending on the state of the VC pins: \n 00 for RF4, 01 for A2 (RF2), 10 for A3 (RF3) and 11 for RF1.",
+            "subComponents" : {
+                    "VC1_CC23X0": {
+                        "displayName": "VC1 for CC23X0",
+                        "description": "VC1 Channel Sounding Pin for CC23X0 boards",
+                        "definition"  : "/ti/boards/components/digitalOutput.json",
+                        "connections" : {
+                            "OUTPUT": 27
+                        }
+                    },
+                    "VC2_CC23X0": {
+                        "displayName": "VC2 for CC23X0",
+                        "description": "VC2 Channel Sounding Pin for CC23X0 boards",
+                        "definition"  : "/ti/boards/components/digitalOutput.json",
+                        "connections" : {
+                            "OUTPUT": 28
+                        }
+                    },
+                    "VC1_CC27XX": {
+                        "displayName": "VC1 for CC27XX",
+                        "description": "VC1 Channel Sounding Pin for CC27XX boards",
+                        "definition"  : "/ti/boards/components/digitalOutput.json",
+                        "connections" : {
+                            "OUTPUT": 31
+                        }
+                    },
+                    "VC2_CC27XX": {
+                        "displayName": "VC2 for CC27XX",
+                        "description": "VC2 Channel Sounding Pin for CC27XX boards",
+                        "definition"  : "/ti/boards/components/digitalOutput.json",
+                        "connections" : {
+                            "OUTPUT": 33
+                        }
+                    }
+                }
+        }
+    }
+}

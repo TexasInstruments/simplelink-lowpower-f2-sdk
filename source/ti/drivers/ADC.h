@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020, Texas Instruments Incorporated
+ * Copyright (c) 2016-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -401,6 +401,11 @@ typedef struct ADC_Config_
  *
  *  @pre        ADC_open() has to be called first.
  *
+ *  @warning    This function must not be called while a conversion is in
+ *              progress, meaning any call to #ADC_convert() and
+ *              #ADC_convertChain() must have returned before calling
+ *              #ADC_close()
+ *
  *  @param[in]  handle An #ADC_Handle returned from ADC_open()
  */
 extern void ADC_close(ADC_Handle handle);
@@ -462,8 +467,8 @@ extern int_fast16_t ADC_convert(ADC_Handle handle, uint16_t *value);
  *                                of #ADC_Handle
  *
  *  @retval #ADC_STATUS_SUCCESS  The conversion was successful.
- *  @retval #ADC_STATUS_ERROR    The conversion failed and @p value is
- *                               invalid.
+ *  @retval #ADC_STATUS_ERROR    The conversion failed and the data in
+ *                               @p dataBuffer is invalid.
  *
  *  @sa     ADC_convert()
  */

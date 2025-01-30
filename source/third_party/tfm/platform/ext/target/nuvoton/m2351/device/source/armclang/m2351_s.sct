@@ -29,10 +29,17 @@ LR_CODE S_CODE_START {
     }
 
     /**** Unprivileged Secure code start here */
-    TFM_UNPRIV_CODE +0 ALIGN 32 {
+    TFM_UNPRIV_CODE_START +0 ALIGN 32 {
         *(SFN)
         *armlib*
         *libtfm_sprt.a (+RO)
+    }
+
+    /*
+     * This empty, zero long execution region is here to mark the end address
+     * of TFM unprivileged code.
+     */
+    TFM_UNPRIV_CODE_END +0 ALIGN 32 EMPTY 0x0 {
     }
 
     /**** PSA RoT RO part (CODE + RODATA) start here */
@@ -130,13 +137,13 @@ LR_CODE S_CODE_START {
     }
 #endif /* TFM_PARTITION_TEST_CORE_IPC */
 
-#ifdef TEST_NS_SLIH_IRQ
-    TFM_SLIH_TEST_LINKER +0 ALIGN 32 {
-        *tfm_Slih_test_service.* (+RO)
+#ifdef TFM_PARTITION_SLIH_TEST
+    TFM_SP_SLIH_TEST_LINKER +0 ALIGN 32 {
+        *tfm_slih_test_service.* (+RO)
         *timer_cmsdk* (+RO)
-        *(TFM_SLIH_TEST_ATTR_FN)
+        *(TFM_SP_SLIH_TEST_ATTR_FN)
     }
-#endif /* TEST_NS_SLIH_IRQ */
+#endif /* TFM_PARTITION_SLIH_TEST */
 
 #ifdef TFM_PARTITION_TEST_SECURE_SERVICES
     TFM_SP_SECURE_CLIENT_2_LINKER +0 ALIGN 32 {
@@ -194,12 +201,6 @@ LR_CODE S_CODE_START {
     STACKSEAL +0 EMPTY 0x8 {
     }
 
-#if defined(CONFIG_TFM_PARTITION_META)
-    TFM_SP_META_PTR +0 ALIGN 32 {
-        *(.bss.SP_META_PTR_SPRTL_INST)
-    }
-#endif
-
     /**** APP RoT DATA start here */
     /*
      * This empty, zero long execution region is here to mark the start address
@@ -231,7 +232,7 @@ LR_CODE S_CODE_START {
     }
 #endif /* TFM_PARTITION_TEST_CORE_IPC */
 
-#ifdef TEST_NS_SLIH_IRQ
+#ifdef TFM_PARTITION_SLIH_TEST
     TFM_SP_SLIH_TEST_LINKER_DATA +0 ALIGN 32 {
         *tfm_slih_test_service.* (+RW +ZI)
         *timer_cmsdk* (+RW +ZI)
@@ -241,7 +242,7 @@ LR_CODE S_CODE_START {
 
     TFM_SP_SLIH_TEST_LINKER_STACK +0 ALIGN 128 EMPTY 0x0400 {
     }
-#endif /* TEST_NS_SLIH_IRQ */
+#endif /* TFM_PARTITION_SLIH_TEST */
 
 #ifdef TFM_PARTITION_TEST_SECURE_SERVICES
     TFM_SP_SECURE_CLIENT_2_LINKER_DATA +0 ALIGN 32 {

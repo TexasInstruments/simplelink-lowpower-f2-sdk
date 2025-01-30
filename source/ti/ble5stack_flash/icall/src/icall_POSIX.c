@@ -15,7 +15,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2024, Texas Instruments Incorporated
+ Copyright (c) 2013-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -2678,11 +2678,21 @@ void *ICall_allocMsg(size_t size)
   void * msg = NULL;
   ICall_MsgHdr *hdr = NULL;
   ICall_CSState key;
+  size_t allocSize;
+
+  allocSize = sizeof(ICall_MsgHdr) + size;
+
+  // If 'size' is very large and 'allocSize' overflows, the result will be
+  // smaller than size. In this case, don't try to allocate.
+  if ( allocSize < size )
+  {
+    return (NULL);
+  }
 
   // Enter CS to avoid race with allocation from interrupt context
   key = ICall_enterCSImpl();
 
-  hdr = (ICall_MsgHdr *) ICall_heapMalloc(sizeof(ICall_MsgHdr) + size);
+  hdr = (ICall_MsgHdr *) ICall_heapMalloc(allocSize);
 
   if (!hdr)
   {

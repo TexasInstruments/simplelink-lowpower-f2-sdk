@@ -2439,5 +2439,7 @@
     "../../../examples/rtos/LP_EM_CC1354P10_6/prop_rf/tfm_rfPacketTx/freertos/ticlang/tfm_rfPacketTx_LP_EM_CC1354P10_6_freertos_ticlang.projectspec": "tfm_rfPacketTx_LP_EM_CC1354P10_6_freertos_ticlang_0.dependency.tirex.json",
     "../../../examples/rtos/LP_EM_CC1354P10_6/prop_rf/tfm_rfPacketTx/tirtos7/gcc/tfm_rfPacketTx_LP_EM_CC1354P10_6_tirtos7_gcc.projectspec": "tfm_rfPacketTx_LP_EM_CC1354P10_6_tirtos7_gcc_0.dependency.tirex.json",
     "../../../examples/rtos/LP_EM_CC1354P10_6/prop_rf/tfm_rfPacketTx/tirtos7/iar/tfm_rfPacketTx_LP_EM_CC1354P10_6_tirtos7_iar.ipcf": "tfm_rfPacketTx_LP_EM_CC1354P10_6_tirtos7_iar_0.dependency.tirex.json",
-    "../../../examples/rtos/LP_EM_CC1354P10_6/prop_rf/tfm_rfPacketTx/tirtos7/ticlang/tfm_rfPacketTx_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec": "tfm_rfPacketTx_LP_EM_CC1354P10_6_tirtos7_ticlang_0.dependency.tirex.json"
+    "../../../examples/rtos/LP_EM_CC1354P10_6/prop_rf/tfm_rfPacketTx/tirtos7/ticlang/tfm_rfPacketTx_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec": "tfm_rfPacketTx_LP_EM_CC1354P10_6_tirtos7_ticlang_0.dependency.tirex.json",
+    "../../../examples/rtos/LP_EM_CC2674P10/prop_rf/rfDiagnostics/tirtos7/gcc/rfDiagnostics_LP_EM_CC2674P10_tirtos7_gcc.projectspec": "rfDiagnostics_LP_EM_CC2674P10_tirtos7_gcc_0.dependency.tirex.json",
+    "../../../examples/rtos/LP_EM_CC2674P10/prop_rf/rfDiagnostics/tirtos7/ticlang/rfDiagnostics_LP_EM_CC2674P10_tirtos7_ticlang.projectspec": "rfDiagnostics_LP_EM_CC2674P10_tirtos7_ticlang_0.dependency.tirex.json"
 }

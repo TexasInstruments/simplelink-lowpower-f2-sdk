@@ -13,7 +13,7 @@ set(TFM_NS_CLIENT_IDENTIFICATION        OFF         CACHE BOOL      "Enable NS c
 
 ############################ Platform ##########################################
 
-add_definitions(-DCYB0644ABZI_S2D44)
+add_compile_definitions(CYB0644ABZI_S2D44)
 
 set(NUM_MAILBOX_QUEUE_SLOT              4           CACHE BOOL      "Number of mailbox queue slots")
 set(TFM_PARTITION_INTERNAL_TRUSTED_STORAGE ON       CACHE BOOL      "Enable Internal Trusted Storage partition")
@@ -32,11 +32,11 @@ set(CY_P64_UTILS_LIB_VERSION            "release-v1.0.0" CACHE STRING "The versi
 set(CY_P64_UTILS_FORCE_PATCH            OFF         CACHE BOOL      "Always apply p64_utils patches")
 
 # Configure PDL to use RAM interrup vectors. This is required by P64_utils
-add_definitions(-DRAM_VECTORS_SUPPORT)
+add_compile_definitions(RAM_VECTORS_SUPPORT)
 
 # Disable default PDL IPC configuration. Use Cy_Platform_Init() in
 # in psoc6_system_init_cm4.c and psoc6_system_init_cm0p.c instead.
-add_definitions(-DCY_IPC_DEFAULT_CFG_DISABLE)
+add_compile_definitions(CY_IPC_DEFAULT_CFG_DISABLE)
 
 # Platform-specific configurations
 set(CONFIG_TFM_USE_TRUSTZONE            OFF)

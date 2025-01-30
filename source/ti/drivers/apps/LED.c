@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2021, Texas Instruments Incorporated
+ * Copyright (c) 2016-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,6 +59,9 @@ extern const uint_least8_t LED_count;
 
 /* Local functions: */
 
+static void clockTimeoutHandler(uintptr_t arg);
+static uint32_t msToTicks(uint32_t ms);
+
 /*
  *  ======== clockTimeoutHandler ========
  * Called when blinker clock times out
@@ -66,7 +69,7 @@ extern const uint_least8_t LED_count;
 static void clockTimeoutHandler(uintptr_t arg)
 {
     LED_Object *obj = ((LED_Handle)arg)->object;
-    ClockP_setTimeout(obj->clockHandle, obj->togglePeriod);
+    ClockP_setTimeout(obj->clockHandle, msToTicks(obj->togglePeriod));
     ClockP_start(obj->clockHandle);
     LED_toggle((LED_Handle)arg);
 
@@ -396,7 +399,7 @@ bool LED_setOn(LED_Handle ledHandle, uint8_t brightness)
 
 /*
  *  ======== LED_startBlinking ========
- *  Starts blinking an LED with specified period and specified number of times
+ *  Starts blinking an LED with specified period (in ms) and specified number of times
  */
 void LED_startBlinking(LED_Handle ledHandle, uint16_t blinkPeriod, uint16_t blinkCount)
 {
@@ -433,9 +436,8 @@ void LED_startBlinking(LED_Handle ledHandle, uint16_t blinkPeriod, uint16_t blin
             }
             obj->blinkCount = 2 * blinkCount;
         }
-
-        obj->togglePeriod = msToTicks(blinkPeriod / 2);
-        ClockP_setTimeout(obj->clockHandle, obj->togglePeriod);
+        obj->togglePeriod = blinkPeriod / 2;
+        ClockP_setTimeout(obj->clockHandle, msToTicks(obj->togglePeriod));
         ClockP_start(obj->clockHandle);
         obj->state = LED_STATE_BLINKING;
     }

@@ -8,6 +8,7 @@
             "+../README.html -> README.html",
             "+../main_nortos.c -> main_nortos.c",
             "+../display.syscfg -> display.syscfg",
+            "+../syscall_stubs.c -> syscall_stubs.c",
             "+../../../../../../source/ti/boards/LP_CC1312R7/Board.html -> Board.html",
             "+cc13x2x7_cc26x2x7_nortos.lds -> cc13x2x7_cc26x2x7_nortos.lds"
         ]

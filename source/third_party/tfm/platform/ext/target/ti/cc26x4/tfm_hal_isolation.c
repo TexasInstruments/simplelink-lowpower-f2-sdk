@@ -58,7 +58,7 @@ FIH_RET_TYPE(enum tfm_hal_status_t) tfm_hal_set_up_static_boundaries(
  * SPM passes the handle to platform to do platform settings and update
  * isolation boundaries.
  */
-enum tfm_hal_status_t tfm_hal_bind_boundary(
+FIH_RET_TYPE(enum tfm_hal_status_t) tfm_hal_bind_boundary(
                                     const struct partition_load_info_t *p_ldinf,
                                     uintptr_t *p_boundary)
 {
@@ -67,10 +67,10 @@ enum tfm_hal_status_t tfm_hal_bind_boundary(
     uint32_t partition_attrs = 0;
 
     if (!p_ldinf || !p_boundary) {
-        return TFM_HAL_ERROR_GENERIC;
+        FIH_RET(fih_int_encode(TFM_HAL_ERROR_GENERIC));
     }
 
-#if TFM_LVL == 1
+#if TFM_ISOLATION_LEVEL == 1
     privileged = true;
 #else
     privileged = IS_PSA_ROT(p_ldinf);
@@ -80,42 +80,45 @@ enum tfm_hal_status_t tfm_hal_bind_boundary(
 
     /* Platform does not have a need for MMIO yet */
 
-    partition_attrs = ((uint32_t)privileged << HANDLE_ATTR_PRIV_POS) &
+    partition_attrs |= ((uint32_t)privileged << HANDLE_ATTR_PRIV_POS) &
                         HANDLE_ATTR_PRIV_MASK;
     partition_attrs |= ((uint32_t)ns_agent << HANDLE_ATTR_NS_POS) &
                         HANDLE_ATTR_NS_MASK;
     *p_boundary = (uintptr_t)partition_attrs;
 
-    return TFM_HAL_SUCCESS;
+    FIH_RET(fih_int_encode(TFM_HAL_SUCCESS));
 }
 
-enum tfm_hal_status_t tfm_hal_activate_boundary(
+FIH_RET_TYPE(enum tfm_hal_status_t) tfm_hal_activate_boundary(
                              const struct partition_load_info_t *p_ldinf,
                              uintptr_t boundary)
 {
     CONTROL_Type ctrl;
-    bool privileged = !!((uint32_t)boundary & HANDLE_ATTR_PRIV_MASK);
+    uint32_t local_handle = (uint32_t)boundary;
+    bool privileged = !!(local_handle & HANDLE_ATTR_PRIV_MASK);
 
     /* Privileged level is required to be set always */
     ctrl.w = __get_CONTROL();
     ctrl.b.nPRIV = privileged ? 0 : 1;
     __set_CONTROL(ctrl.w);
 
-    return TFM_HAL_SUCCESS;
+
+    FIH_RET(fih_int_encode(TFM_HAL_SUCCESS));
 }
 
-enum tfm_hal_status_t tfm_hal_memory_check(uintptr_t boundary, uintptr_t base,
+FIH_RET_TYPE(enum tfm_hal_status_t) tfm_hal_memory_check(
+                                           uintptr_t boundary, uintptr_t base,
                                            size_t size, uint32_t access_type)
 {
     int flags = 0;
 
     /* If size is zero, this indicates an empty buffer and base is ignored */
     if (size == 0) {
-        return TFM_HAL_SUCCESS;
+        FIH_RET(fih_int_encode(TFM_HAL_SUCCESS));
     }
 
     if (!base) {
-        return TFM_HAL_ERROR_INVALID_INPUT;
+        FIH_RET(fih_int_encode(TFM_HAL_ERROR_INVALID_INPUT));
     }
 
     if ((access_type & TFM_HAL_ACCESS_READWRITE) == TFM_HAL_ACCESS_READWRITE) {
@@ -123,7 +126,7 @@ enum tfm_hal_status_t tfm_hal_memory_check(uintptr_t boundary, uintptr_t base,
     } else if (access_type & TFM_HAL_ACCESS_READABLE) {
         flags |= CMSE_MPU_READ;
     } else {
-        return TFM_HAL_ERROR_INVALID_INPUT;
+        FIH_RET(fih_int_encode(TFM_HAL_ERROR_INVALID_INPUT));
     }
 
     if (!((uint32_t)boundary & HANDLE_ATTR_PRIV_MASK)) {
@@ -142,9 +145,9 @@ enum tfm_hal_status_t tfm_hal_memory_check(uintptr_t boundary, uintptr_t base,
     }
 
     if (cmse_check_address_range((void *)base, size, flags) != NULL) {
-        return TFM_HAL_SUCCESS;
+        FIH_RET(fih_int_encode(TFM_HAL_SUCCESS));
     } else {
-        return TFM_HAL_ERROR_MEM_FAULT;
+        FIH_RET(fih_int_encode(TFM_HAL_ERROR_MEM_FAULT));
     }
 }
 

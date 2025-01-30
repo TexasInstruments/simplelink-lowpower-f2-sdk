@@ -70,6 +70,11 @@ for (let i in clusters) {
       }
     }
   }
+
+  if (tempServerCommandOptions.length == 0) {
+    mcmcrServerAlwaysHidden.push(cluster._id + "mcmcrServer");
+    tempServerCommandOptions.push({name: "dummy", displayName: "dummy"});
+  }
   mcmcrModule.config.push({
     name: cluster._id + "mcmcrServer",
     displayName: cluster._name + " Server Commands",
@@ -81,7 +86,6 @@ for (let i in clusters) {
     minSelections: 0
   })
   mcmcrServerDropDowns.push(cluster._id + "mcmcrServer");
-  if (tempServerCommandOptions.length == 0) { mcmcrServerAlwaysHidden.push(cluster._id + "mcmcrServer"); }
 
   let tempClientCommandDefault = [];
   let tempClientCommandOptions = [];
@@ -94,6 +98,11 @@ for (let i in clusters) {
       }
     }
   }
+
+  if (tempClientCommandOptions.length == 0) {
+    mcmcrClientAlwaysHidden.push(cluster._id + "mcmcrClient");
+    tempClientCommandOptions.push({name: "dummy", displayName: "dummy"});
+  }
   mcmcrModule.config.push({
     name: cluster._id + "mcmcrClient",
     displayName: cluster._name + " Client Commands",
@@ -105,7 +114,6 @@ for (let i in clusters) {
     minSelections: 0
   })
   mcmcrClientDropDowns.push(cluster._id + "mcmcrClient");
-  if (tempClientCommandOptions.length == 0) { mcmcrClientAlwaysHidden.push(cluster._id + "mcmcrClient"); }
 }
 
 /* Function to handle changes in the mandatory server clusters */

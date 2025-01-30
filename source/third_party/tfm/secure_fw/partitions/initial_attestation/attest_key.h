@@ -51,8 +51,7 @@ attest_get_initial_attestation_key_id(struct q_useful_buf_c *attest_key_id);
 static inline enum psa_attest_err_t
 attest_get_initial_attestation_key_id(struct q_useful_buf_c *attest_key_id)
 {
-    (void)attest_key_id;
-
+    *attest_key_id = NULL_Q_USEFUL_BUF_C;
     return PSA_ATTEST_ERR_SUCCESS;
 }
 #endif /* ATTEST_INCLUDE_COSE_KEY_ID */

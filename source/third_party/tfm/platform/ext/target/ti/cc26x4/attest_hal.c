@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instrubments Incorporated. All rights reserved.
+ * Copyright (c) 2022, Texas Instruments Incorporated. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *

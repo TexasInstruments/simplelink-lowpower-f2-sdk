@@ -183,7 +183,9 @@ msg_tr_t *dhcp_tr_create(void)
     uint32_t tr_id;
     msg_tr_t *msg_ptr = NULL;
     msg_ptr = ns_dyn_mem_temporary_alloc(sizeof(msg_tr_t));
+    tr_info("Allocating %d bytes of memory for dhcp_tr_create", sizeof(msg_tr_t));
     if (msg_ptr == NULL) {
+        tr_error("Not enough memory for dhcp_tr_create!");
         return NULL;
     }
 
@@ -439,15 +441,62 @@ void recv_dhcp_relay_msg(void *cb_res)
 
     msg_len = socket_recvmsg(sckt_data->socket_id, &msghdr, NS_MSG_LEGACY0);
 
-    tr_debug("dhcp Relay recv msg");
-
     //Parse type
     uint8_t msg_type = *socket_data;
 
+    tr_debug("dhcp Relay recv msg. Msg Type: %d", msg_type);
+
     int16_t tc = 0;
+
     if (msg_type == DHCPV6_RELAY_FORWARD) {
-        tr_error("Drop not supported DHCPv6 forward at Agent");
-        goto cleanup;
+        //Parse and validate Relay
+        dhcpv6_relay_msg_t relay_msg;
+        if (!libdhcpv6_relay_msg_read(socket_data, msg_len, &relay_msg)) {
+            tr_error("Not valid relay");
+            goto cleanup;
+        }
+        if (0 != libdhcpv6_message_malformed_check(relay_msg.relay_options.msg_ptr, relay_msg.relay_options.len)) {
+            tr_error("Malformed packet");
+            goto cleanup;
+        }
+        uint8_t gp_address[16];
+        //Get global address from interface
+        if (addr_interface_select_source(interface_ptr, gp_address, relay_srv->server_address, 0) != 0) {
+            // No global prefix available
+            tr_error("No GP address");
+            goto cleanup;
+        }
+        ns_iovec_t msg_iov[2];
+        uint8_t *ptr = relay_frame;
+        //ADD relay frame vector front of original data
+        msghdr.msg_iov = &msg_iov[0];
+        msg_iov[0].iov_base = relay_frame;
+        msghdr.msg_iovlen = 2;
+        //SET Original Data
+        msg_iov[1].iov_base = socket_data;
+        msg_iov[1].iov_len = msg_len;
+
+        // set hop_count to 1, as we're forwarding this message on further outside the Wi-SUN network
+        ptr = libdhcpv6_dhcp_relay_msg_write(ptr, DHCPV6_RELAY_FORWARD, 1, src_address.address, gp_address);
+        if (relay_srv->add_interface_id_option) {
+            ptr = libdhcpv6_option_interface_id_write(ptr, sckt_data->interface_id);
+        }
+        ptr = libdhcpv6_dhcp_option_header_write(ptr, DHCPV6_OPTION_RELAY, msg_len);
+        //Update length of relay vector
+        msg_iov[0].iov_len = ptr - relay_frame;
+
+        //Update Neighbour table if necessary
+        relay_notify_t *neigh_notify = dhcp_service_notify_find(sckt_data->interface_id);
+        if (neigh_notify && neigh_notify->recv_notify_cb) {
+            neigh_notify->recv_notify_cb(sckt_data->interface_id, src_address.address);
+        }
+
+        //Copy DST address
+        memcpy(src_address.address, relay_srv->server_address, 16);
+        src_address.type = ADDRESS_IPV6;
+        src_address.identifier = DHCPV6_SERVER_PORT;
+        tr_debug("Forward Client msg to server");
+        tc = IP_DSCP_CS6 << IP_TCLASS_DSCP_SHIFT;
 
     } else if (msg_type == DHCPV6_RELAY_REPLY) {
         //Parse and validate Relay
@@ -460,15 +509,32 @@ void recv_dhcp_relay_msg(void *cb_res)
             tr_error("Malformed packet");
             goto cleanup;
         }
-        //Copy DST address
-        memcpy(src_address.address, relay_msg.peer_address, 16);
-        src_address.type = ADDRESS_IPV6;
-        src_address.identifier = DHCPV6_CLIENT_PORT;
-        msghdr.msg_iov = &msg_data;
-        msghdr.msg_iovlen = 1;
-        msg_data.iov_base = relay_msg.relay_options.msg_ptr;
-        msg_data.iov_len = relay_msg.relay_options.len;
-        tr_debug("Forward Original relay msg to client");
+        // hop count of 0 means we're at the parent of the joining node (which could also be the border router)
+        if(relay_msg.hop_count == 0)
+        {
+            //Copy DST address
+            memcpy(src_address.address, relay_msg.peer_address, 16);
+            src_address.type = ADDRESS_IPV6;
+            src_address.identifier = DHCPV6_CLIENT_PORT;
+            msghdr.msg_iov = &msg_data;
+            msghdr.msg_iovlen = 1;
+            msg_data.iov_base = relay_msg.relay_options.msg_ptr;
+            msg_data.iov_len = relay_msg.relay_options.len;
+            tr_debug("Forward DHCP Reply msg to client");
+        }
+        // hop_limit is equal to 1 when the border router receives a relay message from the Linux Host
+        // and the joining node isn't a direct child of the border router
+        else if(relay_msg.hop_count == 1)
+        {
+            memcpy(src_address.address, relay_msg.peer_address, 16);
+            src_address.type = ADDRESS_IPV6;
+            src_address.identifier = DHCPV6_SERVER_PORT;
+            msghdr.msg_iov = &msg_data;
+            msghdr.msg_iovlen = 1;
+            msg_data.iov_base = relay_msg.relay_options.msg_ptr;
+            msg_data.iov_len = relay_msg.relay_options.len;
+            tr_debug("Forward relay msg to joining node's parent");
+        }
 
     } else {
         if (0 != libdhcpv6_message_malformed_check(socket_data, msg_len)) {
@@ -476,7 +542,7 @@ void recv_dhcp_relay_msg(void *cb_res)
             goto cleanup;
         }
         uint8_t gp_address[16];
-        //Get blobal address from interface
+        //Get global address from interface
         if (addr_interface_select_source(interface_ptr, gp_address, relay_srv->server_address, 0) != 0) {
             // No global prefix available
             tr_error("No GP address");

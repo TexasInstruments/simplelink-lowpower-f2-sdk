@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2011-2024, Texas Instruments Incorporated
+ Copyright (c) 2011-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -99,6 +99,7 @@
 #define VT100_COLOR_INFO  "\x1b[39m"
 #define VT100_COLOR_DEBUG "\x1b[90m"
 #define VT100_COLOR_DEMO  "\x1b[39m"
+#define VT100_RESET_TERM  "\x1b[0m\n\r"
 
 #define DEFAULT_TRACE_TMP_LINE_LEN  128
 
@@ -209,13 +210,17 @@ void ns_trace_init(void)
     // bring trace output on UART1 TX pin
 #if defined(LP_CC1312R7) || defined(LAUNCHXL_CC1312R1)
     IOCPortConfigureSet(IOID_11, IOC_PORT_MCU_SWV, IOC_STD_OUTPUT);
-#elif defined(LP_EM_CC1314R10) || defined(CC1354P10_1) || defined(CC1354P10_6)
+#elif defined(LP_EM_CC1314R10) || defined(LP_CC1314R10_RGZ) \
+    || defined(LP_EM_CC1354P10_1) || defined(LP_CC1354P10_1_RGZ) || defined(LP_CC1354R10_RGZ) \
+    || defined(LP_EM_CC1354P10_6) || defined(LP_CC1354P10_6_RGZ)
     IOCPortConfigureSet(IOID_21, IOC_PORT_MCU_SWV, IOC_STD_OUTPUT);
 #else //1312
     IOCPortConfigureSet(IOID_16, IOC_PORT_MCU_SWV, IOC_STD_OUTPUT);
 #endif //1312
 #else //WISUN_NCP_ENABLE
-#if defined(LP_CC1312R7) || defined(LAUNCHXL_CC1312R1) || defined(LP_EM_CC1314R10) || defined(CC1354P10_1) || defined(CC1354P10_6)
+#if defined(LP_CC1312R7) || defined(LAUNCHXL_CC1312R1) || defined(LP_EM_CC1314R10) || defined(LP_CC1314R10_RGZ) \
+    || defined(LP_EM_CC1354P10_1) || defined(LP_CC1354P10_1_RGZ) || defined(LP_CC1354R10_RGZ) \
+    || defined(LP_EM_CC1354P10_6) || defined(LP_CC1354P10_6_RGZ)
     IOCPortConfigureSet(IOID_3, IOC_PORT_MCU_SWV, IOC_STD_OUTPUT);
 #else // 1312
     // bring trace output on UART0 TX pin
@@ -239,7 +244,7 @@ void ns_trace_vprintf(uint8_t dlevel, const char *grp, const char *fmt, va_list 
 {
     sem_wait(&ns_trace_mutex_handle);
     int len_written = 0, total_len =0, remaining_len;
-    uint8_t *pBuf;
+    char *pBuf;
 
     /*
      * This function assumes tirtos cfg file redirects System_printf to ns_put_char_blocking:
@@ -274,13 +279,17 @@ void ns_trace_vprintf(uint8_t dlevel, const char *grp, const char *fmt, va_list 
     // update the buf position
     pBuf += len_written;
     len_written = SystemP_vsnprintf(pBuf, remaining_len, fmt, ap);
+    if (len_written > (remaining_len - sizeof(VT100_RESET_TERM)))
+    {
+        len_written = remaining_len - sizeof(VT100_RESET_TERM);
+    }
 
     total_len += len_written;
     remaining_len = sizeof(ns_buf) - total_len;
 
     // update the buf position
     pBuf += len_written;
-    len_written = SystemP_snprintf(pBuf, remaining_len, "\x1b[0m\n\r", grp);
+    len_written = SystemP_snprintf(pBuf, remaining_len, VT100_RESET_TERM, grp);
 
     total_len += len_written;
     remaining_len = sizeof(ns_buf) - total_len;
@@ -420,7 +429,7 @@ char *ns_trace_array(const uint8_t *buf, uint16_t len)
     }
 
     const uint8_t *ptr = buf;
-    uint8_t *pOutput = tmpStr;
+    char *pOutput = tmpStr;
     // zero tmpbuf to Null
     memset (pOutput, 0x0,DEFAULT_TRACE_TMP_LINE_LEN);
 
@@ -451,7 +460,7 @@ char *ns_trace_array(const uint8_t *buf, uint16_t len)
 char *ns_trace_array16(const uint16_t *buf, uint16_t len)
 {
     int i;
-    if (len == 0 || tmpStr == NULL) {
+    if (len == 0) {
         return "";
     }
     if (buf == NULL) {
@@ -459,7 +468,7 @@ char *ns_trace_array16(const uint16_t *buf, uint16_t len)
     }
 
     const uint16_t *ptr = buf;
-    uint8_t *pOutput = tmpStr;
+    char *pOutput = tmpStr;
     // zero tmpbuf to Null
     memset (pOutput, 0x0,DEFAULT_TRACE_TMP_LINE_LEN);
 

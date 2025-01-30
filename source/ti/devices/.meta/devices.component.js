@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -69,6 +69,16 @@ if (deviceId.match(/CC13.[124]|CC26.[1234]|CC23.0|CC27../)) {
         {
             name: "/ti/devices/templates/ti_devices_CC27XX_config.c.xdt",
             outputPath: "ti_devices_config.c",
+            alwaysRun: false
+        },
+        {
+            name: "/ti/devices/templates/ti_devices_CC27XX_secure_boot_properties.json.xdt",
+            outputPath: "ti_secure_boot_properties.json",
+            alwaysRun: false
+        },
+        {
+            name: "/ti/devices/templates/ti_devices_CC27XX_secure_boot_properties.h.xdt",
+            outputPath: "ti_secure_boot_properties.h",
             alwaysRun: false
         }
     ];

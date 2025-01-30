@@ -65,7 +65,7 @@ void SystemInit (void)
 
 //#if __DOMAIN_NS == 0
 
-#if (defined (__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3L) && defined(BL2))
+#ifdef BL2
 
     /* Initial the system */
     SYS_UnlockReg();
@@ -77,7 +77,6 @@ void SystemInit (void)
 
     CLK->AHBCLK |= CLK_AHBCLK_TRACECKEN_Msk;
 #endif
-
     /* power gating */
     M32(0x400001f4) = 0xfffffffful;
     M32(0x400000dC) = 0ul;
@@ -160,12 +159,8 @@ void SystemInit (void)
     /* Set UART 0 to Non-secure */
     SCU_SET_PNSSET(UART0_Attr);
 
-    /* Set SAU */
-    SAU->RNR = 3;
-    SAU->RBAR = 0x50000000;
-    SAU->RLAR = (0x5FFFFFFF & SAU_RLAR_LADDR_Msk) | SAU_RLAR_ENABLE_Msk;
 
-#ifndef NU_DISABLE_TAMPER
+# ifndef NU_DISABLE_TAMPER
     CLK->APBCLK0 |= CLK_APBCLK0_TAMPERCKEN_Msk;
 
     /* Reset tamper coreblock */
@@ -201,10 +196,18 @@ void SystemInit (void)
 
     /* Enable to trigger chip reset */
     TAMPER_ENABLE_CHIPRST();
-#endif
-#endif
+# endif // NU_DISABLE_TAMPER
+
+#endif // !(__DOMAIN_NS)
+
+#if defined (__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3L)
 
 
+    /* Set SAU */
+    SAU->RNR = 3;
+    SAU->RBAR = 0x50000000;
+    SAU->RLAR = (0x5FFFFFFF & SAU_RLAR_LADDR_Msk) | SAU_RLAR_ENABLE_Msk;
+# endif // defined (__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3L)
 
 
   SystemCoreClock = SYSTEM_CLOCK;

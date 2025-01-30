@@ -11,6 +11,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "internal_status_code.h"
 #include "region.h"
 #include "region_defs.h"
 #include "tfm_hal_multi_core.h"
@@ -18,8 +19,8 @@
 #include "tfm_arch.h"
 #include "utilities.h"
 
-#ifndef TFM_LVL
-#error TFM_LVL is not defined!
+#ifndef TFM_ISOLATION_LEVEL
+#error TFM_ISOLATION_LEVEL is not defined!
 #endif
 
 void tfm_get_mem_region_security_attr(const void *p, size_t s,
@@ -28,23 +29,23 @@ void tfm_get_mem_region_security_attr(const void *p, size_t s,
     p_attr->is_valid = true;
 
     if (check_address_range(p, s, NS_DATA_START,
-                            NS_DATA_LIMIT) == TFM_SUCCESS) {
+                            NS_DATA_LIMIT) == SPM_SUCCESS) {
         p_attr->is_secure = false;
         return;
     }
 
     if (check_address_range(p, s, NS_CODE_START,
-                            NS_CODE_LIMIT) == TFM_SUCCESS) {
+                            NS_CODE_LIMIT) == SPM_SUCCESS) {
         p_attr->is_secure = false;
         return;
     }
 
-    if (check_address_range(p, s, S_DATA_START, S_DATA_LIMIT) == TFM_SUCCESS) {
+    if (check_address_range(p, s, S_DATA_START, S_DATA_LIMIT) == SPM_SUCCESS) {
         p_attr->is_secure = true;
         return;
     }
 
-    if (check_address_range(p, s, S_CODE_START, S_CODE_LIMIT) == TFM_SUCCESS) {
+    if (check_address_range(p, s, S_CODE_START, S_CODE_LIMIT) == SPM_SUCCESS) {
         p_attr->is_secure = true;
         return;
     }
@@ -52,9 +53,9 @@ void tfm_get_mem_region_security_attr(const void *p, size_t s,
     p_attr->is_valid = false;
 }
 
-#if TFM_LVL == 2
-REGION_DECLARE(Image$$, TFM_UNPRIV_CODE, $$RO$$Base);
-REGION_DECLARE(Image$$, TFM_UNPRIV_CODE, $$RO$$Limit);
+#if TFM_ISOLATION_LEVEL == 2
+REGION_DECLARE(Image$$, TFM_UNPRIV_CODE_START, $$RO$$Base);
+REGION_DECLARE(Image$$, TFM_UNPRIV_CODE_END, $$RO$$Limit);
 #ifdef CONFIG_TFM_PARTITION_META
 REGION_DECLARE(Image$$, TFM_SP_META_PTR, $$ZI$$Base);
 REGION_DECLARE(Image$$, TFM_SP_META_PTR, $$ZI$$Limit);
@@ -68,11 +69,11 @@ REGION_DECLARE(Image$$, TFM_APP_RW_STACK_END, $$Base);
 void tfm_get_secure_mem_region_attr(const void *p, size_t s,
                                     struct mem_attr_info_t *p_attr)
 {
-#if TFM_LVL == 1
+#if TFM_ISOLATION_LEVEL == 1
     p_attr->is_mpu_enabled = false;
     p_attr->is_valid = true;
 
-    if (check_address_range(p, s, S_DATA_START, S_DATA_LIMIT) == TFM_SUCCESS) {
+    if (check_address_range(p, s, S_DATA_START, S_DATA_LIMIT) == SPM_SUCCESS) {
         p_attr->is_priv_rd_allow = true;
         p_attr->is_priv_wr_allow = true;
         p_attr->is_unpriv_rd_allow = true;
@@ -81,7 +82,7 @@ void tfm_get_secure_mem_region_attr(const void *p, size_t s,
         return;
     }
 
-    if (check_address_range(p, s, S_CODE_START, S_CODE_LIMIT) == TFM_SUCCESS) {
+    if (check_address_range(p, s, S_CODE_START, S_CODE_LIMIT) == SPM_SUCCESS) {
         p_attr->is_priv_rd_allow = true;
         p_attr->is_priv_wr_allow = false;
         p_attr->is_unpriv_rd_allow = true;
@@ -91,16 +92,16 @@ void tfm_get_secure_mem_region_attr(const void *p, size_t s,
     }
 
     p_attr->is_valid = false;
-#elif TFM_LVL == 2
+#elif TFM_ISOLATION_LEVEL == 2
     uintptr_t base, limit;
 
     p_attr->is_mpu_enabled = false;
     p_attr->is_valid = true;
 
     /* TFM Core unprivileged code region */
-    base = (uintptr_t)&REGION_NAME(Image$$, TFM_UNPRIV_CODE, $$RO$$Base);
-    limit = (uintptr_t)&REGION_NAME(Image$$, TFM_UNPRIV_CODE, $$RO$$Limit) - 1;
-    if (check_address_range(p, s, base, limit) == TFM_SUCCESS) {
+    base = (uintptr_t)&REGION_NAME(Image$$, TFM_UNPRIV_CODE_START, $$RO$$Base);
+    limit = (uintptr_t)&REGION_NAME(Image$$, TFM_UNPRIV_CODE_END, $$RO$$Limit) - 1;
+    if (check_address_range(p, s, base, limit) == SPM_SUCCESS) {
         p_attr->is_priv_rd_allow = true;
         p_attr->is_priv_wr_allow = false;
         p_attr->is_unpriv_rd_allow = true;
@@ -113,7 +114,7 @@ void tfm_get_secure_mem_region_attr(const void *p, size_t s,
     /* TFM partition metadata pointer region */
     base = (uintptr_t)&REGION_NAME(Image$$, TFM_SP_META_PTR, $$ZI$$Base);
     limit = (uintptr_t)&REGION_NAME(Image$$, TFM_SP_META_PTR, $$ZI$$Limit) - 1;
-    if (check_address_range(p, s, base, limit) == TFM_SUCCESS) {
+    if (check_address_range(p, s, base, limit) == SPM_SUCCESS) {
         p_attr->is_priv_rd_allow = true;
         p_attr->is_priv_wr_allow = true;
         p_attr->is_unpriv_rd_allow = true;
@@ -126,7 +127,7 @@ void tfm_get_secure_mem_region_attr(const void *p, size_t s,
     /* APP RoT partition RO region */
     base = (uintptr_t)&REGION_NAME(Image$$, TFM_APP_CODE_START, $$Base);
     limit = (uintptr_t)&REGION_NAME(Image$$, TFM_APP_CODE_END, $$Base) - 1;
-    if (check_address_range(p, s, base, limit) == TFM_SUCCESS) {
+    if (check_address_range(p, s, base, limit) == SPM_SUCCESS) {
         p_attr->is_priv_rd_allow = true;
         p_attr->is_priv_wr_allow = false;
         p_attr->is_unpriv_rd_allow = true;
@@ -138,7 +139,7 @@ void tfm_get_secure_mem_region_attr(const void *p, size_t s,
     /* RW, ZI and stack as one region */
     base = (uintptr_t)&REGION_NAME(Image$$, TFM_APP_RW_STACK_START, $$Base);
     limit = (uintptr_t)&REGION_NAME(Image$$, TFM_APP_RW_STACK_END, $$Base) - 1;
-    if (check_address_range(p, s, base, limit) == TFM_SUCCESS) {
+    if (check_address_range(p, s, base, limit) == SPM_SUCCESS) {
         p_attr->is_priv_rd_allow = true;
         p_attr->is_priv_wr_allow = true;
         p_attr->is_unpriv_rd_allow = true;
@@ -153,7 +154,7 @@ void tfm_get_secure_mem_region_attr(const void *p, size_t s,
      */
     base = (uintptr_t)S_DATA_START;
     limit = (uintptr_t)S_DATA_LIMIT;
-    if (check_address_range(p, s, base, limit) == TFM_SUCCESS) {
+    if (check_address_range(p, s, base, limit) == SPM_SUCCESS) {
         p_attr->is_priv_rd_allow = true;
         p_attr->is_priv_wr_allow = true;
         p_attr->is_unpriv_rd_allow = false;
@@ -164,7 +165,7 @@ void tfm_get_secure_mem_region_attr(const void *p, size_t s,
 
     base = (uintptr_t)S_CODE_START;
     limit = (uintptr_t)S_CODE_LIMIT;
-    if (check_address_range(p, s, base, limit) == TFM_SUCCESS) {
+    if (check_address_range(p, s, base, limit) == SPM_SUCCESS) {
         p_attr->is_priv_rd_allow = true;
         p_attr->is_priv_wr_allow = false;
         p_attr->is_unpriv_rd_allow = false;
@@ -186,7 +187,7 @@ void tfm_get_ns_mem_region_attr(const void *p, size_t s,
     p_attr->is_valid = true;
 
     if (check_address_range(p, s, NS_DATA_START,
-                            NS_DATA_LIMIT) == TFM_SUCCESS) {
+                            NS_DATA_LIMIT) == SPM_SUCCESS) {
         p_attr->is_priv_rd_allow = true;
         p_attr->is_priv_wr_allow = true;
         p_attr->is_unpriv_rd_allow = true;
@@ -196,7 +197,7 @@ void tfm_get_ns_mem_region_attr(const void *p, size_t s,
     }
 
     if (check_address_range(p, s, NS_CODE_START,
-                            NS_CODE_LIMIT) == TFM_SUCCESS) {
+                            NS_CODE_LIMIT) == SPM_SUCCESS) {
         p_attr->is_priv_rd_allow = true;
         p_attr->is_priv_wr_allow = false;
         p_attr->is_unpriv_rd_allow = true;
@@ -247,16 +248,15 @@ static void mem_attr_init(struct mem_attr_info_t *p_attr)
  *                   memory region
  * \param[in] flags  The flags indicating the access permissions.
  *
- * \return TFM_SUCCESS if the check passes,
- *         TFM_ERROR_GENERIC otherwise.
+ * \return SPM_SUCCESS if the check passes,
+ *         SPM_ERROR_GENERIC otherwise.
  */
-static enum tfm_status_e security_attr_check(struct security_attr_info_t attr,
-                                             uint8_t flags)
+static int32_t security_attr_check(struct security_attr_info_t attr, uint8_t flags)
 {
     bool secure_access;
 
     if (!attr.is_valid) {
-        return TFM_ERROR_GENERIC;
+        return SPM_ERROR_GENERIC;
     }
 
     secure_access = flags & MEM_CHECK_NONSECURE ? false : true;
@@ -265,10 +265,10 @@ static enum tfm_status_e security_attr_check(struct security_attr_info_t attr,
      * Secure service should not directly access non-secure memory region.
      */
     if (secure_access ^ attr.is_secure) {
-        return TFM_ERROR_GENERIC;
+        return SPM_ERROR_GENERIC;
     }
 
-    return TFM_SUCCESS;
+    return SPM_SUCCESS;
 }
 
 /**
@@ -278,11 +278,10 @@ static enum tfm_status_e security_attr_check(struct security_attr_info_t attr,
  * \param[in] attr   The mem_attr_info_t containing attributes of memory region
  * \param[in] flags  The flags indicating the access permissions.
  *
- * \return TFM_SUCCESS if the check passes,
- *         TFM_ERROR_GENERIC otherwise.
+ * \return SPM_SUCCESS if the check passes,
+ *         SPM_ERROR_GENERIC otherwise.
  */
-static enum tfm_status_e ns_mem_attr_check(struct mem_attr_info_t attr,
-                                           uint8_t flags)
+static int32_t ns_mem_attr_check(struct mem_attr_info_t attr, uint8_t flags)
 {
     /*
      * Non-secure privileged/unprivileged check is skipped.
@@ -293,15 +292,15 @@ static enum tfm_status_e ns_mem_attr_check(struct mem_attr_info_t attr,
     if ((flags & MEM_CHECK_MPU_READWRITE) &&
         (attr.is_priv_rd_allow || attr.is_unpriv_rd_allow) &&
         (attr.is_priv_wr_allow || attr.is_unpriv_wr_allow)) {
-            return TFM_SUCCESS;
+            return SPM_SUCCESS;
     }
 
     if ((flags & MEM_CHECK_MPU_READ) &&
         (attr.is_priv_rd_allow || attr.is_unpriv_rd_allow)) {
-            return TFM_SUCCESS;
+            return SPM_SUCCESS;
     }
 
-    return TFM_ERROR_GENERIC;
+    return SPM_ERROR_GENERIC;
 }
 
 /**
@@ -311,49 +310,48 @@ static enum tfm_status_e ns_mem_attr_check(struct mem_attr_info_t attr,
  * \param[in] attr   The mem_attr_info_t containing attributes of memory region
  * \param[in] flags  The flags indicating the access permissions.
  *
- * \return TFM_SUCCESS if the check passes,
- *         TFM_ERROR_GENERIC otherwise.
+ * \return SPM_SUCCESS if the check passes,
+ *         SPM_ERROR_GENERIC otherwise.
  */
-static enum tfm_status_e secure_mem_attr_check(struct mem_attr_info_t attr,
-                                               uint8_t flags)
+static int32_t secure_mem_attr_check(struct mem_attr_info_t attr, uint8_t flags)
 {
-#if TFM_LVL == 1
-    /* Privileged/unprivileged is ignored in TFM_LVL == 1 */
+#if TFM_ISOLATION_LEVEL == 1
+    /* Privileged/unprivileged is ignored in TFM_ISOLATION_LEVEL == 1 */
 
     if ((flags & MEM_CHECK_MPU_READWRITE) &&
         (attr.is_priv_rd_allow || attr.is_unpriv_rd_allow) &&
         (attr.is_priv_wr_allow || attr.is_unpriv_wr_allow)) {
-            return TFM_SUCCESS;
+            return SPM_SUCCESS;
     }
 
     if ((flags & MEM_CHECK_MPU_READ) &&
         (attr.is_priv_rd_allow || attr.is_unpriv_rd_allow)) {
-            return TFM_SUCCESS;
+            return SPM_SUCCESS;
     }
 
-    return TFM_ERROR_GENERIC;
+    return SPM_ERROR_GENERIC;
 #else
     if (flags & MEM_CHECK_MPU_UNPRIV) {
         if ((flags & MEM_CHECK_MPU_READWRITE) && attr.is_unpriv_rd_allow &&
             attr.is_unpriv_wr_allow) {
-            return TFM_SUCCESS;
+            return SPM_SUCCESS;
         }
 
         if ((flags & MEM_CHECK_MPU_READ) && attr.is_unpriv_rd_allow) {
-            return TFM_SUCCESS;
+            return SPM_SUCCESS;
         }
     } else {
         if ((flags & MEM_CHECK_MPU_READWRITE) && attr.is_priv_rd_allow &&
             attr.is_priv_wr_allow) {
-            return TFM_SUCCESS;
+            return SPM_SUCCESS;
         }
 
         if ((flags & MEM_CHECK_MPU_READ) && attr.is_priv_rd_allow) {
-            return TFM_SUCCESS;
+            return SPM_SUCCESS;
         }
     }
 
-    return TFM_ERROR_GENERIC;
+    return SPM_ERROR_GENERIC;
 #endif
 }
 
@@ -364,14 +362,13 @@ static enum tfm_status_e secure_mem_attr_check(struct mem_attr_info_t attr,
  * \param[in] attr   The mem_attr_info_t containing memory region attributes
  * \param[in] flags  The flags indicating the access permissions.
  *
- * \return TFM_SUCCESS if the check passes,
- *         TFM_ERROR_GENERIC otherwise.
+ * \return SPM_SUCCESS if the check passes,
+ *         SPM_ERROR_GENERIC otherwise.
  */
-static enum tfm_status_e mem_attr_check(struct mem_attr_info_t attr,
-                                        uint8_t flags)
+static int32_t mem_attr_check(struct mem_attr_info_t attr, uint8_t flags)
 {
     if (!attr.is_valid) {
-        return TFM_ERROR_GENERIC;
+        return SPM_ERROR_GENERIC;
     }
 
     if (flags & MEM_CHECK_NONSECURE) {
@@ -381,23 +378,22 @@ static enum tfm_status_e mem_attr_check(struct mem_attr_info_t attr,
     return secure_mem_attr_check(attr, flags);
 }
 
-enum tfm_status_e tfm_has_access_to_region(const void *p, size_t s,
-                                           uint32_t flags)
+int32_t tfm_has_access_to_region(const void *p, size_t s, uint32_t flags)
 {
     struct security_attr_info_t security_attr;
     struct mem_attr_info_t mem_attr;
 
     /* If size is zero, this indicates an empty buffer and base is ignored */
     if (s == 0) {
-        return TFM_SUCCESS;
+        return SPM_SUCCESS;
     }
 
     if (!p) {
-        return TFM_ERROR_GENERIC;
+        return SPM_ERROR_GENERIC;
     }
 
     if ((uintptr_t)p > (UINTPTR_MAX - s)) {
-        return TFM_ERROR_GENERIC;
+        return SPM_ERROR_GENERIC;
     }
 
     /* Abort if current check doesn't run in PSA RoT */
@@ -410,8 +406,8 @@ enum tfm_status_e tfm_has_access_to_region(const void *p, size_t s,
     /* Retrieve security attributes of target memory region */
     tfm_hal_get_mem_security_attr(p, s, &security_attr);
 
-    if (security_attr_check(security_attr, flags) != TFM_SUCCESS) {
-        return TFM_ERROR_GENERIC;
+    if (security_attr_check(security_attr, flags) != SPM_SUCCESS) {
+        return SPM_ERROR_GENERIC;
     }
 
     mem_attr_init(&mem_attr);
@@ -420,7 +416,7 @@ enum tfm_status_e tfm_has_access_to_region(const void *p, size_t s,
         /* Retrieve access attributes of secure memory region */
         tfm_hal_get_secure_access_attr(p, s, &mem_attr);
 
-#if TFM_LVL != 1
+#if TFM_ISOLATION_LEVEL != 1
         /* Secure MPU must be enabled in Isolation Level 2 and 3 */
         if (!mem_attr.is_mpu_enabled) {
             tfm_core_panic();
@@ -434,15 +430,15 @@ enum tfm_status_e tfm_has_access_to_region(const void *p, size_t s,
     return mem_attr_check(mem_attr, flags);
 }
 
-enum tfm_status_e check_address_range(const void *p, size_t s,
-                                      uintptr_t region_start,
-                                      uintptr_t region_limit)
+int32_t check_address_range(const void *p, size_t s,
+                            uintptr_t region_start,
+                            uintptr_t region_limit)
 {
     int32_t range_in_region;
 
     /* Check for overflow in the range parameters */
     if ((uintptr_t)p > UINTPTR_MAX - s) {
-        return TFM_ERROR_GENERIC;
+        return SPM_ERROR_GENERIC;
     }
 
     /* We trust the region parameters, and don't check for overflow */
@@ -451,8 +447,8 @@ enum tfm_status_e check_address_range(const void *p, size_t s,
     range_in_region = ((uintptr_t)p >= region_start) &&
                       ((uintptr_t)((char *) p + s - 1) <= region_limit);
     if (range_in_region) {
-        return TFM_SUCCESS;
+        return SPM_SUCCESS;
     } else {
-        return TFM_ERROR_GENERIC;
+        return SPM_ERROR_GENERIC;
     }
 }

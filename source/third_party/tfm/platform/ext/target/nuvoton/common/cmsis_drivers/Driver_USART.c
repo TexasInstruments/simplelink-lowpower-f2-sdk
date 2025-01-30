@@ -84,7 +84,6 @@ typedef struct
 static int32_t ARM_USARTx_Initialize(UARTx_Resources* uart_dev)
 {
     /* Initializes generic UART driver */
-
     return ARM_DRIVER_OK;
 }
 

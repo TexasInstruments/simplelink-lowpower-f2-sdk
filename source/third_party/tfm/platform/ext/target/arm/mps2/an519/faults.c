@@ -9,6 +9,7 @@
 #include "target_cfg.h"
 #include "Driver_MPC.h"
 #include "utilities.h"
+/* "exception_info.h" must be the last include because of the IAR pragma */
 #include "exception_info.h"
 
 /* Import MPC driver */

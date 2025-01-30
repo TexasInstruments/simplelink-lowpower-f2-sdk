@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2021-2023, Arm Limited. All rights reserved.
  * Copyright (c) 2023 Cypress Semiconductor Corporation (an Infineon
  * company) or an affiliate of Cypress Semiconductor Corporation. All rights
  * reserved.
@@ -17,9 +17,7 @@
 __naked void ns_agent_tz_main(uint32_t c_entry)
 {
     __ASM volatile(
-#ifndef __ICCARM__
-        ".syntax unified                            \n"
-#endif
+        SYNTAX_UNIFIED
         "   ldr      r2, [sp]                       \n"
         "   ldr      r3, ="M2S(STACK_SEAL_PATTERN)" \n" /* SEAL double-check */
         "   cmp      r2, r3                         \n"

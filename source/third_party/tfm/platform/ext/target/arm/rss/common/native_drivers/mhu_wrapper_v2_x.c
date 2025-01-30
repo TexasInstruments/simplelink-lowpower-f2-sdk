@@ -225,6 +225,24 @@ enum mhu_error_t mhu_send_data(void *mhu_sender_dev,
     return error_mapping_to_mhu_error_t(err);
 }
 
+enum mhu_error_t mhu_wait_data(void *mhu_receiver_dev)
+{
+    enum mhu_v2_x_error_t err;
+    struct mhu_v2_x_dev_t *dev = mhu_receiver_dev;
+    uint32_t num_channels = mhu_v2_x_get_num_channel_implemented(dev);
+    uint32_t val;
+
+    do {
+        /* Using the last channel for notifications */
+        err = mhu_v2_x_channel_receive(dev, num_channels - 1, &val);
+        if (err != MHU_V_2_X_ERR_NONE) {
+            break;
+        }
+    } while (val != MHU_NOTIFY_VALUE);
+
+    return error_mapping_to_mhu_error_t(err);
+}
+
 enum mhu_error_t mhu_receive_data(void *mhu_receiver_dev,
                                   uint8_t *receive_buffer,
                                   size_t *size)

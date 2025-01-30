@@ -1,5 +1,7 @@
 ;/*
 ; * Copyright (c) 2009-2022 Arm Limited
+; * Copyright (c) 2023 Cypress Semiconductor Corporation (an Infineon company)
+; * or an affiliate of Cypress Semiconductor Corporation. All rights reserved.
 ; *
 ; * Licensed under the Apache License, Version 2.0 (the "License");
 ; * you may not use this file except in compliance with the License.
@@ -53,44 +55,6 @@ SECTIONS
         . = ALIGN(4);
     } > FLASH
 
-    .copy.table : ALIGN(4)
-    {
-        __copy_table_start__ = .;
-        LONG (LOADADDR(.TFM_DATA))
-        LONG (ADDR(.TFM_DATA))
-        LONG (SIZEOF(.TFM_DATA) / 4)
-
-        LONG (LOADADDR(.TFM_PSA_ROT_LINKER_DATA))
-        LONG (ADDR(.TFM_PSA_ROT_LINKER_DATA))
-        LONG (SIZEOF(.TFM_PSA_ROT_LINKER_DATA) / 4)
-
-        LONG (LOADADDR(.TFM_APP_ROT_LINKER_DATA))
-        LONG (ADDR(.TFM_APP_ROT_LINKER_DATA))
-        LONG (SIZEOF(.TFM_APP_ROT_LINKER_DATA) / 4)
-        __copy_table_end__ = .;
-    } > FLASH
-
-    .zero.table : ALIGN(4)
-    {
-        __zero_table_start__ = .;
-        LONG (ADDR(.TFM_BSS))
-        LONG (SIZEOF(.TFM_BSS) / 4)
-        LONG (ADDR(.TFM_PSA_ROT_LINKER_BSS))
-        LONG (SIZEOF(.TFM_PSA_ROT_LINKER_BSS) / 4)
-
-        LONG (ADDR(.TFM_APP_ROT_LINKER_BSS))
-        LONG (SIZEOF(.TFM_APP_ROT_LINKER_BSS) / 4)
-#if defined(PSA_PROXY_SHARED_MEMORY_BASE)
-        LONG (PSA_PROXY_SHARED_MEMORY_BASE)
-        LONG (PSA_PROXY_SHARED_MEMORY_SIZE / 4)
-#endif
-#if defined(CONFIG_TFM_PARTITION_META)
-        LONG (ADDR(.TFM_SP_META_PTR))
-        LONG (SIZEOF(.TFM_SP_META_PTR) / 4)
-#endif
-        __zero_table_end__ = .;
-    } > FLASH
-
     /**** Section for holding partition RO load data */
     /*
      * Sort the partition info by priority to guarantee the initing order.
@@ -98,10 +62,10 @@ SECTIONS
      */
     .TFM_SP_LOAD_LIST : ALIGN(4)
     {
-       KEEP(*(.part_load_priority_lowest))
-       KEEP(*(.part_load_priority_low))
-       KEEP(*(.part_load_priority_normal))
-       KEEP(*(.part_load_priority_high))
+       KEEP(*(.part_load_priority_00))
+       KEEP(*(.part_load_priority_01))
+       KEEP(*(.part_load_priority_02))
+       KEEP(*(.part_load_priority_03))
     } > FLASH
     Image$$TFM_SP_LOAD_LIST$$RO$$Base = ADDR(.TFM_SP_LOAD_LIST);
     Image$$TFM_SP_LOAD_LIST$$RO$$Limit = ADDR(.TFM_SP_LOAD_LIST) + SIZEOF(.TFM_SP_LOAD_LIST);
@@ -127,7 +91,7 @@ SECTIONS
     Image$$TFM_PSA_CODE_END$$Base = .;
 
 
-#if TFM_LVL != 1
+#if TFM_ISOLATION_LEVEL != 1
     .ARM.extab :
     {
         *(.ARM.extab* .gnu.linkonce.armextab.*)
@@ -140,10 +104,44 @@ SECTIONS
     } > FLASH
     __exidx_end = .;
 
-#endif /* TFM_LVL != 1 */
+#endif /* TFM_ISOLATION_LEVEL != 1 */
 
     .ER_TFM_CODE : ALIGN(4)
     {
+        . = ALIGN(4);
+        __copy_table_start__ = .;
+        LONG (LOADADDR(.TFM_DATA))
+        LONG (ADDR(.TFM_DATA))
+        LONG (SIZEOF(.TFM_DATA) / 4)
+
+        LONG (LOADADDR(.TFM_PSA_ROT_LINKER_DATA))
+        LONG (ADDR(.TFM_PSA_ROT_LINKER_DATA))
+        LONG (SIZEOF(.TFM_PSA_ROT_LINKER_DATA) / 4)
+
+        LONG (LOADADDR(.TFM_APP_ROT_LINKER_DATA))
+        LONG (ADDR(.TFM_APP_ROT_LINKER_DATA))
+        LONG (SIZEOF(.TFM_APP_ROT_LINKER_DATA) / 4)
+        __copy_table_end__ = .;
+
+        . = ALIGN(4);
+        __zero_table_start__ = .;
+        LONG (ADDR(.TFM_BSS))
+        LONG (SIZEOF(.TFM_BSS) / 4)
+        LONG (ADDR(.TFM_PSA_ROT_LINKER_BSS))
+        LONG (SIZEOF(.TFM_PSA_ROT_LINKER_BSS) / 4)
+
+        LONG (ADDR(.TFM_APP_ROT_LINKER_BSS))
+        LONG (SIZEOF(.TFM_APP_ROT_LINKER_BSS) / 4)
+#if defined(PSA_PROXY_SHARED_MEMORY_BASE)
+        LONG (PSA_PROXY_SHARED_MEMORY_BASE)
+        LONG (PSA_PROXY_SHARED_MEMORY_SIZE / 4)
+#endif
+#if defined(CONFIG_TFM_PARTITION_META)
+        LONG (ADDR(.TFM_SP_META_PTR))
+        LONG (SIZEOF(.TFM_SP_META_PTR) / 4)
+#endif
+        __zero_table_end__ = .;
+
         *libplatform_s*:*(.text*)
         *libtfm_spm*:*(.text*)
 
@@ -158,7 +156,7 @@ SECTIONS
 /**** Unpriv  DATA start here */
     Image$$TFM_APP_RW_STACK_START$$Base = ADDR(.dummy_empty);
 #if defined(CONFIG_TFM_PARTITION_META)
-    .TFM_SP_META_PTR : ALIGN(32)
+    .TFM_SP_META_PTR (NOLOAD): ALIGN(32)
     {
         *(.bss.SP_META_PTR_SPRTL_INST)
         . = ALIGN(32);
@@ -176,7 +174,7 @@ SECTIONS
     Image$$TFM_APP_ROT_LINKER_DATA$$RW$$Base = ADDR(.TFM_APP_ROT_LINKER_DATA);
     Image$$TFM_APP_ROT_LINKER_DATA$$RW$$Limit = ADDR(.TFM_APP_ROT_LINKER_DATA) + SIZEOF(.TFM_APP_ROT_LINKER_DATA);
 
-    .TFM_APP_ROT_LINKER_BSS : ALIGN(32)
+    .TFM_APP_ROT_LINKER_BSS (NOLOAD): ALIGN(32)
     {
         start_of_TFM_APP_ROT_LINKER = .;
         *tfm_app_rot_partition*:*(.bss*)
@@ -217,7 +215,7 @@ SECTIONS
     } > RAM
     __StackSeal = ADDR(.msp_stack_seal_res);
 
-#if (TFM_LVL == 1)
+#if (TFM_ISOLATION_LEVEL == 1)
     .heap : ALIGN(8)
     {
         __end__ = .;
@@ -227,9 +225,9 @@ SECTIONS
         __HeapLimit = .;
         __heap_limit = .; /* Add for _sbrk */
     } > RAM
-#endif /* TFM_LVL == 1 */
+#endif /* TFM_ISOLATION_LEVEL == 1 */
 
-#if TFM_LVL != 1
+#if TFM_ISOLATION_LEVEL != 1
 #ifdef TFM_PARTITION_TEST_SECURE_SERVICES
     .TFM_SP_SECURE_TEST_PARTITION_LINKER_DATA : ALIGN(32)
     {
@@ -242,7 +240,7 @@ SECTIONS
         /* FixMe:
          * Test framework use printf to print out test result. Implementation of
          * printf in GCC libc use static data and heap as well. To be able to
-         * execute test suites with TFM_LVL=3 this workaround is needed to
+         * execute test suites with TFM_ISOLATION_LEVEL=3 this workaround is needed to
          * allocate libc static data and heap within the data section of secure
          * test partition. This can be removed if test service will be executed
          * in privileged mode.
@@ -270,7 +268,7 @@ SECTIONS
         __heap_limit = .; /* Add for _sbrk */
     } > RAM AT> RAM
 #endif /* TFM_PARTITION_TEST_SECURE_SERVICES */
-#endif /* TFM_LVL != 1 */
+#endif /* TFM_ISOLATION_LEVEL != 1 */
 
     /**** PSA RoT DATA start here */
 
@@ -285,7 +283,7 @@ SECTIONS
     Image$$TFM_PSA_ROT_LINKER_DATA$$RW$$Base = ADDR(.TFM_PSA_ROT_LINKER_DATA);
     Image$$TFM_PSA_ROT_LINKER_DATA$$RW$$Limit = ADDR(.TFM_PSA_ROT_LINKER_DATA) + SIZEOF(.TFM_PSA_ROT_LINKER_DATA);
 
-    .TFM_PSA_ROT_LINKER_BSS : ALIGN(32)
+    .TFM_PSA_ROT_LINKER_BSS (NOLOAD): ALIGN(32)
     {
         start_of_TFM_PSA_ROT_LINKER = .;
         *tfm_psa_rot_partition*:*(.bss*)
@@ -358,8 +356,8 @@ SECTIONS
         KEEP(*(.eh_frame*))
         . = ALIGN(32);
     } > FLASH
-    Image$$TFM_UNPRIV_CODE$$RO$$Base = ADDR(.TFM_UNPRIV_CODE);
-    Image$$TFM_UNPRIV_CODE$$RO$$Limit = ADDR(.TFM_UNPRIV_CODE) + SIZEOF(.TFM_UNPRIV_CODE);
+    Image$$TFM_UNPRIV_CODE_START$$RO$$Base = ADDR(.TFM_UNPRIV_CODE);
+    Image$$TFM_UNPRIV_CODE_END$$RO$$Limit = ADDR(.TFM_UNPRIV_CODE) + SIZEOF(.TFM_UNPRIV_CODE);
 
     /**** APPLICATION RoT RO part (CODE + RODATA) start here */
     Image$$TFM_APP_CODE_START$$Base = .;
@@ -380,25 +378,25 @@ SECTIONS
     Image$$TFM_APP_ROT_LINKER$$Base = ADDR(.TFM_APP_ROT_LINKER);
     Image$$TFM_APP_ROT_LINKER$$Limit = ADDR(.TFM_APP_ROT_LINKER) + SIZEOF(.TFM_APP_ROT_LINKER);
 
-    .TFM_BSS : ALIGN(4)
+    .TFM_BSS (NOLOAD): ALIGN(4)
     {
         __bss_start__ = .;
 
         /* The runtime partition placed order is same as load partition */
         __partition_runtime_start__ = .;
-        KEEP(*(.bss.part_runtime_priority_lowest))
-        KEEP(*(.bss.part_runtime_priority_low))
-        KEEP(*(.bss.part_runtime_priority_normal))
-        KEEP(*(.bss.part_runtime_priority_high))
+        KEEP(*(.bss.part_runtime_priority_00))
+        KEEP(*(.bss.part_runtime_priority_01))
+        KEEP(*(.bss.part_runtime_priority_02))
+        KEEP(*(.bss.part_runtime_priority_03))
         __partition_runtime_end__ = .;
         . = ALIGN(4);
 
         /* The runtime service placed order is same as load partition */
         __service_runtime_start__ = .;
-        KEEP(*(.bss.serv_runtime_priority_lowest))
-        KEEP(*(.bss.serv_runtime_priority_low))
-        KEEP(*(.bss.serv_runtime_priority_normal))
-        KEEP(*(.bss.serv_runtime_priority_high))
+        KEEP(*(.bss.serv_runtime_priority_00))
+        KEEP(*(.bss.serv_runtime_priority_01))
+        KEEP(*(.bss.serv_runtime_priority_02))
+        KEEP(*(.bss.serv_runtime_priority_03))
         __service_runtime_end__ = .;
         *(.bss*)
         *(COMMON)

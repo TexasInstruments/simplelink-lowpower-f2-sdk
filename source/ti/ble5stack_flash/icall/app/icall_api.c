@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2024, Texas Instruments Incorporated
+ Copyright (c) 2013-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -5321,20 +5321,6 @@ hciStatus_t HCI_EXT_SetTxPowerCmd(uint8 txPower)
 }
 
 /*******************************************************************************
- * This API is used to set this device's TX Power
- *
- * Note: This command is only allowed when the device's state is Standby.
- *
- * Public function defined in hci.h.
- */
-hciStatus_t HCI_EXT_SetTxPowerDbmCmd(int8 txPower, uint8 fraction)
-{
-  return hciSendParamsCmd(HCI_EXT_SET_TX_POWER_DBM, txPower,
-                          fraction, HCI_NO_PARAM,
-                          matchHciExtSetTxPowerDbmCS);
-}
-
-/*******************************************************************************
  * This HCI Extension API is used to set whether a connection will be limited
  * to one packet per event.
  *
@@ -5506,18 +5492,6 @@ hciStatus_t HCI_EXT_SetMaxDtmTxPowerCmd(uint8 txPower)
   return hciSendParamsCmd(HCI_EXT_SET_MAX_DTM_TX_POWER, txPower,
                           HCI_NO_PARAM, HCI_NO_PARAM,
                           matchHciExtSetMaxDtmTxPwrCS);
-}
-
-/*******************************************************************************
- * This HCI Extension API is used to set the max TX power for Direct Test Mode.
- *
- * Public function defined in hci.h.
- */
-hciStatus_t HCI_EXT_SetMaxDtmTxPowerDbmCmd(int8 txPower, uint8 fraction)
-{
-  return hciSendParamsCmd(HCI_EXT_SET_MAX_DTM_TX_POWER_DBM, txPower,
-                          fraction, HCI_NO_PARAM,
-                          matchHciExtSetMaxDtmTxPwrDbmCS);
 }
 
 /*******************************************************************************

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2021, Nordic Semiconductor ASA. All rights reserved.
+ * Copyright (c) 2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -29,7 +30,9 @@
 /* This level of indirection is needed to fully resolve exception info when it's
  * a macro
  */
-#define _STRINGIFY(exception_info) #exception_info
+#ifndef __STRINGIFY /* TI-TFM: Added #ifndef to avoid redefinition warning */
+#define __STRINGIFY(exception_info) #exception_info
+#endif
 
 /* Store context for an exception, and print an error message with the context.
  *
@@ -37,22 +40,29 @@
  *                             other value will result in printing "Unknown".
  */
 #ifdef TFM_EXCEPTION_INFO_DUMP
-#define EXCEPTION_INFO(exception_type)                  \
-    __ASM volatile(                                     \
-        "MOV     r0, lr\n"                              \
-        "MRS     r1, MSP\n"                             \
-        "MRS     r2, PSP\n"                             \
-        "MOVS    r3, #" _STRINGIFY(exception_type) "\n" \
-        "BL      store_and_dump_context\n"              \
-    )
 
 /* Store context for an exception, then print the info.
  * Call EXCEPTION_INFO() instead of calling this directly.
  */
 void store_and_dump_context(uint32_t LR_in, uint32_t MSP_in, uint32_t PSP_in,
                             uint32_t exception_type);
-#else
-#define EXCEPTION_INFO(exception_type)
+
+/* IAR Specific */
+#if defined(__ICCARM__)
+#pragma required = store_and_dump_context
 #endif
+
+#define EXCEPTION_INFO(exception_type)                  \
+    __ASM volatile(                                     \
+        "MOV     r0, lr\n"                              \
+        "MRS     r1, MSP\n"                             \
+        "MRS     r2, PSP\n"                             \
+        "MOVS    r3, #" __STRINGIFY(exception_type) "\n"\
+        "BL      store_and_dump_context\n"              \
+    )
+
+#else /* TFM_EXCEPTION_INFO_DUMP */
+#define EXCEPTION_INFO(exception_type)
+#endif /* TFM_EXCEPTION_INFO_DUMP */
 
 #endif /* __EXCEPTION_INFO_H__ */

@@ -2,3 +2,6 @@ core/
 streams/itm/
 streams/uart/
 streams/wireshark/
+streams/stdout/
+streams/to_replayfile/
+streams/from_replayfile/

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022, Texas Instruments Incorporated
+ * Copyright (c) 2021-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,8 @@
 #include <FreeRTOS.h>
 #include <task.h>
 #include <portmacro.h>
+
+#include <ti/log/Log.h>
 
 /* driverlib header files */
 #include <ti/devices/DeviceFamily.h>
@@ -95,9 +97,18 @@ void PowerCC26XX_standbyPolicy(void)
     /* query the declared constraints */
     constraints = Power_getConstraintMask();
 
+    Log_printf(LogModule_Power,
+               Log_VERBOSE,
+               "PowerCC26XX_standbyPolicy: Standby constraint count = %d. Idle constraint count = %d",
+               Power_getConstraintCount(PowerCC26XX_DISALLOW_STANDBY),
+               Power_getConstraintCount(PowerCC26XX_DISALLOW_IDLE));
+
     /* do quick check to see if only WFI allowed; if yes, do it now */
     if ((constraints & (1 << PowerCC26XX_DISALLOW_STANDBY)) == (1 << PowerCC26XX_DISALLOW_STANDBY))
     {
+        Log_printf(LogModule_Power,
+                   Log_INFO,
+                   "PowerCC26XX_standbyPolicy: Only WFI allowed");
 
         /* Flush any remaining log messages in the ITM */
         ITM_flush();
@@ -147,6 +158,11 @@ void PowerCC26XX_standbyPolicy(void)
                 ClockP_setTimeout(ClockP_handle((ClockP_Struct *)&PowerCC26X2_module.clockObj), timeout);
                 ClockP_start(ClockP_handle((ClockP_Struct *)&PowerCC26X2_module.clockObj));
 
+                Log_printf(LogModule_Power,
+                           Log_INFO,
+                           "PowerCC26XX_standbyPolicy: Entering standby. Soonest timeout = 0x%x",
+                           soonest);
+
                 /* save ClockP tick count before sleep */
                 ticksBefore = ClockP_getSystemTicks();
 
@@ -173,6 +189,11 @@ void PowerCC26XX_standbyPolicy(void)
 
                 /* restart FreeRTOS ticks */
                 SysTickEnable();
+
+                Log_printf(LogModule_Power,
+                           Log_INFO,
+                           "PowerCC26XX_standbyPolicy: Exit standby after %d FreeRTOS ticks",
+                           sleptTicks);
             }
         }
     }

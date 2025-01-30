@@ -15,7 +15,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2024, Texas Instruments Incorporated
+ Copyright (c) 2009-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -964,6 +964,46 @@ extern llStatus_t LL_ReadBDADDR( uint8 *bdAddr );
  *
  */
 extern llStatus_t LL_SetRandomAddress( uint8 *devAddr );
+
+/*******************************************************************************
+ *
+ * @fn          LL_GetCurrConnHandle API
+ *
+ * @brief       This API is used to get the current connection handle
+ *
+ * input parameters
+ *
+ * @param       None.
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      Connection handle in case of at least one active connection or
+ *              LL_INVALID_CONNECTION_ID in case of none.
+ *
+ */
+extern uint8 LL_GetCurrConnId( void );
+
+/*******************************************************************************
+ *
+ * @fn          LL_IsWaitingFirstPacket API
+ *
+ * @brief       This API is used to get the current connection first packet status
+ *
+ * input parameters
+ *
+ * @param       None.
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      TRUE in case this connection still waits first packet
+ *              FALSE in case not waiting for first packet or invalid handle
+ *
+ */
+extern uint8 LL_IsWaitingFirstPacket( uint8 connId );
 
 /*******************************************************************************
  * @fn          LL_IsRandomAddressConfigured

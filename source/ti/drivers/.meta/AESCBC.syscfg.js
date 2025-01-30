@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2022, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,6 +46,9 @@ let family = Common.device2Family(system.deviceData, "AESCBC");
 
 let config = [];
 
+/* get device ID */
+let deviceId = system.deviceData.deviceId;
+
 /*
  *  ======== validate ========
  */
@@ -84,7 +87,21 @@ Unlike ECB, it guarantees confidentiality of the entire message.
 `,
     defaultInstanceName : "CONFIG_AESCBC_",
     config              : Common.addNameConfig(config, "/ti/drivers/AESCBC", "CONFIG_AESCBC_"),
-    modules             : Common.autoForceModules(["Board", "DMA", "Power"]),
+    modules: (inst) => {
+        let forcedModules = ["Board", "Power"];
+
+        if (deviceId.match(/CC23|CC27/)) {
+            /* LAES driver requires DMA module */
+            forcedModules.push("DMA");
+        }
+
+        if (deviceId.match(/CC27/)) {
+            /* HSM library requires Key Store module */
+            forcedModules.push("CryptoKeyKeyStore_PSA");
+        }
+
+        return Common.autoForceModules(forcedModules)();
+    },
     validate            : validate
 };
 

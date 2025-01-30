@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2019, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -658,6 +658,10 @@ static void GPTimerCC26XX_resetHw(GPTimerCC26XX_Handle handle)
     /* Reset match register for timer N.
        Equivalent to TimerMatchSet(ui32Base, timer, 0xFFFFFFFF) */
     HWREG(ui32Base + offset + GPT_O_TAMATCHR) = 0xFFFFFFFF;
+
+    /* Reset value register for timer N.
+       No equivalent function in driverlib. */
+    HWREG(ui32Base + offset + GPT_O_TAV) = 0xFFFFFFFF;
 
     /* Reset pre-scale register for timer N.
        Equivalent to TimerPrescaleSet(ui32Base, timer, 0) */

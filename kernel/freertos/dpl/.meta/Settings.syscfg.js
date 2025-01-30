@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,13 +60,6 @@ var cc13xxcc26xxDeviceFiles = [
     "dpl/TimestampPCC26XX_freertos.c"
 ];
 
-var cc32xxDeviceFiles = [
-    "dpl/ClockP_freertos.c",
-    "dpl/HwiPCC32XX_freertos.c",
-    "dpl/PowerCC32XX_freertos.c",
-    "dpl/TimestampPCC32XX_freertos.c"
-];
-
 var cc23x0r5DeviceFiles = [
     "dpl/ClockPLPF3_freertos.c",
     "dpl/HwiPCC23X0_freertos.c",
@@ -91,7 +84,8 @@ var cc27xxDeviceFiles = [
 var cc35xxDeviceFiles = [
     "dpl/ClockPWFF3_freertos.c",
     "dpl/HwiPWFF3_freertos.c",
-    "dpl/PowerWFF3_freertos.c"
+    "dpl/PowerWFF3_freertos.c",
+    "dpl/TimestampPWFF3_freertos.c"
 ];
 
 function getStartupFiles(family)
@@ -115,8 +109,9 @@ function getCFiles(kernel)
         return dplFiles.concat(cc13xxcc26xxDeviceFiles, getStartupFiles("cc13x2_cc26x2"));
     } else if (system.deviceData.deviceId.match(/CC(13|26).[34]/)) {
         return dplFiles.concat(cc13xxcc26xxDeviceFiles, getStartupFiles("cc13x4_cc26x4"));
-    } else if (system.deviceData.deviceId.match(/CC32../)) {
-        return dplFiles.concat(cc32xxDeviceFiles, getStartupFiles("cc32xx"));
+    } else if (system.deviceData.deviceId.match(/CC23.0R22/)) {
+        // cc2340r22 uses cc2340r5 driverlib
+        return dplFiles.concat(cc23x0r5DeviceFiles, getStartupFiles("cc23x0r5"));
     } else if (system.deviceData.deviceId.match(/CC23.0R2/)) {
         return dplFiles.concat(cc23x0r2DeviceFiles, getStartupFiles("cc23x0r2"));
     } else if (system.deviceData.deviceId.match(/CC23.0R5/)) {
@@ -136,10 +131,15 @@ exports = {
     getCFiles: getCFiles,
     templates: {
         "/ti/utils/rov/syscfg_c.rov.xs.xdt": [
-            "/kernel/freertos/rov/clock.rov.js",
-            "/kernel/freertos/rov/exception.rov.js",
-            "/kernel/freertos/rov/hwi.rov.js",
-            "/kernel/freertos/rov/nvic.rov.js"
+            "crov:/kernel/freertos/rov/clock.rov.js",
+            "crov:/kernel/freertos/rov/exception.rov.js",
+            "crov:/kernel/freertos/rov/hwi.rov.js",
+            "crov:/kernel/freertos/rov/nvic.rov.js",
+            "objView:/kernel/freertos/rov_theia/clock.rov.js",
+            "objView:/kernel/freertos/rov_theia/exception.rov.js",
+            "objView:/kernel/freertos/rov_theia/hwi.rov.js",
+            "objView:/kernel/freertos/rov_theia/nvic.rov.js"
+
         ]
     }
 };

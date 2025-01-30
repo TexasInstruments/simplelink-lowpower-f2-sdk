@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Texas Instruments Incorporated
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -65,7 +65,7 @@ void EDDSA_Params_init(EDDSA_Params *params)
 /*
  *  ======== EDDSA_open ========
  */
-EDDSA_Handle EDDSA_open(uint_least8_t index, const EDDSA_Params *params)
+__attribute__((weak)) EDDSA_Handle EDDSA_open(uint_least8_t index, const EDDSA_Params *params)
 {
     DebugP_assert(index < EDDSA_count);
 

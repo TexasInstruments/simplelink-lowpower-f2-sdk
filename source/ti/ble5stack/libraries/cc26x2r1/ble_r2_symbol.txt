@@ -95,8 +95,6 @@ hide LL_SetRandomAddress
 hide LL_SetAddressResolutionEnable
 hide LL_SetResolvablePrivateAddressTimeout
 hide LL_ENC_DecryptMsg
-hide LL_ENC_Encrypt
-hide LL_ENC_Decrypt
 hide L2CAP_RegisterPsm
 hide LL_ENC_GenerateTrueRandNum
 hide LL_ENC_GeneratePseudoRandNum
@@ -123,6 +121,8 @@ hide linkDB_Authen
 hide llTimeCompare
 hide llAllocConnId
 hide GapScan_disable
+hide gapBondMgrGetStateFlags
+hide gapBondMgr_SlaveReqSecurity
 hide llFindNextSecCmd
 hide llSetupExtHdr
 hide llSetupConnRxDataEntryQueue

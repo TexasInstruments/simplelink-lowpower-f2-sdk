@@ -11,7 +11,7 @@ options of TF-M.
 It handles dependencies and validations automatically when you change configurations so that the
 generated configuration options are always valid.
 
-To use the Kconfig system, enable ``USE_KCONFIG_TOOL`` in commande line.
+To use the Kconfig system, enable ``USE_KCONFIG_TOOL`` in command line.
 And enable ``MENUCONFIG`` to launch configuration GUI.
 
 The Kconfig system consists of `The Kconfig tool`_ and the `The Kconfig files`_.
@@ -29,7 +29,7 @@ to generate the following config files:
 - Header file
 
   Contains component options in the header file system.
-  Component options are gathered together in a seperate menu ``TF-M component configs`` in
+  Component options are gathered together in a separate menu ``TF-M component configs`` in
   `The Kconfig files`_.
 
 - The .config and .config.old files
@@ -44,7 +44,7 @@ The tool supports loading multiple pre-set configuration files merging into a si
 The first loaded options are overridden by later ones if the config files contain duplicated
 options.
 And dependencies between config options are taken care of.
-It then launchs a configuration GUI for users to change any config options if the ``MENUCONFIG`` is
+It then launches a configuration GUI for users to change any config options if the ``MENUCONFIG`` is
 enabled in build command line.
 
 Integration with TF-M build system

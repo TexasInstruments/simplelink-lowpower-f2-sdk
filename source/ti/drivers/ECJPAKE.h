@@ -884,11 +884,11 @@ typedef struct
     const ECCParams_CurveParams *curve; /*!< A pointer to the elliptic curve parameters
                                          *   used in the operation.
                                          */
-    CryptoKey *myPrivateKey1;           /*!< A pointer to a private ECC key. Must
+    const CryptoKey *myPrivateKey1;     /*!< A pointer to a private ECC key. Must
                                          *   be of the same length as other params
                                          *   of the curve used.
                                          */
-    CryptoKey *myPrivateKey2;           /*!< A pointer to a private ECC key. Must
+    const CryptoKey *myPrivateKey2;     /*!< A pointer to a private ECC key. Must
                                          *   be of the same length as other params
                                          *   of the curve used.
                                          */
@@ -902,14 +902,14 @@ typedef struct
                                          *   written to the buffer specified in the
                                          *   CryptoKey.
                                          */
-    CryptoKey *myPrivateV1;             /*!< A pointer to a private ECC key used in the
+    const CryptoKey *myPrivateV1;       /*!< A pointer to a private ECC key used in the
                                          *   first Schnorr ZKP.
                                          *   Must be of the same length as other params
                                          *   of the curve used. The CryptoKey and keying material
                                          *   may be deleted or go out of scope after
                                          *   generating the ZKP.
                                          */
-    CryptoKey *myPrivateV2;             /*!< A pointer to a private ECC key used in the
+    const CryptoKey *myPrivateV2;       /*!< A pointer to a private ECC key used in the
                                          *   second Schnorr ZKP.
                                          *   Must be of the same length as other params
                                          *   of the curve used. The CryptoKey and keying material
@@ -1049,7 +1049,7 @@ typedef struct
     CryptoKey *myCombinedPublicKey;     /*!< A pointer to a blank public ECC key. Result of multiplying
                                          *   \c myCombinedPrivateKey by \c myNewGenerator.
                                          */
-    CryptoKey *myPrivateV;              /*!< A pointer to a private ECC key used in the
+    const CryptoKey *myPrivateV;        /*!< A pointer to a private ECC key used in the
                                          *   only second-round Schnorr ZKP.
                                          *   Must be of the same length as other params
                                          *   of the curve used. The CryptoKey and keying material

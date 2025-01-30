@@ -1,14 +1,21 @@
 /*
- * Copyright (c) 2019-2023, Arm Limited. All rights reserved.
- * Copyright (c) 2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2024, Arm Limited. All rights reserved.
+ * Copyright (c) 2024, Texas Instruments Incorporated - http://www.ti.com
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
  */
 
 /* The following code is copied from tfm_its_req_mngr.c from TF-M v1.1 and
- * its_signal_handle() was modified to support TF-M v1.8.
+ * its_signal_handle() was modified to support TF-M v2.0.
  */
+
+#include <stddef.h>
+
+#include <third_party/tfm/interface/include/psa/error.h>
+#include <third_party/tfm/interface/include/psa/service.h>
+#include <third_party/tfm/interface/include/psa/storage_common.h>
+#include <third_party/tfm/secure_fw/partitions/internal_trusted_storage/tfm_internal_trusted_storage.h>
 
 typedef psa_status_t (*its_func_t)(void);
 

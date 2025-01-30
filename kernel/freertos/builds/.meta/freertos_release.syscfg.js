@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, Texas Instruments Incorporated
+ * Copyright (c) 2022-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,34 +34,34 @@
  * the freertos kernel configuration.
  */
 
-var board = system.deviceData.board.name;
+var device = system.deviceData.deviceId;
 
 if (system.getRTOS() === "freertos") {
-    if (board.match(/CC13.1/) || board.match(/CC26.1/)) {
+    if (device.match(/CC13.1/) || device.match(/CC26.1/)) {
         system.getScript("cc13x1_cc26x1/release/freertos_release.syscfg.js");
     }
-    else if (board.match(/CC13.2/) || board.match(/CC26.2/)) {
+    else if (device.match(/CC13.2/) || device.match(/CC26.2/)) {
         system.getScript("cc13x2_cc26x2/release/freertos_release.syscfg.js");
     }
-    else if (board.match(/CC13.2.7/) || board.match(/CC26.2.7/)) {
+    else if (device.match(/CC13.2.7/) || device.match(/CC26.2.7/)) {
         system.getScript("cc13x2x7_cc26x2x7/release/freertos_release.syscfg");
     }
-    else if (board.match(/CC13.4/) || board.match(/CC26.4/) || board.match(/CC26.3/)) {
+    else if (device.match(/CC13.4/) || device.match(/CC26.4/) || device.match(/CC26.3/)) {
         system.getScript("cc13x4_cc26x4/release/freertos_release.syscfg.js");
     }
-    else if (board.match(/CC23.0R2/)) {
-        system.getScript("cc23x0r2/release/freertos_release.syscfg.js");
-    }
-    else if (board.match(/CC23.0R5/)) {
+    else if (device.match(/CC23.0R22/)) {
         system.getScript("cc23x0r5/release/freertos_release.syscfg.js");
     }
-    else if (board.match(/CC27/)) {
+    else if (device.match(/CC23.0R2/)) {
+        system.getScript("cc23x0r2/release/freertos_release.syscfg.js");
+    }
+    else if (device.match(/CC23.0R5/)) {
+        system.getScript("cc23x0r5/release/freertos_release.syscfg.js");
+    }
+    else if (device.match(/CC27/)) {
         system.getScript("cc27xx/release/freertos_release.syscfg.js");
     }
-    else if (board.match(/CC32/)) {
-        system.getScript("cc32xx/release/freertos_release.syscfg.js");
-    }
-    else if (board.match(/CC35/)) {
+    else if (device.match(/CC35/)) {
         system.getScript("cc35xx/release/freertos_release.syscfg.js");
     }
 }

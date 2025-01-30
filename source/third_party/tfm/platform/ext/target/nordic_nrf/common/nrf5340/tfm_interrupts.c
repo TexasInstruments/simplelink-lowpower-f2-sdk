@@ -16,7 +16,7 @@
 #include "tfm_peripherals_def.h"
 #include "tfm_peripherals_config.h"
 #include "load/interrupt_defs.h"
-#include "ffm/interrupt.h"
+#include "interrupt.h"
 
 static enum tfm_hal_status_t irq_init(struct irq_t *irq, IRQn_Type irqn,
                                       void * p_pt,

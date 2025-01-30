@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ if (board != null) {
 }
 
 const moduleDesc = `
-The [__CCFG area__][1] is the last flash memory sector and must contain a
+The [__CCFG area__][1] is a dedicated flash memory region and must contain a
 Customer Configuration section (CCFG) that is used by boot ROM and TI provided
 drivers to configure the device. This configuration is done by simply letting
 Syscfg generate the file ti_devices_config.c and include it in the project.
@@ -60,9 +60,9 @@ Syscfg generate the file ti_devices_config.c and include it in the project.
 * [Detailed Field Description][2]
 * [API access][3]
 
-[1]: /driverlib_cc13xx_cc26xx/cc13x2_cc26x2/driverlib/index.html#ccfg "Basic usage summary"
-[2]: /driverlib_cc13xx_cc26xx/cc13x2_cc26x2/register_descriptions/CPU_MMAP/CCFG.html "CCFG field description"
-[3]: /driverlib_cc13xx_cc26xx/cc13x2_cc26x2/driverlib/group__ccfgread__api.html "CCFG access API"`;
+[1]: /driverlib/cc13x2_cc26x2/driverlib/index.html#ccfg "Basic usage summary"
+[2]: /driverlib/cc13x2_cc26x2/register_descriptions/CPU_MMAP/CCFG.html "CCFG field description"
+[3]: /driverlib/cc13x2_cc26x2/driverlib/group__ccfgread__api.html "CCFG access API"`;
 
 let devSpecific = {
     templates : {

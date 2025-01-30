@@ -17,7 +17,6 @@
 #include "psa/framework_feature.h"
 #include "psa/service.h"
 #include "psa_manifest/tfm_initial_attestation.h"
-#include "region_defs.h"
 #include "tfm_attest_defs.h"
 
 #define ECC_P256_PUBLIC_KEY_SIZE PSA_KEY_EXPORT_ECC_PUBLIC_KEY_MAX_SIZE(256)
@@ -60,7 +59,7 @@ static psa_status_t psa_attest_get_token(const psa_msg_t *msg)
 }
 #else /* PSA_FRAMEWORK_HAS_MM_IOVEC == 1 */
 /* Buffer to store the created attestation token. */
-static uint8_t token_buff[PSA_INITIAL_ATTEST_TOKEN_MAX_SIZE];
+static uint8_t token_buff[PSA_INITIAL_ATTEST_MAX_TOKEN_SIZE];
 
 static psa_status_t psa_attest_get_token(const psa_msg_t *msg)
 {

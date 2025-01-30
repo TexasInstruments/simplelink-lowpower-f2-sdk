@@ -34,13 +34,13 @@
  * the freertos kernel configuration.
  */
 
-var board = system.deviceData.board.name;
+var device = system.deviceData.deviceId;
 
 if (system.getRTOS() === "nortos") {
-    if (board.match(/CC13.4/) || board.match(/CC26.4/) || board.match(/CC26.3/)) {
+    if (device.match(/CC13.4/) || device.match(/CC26.4/) || device.match(/CC26.3/)) {
         system.getScript("cc13x4_cc26x4/release/nortos_release.syscfg.js");
     }
-    else if (board.match(/CC27/)) {
+    else if (device.match(/CC27/)) {
         system.getScript("cc27xx/release/nortos_release.syscfg.js");
     }
 }

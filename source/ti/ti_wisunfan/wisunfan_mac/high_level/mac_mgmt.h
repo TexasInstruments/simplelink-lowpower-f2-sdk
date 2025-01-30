@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2005-2024, Texas Instruments Incorporated
+ Copyright (c) 2005-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -171,7 +171,7 @@ typedef void (*fhStartBsFn_t)(void);
 typedef FHAPI_status (*fhStopAsyncFn_t)(void);
 typedef void (*fhSendDataFn_t)(void);
 typedef uint16_t (*fhGetIeLenFn_t)(uint32_t);
-#ifndef FEATURE_WISUN_EDFE_SUPPORT
+#if !defined(FEATURE_WISUN_EDFE_SUPPORT) && !defined(FEATURE_WISUN_MIN_EDFE)
 typedef uint16_t (*fhGenIeFn_t)(uint8_t*, uint32_t, macTx_t*, FHIE_ieInfo_t*);
 #else
 typedef uint16_t (*fhGenIeFn_t)(uint8_t*, uint32_t, macTx_t*, FHIE_ieInfo_new_t*);

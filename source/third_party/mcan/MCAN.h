@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Texas Instruments Incorporated
+ * Copyright (c) 2023-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,24 +57,24 @@ extern "C" {
  * external devices as will the base MCAN register address.
  */
 extern void MCAN_writeReg(uint32_t offset, uint32_t value);
-extern void MCAN_writeMsgRAM(uint32_t offset, const uint8_t *src, size_t numBytes);
+extern void MCAN_writeMsgRam(uint32_t offset, const uint8_t *src, size_t numBytes);
 extern uint32_t MCAN_readReg(uint32_t offset);
-extern void MCAN_readMsgRAM(uint8_t *dst, uint32_t offset, size_t numBytes);
+extern void MCAN_readMsgRam(uint8_t *dst, uint32_t offset, size_t numBytes);
 extern uint32_t MCAN_getMRAMOffset(void);
 
 /*!
- * @brief   Successful status code.
+ *  @brief   Successful status code.
  *
- * Functions return MCAN_STATUS_SUCCESS if the function was executed
- * successfully.
+ *  Functions return MCAN_STATUS_SUCCESS if the function was executed
+ *  successfully.
  */
 #define MCAN_STATUS_SUCCESS ((int_fast16_t)0)
 
 /*!
- * @brief   Generic error status code.
+ *  @brief   Generic error status code.
  *
- * Functions return MCAN_STATUS_ERROR if the function was not executed
- * successfully and no more specific error is applicable.
+ *  Functions return MCAN_STATUS_ERROR if the function was not executed
+ *  successfully and no more specific error is applicable.
  */
 #define MCAN_STATUS_ERROR ((int_fast16_t)-1)
 
@@ -142,14 +142,14 @@ typedef uint32_t MCAN_MemType;
 /* @} */
 
 /*!
- *  @anchor MCAN_RxFIFONum
+ *  @anchor MCAN_RxFifoNum
  *  @name MCAN Rx FIFO Number
  *  @{
  */
 /*!
  *  @brief    Enum to represent the MCAN Rx FIFO number
  */
-typedef uint32_t MCAN_RxFIFONum;
+typedef uint32_t MCAN_RxFifoNum;
 
 #define MCAN_RX_FIFO_NUM_0 (0U)
 /*!< MCAN Rx FIFO 0 */
@@ -211,7 +211,7 @@ typedef uint32_t MCAN_TimeOutSelect;
  *  @{
  */
 /*!
- * @brief  Enum for MCAN interrupts.
+ *  @brief  Enum for MCAN interrupts.
  */
 typedef uint32_t MCAN_IntSrc;
 
@@ -288,15 +288,15 @@ typedef uint32_t MCAN_IntSrc;
 typedef uint32_t MCAN_LpbkMode;
 
 #define MCAN_LPBK_MODE_INTERNAL (0U)
-/*!< Internal Loop Back Mode
+/*!< Internal Loop Back Mode.
  *   This mode can be used for hot self-test and this mode will not
  *   affect bus state.
  */
 #define MCAN_LPBK_MODE_EXTERNAL (1U)
-/*!< External Loop Back Mode
- *   In this mode, MCAN the M_CAN treats its own transmitted messages as
+/*!< External Loop Back Mode.
+ *   In this mode, the M_CAN controller treats its own transmitted messages as
  *   received messages and stores them (if they pass acceptance filtering)
- *   into an Rx Buffer or an Rx FIFO. This mode will affect bus state
+ *   into an Rx Buffer or an Rx FIFO. This mode will affect bus state.
  */
 /* @} */
 
@@ -306,7 +306,7 @@ typedef uint32_t MCAN_LpbkMode;
  *  @{
  */
 /*!
- *  @brief    Enum to represent MCAN's communication state
+ *  @brief    Enum to represent MCAN communication state
  */
 typedef uint32_t MCAN_ComState;
 
@@ -331,9 +331,9 @@ typedef uint32_t MCAN_ComState;
 typedef uint32_t MCAN_GFCNonMatching;
 
 #define MCAN_GFC_NM_ACCEPT_INTO_RXFIFO0 (0U)
-/*!< Accept non-matching frames into RXFIFO0 */
+/*!< Accept non-matching frames into Rx FIFO0 */
 #define MCAN_GFC_NM_ACCEPT_INTO_RXFIFO1 (1U)
-/*!< Accept non-matching frames into RXFIFO0 */
+/*!< Accept non-matching frames into Rx FIFO0 */
 #define MCAN_GFC_NM_REJECT              (3U)
 /*!< Reject non-matching frames */
 /* @} */
@@ -351,7 +351,7 @@ typedef uint32_t MCAN_TSCCTimestampSel;
 #define MCAN_TSCC_COUNTER_ALWAYS_0 (0U)
 /*!< Timestamp counter value always 0x0000 */
 #define MCAN_TSCC_COUNTER_USE_TCP  (1U)
-/*!< Timestamp counter value incremented according to Timestamp Counter Pre-scaler */
+/*!< Timestamp counter value incremented according to Timestamp Counter Prescaler */
 #define MCAN_TSCC_COUNTER_EXTERNAL (2U)
 /*!< External timestamp counter value used - req'd for CAN FD */
 /* @} */
@@ -362,7 +362,7 @@ typedef uint32_t MCAN_TSCCTimestampSel;
  *  @{
  */
 /*!
- *  @brief    Enum to represent MCAN's Error Code
+ *  @brief    Enum to represent M_CAN Error Code
  */
 typedef uint32_t MCAN_ErrCode;
 
@@ -384,7 +384,7 @@ typedef uint32_t MCAN_ErrCode;
 /*!< During the transmission of a message (with the exception of
  *   the arbitration field), the device wanted to send a
  *   recessive level (bit of logical value 1))
- *  but the monitored bus value was dominant.
+ *   but the monitored bus value was dominant.
  */
 #define MCAN_ERR_CODE_BIT0_ERROR  (5U)
 /*!< During the transmission of a message (or acknowledge bit,
@@ -403,172 +403,180 @@ typedef uint32_t MCAN_ErrCode;
  */
 #define MCAN_ERR_CODE_NO_CHANGE   (7U)
 /*! < Any read access to the Protocol Status Register re-initializes the LEC to
- * 7. When the LEC shows the value 7, no CAN bus event was detected since the
- * last CPU read access to the Protocol Status Register.
+ *    7. When the LEC shows the value 7, no CAN bus event was detected since the
+ *    last CPU read access to the Protocol Status Register.
  */
 /* @} */
 
 /*!
- * @brief  Structure for bit timing calculation.
- *         Bit timing related to data phase will be valid only if CAN-FD mode
- *         and bit rate switching are enabled and will be '0' otherwise.
- */
-typedef struct
-{
-    uint32_t nomRatePrescalar;
-    /*!< Nominal Baud Rate Pre-scaler
-     *   Interpreted by MCAN as the value in this field + 1.
-     *   Range:[0x0-0x1FF]
-     */
-    uint32_t nomTimeSeg1;
-    /*!< Nominal Time segment before sample point
-     *   Interpreted by MCAN as the value in this field + 1.
-     *   Range:[0x0-0xFF]
-     */
-    uint32_t nomTimeSeg2;
-    /*!< Nominal Time segment after sample point
-     *   Interpreted by MCAN as the value in this field + 1.
-     *   Range:[0x0-0x7F]
-     */
-    uint32_t nomSynchJumpWidth;
-    /*!< Nominal (Re)Synchronization Jump Width
-     *   Interpreted by MCAN as the value in this field + 1.
-     *   Range:[0x0-0x7F]
-     */
-    uint32_t dataRatePrescalar;
-    /*!< Data Baud Rate Pre-scaler
-     *   Interpreted by MCAN as the value in this field + 1.
-     *   Range:[0x0-0x1F]
-     */
-    uint32_t dataTimeSeg1;
-    /*!< Data Time segment before sample point
-     *   Interpreted by MCAN as the value in this field + 1.
-     *   Range:[0x0-0x1F]
-     */
-    uint32_t dataTimeSeg2;
-    /*!< Data Time segment after sample point
-     *   Interpreted by MCAN as the value in this field + 1.
-     *   Range:[0x0-0xF]
-     */
-    uint32_t dataSynchJumpWidth;
-    /*!< Data (Re)Synchronization Jump Width
-     *   Interpreted by MCAN as the value in this field + 1.
-     *   Range:[0x0-0xF]
-     */
-} MCAN_BitTimingParams;
-
-/*!
- * @brief  Structure for MCAN Transmitter Delay Compensation parameters.
+ *  @brief  Structure for MCAN Transmitter Delay Compensation parameters.
  */
 typedef struct
 {
     uint32_t tdcf;
-    /*!< Transmitter Delay Compensation Filter Window Length
+    /*!< Transmitter Delay Compensation Filter Window Length.
+     *   Defines the minimum value for the Secondary Sample Point (SSP) position;
+     *   dominant edges on M_CAN Rx that would result in an earlier SSP position
+     *   are ignored for transmitter delay measurement. The feature is enabled when
+     *   \c TDCF is configured to a value greater than \c TDCO.
      *   Range:[0x0-0x7F]
      */
     uint32_t tdco;
-    /*!< Transmitter Delay Compensation Offset
+    /*!< Transmitter Delay Compensation Offset.
+     *   Defines the distance between the measured delay from M_CAN Tx to
+     *   M_CAN Rx and the secondary sample point. Transmitter Delay
+     *   Compensation is enabled when this value is non-zero and the
+     *   \c dataRatePrescaler is 0 or 1. If the \c dataRatePrescaler is > 1,
+     *   Transmitter Delay Compensation cannot be enabled.
      *   Range:[0x0-0x7F]
      */
 } MCAN_TDCConfig;
 
 /*!
- * @brief  Structure for MCAN Global Filter Configuration parameters.
+ *  @brief  Structure for bit timing parameters.
+ *
+ *  @note   Bit timing related to data phase and transmitter delay compensation
+ *          are only valid if CAN-FD mode and bit rate switching are enabled.
  */
 typedef struct
 {
-    uint32_t rrfe;
-    /*!< Reject Remote Frames Extended
-     *   0 = Filter remote frames with 29-bit extended IDs
-     *   1 = Reject all remote frames with 29-bit extended IDs
+    uint32_t nomRatePrescaler;
+    /*!< Nominal Bit Rate Prescaler.
+     *   Interpreted by M_CAN as the value in this field + 1.
+     *   Range:[0x0-0x1FF]
      */
-    uint32_t rrfs;
-    /*!< Reject Remote Frames Standard
-     *   0 = Filter remote frames with 11-bit standard IDs
-     *   1 = Reject all remote frames with 11-bit standard IDs
-     */
-    MCAN_GFCNonMatching anfe;
-    /*!< Accept Non-matching Frames Extended
-     *   Refer enum MCAN_GFCNonMatching.
-     */
-    MCAN_GFCNonMatching anfs;
-    /*!< Accept Non-matching Frames Standard
-     *   Refer enum MCAN_GFCNonMatching.
-     */
-} MCAN_GlobalFiltConfig;
-
-/*!
- * @brief  Structure for MCAN initialization parameters.
- */
-typedef struct
-{
-    uint32_t fdMode;
-    /*!< FD Operation Enable
-     *   0 = FD operation disabled
-     *   1 = FD operation enabled
-     */
-    uint32_t brsEnable;
-    /*!< Bit Rate Switch Enable
-     *   This is valid only when fdMode = 1.
-     *   0 = Bit rate switching for transmissions disabled
-     *   1 = Bit rate switching for transmissions enabled
-     */
-    uint32_t txpEnable;
-    /*!< Transmit Pause
-     *   0 = Transmit pause disabled
-     *   1 = Transmit pause enabled
-     */
-    uint32_t efbi;
-    /*!< Edge Filtering during Bus Integration
-     *   0 = Edge filtering disabled
-     *   1 = Two consecutive dominant tq required to detect an edge for
-     *       hard synchronization
-     */
-    uint32_t pxhDisable;
-    /*!< Protocol Exception Handling Disable
-     *   0 = Protocol exception handling enabled
-     *   1 = Protocol exception handling disabled
-     */
-    uint32_t darEnable;
-    /*!< Disable Automatic Retransmission
-     *   0 = Automatic retransmission of messages not transmitted successfully
-     *       enabled
-     *   1 = Automatic retransmission disabled
-     */
-    uint32_t wdcPreload;
-    /*!< Start value of the Message RAM Watchdog Counter
+    uint32_t nomTimeSeg1;
+    /*!< Nominal Time segment before sample point.
+     *   Interpreted by M_CAN as the value in this field + 1.
      *   Range:[0x0-0xFF]
+     */
+    uint32_t nomTimeSeg2;
+    /*!< Nominal Time segment after sample point.
+     *   Interpreted by M_CAN as the value in this field + 1.
+     *   Range:[0x0-0x7F]
+     */
+    uint32_t nomSynchJumpWidth;
+    /*!< Nominal (Re)Synchronization Jump Width.
+     *   Interpreted by M_CAN as the value in this field + 1.
+     *   Range:[0x0-0x7F]
+     */
+    uint32_t dataRatePrescaler;
+    /*!< Data Bit Rate Prescaler.
+     *   Interpreted by M_CAN as the value in this field + 1.
+     *   Range:[0x0-0x01] if Transmitter Delay Compensation is enabled.
+     *   Range:[0x0-0x1F] if Transmitter Delay Compensation is disabled.
+     */
+    uint32_t dataTimeSeg1;
+    /*!< Data Time segment before sample point.
+     *   Interpreted by M_CAN as the value in this field + 1.
+     *   Range:[0x0-0x1F]
+     */
+    uint32_t dataTimeSeg2;
+    /*!< Data Time segment after sample point.
+     *   Interpreted by M_CAN as the value in this field + 1.
+     *   Range:[0x0-0xF]
+     */
+    uint32_t dataSynchJumpWidth;
+    /*!< Data (Re)Synchronization Jump Width.
+     *   Interpreted by M_CAN as the value in this field + 1.
+     *   Range:[0x0-0xF]
      */
     MCAN_TDCConfig tdcConfig;
     /*!< Transmitter Delay Compensation parameters.
      *   Refer struct MCAN_TDCConfig.
      */
-    uint32_t tdcEnable;
-    /*!< Transmitter Delay Compensation Enable
-     *   0 = Transmitter Delay Compensation is disabled
-     *   1 = Transmitter Delay Compensation is enabled
+} MCAN_BitTimingParams;
+
+/*!
+ *  @brief  Structure for MCAN Global Filter Configuration parameters.
+ */
+typedef struct
+{
+    uint32_t rrfe;
+    /*!< Reject Remote Frames Extended
+     *   <br> 0 = Filter remote frames with 29-bit extended IDs
+     *   <br> 1 = Reject all remote frames with 29-bit extended IDs
+     */
+    uint32_t rrfs;
+    /*!< Reject Remote Frames Standard
+     *   <br> 0 = Filter remote frames with 11-bit standard IDs
+     *   <br> 1 = Reject all remote frames with 11-bit standard IDs
+     */
+    MCAN_GFCNonMatching anfe;
+    /*!< Accept Non-matching Frames Extended.
+     *   Refer enum MCAN_GFCNonMatching.
+     */
+    MCAN_GFCNonMatching anfs;
+    /*!< Accept Non-matching Frames Standard.
+     *   Refer enum MCAN_GFCNonMatching.
+     */
+} MCAN_GlobalFiltConfig;
+
+/*!
+ *  @brief  Structure for MCAN initialization parameters.
+ */
+typedef struct
+{
+    uint32_t fdMode;
+    /*!< FD Operation Enable
+     *   <br> 0 = FD operation disabled
+     *   <br> 1 = FD operation enabled
+     */
+    uint32_t brsEnable;
+    /*!< Bit Rate Switch Enable
+     *   This is valid only when fdMode = 1.
+     *   <br> 0 = Bit rate switching for transmissions disabled
+     *   <br> 1 = Bit rate switching for transmissions enabled
+     */
+    uint32_t txpEnable;
+    /*!< Transmit Pause
+     *   <br> 0 = Transmit pause disabled
+     *   <br> 1 = Transmit pause enabled
+     */
+    uint32_t efbi;
+    /*!< Edge Filtering during Bus Integration
+     *   <br> 0 = Edge filtering disabled
+     *   <br> 1 = Two consecutive dominant tq required to detect an edge for
+     *            hard synchronization
+     */
+    uint32_t pxhDisable;
+    /*!< Protocol Exception Handling Disable
+     *   <br> 0 = Protocol exception handling enabled
+     *   <br> 1 = Protocol exception handling disabled
+     */
+    uint32_t darEnable;
+    /*!< Disable Automatic Retransmission
+     *   <br> 0 = Automatic retransmission of messages not transmitted successfully
+     *            enabled
+     *   <br> 1 = Automatic retransmission disabled
+     */
+    uint32_t wdcPreload;
+    /*!< Start value of the Message RAM Watchdog Counter.
+     *   Range:[0x0-0xFF]
      */
 } MCAN_InitParams;
 
 /*!
- * @brief  Structure for MCAN configuration parameters.
+ *  @brief  Structure for MCAN configuration parameters.
  */
 typedef struct
 {
     uint32_t monEnable;
     /*!< Bus Monitoring Mode
-     *   0 = Bus Monitoring Mode is disabled
-     *   1 = Bus Monitoring Mode is enabled
+     *   <br> 0 = Bus Monitoring Mode is disabled
+     *   <br> 1 = Bus Monitoring Mode is enabled
      */
     uint32_t asmEnable;
     /*!< Restricted Operation Mode
-     *   0 = Normal CAN operation
-     *   1 = Restricted Operation Mode active
-     *   This mode should not be combined with test modes.
+     *   <br> 0 = Normal CAN operation
+     *   <br> 1 = Restricted Operation Mode active
+     *   <br> This mode should not be combined with test modes.
      */
-    uint32_t tsPrescalar;
+    uint32_t tsPrescaler;
     /*!< Timestamp Counter Prescaler.
-     *   Interpreted by MCAN as the value in this field + 1.
+     *   This prescaler is only used when tsSelect is MCAN_TSCC_COUNTER_USE_TCP
+     *   which means the internal timestamp counter source is selected.
+     *   Interpreted by M_CAN as the value in this field + 1.
      *   Range:[0x0-0xF]
      */
     MCAN_TSCCTimestampSel tsSelect;
@@ -582,22 +590,22 @@ typedef struct
     uint32_t timeoutPreload;
     /*!< Start value of the Timeout Counter (down-counter).
      *   The Timeout Counter is decremented in multiples of CAN bit times [1-16]
-     *   depending on the configuration of the tsPrescalar.
+     *   depending on the configuration of the tsPrescaler.
      *   Range:[0x0-0xFFFF]
      */
     uint32_t timeoutCntEnable;
     /*!< Time-out Counter Enable
-     *   0 = Timeout Counter is disabled
-     *   1 = Timeout Counter is enabled
+     *   <br> 0 = Timeout Counter is disabled
+     *   <br> 1 = Timeout Counter is enabled
      */
     MCAN_GlobalFiltConfig filterConfig;
     /*!< Global Filter Configuration parameters.
-     *    Refer struct MCAN_GlobalFiltConfig.
+     *   Refer struct MCAN_GlobalFiltConfig.
      */
 } MCAN_ConfigParams;
 
 /*!
- * @brief  Structure for MCAN error logging counters status.
+ *  @brief  Structure for MCAN error logging counters status.
  */
 typedef struct
 {
@@ -607,20 +615,20 @@ typedef struct
     /*!< Receive Error Counter */
     uint32_t rpStatus;
     /*!< Receive Error Passive
-     *   0 = The Receive Error Counter is below the error passive level (128)
-     *   1 = The Receive Error Counter has reached the error passive level (128)
+     *   <br> 0 = The Receive Error Counter is below the error passive level (128)
+     *   <br> 1 = The Receive Error Counter has reached the error passive level (128)
      */
     uint32_t canErrLogCnt;
     /*!< CAN Error Logging */
 } MCAN_ErrCntStatus;
 
 /*!
- * @brief  Structure for MCAN protocol status.
+ *  @brief  Structure for MCAN protocol status.
  */
 typedef struct
 {
     MCAN_ErrCode lastErrCode;
-    /*!< Last Error Code
+    /*!< Last Error Code.
      *   Refer enum MCAN_ErrCode
      */
     MCAN_ComState act;
@@ -629,64 +637,64 @@ typedef struct
      */
     uint32_t errPassive;
     /*!< Error Passive
-     *   0 = The M_CAN is in the Error_Active state
-     *   1 = The M_CAN is in the Error_Passive state
+     *   <br> 0 = The M_CAN is in the Error_Active state
+     *   <br> 1 = The M_CAN is in the Error_Passive state
      */
     uint32_t warningStatus;
     /*!< Warning Status
-     *   0 = Both error counters are below the Error_Warning limit of 96
-     *   1 = At least one of error counter has reached the Error_Warning
-     *       limit of 96
+     *   <br> 0 = Both error counters are below the Error_Warning limit of 96
+     *   <br> 1 = At least one of error counter has reached the Error_Warning
+     *            limit of 96
      */
     uint32_t busOffStatus;
     /*!< Bus_Off Status
-     *   0 = The M_CAN is not Bus_Off
-     *   1 = The M_CAN is in Bus_Off state
+     *   <br> 0 = The M_CAN is not Bus_Off
+     *   <br> 1 = The M_CAN is in Bus_Off state
      */
     MCAN_ErrCode dlec;
-    /*!< Data Phase Last Error Code
+    /*!< Data Phase Last Error Code.
      *   Refer enum MCAN_ErrCode
      */
     uint32_t resi;
     /*!< ESI flag of last received CAN FD Message
-     *   0 = Last received CAN FD message did not have its ESI flag set
-     *   1 = Last received CAN FD message had its ESI flag set
+     *   <br> 0 = Last received CAN FD message did not have its ESI flag set
+     *   <br> 1 = Last received CAN FD message had its ESI flag set
      */
     uint32_t rbrs;
     /*!< BRS flag of last received CAN FD Message
-     *   0 = Last received CAN FD message did not have its BRS flag set
-     *   1 = Last received CAN FD message had its BRS flag set
+     *   <br> 0 = Last received CAN FD message did not have its BRS flag set
+     *   <br> 1 = Last received CAN FD message had its BRS flag set
      */
     uint32_t rfdf;
     /*!< Received a CAN FD Message
-     *   0 = Since this bit was reset by the CPU, no CAN FD message has been
-     *       received
-     *   1 = Message in CAN FD format with FDF flag set has been received
+     *   <br> 0 = Since this bit was reset by the CPU, no CAN FD message has been
+     *            received
+     *   <br> 1 = Message in CAN FD format with FDF flag set has been received
      */
     uint32_t pxe;
     /*!< Protocol Exception Event
-     *   0 = No protocol exception event occurred since last read access
-     *   1 = Protocol exception event occurred
+     *   <br> 0 = No protocol exception event occurred since last read access
+     *   <br> 1 = Protocol exception event occurred
      */
     uint32_t tdcv;
     /*!< Transmitter Delay Compensation Value */
 } MCAN_ProtocolStatus;
 
 /*!
- * @brief  Structure for MCAN Message RAM Configuration Parameters.
- *         Message RAM can contain following sections:
- *           Standard ID filters,
- *           Extended ID filters,
- *           RX FIFO0,
- *           RX FIFO1,
- *           RX Buffers,
- *           TX EventFIFO,
- *           TX Buffers,
- *           TX FIFO (or TX Q)
+ *  @brief  Structure for MCAN Message RAM Configuration Parameters.
  *
- *         Note: If particular section in the RAM is not used then it's size
- *         should be initialized to '0'
- *         (Number of buffers in case of Tx/Rx buffer).
+ *  Message RAM can contain following sections:
+ *  - Standard ID filters,
+ *  - Extended ID filters,
+ *  - Rx FIFO0,
+ *  - Rx FIFO1,
+ *  - Rx Buffers,
+ *  - Tx Event FIFO,
+ *  - Tx Buffers,
+ *  - Tx FIFO (or Tx Queue)
+ *
+ *  @note   If any section in the message RAM is not used then its size should
+ *          be initialized to '0'. (Number of buffers in case of Tx/Rx buffer).
  */
 typedef struct
 {
@@ -694,121 +702,121 @@ typedef struct
     /*!< Standard ID Filter List Start Address */
     uint32_t sidFilterListSize;
     /*!< List Size: Standard ID
-     *   0 = No standard Message ID filter
-     *   1-128 = Number of standard Message ID filter elements
+     *   <br> 0 = No standard Message ID filter
+     *   <br> 1-128 = Number of standard Message ID filter elements
      */
     uint32_t xidFilterStartAddr;
     /*!< Extended ID Filter List Start Address */
     uint32_t xidFilterListSize;
     /*!< List Size: Extended ID
-     *   0 = No standard Message ID filter
-     *   1-64 = Number of standard Message ID filter elements
+     *   <br> 0 = No standard Message ID filter
+     *   <br> 1-64 = Number of standard Message ID filter elements
      */
 
-    uint32_t rxFIFO0StartAddr;
+    uint32_t rxFifo0StartAddr;
     /*!< Rx FIFO0 Start Address */
-    uint32_t rxFIFO0Size;
+    uint32_t rxFifo0Size;
     /*!< Rx FIFO0 Size
-     *   0 = No Rx FIFO
-     *   1-64 = Number of Rx FIFO elements
+     *   <br> 0 = No Rx FIFO
+     *   <br> 1-64 = Number of Rx FIFO elements
      */
-    uint32_t rxFIFO0Watermark;
+    uint32_t rxFifo0Watermark;
     /*!< Rx FIFO0 Watermark
-     *   0 = Watermark interrupt disabled
-     *   1-64 = Level for Rx FIFO 0 watermark interrupt
+     *   <br> 0 = Watermark interrupt disabled
+     *   <br> 1-64 = Level for Rx FIFO 0 watermark interrupt
      */
-    uint32_t rxFIFO0OpMode;
+    uint32_t rxFifo0OpMode;
     /*!< Rx FIFO0 Operation Mode
-     *   0 = FIFO blocking mode
-     *   1 = FIFO overwrite mode
+     *   <br> 0 = FIFO blocking mode
+     *   <br> 1 = FIFO overwrite mode
      */
-    uint32_t rxFIFO1StartAddr;
+    uint32_t rxFifo1StartAddr;
     /*!< Rx FIFO1 Start Address */
-    uint32_t rxFIFO1Size;
+    uint32_t rxFifo1Size;
     /*!< Rx FIFO1 Size
-     *   0 = No Rx FIFO
-     *   1-64 = Number of Rx FIFO elements
+     *   <br> 0 = No Rx FIFO
+     *   <br> 1-64 = Number of Rx FIFO elements
      */
-    uint32_t rxFIFO1Watermark;
+    uint32_t rxFifo1Watermark;
     /*!< Rx FIFO1 Watermark
-     *   0 = Watermark interrupt disabled
-     *   1-64 = Level for Rx FIFO 1 watermark interrupt
+     *   <br> 0 = Watermark interrupt disabled
+     *   <br> 1-64 = Level for Rx FIFO 1 watermark interrupt
      */
-    uint32_t rxFIFO1OpMode;
+    uint32_t rxFifo1OpMode;
     /*!< Rx FIFO1 Operation Mode
-     *   0 = FIFO blocking mode
-     *   1 = FIFO overwrite mode
+     *   <br> 0 = FIFO blocking mode
+     *   <br> 1 = FIFO overwrite mode
      */
     uint32_t rxBufStartAddr;
     /*!< Rx Buffer Start Address */
     uint32_t rxBufElemSize;
     /*!< Rx Buffer Element Size */
-    uint32_t rxFIFO0ElemSize;
+    uint32_t rxFifo0ElemSize;
     /*!< Rx FIFO0 Element Size */
-    uint32_t rxFIFO1ElemSize;
+    uint32_t rxFifo1ElemSize;
     /*!< Rx FIFO1 Element Size */
 
-    uint32_t txEventFIFOStartAddr;
+    uint32_t txEventFifoStartAddr;
     /*!< Tx Event FIFO Start Address */
-    uint32_t txEventFIFOSize;
+    uint32_t txEventFifoSize;
     /*!< Event FIFO Size
-     *   0 = Tx Event FIFO disabled
-     *   1-32 = Number of Tx Event FIFO elements
+     *   <br> 0 = Tx Event FIFO disabled
+     *   <br> 1-32 = Number of Tx Event FIFO elements
      */
-    uint32_t txEventFIFOWatermark;
+    uint32_t txEventFifoWatermark;
     /*!< Tx Event FIFO Watermark
-     *   0 = Watermark interrupt disabled
-     *   1-32 = Level for Tx Event FIFO watermark interrupt
+     *   <br> 0 = Watermark interrupt disabled
+     *   <br> 1-32 = Level for Tx Event FIFO watermark interrupt
      */
 
     uint32_t txBufStartAddr;
     /*!< Tx Buffers Start Address */
     uint32_t txBufNum;
     /*!< Number of Dedicated Transmit Buffers
-     *   0 = No Dedicated Tx Buffers
-     *   1-32 = Number of Dedicated Tx Buffers
+     *   <br> 0 = No Dedicated Tx Buffers
+     *   <br> 1-32 = Number of Dedicated Tx Buffers
      */
-    uint32_t txFIFOQSize;
+    uint32_t txFifoQSize;
     /*!< Transmit FIFO/Queue Size
-     *   0 = No Tx FIFO/Queue
-     *   1-32 = Number of Tx Buffers used for Tx FIFO/Queue
+     *   <br> 0 = No Tx FIFO/Queue
+     *   <br> 1-32 = Number of Tx Buffers used for Tx FIFO/Queue
      */
-    uint32_t txFIFOQMode;
+    uint32_t txFifoQMode;
     /*!< Tx FIFO/Queue Mode
-     *   0 = Tx FIFO operation
-     *   1 = Tx Queue operation
+     *   <br> 0 = Tx FIFO operation
+     *   <br> 1 = Tx Queue operation
      */
     uint32_t txBufElemSize;
     /*!< Tx Buffer Element Size */
-} MCAN_MsgRAMConfig;
+} MCAN_MsgRamConfig;
 
 /*!
- * @brief  Structure for MCAN High Priority Message.
+ *  @brief  Structure for MCAN High Priority Message.
  */
 typedef struct
 {
     uint32_t bufIdx;
-    /*!< Buffer Index
+    /*!< Buffer Index.
      *   Only valid when MSI[1] = 1.
      */
     uint32_t msi;
     /*!< Message Storage Indicator
-     *   0  = No FIFO selected
-     *   1  = FIFO message lost
-     *   2  = Message stored in FIFO 0
-     *   3  = Message stored in FIFO 1
+     *   <br> 0 = No FIFO selected
+     *   <br> 1 = FIFO message lost
+     *   <br> 2 = Message stored in FIFO 0
+     *   <br> 3 = Message stored in FIFO 1
      */
     uint32_t filterIdx;
     /*!< Filter Index */
     uint32_t filterList;
     /*!< Indicates the filter list of the matching filter element
-     *   0 = Standard Filter List
-     *   1 = Extended Filter List
+     *   <br> 0 = Standard Filter List
+     *   <br> 1 = Extended Filter List
      */
 } MCAN_HighPriorityMsgInfo;
 
 /*!
- * @brief  Structure for MCAN new data flag for Rx buffer.
+ *  @brief  Structure for MCAN new data flag for Rx buffer.
  */
 typedef struct
 {
@@ -819,7 +827,7 @@ typedef struct
 } MCAN_RxNewDataStatus;
 
 /*!
- * @brief  Structure for MCAN Rx FIFO Status.
+ *  @brief  Structure for MCAN Rx FIFO Status.
  */
 typedef struct
 {
@@ -831,35 +839,35 @@ typedef struct
     /*!< Rx FIFO Put Index */
     uint32_t fifoFull;
     /*!< Rx FIFO Full
-     *   0 = Rx FIFO not full
-     *   1 = Rx FIFO full
+     *   <br> 0 = Rx FIFO not full
+     *   <br> 1 = Rx FIFO full
      */
     uint32_t msgLost;
     /*!< Rx FIFO Message Lost */
-} MCAN_RxFIFOStatus;
+} MCAN_RxFifoStatus;
 
 /*!
- * @brief  Structure for MCAN Tx FIFO/Queue Status.
+ *  @brief  Structure for MCAN Tx FIFO/Queue Status.
  */
 typedef struct
 {
     uint32_t freeLvl;
     /*!< Tx FIFO Free Level */
     uint32_t getIdx;
-    /*!< Tx FIFO Get Index
+    /*!< Tx FIFO Get Index.
      *   Read as zero when Tx Queue operation is configured.
      */
     uint32_t putIdx;
     /*!< Tx FIFO/Queue Put Index */
     uint32_t fifoFull;
     /*!< Tx FIFO/Queue Full
-     *   0 = Tx FIFO/Queue not full
-     *   1 = Tx FIFO/Queue full
+     *   <br> 0 = Tx FIFO/Queue not full
+     *   <br> 1 = Tx FIFO/Queue full
      */
-} MCAN_TxFIFOQStatus;
+} MCAN_TxFifoQStatus;
 
 /*!
- * @brief  Structure for MCAN Tx Event FIFO Status.
+ *  @brief  Structure for MCAN Tx Event FIFO Status.
  */
 typedef struct
 {
@@ -871,19 +879,19 @@ typedef struct
     /*!< Event FIFO Put Index */
     uint32_t fifoFull;
     /*!< Event FIFO Full
-     *   0 = Tx Event FIFO not full
-     *   1 = Tx Event FIFO full
+     *   <br> 0 = Tx Event FIFO not full
+     *   <br> 1 = Tx Event FIFO full
      */
     uint32_t eleLost;
     /*!< Tx Event FIFO Element Lost
-     *   0 = No Tx Event FIFO element lost
-     *   1 = Tx Event FIFO element lost, also set after write attempt to
-     *       Tx Event FIFO of size zero.
+     *   <br> 0 = No Tx Event FIFO element lost
+     *   <br> 1 = Tx Event FIFO element lost, also set after write attempt to
+     *            Tx Event FIFO of size zero.
      */
-} MCAN_TxEventFIFOStatus;
+} MCAN_TxEventFifoStatus;
 
 /*!
- * @brief  Structure for MCAN Tx Buffer element.
+ *  @brief  Structure for MCAN Tx Buffer element.
  */
 typedef struct
 {
@@ -895,48 +903,46 @@ typedef struct
     /*!< Identifier */
     uint32_t rtr;
     /*!< Remote Transmission Request
-     *   0 = Transmit data frame
-     *   1 = Transmit remote frame
+     *   <br> 0 = Transmit data frame
+     *   <br> 1 = Transmit remote frame
      */
     uint32_t xtd;
     /*!< Extended Identifier
-     *   0 = 11-bit standard identifier
-     *   1 = 29-bit extended identifier
+     *   <br> 0 = 11-bit standard identifier
+     *   <br> 1 = 29-bit extended identifier
      */
     uint32_t esi;
     /*!< Error State Indicator
-     *   0 = ESI bit in CAN FD format depends only on error passive flag
-     *   1 = ESI bit in CAN FD format transmitted recessive
+     *   <br> 0 = ESI bit in CAN FD format depends only on error passive flag
+     *   <br> 1 = ESI bit in CAN FD format transmitted recessive
      */
     uint32_t dlc;
     /*!< Data Length Code
-     *   0-8  = CAN + CAN FD: transmit frame has 0-8 data bytes
-     *   9-15 = CAN: transmit frame has 8 data bytes
-     *   9-15 = CAN FD: transmit frame has 12/16/20/24/32/48/64 data bytes
+     *   <br> 0-8  = CAN + CAN FD: transmit frame has 0-8 data bytes
+     *   <br> 9-15 = CAN: transmit frame has 8 data bytes
+     *   <br> 9-15 = CAN FD: transmit frame has 12/16/20/24/32/48/64 data bytes
      */
     uint32_t brs;
     /*!< Bit Rate Switching
-     *   0 = CAN FD frame transmitted without bit rate switching
-     *   1 = CAN FD frame transmitted with bit rate switching
+     *   <br> 0 = CAN FD frame transmitted without bit rate switching
+     *   <br> 1 = CAN FD frame transmitted with bit rate switching
      */
     uint32_t fdf;
     /*!< FD Format
-     *   0 = Frame transmitted in Classic CAN format
-     *   1 = Frame transmitted in CAN FD format
+     *   <br> 0 = Frame transmitted in Classic CAN format
+     *   <br> 1 = Frame transmitted in CAN FD format
      */
     uint32_t efc;
     /*!< Event FIFO Control
-     *   0 = Don't store Tx events
-     *   1 = Store Tx events
+     *   <br> 0 = Don't store Tx events
+     *   <br> 1 = Store Tx events
      */
     uint32_t mm;
-    /*!< Message Marker */
+    /*!< Message Marker - 8 bits */
 } MCAN_TxBufElement;
 
 /*!
- * @brief  Structure for MCAN Tx Buffer element which takes data as a pointer.
- *         Please note that as the data field is a pointer so wrong value for
- *         payload size passed from application will lead to data corruption.
+ *  @brief  Structure for MCAN Tx Buffer element which takes data as a pointer.
  */
 typedef struct
 {
@@ -944,50 +950,50 @@ typedef struct
     /*!< Identifier */
     uint32_t rtr;
     /*!< Remote Transmission Request
-     *   0 = Transmit data frame
-     *   1 = Transmit remote frame
+     *   <br> 0 = Transmit data frame
+     *   <br> 1 = Transmit remote frame
      */
     uint32_t xtd;
     /*!< Extended Identifier
-     *   0 = 11-bit standard identifier
-     *   1 = 29-bit extended identifier
+     *   <br> 0 = 11-bit standard identifier
+     *   <br> 1 = 29-bit extended identifier
      */
     uint32_t esi;
     /*!< Error State Indicator
-     *   0 = ESI bit in CAN FD format depends only on error passive flag
-     *   1 = ESI bit in CAN FD format transmitted recessive
+     *   <br> 0 = ESI bit in CAN FD format depends only on error passive flag
+     *   <br> 1 = ESI bit in CAN FD format transmitted recessive
      */
     uint32_t dlc;
     /*!< Data Length Code
-     *   0-8  = CAN + CAN FD: transmit frame has 0-8 data bytes
-     *   9-15 = CAN: transmit frame has 8 data bytes
-     *   9-15 = CAN FD: transmit frame has 12/16/20/24/32/48/64 data bytes
+     *   <br> 0-8  = CAN + CAN FD: transmit frame has 0-8 data bytes
+     *   <br> 9-15 = CAN: transmit frame has 8 data bytes
+     *   <br> 9-15 = CAN FD: transmit frame has 12/16/20/24/32/48/64 data bytes
      */
     uint32_t brs;
     /*!< Bit Rate Switching
-     *   0 = CAN FD frame transmitted without bit rate switching
-     *   1 = CAN FD frame transmitted with bit rate switching
+     *   <br> 0 = CAN FD frame transmitted without bit rate switching
+     *   <br> 1 = CAN FD frame transmitted with bit rate switching
      */
     uint32_t fdf;
     /*!< FD Format
-     *   0 = Frame transmitted in Classic CAN format
-     *   1 = Frame transmitted in CAN FD format
+     *   <br> 0 = Frame transmitted in Classic CAN format
+     *   <br> 1 = Frame transmitted in CAN FD format
      */
     uint32_t efc;
     /*!< Event FIFO Control
-     *   0 = Don't store Tx events
-     *   1 = Store Tx events
+     *   <br> 0 = Don't store Tx events
+     *   <br> 1 = Store Tx events
      */
     uint32_t mm;
-    /*!< Message Marker */
+    /*!< Message Marker - 8 bits */
     const uint8_t *data;
     /*!< Pointer to data. Must be word-aligned for best performance.
-     *   Only first DLC number of bytes are valid.
+     *   Only the first DLC number of bytes will be transmitted.
      */
 } MCAN_TxBufElementNoCpy;
 
 /*!
- * @brief  Structure for MCAN Rx Buffer element.
+ *  @brief  Structure for MCAN Rx Buffer element.
  */
 typedef struct
 {
@@ -1001,48 +1007,48 @@ typedef struct
     /*!< Rx Timestamp */
     uint8_t rtr;
     /*!< Remote Transmission Request
-     *   0 = Received frame is a data frame
-     *   1 = Received frame is a remote frame
+     *   <br> 0 = Received frame is a data frame
+     *   <br> 1 = Received frame is a remote frame
      */
     uint8_t xtd;
     /*!< Extended Identifier
-     *   0 = 11-bit standard identifier
-     *   1 = 29-bit extended identifier
+     *   <br> 0 = 11-bit standard identifier
+     *   <br> 1 = 29-bit extended identifier
      */
     uint8_t esi;
     /*!< Error State Indicator
-     *   0 = Transmitting node is error active
-     *   1 = Transmitting node is error passive
+     *   <br> 0 = Transmitting node is error active
+     *   <br> 1 = Transmitting node is error passive
      */
     uint8_t dlc;
     /*!< Data Length Code
-     *   0-8  = CAN + CAN FD: received frame has 0-8 data bytes
-     *   9-15 = CAN: received frame has 8 data bytes
-     *   9-15 = CAN FD: received frame has 12/16/20/24/32/48/64 data bytes
+     *   <br> 0-8  = CAN + CAN FD: received frame has 0-8 data bytes
+     *   <br> 9-15 = CAN: received frame has 8 data bytes
+     *   <br> 9-15 = CAN FD: received frame has 12/16/20/24/32/48/64 data bytes
      */
     uint8_t brs;
     /*!< Bit Rate Switching
-     *   0 = Frame received without bit rate switching
-     *   1 = Frame received with bit rate switching
+     *   <br> 0 = Frame received without bit rate switching
+     *   <br> 1 = Frame received with bit rate switching
      */
     uint8_t fdf;
     /*!< FD Format
-     *   0 = Standard frame format
-     *   1 = CAN FD frame format (new DLC-coding and CRC)
+     *   <br> 0 = Standard frame format
+     *   <br> 1 = CAN FD frame format (new DLC-coding and CRC)
      */
     uint8_t fidx;
     /*!< Filter Index */
     uint8_t anmf;
     /*!< Accepted Non-matching Frame
-     *   0 = Received frame matching filter index FIDX
-     *   1 = Received frame did not match any Rx filter element
+     *   <br> 0 = Received frame matching filter index FIDX
+     *   <br> 1 = Received frame did not match any Rx filter element
      */
 } MCAN_RxBufElement;
 
 /*!
- * @brief  Structure for MCAN Rx Buffer element which takes data as a pointer.
- *         Please note that as the data field is a pointer so wrong value for
- *         payload size passed from application will lead to data corruption.
+ *  @brief  Structure for MCAN Rx Buffer element which takes data as a pointer.
+ *          Please note that as the data field is a pointer so wrong value for
+ *          payload size passed from application will lead to data corruption.
  */
 typedef struct
 {
@@ -1052,41 +1058,41 @@ typedef struct
     /*!< Rx Timestamp */
     uint8_t rtr;
     /*!< Remote Transmission Request
-     *   0 = Received frame is a data frame
-     *   1 = Received frame is a remote frame
+     *   <br> 0 = Received frame is a data frame
+     *   <br> 1 = Received frame is a remote frame
      */
     uint8_t xtd;
     /*!< Extended Identifier
-     *   0 = 11-bit standard identifier
-     *   1 = 29-bit extended identifier
+     *   <br> 0 = 11-bit standard identifier
+     *   <br> 1 = 29-bit extended identifier
      */
     uint8_t esi;
     /*!< Error State Indicator
-     *   0 = Transmitting node is error active
-     *   1 = Transmitting node is error passive
+     *   <br> 0 = Transmitting node is error active
+     *   <br> 1 = Transmitting node is error passive
      */
     uint8_t dlc;
     /*!< Data Length Code
-     *   0-8  = CAN + CAN FD: received frame has 0-8 data bytes
-     *   9-15 = CAN: received frame has 8 data bytes
-     *   9-15 = CAN FD: received frame has 12/16/20/24/32/48/64 data bytes
+     *   <br> 0-8  = CAN + CAN FD: received frame has 0-8 data bytes
+     *   <br> 9-15 = CAN: received frame has 8 data bytes
+     *   <br> 9-15 = CAN FD: received frame has 12/16/20/24/32/48/64 data bytes
      */
     uint8_t brs;
     /*!< Bit Rate Switching
-     *   0 = Frame received without bit rate switching
-     *   1 = Frame received with bit rate switching
+     *   <br> 0 = Frame received without bit rate switching
+     *   <br> 1 = Frame received with bit rate switching
      */
     uint8_t fdf;
     /*!< FD Format
-     *   0 = Standard frame format
-     *   1 = CAN FD frame format (new DLC-coding and CRC)
+     *   <br> 0 = Standard frame format
+     *   <br> 1 = CAN FD frame format (new DLC-coding and CRC)
      */
     uint8_t fidx;
     /*!< Filter Index */
     uint8_t anmf;
     /*!< Accepted Non-matching Frame
-     *   0 = Received frame matching filter index FIDX
-     *   1 = Received frame did not match any Rx filter element
+     *   <br> 0 = Received frame matching filter index FIDX
+     *   <br> 1 = Received frame did not match any Rx filter element
      */
     uint8_t *data;
     /*!< Pointer to data. Must be word-aligned for best performance.
@@ -1095,7 +1101,7 @@ typedef struct
 } MCAN_RxBufElementNoCpy;
 
 /*!
- * @brief  Structure for MCAN Tx Event FIFO element.
+ *  @brief  Structure for MCAN Tx Event FIFO element.
  */
 typedef struct
 {
@@ -1105,479 +1111,587 @@ typedef struct
     /*!< Tx Timestamp */
     uint8_t rtr;
     /*!< Remote Transmission Request
-     *   0 = Data frame transmitted
-     *   1 = Remote frame transmitted
+     *   <br> 0 = Data frame transmitted
+     *   <br> 1 = Remote frame transmitted
      */
     uint8_t xtd;
     /*!< Extended Identifier
-     *   0 = 11-bit standard identifier
-     *   1 = 29-bit extended identifier
+     *   <br> 0 = 11-bit standard identifier
+     *   <br> 1 = 29-bit extended identifier
      */
     uint8_t esi;
     /*!< Error State Indicator
-     *   0 = Transmitting node is error active
-     *   1 = Transmitting node is error passive
+     *   <br> 0 = Transmitting node is error active
+     *   <br> 1 = Transmitting node is error passive
      */
     uint8_t dlc;
     /*!< Data Length Code
-     *   0-8  = CAN + CAN FD: frame with 0-8 data bytes transmitted
-     *   9-15 = CAN: frame with 8 data bytes transmitted
-     *   9-15 = CAN FD: frame with 12/16/20/24/32/48/64 data bytes transmitted
+     *   <br> 0-8  = CAN + CAN FD: frame with 0-8 data bytes transmitted
+     *   <br> 9-15 = CAN: frame with 8 data bytes transmitted
+     *   <br> 9-15 = CAN FD: frame with 12/16/20/24/32/48/64 data bytes transmitted
      */
     uint8_t brs;
     /*!< Bit Rate Switching
-     *   0 = Frame transmitted without bit rate switching
-     *   1 = Frame transmitted with bit rate switching
+     *   <br> 0 = Frame transmitted without bit rate switching
+     *   <br> 1 = Frame transmitted with bit rate switching
      */
     uint8_t fdf;
     /*!< FD Format
-     *   0 = Standard frame format
-     *   1 = CAN FD frame format (new DLC-coding and CRC)
+     *   <br> 0 = Standard frame format
+     *   <br> 1 = CAN FD frame format (new DLC-coding and CRC)
      */
     uint8_t et;
     /*!< Event Type
-     *   0 = Reserved
-     *   1 = Tx event
-     *   2 = Transmission in spite of cancellation
+     *   <br> 0 = Reserved
+     *   <br> 1 = Tx event
+     *   <br> 2 = Transmission in spite of cancellation
      *        (always set for transmissions in DAR mode)
-     *   3 = Reserved
+     *   <br> 3 = Reserved
      */
     uint8_t mm;
     /*!< Message Marker */
-} MCAN_TxEventFIFOElement;
+} MCAN_TxEventFifoElement;
 
 /*!
- * @brief  Structure for MCAN Standard Message ID Filter Element.
+ *  @brief  Structure for MCAN Standard Message ID Filter Element.
  */
 typedef struct
 {
-    uint32_t sfid2;
-    /*!< Standard Filter ID 2 (11-bits) */
-    uint32_t sfid1;
-    /*!< Standard Filter ID 1 (11-bits) */
     uint32_t sfec;
-    /*!< Standard Filter Element Configuration
-     *   0 = Disable filter element
-     *   1 = Store in Rx FIFO 0 if filter matches
-     *   2 = Store in Rx FIFO 1 if filter matches
-     *   3 = Reject ID if filter matches
-     *   4 = Set priority if filter matches
-     *   5 = Set priority and store in FIFO 0 if filter matches
-     *   6 = Set priority and store in FIFO 1 if filter matches
-     *   7 = Store into Rx Buffer or as debug message,
-     *       configuration of SFT[1:0] ignored.
-     *   If SFEC = 4-6, a match sets high priority
-     *   message status and generates an interrupt.
+    /*!< Standard Filter Element Configuration (3-bits)
+     *   <br> 0 = Disable filter element
+     *   <br> 1 = Store in Rx FIFO 0 if filter matches
+     *   <br> 2 = Store in Rx FIFO 1 if filter matches
+     *   <br> 3 = Reject ID if filter matches
+     *   <br> 4 = Set priority if filter matches
+     *   <br> 5 = Set priority and store in FIFO 0 if filter matches
+     *   <br> 6 = Set priority and store in FIFO 1 if filter matches
+     *   <br> 7 = Store into Rx Buffer or as debug message, configuration of
+     *            SFT field is ignored as the ID must match SFID1 exactly.
+     *   <br> If SFEC = 4-6, a match sets high priority
+     *        message status and generates an interrupt.
      */
     uint32_t sft;
-    /*!< Standard Filter Type
-     *   0 = Range filter from SFID1 to SFID2 (SFID2 >= SFID1)
-     *   1 = Dual ID filter for SFID1 or SFID2
-     *   2 = Classic filter: SFID1 = filter, SFID2 = mask
-     *   3 = Filter element disabled
+    /*!< Standard Filter Type (2-bits)
+     *   <br> 0 = Range filter from SFID1 to SFID2 (SFID2 >= SFID1)
+     *   <br> 1 = Dual ID filter for SFID1 or SFID2
+     *   <br> 2 = Classic filter: SFID1 = filter, SFID2 = mask
+     *   <br> 3 = Filter element disabled
+     */
+    uint32_t sfid1;
+    /*!< Standard Filter ID 1 (11-bits).
+     *   First ID of standard ID filter element.
+     *   When filtering for Rx Buffers or for debug messages this field defines
+     *   the ID of a standard message to be stored. The received identifiers
+     *   must match exactly, no masking mechanism is used.
+     */
+    uint32_t sfid2;
+    /*!< Standard Filter ID 2 (11-bits).
+     *   This field has a different meaning depending on the value of SFEC:
+     *   <br> SFEC = 1-6: Second ID of standard ID filter element
+     *   <br> SFEC = 7: Filter for Rx Buffers or for debug messages
+     *   <br>
+     *   <br> SFID2[10:9] decides whether the received message is stored into
+     *        an Rx Buffer or treated as message A, B, or C of the debug
+     *        message sequence.
+     *   <br> 0 = Store message into an Rx Buffer
+     *   <br> 1 = Debug Message A
+     *   <br> 2 = Debug Message B
+     *   <br> 3 = Debug Message C
+     *   <br>
+     *   <br> SFID2[8:6] is used to control the filter event pins at the
+     *        Extension Interface.
+     *   <br>
+     *   <br> SFID2[5:0] defines the offset to the Rx Buffer Start Address
+     *        RXBC.RBSA for storage of a matching message.
      */
 } MCAN_StdMsgIDFilterElement;
 
 /*!
- * @brief  Structure for MCAN Extended Message ID Filter Element.
+ *  @brief  Structure for MCAN Extended Message ID Filter Element.
  */
 typedef struct
 {
-    uint32_t efid1;
-    /*!< Extended Filter ID 1 (29-bits) */
-    uint32_t efid2;
-    /*!< Extended Filter ID 2 (29-bits) */
     uint32_t efec;
     /*!< Extended Filter Element Configuration
-     *   0 = Disable filter element
-     *   1 = Store in Rx FIFO 0 if filter matches
-     *   2 = Store in Rx FIFO 1 if filter matches
-     *   3 = Reject ID if filter matches
-     *   4 = Set priority if filter matches
-     *   5 = Set priority and store in FIFO 0 if filter matches
-     *   6 = Set priority and store in FIFO 1 if filter matches
-     *   7 = Store into Rx Buffer or as debug message,
-     *       configuration of SFT[1:0] ignored.
-     *   If EFEC = 4-6, a match sets high priority
-     *   message status and generates an interrupt.
+     *   <br> 0 = Disable filter element
+     *   <br> 1 = Store in Rx FIFO 0 if filter matches
+     *   <br> 2 = Store in Rx FIFO 1 if filter matches
+     *   <br> 3 = Reject ID if filter matches
+     *   <br> 4 = Set priority if filter matches
+     *   <br> 5 = Set priority and store in FIFO 0 if filter matches
+     *   <br> 6 = Set priority and store in FIFO 1 if filter matches
+     *   <br> 7 = Store into Rx Buffer or as debug message, configuration of
+     *            EFT field is ignored as the ID must match EFID1 exactly.
+     *   <br> If EFEC = 4-6, a match sets high priority
+     *        message status and generates an interrupt.
      */
     uint32_t eft;
     /*!< Extended Filter Type
-     *   0 = Range filter from EFID1 to EFID2 (EFID2 >= EFID1)
-     *   1 = Dual ID filter for EFID1 or EFID2
-     *   2 = Classic filter: EFID1 = filter, EFID2 = mask
-     *   3 = Range filter from EFID1 to EFID2 (EFID2 >= EFID1),
-     *       XIDAM mask not applied
+     *   <br> 0 = Range filter from EFID1 to EFID2 (EFID2 >= EFID1)
+     *   <br> 1 = Dual ID filter for EFID1 or EFID2
+     *   <br> 2 = Classic filter: EFID1 = filter, EFID2 = mask
+     *   <br> 3 = Range filter from EFID1 to EFID2 (EFID2 >= EFID1),
+     *            XIDAM mask not applied
      */
+    uint32_t efid1;
+    /*!< Extended Filter ID 1 (29-bits).
+     *   First ID of extended ID filter element.
+     *   When filtering for Rx Buffers or for debug messages this field defines
+     *   the ID of a extended message to be stored. The received identifiers
+     *   must match exactly, no masking mechanism is used.
+     */
+    uint32_t efid2;
+    /*!< Extended Filter ID 2 (29-bits)
+     *   This field has a different meaning depending on the value of EFEC:
+     *   <br> EFEC = 1-6: Second ID of extended ID filter element
+     *   <br> EFEC = 7: Filter for Rx Buffers or for debug messages
+     *   <br>
+     *   <br> EFID2[10:9] decides whether the received message is stored into
+     *        an Rx Buffer or treated as message A, B, or C of the debug
+     *        message sequence.
+     *   <br> 0 = Store message into an Rx Buffer
+     *   <br> 1 = Debug Message A
+     *   <br> 2 = Debug Message B
+     *   <br> 3 = Debug Message C
+     *   <br>
+     *   <br> EFID2[8:6] is used to control the filter event pins at the
+     *        Extension Interface.
+     *   <br>
+     *   <br> EFID2[5:0] defines the offset to the Rx Buffer Start Address
+     *        RXBC.RBSA for storage of a matching message. */
 } MCAN_ExtMsgIDFilterElement;
 
 /*!
- * @brief   Initializes MCAN module.
+ *  @brief   Initializes M_CAN controller.
  *
- * @param   initParams      Pointer to initialization parameters.
- *                          Refer struct MCAN_InitParams.
+ *  @param   initParams      Pointer to initialization parameters.
+ *                           Refer struct MCAN_InitParams.
  *
- * @retval  MCAN_STATUS_SUCCESS if successful.
- * @retval  MCAN_STATUS_ERROR if config has invalid time delay compensation or WDT preload.
+ *  @retval  MCAN_STATUS_SUCCESS if successful.
+ *  @retval  MCAN_STATUS_ERROR if config has invalid time delay compensation or WDT preload.
  */
 int_fast16_t MCAN_init(const MCAN_InitParams *initParams);
 
 /*!
- * @brief   Configures MCAN module.
+ *  @brief   Configures M_CAN controller.
  *
- * @param   config          Pointer to configuration parameters.
- *                          Refer struct MCAN_ConfigParams.
+ *  @param   config          Pointer to configuration parameters.
+ *                           Refer struct MCAN_ConfigParams.
  *
- * @retval  MCAN_STATUS_SUCCESS if successful.
- * @retval  MCAN_STATUS_ERROR if config has invalid prescalar or timeout preload.
+ *  @retval  MCAN_STATUS_SUCCESS if successful.
+ *  @retval  MCAN_STATUS_ERROR if config has invalid prescaler or timeout preload.
  */
 int_fast16_t MCAN_config(const MCAN_ConfigParams *config);
 
 /*!
- * @brief   Sets MCAN module mode of operation.
+ *  @brief   Sets M_CAN controller mode of operation.
  *
- * @param   mode            Mode of operation.
- *                          Refer enum MCAN_OperationMode.
+ *  @param   mode            Mode of operation.
+ *                           Refer enum MCAN_OperationMode.
  *
- * @return  None.
+ *  @return  None.
  */
 void MCAN_setOpMode(MCAN_OperationMode mode);
 
 /*!
- * @brief   Returns MCAN module mode of operation.
+ *  @brief   Returns M_CAN controller mode of operation.
  *
  *
- * @return  mode            Mode of operation.
- *                          Refer enum MCAN_OperationMode.
+ *  @return  mode            Mode of operation.
+ *                           Refer enum MCAN_OperationMode.
  */
 MCAN_OperationMode MCAN_getOpMode(void);
 
 /*!
- * @brief   Configures bit timings for MCAN module.
+ *  @brief   Reads the M_CAN controller bit timings.
  *
- * @param   bitTiming       Pointer to MCAN bit timing parameters.
- *                          Refer struct MCAN_BitTimingParams.
+ *  @param   bitTiming       Pointer to MCAN bit timing parameters.
+ *                           Refer struct MCAN_BitTimingParams.
  *
- * @retval  MCAN_STATUS_SUCCESS if successful.
- * @retval  MCAN_STATUS_ERROR if config has invalid timing values.
+ *  @return  None.
+ */
+void MCAN_getBitTime(MCAN_BitTimingParams *bitTiming);
+
+/*!
+ *  @brief   Sets M_CAN controller bit timings.
+ *
+ *  @param   bitTiming       Pointer to MCAN bit timing parameters.
+ *                           Refer struct MCAN_BitTimingParams.
+ *
+ *  @retval  MCAN_STATUS_SUCCESS if successful.
+ *  @retval  MCAN_STATUS_ERROR if config has invalid timing values.
  */
 int_fast16_t MCAN_setBitTime(const MCAN_BitTimingParams *bitTiming);
 
 /*!
- * @brief   Configures the various sections of Message RAM.
+ *  @brief   Configures the various sections of Message RAM.
  *
- * @warning Message RAM configuration is not validated by this API.
+ *  @warning Message RAM configuration is not validated by this API.
  *
- * @param   msgRAMConfig    Pointer to Message RAM configuration.
- *                          Refer struct MCAN_MsgRAMConfig.
+ *  @param   msgRamConfig    Pointer to Message RAM configuration.
+ *                           Refer struct MCAN_MsgRamConfig.
+ *
+ *  @return  None.
  */
-void MCAN_configMsgRAM(const MCAN_MsgRAMConfig *msgRAMConfig);
+void MCAN_configMsgRam(const MCAN_MsgRamConfig *msgRamConfig);
 
 /*!
- * @brief   Writes Tx message to message RAM.
+ *  @brief   Writes Tx message to message RAM.
  *
- * This uses the MCAN_TxBufElementNoCpy structure element which has data as a
- * pointer instead of an array. Note that as the data is a pointer here hence
- * corruption of data is possible when the payload size is exceeded.
+ *  @param   bufIdx          Tx Buffer index [0-31] where to write message. Must be valid per
+ *                           the message RAM configuration.
+ *  @param   elem            Pointer to Tx element.
+ *                           Refer struct MCAN_TxBufElementNoCpy.
  *
- * @param   bufIdx          Tx Buffer index [0-31] where message to write. Must be valid per
- *                          the message RAM configuration.
- * @param   elem            Pointer to Tx element.
- *                          Refer struct MCAN_TxBufElementNoCpy.
+ *  @return  None.
+ *
+ *  @post    #MCAN_setTxBufAddReq()
+ *
+ *  @sa      #MCAN_writeTxMsg()
  */
 void MCAN_writeTxMsgNoCpy(uint32_t bufIdx, const MCAN_TxBufElementNoCpy *elem);
 
 /*!
- * @brief   Writes Tx message to message RAM.
+ *  @brief   Writes Tx message to message RAM.
  *
- * @param   bufIdx          Tx Buffer index [0-31] where message to write. Must be valid per
- *                          the message RAM configuration.
- * @param   elem            Pointer to Tx element.
- *                          Refer struct MCAN_TxBufElement.
+ *  @param   bufIdx          Tx Buffer index [0-31] where to write message. Must be valid per
+ *                           the message RAM configuration.
+ *  @param   elem            Pointer to Tx element.
+ *                           Refer struct MCAN_TxBufElement.
+ *
+ *  @return  None.
+ *
+ *  @post    #MCAN_setTxBufAddReq()
+ *
+ *  @sa      #MCAN_writeTxMsgNoCpy()
  */
 void MCAN_writeTxMsg(uint32_t bufIdx, const MCAN_TxBufElement *elem);
 
 /*!
- * @brief   Sets Tx Buffer Add Request.
+ *  @brief   Sets Tx Buffer Add Request.
  *
- * @param   bufIdx          Tx Buffer index [0-31] for which request is to be added.
- *                          Must be valid per the message RAM configuration.
+ *  @pre     #MCAN_writeTxMsgNoCpy() or #MCAN_writeTxMsg()
+ *
+ *  @param   bufIdx          Tx Buffer index [0-31] for which request is to be added.
+ *                           Must be valid per the message RAM configuration.
+ *
+ *  @return  None.
  */
 void MCAN_setTxBufAddReq(uint32_t bufIdx);
 
 /*!
- * @brief   Returns New Data Message Status.
+ *  @brief   Reads New Data Message Status.
  *
- * @param   newDataStatus   Pointer to Rx Buffer new data status.
- *                          Refer struct MCAN_RxNewDataStatus.
+ *  @param   newDataStatus   Pointer to Rx Buffer new data status.
+ *                           Refer struct MCAN_RxNewDataStatus.
  *
- * @return  None.
+ *  @return  None.
+ *
+ *  @post    #MCAN_clearNewDataStatus()
  */
 void MCAN_getNewDataStatus(MCAN_RxNewDataStatus *newDataStatus);
 
 /*!
- * @brief   Clears New Data Message Status.
+ *  @brief   Clears New Data Message Status.
  *
- * @param   newDataStatus   Pointer to Rx Buffer new data status.
- *                          Refer struct MCAN_RxNewDataStatus.
+ *  @pre     #MCAN_getNewDataStatus()
  *
- * @return  None.
+ *  @param   newDataStatus   Pointer to Rx Buffer new data status.
+ *                           Refer struct MCAN_RxNewDataStatus.
+ *
+ *  @return  None.
  */
 void MCAN_clearNewDataStatus(const MCAN_RxNewDataStatus *newDataStatus);
 
 /*!
- * @brief   Reads received message from message RAM.
+ *  @brief   Reads received message from message RAM.
  *
- * This uses the MCAN_RxBufElementNoCpy structure element which has data as
- * pointer instead of an array. Note that as the data is a pointer here hence
- * corruption of data is possible when the payload size is exceeded.
+ *  This function uses the MCAN_RxBufElementNoCpy structure element which has
+ *  data as pointer instead of an array. Note that as the data is a pointer here
+ *  hence corruption of data is possible when the payload size is exceeded.
  *
+ *  @param   memType         Part of message ram to which given message to write.
+ *                           Refer enum MCAN_MemType.
+ *  @param   num             Buffer number or FIFO number from where message is to read.
+ *                           Refer enum MCAN_RxFifoNum if FIFO number. Must be valid per
+ *                           the message RAM configuration.
+ *  @param   elem            Pointer to Rx element.
+ *                           Refer struct MCAN_RxBufElementNoCpy.
  *
- * @param   memType         Part of message ram to which given message to write.
- *                          Refer enum MCAN_MemType.
- * @param   num             Buffer number or FIFO number from where message is to read.
- *                          Refer enum MCAN_RxFIFONum if FIFO number. Must be valid per
- *                          the message RAM configuration.
- * @param   elem            Pointer to Rx element.
- *                          Refer struct MCAN_RxBufElementNoCpy.
+ *  @return  None.
  *
- * @return  None.
+ *  @post    #MCAN_setRxFifoAck()
+ *
+ *  @sa      #MCAN_readRxMsg()
  */
 void MCAN_readRxMsgNoCpy(MCAN_MemType memType, uint32_t num, MCAN_RxBufElementNoCpy *elem);
 
 /*!
- * @brief   Reads received message from message RAM.
+ *  @brief   Reads received message from message RAM.
  *
+ *  @param   memType         Part of message ram to which given message to write.
+ *                           Refer enum MCAN_MemType.
+ *  @param   num             Buffer number or FIFO number from where message is to read.
+ *                           Refer enum MCAN_RxFifoNum if FIFO number. Must be valid per
+ *                           the message RAM configuration.
+ *  @param   elem            Pointer to Rx element.
+ *                           Refer struct MCAN_RxBufElement.
  *
- * @param   memType         Part of message ram to which given message to write.
- *                          Refer enum MCAN_MemType.
- * @param   num             Buffer number or FIFO number from where message is to read.
- *                          Refer enum MCAN_RxFIFONum if FIFO number. Must be valid per
- *                          the message RAM configuration.
- * @param   elem            Pointer to Rx element.
- *                          Refer struct MCAN_RxBufElement.
+ *  @return  None.
  *
- * @return  None.
+ *  @post    #MCAN_setRxFifoAck()
+ *
+ *  @sa      #MCAN_readRxMsgNoCpy()
  */
 void MCAN_readRxMsg(MCAN_MemType memType, uint32_t num, MCAN_RxBufElement *elem);
 
 /*!
- * @brief   Adds Standard Message ID Filter Element.
+ *  @brief   Reads next available element from Tx Event FIFO.
  *
- * @param   filtNum         Filter number (0-based).
- * @param   elem            Pointer to standard ID Filter Object.
- *                          Refer struct MCAN_StdMsgIDFilterElement.
+ *  This function writes the Tx Event FIFO acknowledge index after successfully
+ *  reading the Tx Event FIFO element.
  *
- * @return  None.
+ *  @param   elem            Pointer to Tx Event FIFO Element Object.
+ *                           Refer struct MCAN_TxEventFifoElement.
+ *
+ *  @retval  MCAN_STATUS_SUCCESS if successful.
+ *  @retval  MCAN_STATUS_ERROR if the Tx Event FIFO is empty.
+ */
+int_fast16_t MCAN_readTxEventFifo(MCAN_TxEventFifoElement *elem);
+
+/*!
+ *  @brief   Adds Standard Message ID Filter Element.
+ *
+ *  @param   filtNum         Filter number (0-based).
+ *  @param   elem            Pointer to standard ID Filter Object.
+ *                           Refer struct MCAN_StdMsgIDFilterElement.
+ *
+ *  @return  None.
  */
 void MCAN_addStdMsgIDFilter(uint32_t filtNum, const MCAN_StdMsgIDFilterElement *elem);
 
 /*!
- * @brief   Adds Extended Message ID Filter Element.
+ *  @brief   Adds Extended Message ID Filter Element.
  *
- * @param   filtNum         Filter number (0-based).
- * @param   elem            Pointer to extended ID Filter Object.
- *                          Refer struct MCAN_ExtMsgIDFilterElement.
+ *  @param   filtNum         Filter number (0-based).
+ *  @param   elem            Pointer to extended ID Filter Object.
+ *                           Refer struct MCAN_ExtMsgIDFilterElement.
  *
- * @return  None.
+ *  @return  None.
  */
 void MCAN_addExtMsgIDFilter(uint32_t filtNum, const MCAN_ExtMsgIDFilterElement *elem);
 
 /*!
- * @brief   Enables Loopback Test Mode for MCAN module.
+ *  @brief   Enables Loopback Test Mode for M_CAN controller.
  *
- * @param   lpbkMode        Loopback mode for MCAN.
- *                          Refer enum MCAN_LpbkMode.
+ *  @param   lpbkMode        Loopback mode for MCAN.
+ *                           Refer enum MCAN_LpbkMode.
  *
- * @return  None.
+ *  @return  None.
  *
- * @note    This API can be called only when MCAN is in Software
- *          Initialization mode of operation.
+ *  @note    This API can be called only when MCAN is in Software
+ *           Initialization mode of operation.
  */
 void MCAN_enableLoopbackMode(MCAN_LpbkMode lpbkMode);
 
 /*!
- * @brief   Disables Loopback Test Mode for MCAN module.
+ *  @brief   Disables Loopback Test Mode for M_CAN controller.
  *
- * @return  None.
+ *  @pre     #MCAN_enableLoopbackMode()
  *
- * @note    This API can be called only when MCAN is in Software
- *          Initialization mode of operation.
+ *  @return  None.
+ *
+ *  @note    This API can be called only when MCAN is in Software
+ *           Initialization mode of operation.
  */
 void MCAN_disableLoopbackMode(void);
 
 /*!
- * @brief   Returns protocol status for MCAN module.
+ *  @brief   Reads protocol status for M_CAN controller.
  *
- * @param   protStatus      Pointer to Protocol Status.
- *                          Refer struct MCAN_ProtocolStatus.
+ *  @param   protStatus      Pointer to Protocol Status.
+ *                           Refer struct MCAN_ProtocolStatus.
  *
- * @return  None.
+ *  @return  None.
  */
 void MCAN_getProtocolStatus(MCAN_ProtocolStatus *protStatus);
 
 /*!
- * @brief   Enables interrupts.
+ *  @brief   Enables interrupts.
  *
- * @param   intMask         Bit mask of interrupts to enable.
- *                          Refer enum MCAN_IntSrc.
+ *  @param   intMask         Bit mask of interrupts to enable.
+ *                           Refer enum MCAN_IntSrc.
  *
- * @return  None.
+ *  @return  None.
  */
 void MCAN_enableInt(uint32_t intMask);
 
 /*!
- * @brief   Disables interrupts.
+ *  @brief   Disables interrupts.
  *
- * @param   intMask         Bit mask of interrupts to disable.
- *                          Refer enum MCAN_IntSrc.
+ *  @param   intMask         Bit mask of interrupts to disable.
+ *                           Refer enum MCAN_IntSrc.
  *
- * @return  None.
+ *  @return  None.
  */
 void MCAN_disableInt(uint32_t intMask);
 
 /*!
- * @brief   Sets interrupt line select.
+ *  @brief   Sets interrupt line select.
  *
- * @param   intMask         Interrupt Number for which interrupt
- *                          line is to be selected. Refer enum MCAN_IntSrc.
- * @param   lineNum         Interrupt Line to select.
- *                          Refer enum MCAN_IntLineNum,
+ *  @param   intMask         Interrupt Number for which interrupt
+ *                           line is to be selected. Refer enum MCAN_IntSrc.
+ *  @param   lineNum         Interrupt Line to select.
+ *                           Refer enum MCAN_IntLineNum.
  *
- * @return  None.
+ *  @return  None.
  */
 void MCAN_setIntLineSel(uint32_t intMask, MCAN_IntLineNum lineNum);
 
 /*!
- * @brief   Enables selected interrupt line.
+ *  @brief   Enables selected interrupt line.
  *
- * @param   lineNum         Interrupt Line to enable.
- *                          Refer enum MCAN_IntLineNum,
+ *  @param   lineNum         Interrupt Line to enable.
+ *                           Refer enum MCAN_IntLineNum.
  *
- * @return  None.
+ *  @return  None.
  */
 void MCAN_enableIntLine(MCAN_IntLineNum lineNum);
 
 /*!
- * @brief   Disables selected interrupt line.
+ *  @brief   Disables selected interrupt line.
  *
- * @param   lineNum         Interrupt Line to disable.
- *                          Refer enum MCAN_IntLineNum,
+ *  @param   lineNum         Interrupt Line to disable.
+ *                           Refer enum MCAN_IntLineNum.
  *
- * @return  None.
+ *  @return  None.
  */
 void MCAN_disableIntLine(MCAN_IntLineNum lineNum);
 
 /*!
- * @brief   Returns interrupt status.
+ *  @brief   Returns interrupt status.
  *
- * @return  Interrupt Status.
+ *  @return  Interrupt Status.
  */
 uint32_t MCAN_getIntStatus(void);
 
 /*!
- * @brief   Clears the interrupt status.
+ *  @brief   Clears the interrupt status.
  *
- * @param   intMask         Interrupts to clear status.
+ *  @param   intMask         Interrupts to clear status.
  *
- * @return  None.
+ *  @return  None.
  */
 void MCAN_clearIntStatus(uint32_t intMask);
 
 /*!
- * @brief   Reads Rx FIFO status.
+ *  @brief   Reads Rx FIFO status.
  *
- * @param   fifoNum         Rx FIFO number
- *                          Refer enum MCAN_RxFIFONum
- * @param   fifoStatus      Rx FIFO Status.
- *                          Refer struct MCAN_RxFIFOStatus.
+ *  @param   fifoNum         Rx FIFO number
+ *                           Refer enum MCAN_RxFifoNum
+ *  @param   fifoStatus      Rx FIFO Status.
+ *                           Refer struct MCAN_RxFifoStatus.
  *
- * @return  None.
+ *  @return  None.
  */
-void MCAN_getRxFIFOStatus(MCAN_RxFIFONum fifoNum, MCAN_RxFIFOStatus *fifoStatus);
+void MCAN_getRxFifoStatus(MCAN_RxFifoNum fifoNum, MCAN_RxFifoStatus *fifoStatus);
 
 /*!
- * @brief   Reads Tx FIFO/Queue status.
+ *  @brief   Reads Tx Event FIFO status.
  *
- * @param   fifoQStatus     Pointer to Tx FIFO/Queue Status.
- *                          Refer struct MCAN_TxFIFOQStatus.
+ *  @param   fifoStatus      Pointer to Tx Event FIFO Status.
+ *                           Refer struct TxEventFifoStatus.
  *
- * @return  None.
+ *  @return  None.
  */
-void MCAN_getTxFIFOQStatus(MCAN_TxFIFOQStatus *fifoQStatus);
+void MCAN_getTxEventFifoStatus(MCAN_TxEventFifoStatus *fifoStatus);
 
 /*!
- * @brief   Sets Rx FIFO Acknowledgement.
+ *  @brief   Reads Tx FIFO/Queue status.
  *
- * @param   fifoNum         FIFO Number.
- *                          Refer enum MCAN_RxFIFONum.
- * @param   idx             Rx FIFO Acknowledge Index
+ *  @param   fifoQStatus     Pointer to Tx FIFO/Queue Status.
+ *                           Refer struct MCAN_TxFifoQStatus.
  *
- * @retval  MCAN_STATUS_SUCCESS if successful.
- * @retval  MCAN_STATUS_ERROR if \c fifoNum or \c idx is invalid.
+ *  @return  None.
  */
-int_fast16_t MCAN_setRxFIFOAck(MCAN_RxFIFONum fifoNum, uint32_t idx);
+void MCAN_getTxFifoQStatus(MCAN_TxFifoQStatus *fifoQStatus);
 
 /*!
- * @brief   Returns Tx Buffer Request Pending status.
+ *  @brief   Sets Rx FIFO Acknowledgement.
  *
- * @return  Tx Buffer Request Pending status.
+ *  @param   fifoNum         FIFO Number.
+ *                           Refer enum MCAN_RxFifoNum.
+ *  @param   idx             Rx FIFO Acknowledge Index
+ *
+ *  @retval  MCAN_STATUS_SUCCESS if successful.
+ *  @retval  MCAN_STATUS_ERROR if \c fifoNum or \c idx is invalid.
+ */
+int_fast16_t MCAN_setRxFifoAck(MCAN_RxFifoNum fifoNum, uint32_t idx);
+
+/*!
+ *  @brief   Returns Tx Buffer Request Pending status.
+ *
+ *  @return  Tx Buffer Request Pending status.
  */
 uint32_t MCAN_getTxBufReqPend(void);
 
 /*!
- * @brief   Cancels a Tx Buffer Request.
+ *  @brief   Cancels a Tx Buffer Request.
  *
- * @param   bufIdx         Tx Buffer index [0-31] for which request is to be cancelled.
+ *  @param   bufIdx         Tx Buffer index [0-31] for which request is to be cancelled.
+ *
+ *  @return  None.
  */
 void MCAN_cancelTxBufReq(uint32_t bufIdx);
 
 /*!
- * @brief   Returns Tx Buffer Transmission Occurred status.
+ *  @brief   Returns Tx Buffer Transmission Occurred status.
  *
- * @return  Tx Buffer Transmission Occurred status.
+ *  @return  Tx Buffer Transmission Occurred status.
  */
 uint32_t MCAN_getTxBufTransmissionStatus(void);
 
 /*!
- * @brief   Returns Transmit Buffer Cancellation Finished status.
+ *  @brief   Returns Transmit Buffer Cancellation Finished status.
  *
- * @return  Transmit Buffer Cancellation Finished status.
+ *  @return  Transmit Buffer Cancellation Finished status.
  */
 uint32_t MCAN_getTxBufCancellationStatus(void);
 
 /*!
- * @brief   Enables Tx Buffer Transmission Interrupt.
+ *  @brief   Enables Tx Buffer Transmission Interrupt.
  *
- * @param   bufMask         Tx Buffer mask for which interrupt(s) to enable.
+ *  @param   bufMask         Tx Buffer mask for which interrupt(s) to enable.
+ *
+ *  @return  None.
  */
 void MCAN_enableTxBufTransInt(uint32_t bufMask);
 
 /*!
- * @brief   Disables Tx Buffer Transmission Interrupt.
+ *  @brief   Disables Tx Buffer Transmission Interrupt.
  *
- * @param   bufMask         Tx Buffer mask for which interrupt(s) to disable.
+ *  @param   bufMask         Tx Buffer mask for which interrupt(s) to disable.
+ *
+ *  @return  None.
  */
 void MCAN_disableTxBufTransInt(uint32_t bufMask);
 
 /*!
- * @brief   Reads message from Tx Event FIFO.
+ *  @brief   Returns clock stop acknowledgement for M_CAN controller.
  *
- * @param   txEventElem     Pointer to Tx Event FIFO Message Object.
- *                          Refer struct MCAN_TxEventFIFOElement.
- *
- * @return  None.
- */
-void MCAN_readTxEventFIFO(MCAN_TxEventFIFOElement *txEventElem);
-
-/*!
- * @brief   Returns clock stop acknowledgement for MCAN module.
- *
- * @return  Clock Stop Acknowledge:
- *          0 = No clock stop acknowledged,
- *          1 = M_CAN may be set in power down
+ *  @return  Clock Stop Acknowledge:
+ *           <br> 0 = No clock stop acknowledged,
+ *           <br> 1 = M_CAN may be set in power down
  */
 uint32_t MCAN_getClkStopAck(void);
+
+/*!
+ *  @brief   Returns the 16-bit timestamp counter value.
+ *
+ *  @return  Timestamp counter value
+ */
+uint16_t MCAN_getTimestampCounter(void);
 
 #ifdef __cplusplus
 }

@@ -16,6 +16,7 @@
  */
 
 #include <string.h>
+#include <ctype.h>
 #include "nsconfig.h"
 #include "ns_types.h"
 #include "ns_trace.h"

@@ -8,7 +8,10 @@
 #include "crypto.h"
 #include "otp.h"
 #include "tfm_plat_provisioning.h"
+#include "tfm_plat_otp.h"
 #include "boot_hal.h"
+#include "boot_measurement.h"
+#include "psa/crypto.h"
 #include "region_defs.h"
 #include "log.h"
 #include "util.h"
@@ -22,8 +25,39 @@ __asm("  .global __ARM_use_no_argv\n");
 
 uint8_t computed_bl1_2_hash[BL1_2_HASH_SIZE];
 
-fih_int validate_image_at_addr(uint8_t *image)
+#ifdef TFM_MEASURED_BOOT_API
+#if (BL1_2_HASH_SIZE == 32)
+#define BL1_2_HASH_ALG  PSA_ALG_SHA_256
+#elif (BL1_2_HASH_SIZE == 64)
+#define BL1_2_HASH_ALG  PSA_ALG_SHA_512
+#else
+#error "The specified BL1_2_HASH_SIZE is not supported with measured boot."
+#endif /* BL1_2_HASH_SIZE */
+
+static void collect_boot_measurement(void)
 {
+    struct boot_measurement_metadata bl1_2_metadata = {
+        .measurement_type = BL1_2_HASH_ALG,
+        .signer_id = { 0 },
+        .signer_id_size = BL1_2_HASH_SIZE,
+        .sw_type = "BL1_2",
+        .sw_version = { 0 },
+    };
+
+    /* Missing metadata:
+     * - image version: not available,
+     * - signer ID: the BL1_2 image is not signed.
+     */
+    if (boot_store_measurement(BOOT_MEASUREMENT_SLOT_BL1_2, computed_bl1_2_hash,
+                               BL1_2_HASH_SIZE, &bl1_2_metadata, true)) {
+        BL1_LOG("[WRN] Failed to store boot measurement of BL1_2\r\n");
+    }
+}
+#endif /* TFM_MEASURED_BOOT_API */
+
+static fih_int validate_image_at_addr(uint8_t *image)
+{
+    enum tfm_plat_err_t plat_err;
     uint8_t stored_bl1_2_hash[BL1_2_HASH_SIZE];
     fih_int fih_rc = FIH_FAILURE;
 
@@ -33,13 +67,15 @@ fih_int validate_image_at_addr(uint8_t *image)
         FIH_RET(FIH_FAILURE);
     }
 
-    FIH_CALL(bl1_otp_read_bl1_2_image_hash, fih_rc, stored_bl1_2_hash);
+    plat_err = tfm_plat_otp_read(PLAT_OTP_ID_BL1_2_IMAGE_HASH, BL1_2_HASH_SIZE,
+                                 stored_bl1_2_hash);
+    fih_rc = fih_int_encode_zero_equality(plat_err);
     if (fih_not_eq(fih_rc, FIH_SUCCESS)) {
         FIH_RET(FIH_FAILURE);
     }
 
-    FIH_CALL(bl_secure_memeql, fih_rc, computed_bl1_2_hash,
-                                       stored_bl1_2_hash, BL1_2_HASH_SIZE);
+    FIH_CALL(bl_fih_memeql, fih_rc, computed_bl1_2_hash,
+                                    stored_bl1_2_hash, BL1_2_HASH_SIZE);
     if (fih_not_eq(fih_rc, FIH_SUCCESS)) {
         FIH_RET(FIH_FAILURE);
     }
@@ -57,14 +93,9 @@ int main(void)
     }
     BL1_LOG("[INF] Starting TF-M BL1_1\r\n");
 
-    fih_rc = bl1_otp_init();
-    if (fih_not_eq(fih_rc, FIH_SUCCESS)) {
-        FIH_PANIC;
-    }
-
     if (tfm_plat_provisioning_is_required()) {
         if (tfm_plat_provisioning_perform()) {
-            BL1_LOG("[ERR] BL1_2 provisioning failed\r\n");
+            BL1_LOG("[ERR] BL1 provisioning failed\r\n");
             FIH_PANIC;
         }
     }
@@ -101,6 +132,10 @@ int main(void)
     if (fih_not_eq(fih_rc, FIH_SUCCESS)) {
         FIH_PANIC;
     }
+
+#ifdef TFM_MEASURED_BOOT_API
+    collect_boot_measurement();
+#endif /* TFM_MEASURED_BOOT_API */
 
     BL1_LOG("[INF] Jumping to BL1_2\r\n");
     /* Jump to BL1_2 */

@@ -183,14 +183,6 @@ config TFM_PLAT_SPECIFIC_MULTI_CORE_COMM
       Whether to use a platform specific inter-core communication instead of
       mailbox in dual-cpu topology
 
-config OTP_NV_COUNTERS_RAM_EMULATION
-    bool "Enable OTP/NV_COUNTERS emulation in RAM"
-    default n
-    depends on PLATFORM_DEFAULT_OTP || PLATFORM_DEFAULT_NV_COUNTERS
-    help
-      Enable OTP/NV_COUNTERS emulation in RAM. Has no effect on non-default
-      implementations of the OTP and NV_COUNTERS
-
 config TFM_NS_NV_COUNTER_AMOUNT
     int "Numbers of NS NV counters"
     default 0

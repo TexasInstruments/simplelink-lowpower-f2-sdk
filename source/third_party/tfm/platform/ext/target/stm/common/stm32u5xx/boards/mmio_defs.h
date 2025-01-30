@@ -20,7 +20,7 @@ extern "C" {
 #define HANDLE_ATTR_PRIV_MASK           (0x1UL << HANDLE_ATTR_PRIV_POS)
 #define HANDLE_ATTR_NS_POS              0U
 #define HANDLE_ATTR_NS_MASK             (0x1UL << HANDLE_ATTR_NS_POS)
-#if TFM_LVL == 3
+#if TFM_ISOLATION_LEVEL == 3
 #define HANDLE_PER_ATTR_BITS            (0x4)
 #define HANDLE_ATTR_RW_POS              (1 << (HANDLE_PER_ATTR_BITS - 1))
 #define HANDLE_ATTR_INDEX_MASK          (HANDLE_ATTR_RW_POS - 1)

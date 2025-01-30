@@ -6,8 +6,9 @@
 
 #include <string.h>
 #include "tfm_arch.h"
-#include "exception_info.h"
 #include "tfm_spm_log.h"
+/* "exception_info.h" must be the last include because of the IAR pragma */
+#include "exception_info.h"
 
 struct exception_info_t {
     uint32_t EXC_RETURN;        /* EXC_RETURN value in LR. */

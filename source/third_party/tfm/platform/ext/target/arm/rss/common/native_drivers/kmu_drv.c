@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2023, Arm Limited. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,10 @@
 
 #include "kmu_drv.h"
 
+#ifdef KMU_CONFIG_EXTERNAL_DPA_HARDENED_WORD_COPY
+#include "dpa_hardened_word_copy.h"
+#endif /* KMU_CONFIG_EXTERNAL_DPA_HARDENED_WORD_COPY */
+
 struct _kmu_reg_map_t {
     volatile uint32_t kmubc;
                 /*!< Offset: 0x000 (R/ ) KMU Build Configuration Register */
@@ -41,8 +45,14 @@ struct _kmu_reg_map_t {
                  *                       Register */
     volatile uint32_t kmuksk[32][8];
                 /*!< Offset: 0x130 (R/W) KMU Key Slot Register */
-    volatile uint32_t reserved_1[680];
-                /*!< Offset: 0x530-0xFCC Reserved */
+    volatile uint32_t kmurd_8;
+                /*!< Offset: 0x530 (R/ ) KMU 8-cycle-limit random delay Register */
+    volatile uint32_t kmurd_16;
+                /*!< Offset: 0x534 (R/ ) KMU 16-cycle-limit random delay Register */
+    volatile uint32_t kmurd_32;
+                /*!< Offset: 0x538 (R/ ) KMU 32-cycle-limit random delay Register */
+    volatile uint32_t reserved_1[668];
+                /*!< Offset: 0x53C-0xFCC Reserved */
     volatile uint32_t pidr4;
                 /*!< Offset: 0xFD0 (R/ ) Peripheral ID 4 */
     volatile uint32_t reserved_2[3];
@@ -88,7 +98,7 @@ enum kmu_error_t kmu_init(struct kmu_dev_t *dev, uint8_t *prbg_seed)
     return KMU_ERROR_NONE;
 }
 
-enum kmu_error_t kmu_key_get_export_config(struct kmu_dev_t *dev, uint32_t slot,
+enum kmu_error_t kmu_get_key_export_config(struct kmu_dev_t *dev, uint32_t slot,
                                            struct kmu_key_export_config_t *config)
 {
     struct _kmu_reg_map_t* p_kmu = (struct _kmu_reg_map_t*)dev->cfg->base;
@@ -96,6 +106,8 @@ enum kmu_error_t kmu_key_get_export_config(struct kmu_dev_t *dev, uint32_t slot,
     if (slot >= KMU_GET_NKS(p_kmu)) {
         return KMU_ERROR_INVALID_SLOT;
     }
+
+    config->export_address = p_kmu->kmudkpa[slot];
 
     config->destination_port_write_delay =
         (p_kmu->kmuksc[slot] & KMU_KMUKSC_DPWD_MASK) >> KMU_KMUKSC_DPWD_OFF;
@@ -118,7 +130,7 @@ enum kmu_error_t kmu_key_get_export_config(struct kmu_dev_t *dev, uint32_t slot,
     return KMU_ERROR_NONE;
 }
 
-enum kmu_error_t kmu_key_set_export_config(struct kmu_dev_t *dev, uint32_t slot,
+enum kmu_error_t kmu_set_key_export_config(struct kmu_dev_t *dev, uint32_t slot,
                                            struct kmu_key_export_config_t *config)
 {
     struct _kmu_reg_map_t* p_kmu = (struct _kmu_reg_map_t*)dev->cfg->base;
@@ -126,6 +138,8 @@ enum kmu_error_t kmu_key_set_export_config(struct kmu_dev_t *dev, uint32_t slot,
     if (slot >= KMU_GET_NKS(p_kmu)) {
         return KMU_ERROR_INVALID_SLOT;
     }
+
+    p_kmu->kmudkpa[slot] = config->export_address;
 
     p_kmu->kmuksc[slot] &= ~KMU_KMUKSC_DPWD_MASK;
     p_kmu->kmuksc[slot] |=
@@ -279,15 +293,18 @@ enum kmu_error_t kmu_set_key(struct kmu_dev_t *dev, uint32_t slot, uint8_t *key,
         return err;
     }
 
+#ifndef KMU_CONFIG_EXTERNAL_DPA_HARDENED_WORD_COPY
     for (idx = 0; idx < key_len / sizeof(uint32_t); idx++) {
         p_kmu->kmuksk[slot][idx] = p_key_word[idx];
-        if (p_kmu->kmuis & KMU_KMISR_MWKSW_MASK) {
-            p_kmu->kmuis &= ~KMU_KMISR_MWKSW_MASK;
-            return KMU_ERROR_SLOT_ALREADY_WRITTEN;
-        }
-        if (p_kmu->kmuksk[slot][idx] != p_key_word[idx]) {
-            return KMU_ERROR_INTERNAL_ERROR;
-        }
+    }
+#else
+    (void)idx;
+    dpa_hardened_word_copy(p_kmu->kmuksk[slot], p_key_word, key_len / sizeof(uint32_t));
+#endif /* KMU_CONFIG_EXTERNAL_DPA_HARDENED_WORD_COPY */
+
+    if (p_kmu->kmuis & KMU_KMISR_MWKSW_MASK) {
+        p_kmu->kmuis &= ~KMU_KMISR_MWKSW_MASK;
+        return KMU_ERROR_SLOT_ALREADY_WRITTEN;
     }
 
     return KMU_ERROR_NONE;
@@ -318,12 +335,41 @@ enum kmu_error_t kmu_get_key(struct kmu_dev_t *dev, uint32_t slot, uint8_t *buf,
         return err;
     }
 
+#ifndef KMU_CONFIG_EXTERNAL_DPA_HARDENED_WORD_COPY
     for (idx = 0; idx < buf_len / sizeof(uint32_t); idx++) {
         p_buf_word[idx] = p_kmu->kmuksk[slot][idx];
     }
+#else
+    (void)idx;
+    dpa_hardened_word_copy(p_buf_word, p_kmu->kmuksk[slot], buf_len / sizeof(uint32_t));
+#endif /* KMU_CONFIG_EXTERNAL_DPA_HARDENED_WORD_COPY */
 
     return KMU_ERROR_NONE;
 }
+
+
+enum kmu_error_t kmu_get_key_buffer_ptr(struct kmu_dev_t *dev, uint32_t slot,
+                                        volatile uint32_t **key_slot,
+                                        size_t *slot_size)
+{
+    enum kmu_error_t err;
+    struct _kmu_reg_map_t* p_kmu = (struct _kmu_reg_map_t*)dev->cfg->base;
+
+    if (slot >= KMU_GET_NKS(p_kmu)) {
+        return KMU_ERROR_INVALID_SLOT;
+    }
+
+    err = kmu_get_key_locked(dev, slot);
+    if (err != KMU_ERROR_NONE) {
+        return err;
+    }
+
+    *key_slot = p_kmu->kmuksk[slot];
+    *slot_size = sizeof(p_kmu->kmuksk[slot]);
+
+    return KMU_ERROR_NONE;
+}
+
 
 enum kmu_error_t kmu_export_key(struct kmu_dev_t *dev, uint32_t slot)
 {
@@ -379,4 +425,27 @@ enum kmu_error_t kmu_export_key(struct kmu_dev_t *dev, uint32_t slot)
 out:
     p_kmu->kmuic = 0xFFFFFFFFu;
     return err;
+}
+
+enum kmu_error_t kmu_random_delay(struct kmu_dev_t *dev,
+                                  enum kmu_delay_limit_t limit)
+{
+    struct _kmu_reg_map_t* p_kmu = (struct _kmu_reg_map_t*)dev->cfg->base;
+    uint32_t foo;
+
+    switch(limit) {
+    case KMU_DELAY_LIMIT_8_CYCLES:
+        foo = p_kmu->kmurd_8;
+        break;
+    case KMU_DELAY_LIMIT_16_CYCLES:
+        foo = p_kmu->kmurd_16;
+        break;
+    case KMU_DELAY_LIMIT_32_CYCLES:
+        foo = p_kmu->kmurd_32;
+        break;
+    default:
+        return KMU_ERROR_INVALID_DELAY_LENGTH;
+    }
+
+    return KMU_ERROR_NONE;
 }

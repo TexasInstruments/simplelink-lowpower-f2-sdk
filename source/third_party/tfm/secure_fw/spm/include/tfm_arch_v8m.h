@@ -104,6 +104,16 @@ __STATIC_INLINE bool is_stack_alloc_fp_space(uint32_t lr)
 }
 
 /**
+ * \brief Get value of PSPLIM register.
+ *
+ * \retval psplim        Register value in PSPLIM register.
+ */
+__STATIC_INLINE uint32_t tfm_arch_get_psplim(void)
+{
+    return __get_PSPLIM();
+}
+
+/**
  * \brief Set PSPLIM register.
  *
  * \param[in] psplim        Register value to be written into PSPLIM.
@@ -154,6 +164,19 @@ __STATIC_INLINE uintptr_t arch_seal_thread_stack(uintptr_t stk)
 __STATIC_INLINE void tfm_arch_check_msp_sealing(void)
 {
     SPM_ASSERT(*(uint64_t *)(&__STACK_SEAL) == __TZ_STACK_SEAL_VALUE);
+}
+
+/*
+ * Update thread stack to architecture registers.
+ * The stack 'bottom' is higher address in this architecture,
+ * and 'toplimit' is the limit of top which is lower address.
+ */
+__STATIC_INLINE void arch_update_process_sp(uint32_t bottom,
+                                            uint32_t toplimit)
+{
+    __set_PSP(bottom);
+    __set_PSPLIM(toplimit);
+    __ISB();
 }
 
 #endif

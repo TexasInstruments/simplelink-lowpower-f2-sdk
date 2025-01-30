@@ -36,7 +36,7 @@
 #include <third_party/tfm/interface/include/psa/crypto.h>
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
-#include <third_party/tfm/interface/include/tfm_api.h>
+#include <third_party/tfm/secure_fw/spm/core/spm.h>
 
 #include <third_party/tfm/secure_fw/spm/include/utilities.h> /* tfm_core_panic() */
 

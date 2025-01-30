@@ -630,7 +630,7 @@ const phyMap_updated2 = {
             "2": {
                 ChanPlanID: {
                     "1": {
-                        TotalNumChan: 90,
+                        TotalNumChan: 129,
                         ChanPlanName: "902_928_200",
                         ChanCenterFreq0: 902.2,
                         ChanSpacing: 200,
@@ -643,7 +643,7 @@ const phyMap_updated2 = {
             "3": {
                 ChanPlanID: {
                     "1": {
-                        TotalNumChan: 90,
+                        TotalNumChan: 129,
                         ChanPlanName: "902_928_200",
                         ChanCenterFreq0: 902.2,
                         ChanSpacing: 200,
@@ -656,7 +656,7 @@ const phyMap_updated2 = {
             "5": {
                 ChanPlanID: {
                     "2": {
-                        TotalNumChan: 43,
+                        TotalNumChan: 64,
                         ChanPlanName: "902_928_400",
                         ChanCenterFreq0: 902.4,
                         ChanSpacing: 400,
@@ -669,7 +669,7 @@ const phyMap_updated2 = {
             "6": {
                 ChanPlanID: {
                     "2": {
-                        TotalNumChan: 43,
+                        TotalNumChan: 64,
                         ChanPlanName: "902_928_400",
                         ChanCenterFreq0: 902.4,
                         ChanSpacing: 400,
@@ -682,7 +682,7 @@ const phyMap_updated2 = {
             "8": {
                 ChanPlanID: {
                     "3": {
-                        TotalNumChan: 28,
+                        TotalNumChan: 42,
                         ChanPlanName: "902_928_600",
                         ChanCenterFreq0: 902.6,
                         ChanSpacing: 600,
@@ -695,7 +695,7 @@ const phyMap_updated2 = {
             "Custom": {
                 ChanPlanID: {
                     "Custom": {
-                        TotalNumChan: 90,
+                        TotalNumChan: 129,
                         ChanPlanName: "902_928_200",
                         ChanCenterFreq0: 902.2,
                         ChanSpacing: 200,
@@ -763,7 +763,7 @@ const phyMap_updated2 = {
             },
             "8": {
                 ChanPlanID: {
-                    "3": {
+                    "23": {
                         TotalNumChan: 12,
                         ChanPlanName: "920_928_600",
                         ChanCenterFreq0: 920.8,

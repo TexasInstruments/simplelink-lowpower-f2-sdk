@@ -202,6 +202,7 @@ static psa_status_t cc3xx_internal_ecdsa_sign(
         goto cleanup;
     }
 
+#ifdef PSA_WANT_ALG_DETERMINISTIC_ECDSA
     if (PSA_ALG_ECDSA_IS_DETERMINISTIC(alg)) {
         /* When deterministic ECDSA is used we don't support
          * doing the hashing at the same time. We need alwas have
@@ -218,7 +219,9 @@ static psa_status_t cc3xx_internal_ecdsa_sign(
         }
 
         err = cc3xx_hmac_drbg_get_ctx(&rnd_ctx, &hmac_drbg_ctx);
-    } else {
+    } else
+#endif /* PSA_WANT_ALG_DETERMINISTIC_ECDSA */
+    {
         err = cc3xx_ctr_drbg_get_ctx(&rnd_ctx);
     }
 

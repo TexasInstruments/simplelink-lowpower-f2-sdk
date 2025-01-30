@@ -584,63 +584,63 @@
                             "PaSetting": [
                                 {
                                     "_text": "5",
-                                    "Value": "0x802B"
+                                    "Value": "0x2039"
                                 },
                                 {
                                     "_text": "4",
-                                    "Value": "0x661E"
+                                    "Value": "0x7628"
                                 },
                                 {
                                     "_text": "3",
-                                    "Value": "0x4E16"
+                                    "Value": "0x661E"
                                 },
                                 {
                                     "_text": "2",
-                                    "Value": "0x4011"
+                                    "Value": "0x5418"
                                 },
                                 {
                                     "_text": "1",
-                                    "Value": "0x2E5C"
+                                    "Value": "0x4413"
                                 },
                                 {
                                     "_text": "0",
-                                    "Value": "0x209C"
+                                    "Value": "0x3462"
                                 },
                                 {
                                     "_text": "-3",
-                                    "Value": "0x2050"
+                                    "Value": "0x2658"
                                 },
                                 {
                                     "_text": "-5",
-                                    "Value": "0x184C"
+                                    "Value": "0x2053"
                                 },
                                 {
                                     "_text": "-6",
-                                    "Value": "0x184B"
+                                    "Value": "0x2051"
                                 },
                                 {
                                     "_text": "-9",
-                                    "Value": "0x0E8B"
+                                    "Value": "0x164D"
                                 },
                                 {
                                     "_text": "-10",
-                                    "Value": "0x08CF"
+                                    "Value": "0x164C"
                                 },
                                 {
                                     "_text": "-12",
-                                    "Value": "0x08CC"
+                                    "Value": "0x108D"
                                 },
                                 {
                                     "_text": "-15",
-                                    "Value": "0x04C9"
+                                    "Value": "0x108A"
                                 },
                                 {
                                     "_text": "-18",
-                                    "Value": "0x0884"
+                                    "Value": "0x06CC"
                                 },
                                 {
                                     "_text": "-20",
-                                    "Value": "0x0883"
+                                    "Value": "0x06CA"
                                 }
                             ]
                         }
@@ -927,19 +927,19 @@
                                 },
                                 {
                                     "_text": "3",
-                                    "Value": "0x7420"
+                                    "Value": "0x731C"
                                 },
                                 {
                                     "_text": "2",
-                                    "Value": "0x6018"
+                                    "Value": "0x6015"
                                 },
                                 {
                                     "_text": "1",
-                                    "Value": "0x4665"
+                                    "Value": "0x4661"
                                 },
                                 {
                                     "_text": "0",
-                                    "Value": "0x385F"
+                                    "Value": "0x385D"
                                 },
                                 {
                                     "_text": "-3",
@@ -1743,63 +1743,55 @@
                         "PaSetting": [
                             {
                                 "_text": "5",
-                                "Value": "0x701F"
+                                "Value": "0x7628"
                             },
                             {
                                 "_text": "4",
-                                "Value": "0x3A17"
+                                "Value": "0x661C"
                             },
                             {
                                 "_text": "3",
-                                "Value": "0x3A64"
+                                "Value": "0x4E16"
                             },
                             {
                                 "_text": "2",
-                                "Value": "0x325F"
+                                "Value": "0x3E63"
                             },
                             {
                                 "_text": "1",
-                                "Value": "0x2C5C"
+                                "Value": "0x345E"
                             },
                             {
                                 "_text": "0",
-                                "Value": "0x2659"
+                                "Value": "0x265B"
                             },
                             {
                                 "_text": "-3",
-                                "Value": "0x1697"
-                            },
-                            {
-                                "_text": "-5",
-                                "Value": "0x1693"
+                                "Value": "0x2652"
                             },
                             {
                                 "_text": "-6",
-                                "Value": "0x1292"
+                                "Value": "0x164C"
                             },
                             {
                                 "_text": "-9",
-                                "Value": "0x0CD3"
-                            },
-                            {
-                                "_text": "-10",
-                                "Value": "0x0AD1"
+                                "Value": "0x108C"
                             },
                             {
                                 "_text": "-12",
-                                "Value": "0x0ACF"
+                                "Value": "0x1089"
                             },
                             {
                                 "_text": "-15",
-                                "Value": "0x06CD"
+                                "Value": "0x06CB"
                             },
                             {
                                 "_text": "-18",
-                                "Value": "0x06CA"
+                                "Value": "0x06C9"
                             },
                             {
                                 "_text": "-20",
-                                "Value": "0x04C8"
+                                "Value": "0x06C7"
                             }
                         ]
                     }
@@ -2838,6 +2830,77 @@
                 ]
             },
             {
+                "_name": "LP-CC2674P10-7x7-XD24-PA24",
+                "FrequencyRange": {
+                    "Min": "2360",
+                    "Max": "2510",
+                    "PaSettingTable": {
+                        "PaSetting": [
+                            {
+                                "_text": "5",
+                                "Value": "0x003F"
+                            },
+                            {
+                                "_text": "4",
+                                "Value": "0x7834"
+                            },
+                            {
+                                "_text": "3",
+                                "Value": "0x8024"
+                            },
+                            {
+                                "_text": "2",
+                                "Value": "0x601B"
+                            },
+                            {
+                                "_text": "1",
+                                "Value": "0x4E15"
+                            },
+                            {
+                                "_text": "0",
+                                "Value": "0x3861"
+                            },
+                            {
+                                "_text": "-3",
+                                "Value": "0x2656"
+                            },
+                            {
+                                "_text": "-5",
+                                "Value": "0x1896"
+                            },
+                            {
+                                "_text": "-6",
+                                "Value": "0x1894"
+                            },
+                            {
+                                "_text": "-9",
+                                "Value": "0x188F"
+                            },
+                            {
+                                "_text": "-10",
+                                "Value": "0x0ED3"
+                            },
+                            {
+                                "_text": "-12",
+                                "Value": "0x0E8B"
+                            },
+                            {
+                                "_text": "-15",
+                                "Value": "0x08CD"
+                            },
+                            {
+                                "_text": "-18",
+                                "Value": "0x08CA"
+                            },
+                            {
+                                "_text": "-20",
+                                "Value": "0x08C8"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
                 "_name": "CC1354P10-7x7-XD7793-XD24-PA24_20dBm",
                 "FrequencyRange": {
                     "Min": "2360",
@@ -3275,6 +3338,159 @@
                                 "Value": "0xFFFF",
                                 "TxSub1Pa": "0x013F",
                                 "TxHighPa": "0x0380D"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "_name": "LP-CC2674P10-7x7-XD24-PA24_10dBm",
+                "FrequencyRange": {
+                    "Min": "2360",
+                    "Max": "2510",
+                    "PaSettingTable": {
+                        "PaSetting": [
+                            {
+                                "_text": "10",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x104F66"
+                            },
+                            {
+                                "_text": "9",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x103F5F"
+                            },
+                            {
+                                "_text": "8",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x10335A"
+                            },
+                            {
+                                "_text": "7",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x14285F"
+                            },
+                            {
+                                "_text": "6",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x144F2A"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "_name": "LP-CC2674P10-7x7-XD24-PA24_5dBm_10",
+                "FrequencyRange": {
+                    "Min": "2360",
+                    "Max": "2510",
+                    "PaSettingTable": {
+                        "PaSetting": [
+                            {
+                                "_text": "5",
+                                "Value": "0x003F"
+                            },
+                            {
+                                "_text": "4",
+                                "Value": "0x8029"
+                            },
+                            {
+                                "_text": "3",
+                                "Value": "0x5C1D"
+                            },
+                            {
+                                "_text": "2",
+                                "Value": "0x4616"
+                            },
+                            {
+                                "_text": "1",
+                                "Value": "0x3263"
+                            },
+                            {
+                                "_text": "0",
+                                "Value": "0x2A5E"
+                            },
+                            {
+                                "_text": "-3",
+                                "Value": "0x1CE6"
+                            },
+                            {
+                                "_text": "-5",
+                                "Value": "0x1695"
+                            },
+                            {
+                                "_text": "-6",
+                                "Value": "0x1693"
+                            },
+                            {
+                                "_text": "-9",
+                                "Value": "0x0E8E"
+                            },
+                            {
+                                "_text": "-10",
+                                "Value": "0x00D2"
+                            },
+                            {
+                                "_text": "-12",
+                                "Value": "0x088A"
+                            },
+                            {
+                                "_text": "-15",
+                                "Value": "0x08CC"
+                            },
+                            {
+                                "_text": "-18",
+                                "Value": "0x00C9"
+                            },
+                            {
+                                "_text": "-20",
+                                "Value": "0x00C7"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "_name": "LP-CC2674P10-7x7-XD24-PA24_20dBm",
+                "FrequencyRange": {
+                    "Min": "2360",
+                    "Max": "2510",
+                    "PaSettingTable": {
+                        "PaSetting": [
+                            {
+                                "_text": "20",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x3F75F5"
+                            },
+                            {
+                                "_text": "19",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x3F61E2"
+                            },
+                            {
+                                "_text": "18",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x3047E0"
+                            },
+                            {
+                                "_text": "17",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x1B4FE5"
+                            },
+                            {
+                                "_text": "16",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x1B39DE"
+                            },
+                            {
+                                "_text": "15",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x1B2FDA"
+                            },
+                            {
+                                "_text": "14",
+                                "Value": "0xFFFF",
+                                "TxHighPa": "0x1B27D6"
                             }
                         ]
                     }

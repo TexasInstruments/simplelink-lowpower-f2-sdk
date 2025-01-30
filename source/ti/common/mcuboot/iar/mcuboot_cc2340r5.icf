@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023, Texas Instruments Incorporated
+ * Copyright (c) 2021-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,11 +29,12 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+include "ti_utils_build_linker.cmd.genmap";
 
-define symbol __intvec_start__ = 0x00000000;
+define symbol __intvec_start__ = ti_utils_build_GenMap_MCUBOOT_FLASH_BASE;
 /*-Memory Regions-*/
-define symbol FLASH_start__ = 0x00000000;
-define symbol FLASH_end__   = 0x000057FF;
+define symbol FLASH_start__ = ti_utils_build_GenMap_MCUBOOT_FLASH_BASE;
+define symbol FLASH_end__   = ti_utils_build_GenMap_MCUBOOT_FLASH_BASE + ti_utils_build_GenMap_MCUBOOT_FLASH_SIZE - 1;
 define symbol RAM_start__ = 0x20000000;
 define symbol RAM_end__   = 0x20008FFF;
 define symbol CCFG_START__ = 0x4E020000;

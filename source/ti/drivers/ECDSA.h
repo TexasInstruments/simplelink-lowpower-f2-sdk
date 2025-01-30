@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2023, Texas Instruments Incorporated
+ * Copyright (c) 2017-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -207,6 +207,68 @@
  * @anchor ti_drivers_ECDSA_Examples
  * # Examples #
  *
+ * ## ECDSA sign with plaintext CryptoKeys for CC27XX and CC35XX devices ##
+ *
+ * @code
+ *
+ * #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyPlaintext.h>
+ * #include <ti/drivers/ECDSA.h>
+ *
+ * ...
+ *
+ * // This vector is taken from the NIST ST toolkit examples from ECDSA_Prime.pdf
+ * uint8_t myPrivateKeyingMaterial[32] = {0x96, 0xBF, 0x85, 0x49, 0xC3, 0x79, 0xE4, 0x04,
+ *                                        0xED, 0xA1, 0x08, 0xA5, 0x51, 0xF8, 0x36, 0x23,
+ *                                        0x12, 0xD8, 0xD1, 0xB2, 0xA5, 0xFA, 0x57, 0x06,
+ *                                        0xE2, 0xCC, 0x22, 0x5C, 0xF6, 0xF9, 0x77, 0xC4};
+ * uint8_t messageHash[32] = {0xA4,0x1A,0x41,0xA1,0x2A,0x79,0x95,0x48,
+ *                            0x21,0x1C,0x41,0x0C,0x65,0xD8,0x13,0x3A,
+ *                            0xFD,0xE3,0x4D,0x28,0xBD,0xD5,0x42,0xE4,
+ *                            0xB6,0x80,0xCF,0x28,0x99,0xC8,0xA8,0xC4};
+ * uint8_t r[32] = {0};
+ * uint8_t s[32] = {0};
+ *
+ *
+ * CryptoKey myPrivateKey;
+ *
+ * ECDSA_Handle ecdsaHandle;
+ *
+ * int_fast16_t operationResult;
+ *
+ * // Since we are using default ECDSA_Params, we just pass in NULL for that parameter.
+ *
+ * ecdsaHandle = ECDSA_open(0, NULL);
+ *
+ * // Since the ECDSA driver for CC27XX and CC35XX relies on one HW engine (the HSM) for all of its operations
+ * // If the HSM boot up sequence fails, ECDSA_open() will return NULL.
+ * if (!ecdsaHandle) {
+ *     // Handle error
+ * }
+ *
+ * // Initialize myPrivateKey
+ * CryptoKeyPlaintextHSM_initKey(&myPrivateKey,
+ *                            myPrivateKeyingMaterial,
+ *                            sizeof(myPrivateKeyingMaterial));
+ *
+ * // Initialize the operation
+ * // For CC27XX and CC35XX devices, you must specify the curveType instead of providing a pointer to the curve like
+ * // the case with other devices.
+ * ECDSA_OperationSign_init(&operationSign);
+ * operationSign.curveType         = ECDSA_TYPE_SEC_P_256_R1;
+ * operationSign.myPrivateKey      = &myPrivateKey;
+ * operationSign.hash              = messageHash;
+ * operationSign.r                 = r;
+ * operationSign.s                 = s;
+ *
+ * // Generate the signature
+ * operationResult = ECDSA_sign(ecdsaHandle, &operationSign);
+ *
+ * if (operationResult != ECDSA_STATUS_SUCCESS) {
+ *     // Handle error
+ * }
+ *
+ * @endcode
+ *
  * ## ECDSA sign with plaintext CryptoKeys #
  *
  * @code
@@ -342,6 +404,39 @@
  *
  * @endcode
  *
+ * ## Using KeyStore for ECDSA Keys #
+ *
+ * @code
+ *
+ * // This example shows how to import persistent public key into KeyStore key and
+ * // how to use KeyStore public key to verify ECDSA signature
+ * KeyStore_PSA_KeyFileId publicKeyID;
+ * KeyStore_PSA_KeyAttributes pubKeyAttributes = KEYSTORE_PSA_KEY_ATTRIBUTES_INIT;
+ * KeyStore_PSA_KeyType keyType = KEYSTORE_PSA_KEY_TYPE_ECC_PUBLIC_KEY_BASE;
+ * int_fast16_t status = KEYSTORE_PSA_STATUS_GENERIC_ERROR;
+ *
+ * // Public key
+ * KeyStore_PSA_setKeyAlgorithm(&pubKeyAttributes, KEYSTORE_PSA_ALG_ECDSA);
+ * KeyStore_PSA_setKeyUsageFlags(&pubKeyAttributes, KEYSTORE_PSA_KEY_USAGE_VERIFY_HASH);
+ * // Set key ID for persistent keys
+ * GET_KEY_ID(publicKeyID, KEYSTORE_PSA_KEY_ID_USER_MIN);
+ * KeyStore_PSA_setKeyLifetime(&pubKeyAttributes, KEYSTORE_PSA_KEY_LIFETIME_PERSISTENT);
+ * // In this example, we assume public key to be stored is for NIST-P256
+ * KeyStore_PSA_setKeyType(attributes, keyType | KEYSTORE_PSA_ECC_CURVE_SECP256R1);
+ * status = KeyStore_PSA_importKey(&pubKeyAttributes,
+ *                                 theirPublicKeyingMaterial,
+ *                                 sizeof(theirPublicKeyingMaterial),
+ *                                 &publicKeyID);
+ * if (status != KEYSTORE_PSA_STATUS_SUCCESS)
+ * {
+ *     while(1); // handle error
+ * }
+ * KeyStore_PSA_initKey(&theirPublicKey, publicKeyID, sizeof(theirPublicKeyingMaterial), NULL);
+ *
+ *
+ * // The application can continue to use the theirPublicKey as they would use
+ * // plaintext keys with ECDSA driver
+ * @endcode
  *
  */
 
@@ -456,6 +551,14 @@ extern "C" {
 #define ECDSA_STATUS_INVALID_KEY_SIZE (-10)
 
 /*!
+ * @brief   The KeyStore module returned an error while importing/exporting key
+ *
+ * Functions return EDDSA_STATUS_KEYSTORE_ERROR if any KeyStore operation
+ * did not return KEYSTORE_PSA_STATUS_SUCCESS
+ */
+#define ECDSA_STATUS_KEYSTORE_ERROR (-11)
+
+/*!
  *  @brief ECDSA Global configuration
  *
  *  The ECDSA_Config structure contains a set of pointers used to characterize
@@ -520,11 +623,54 @@ typedef enum
                                          */
 } ECDSA_ReturnBehavior;
 
+#if ((DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX) || (DeviceFamily_PARENT == DeviceFamily_PARENT_CC35XX))
+/*!
+ *  @brief  Enum for the curve types supported by the driver.
+ */
+typedef enum
+{
+    ECDSA_TYPE_SEC_P_224_R1 = 1,
+    ECDSA_TYPE_SEC_P_256_R1 = 2,
+    ECDSA_TYPE_SEC_P_384_R1 = 3,
+    ECDSA_TYPE_SEC_P_521_R1 = 4,
+    ECDSA_TYPE_BRP_P_256_R1 = 5,
+    ECDSA_TYPE_BRP_P_384_R1 = 6,
+    ECDSA_TYPE_BRP_P_512_R1 = 7,
+} ECDSA_CurveType;
+
+/*!
+ *  @brief  Enum for signature sizes in bits supported by the driver.
+ */
+typedef enum
+{
+    ECDSA_CURVE_LENGTH_192 = 192,
+    ECDSA_CURVE_LENGTH_224 = 224,
+    ECDSA_CURVE_LENGTH_256 = 256,
+    ECDSA_CURVE_LENGTH_384 = 384,
+    ECDSA_CURVE_LENGTH_512 = 512,
+    ECDSA_CURVE_LENGTH_521 = 521,
+} ECDSA_CurveLength;
+
+/*!
+ *  @brief  Enum for the hash digest lengths in bits supported by the driver.
+ */
+typedef enum
+{
+    ECDSA_DIGEST_LENGTH_224 = 224,
+    ECDSA_DIGEST_LENGTH_256 = 256,
+    ECDSA_DIGEST_LENGTH_384 = 384,
+    ECDSA_DIGEST_LENGTH_512 = 512,
+} ECDSA_DigestLength;
+#endif
+
 /*!
  *  @brief  Struct containing the parameters required for signing a message.
  */
 typedef struct
 {
+#if ((DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX) || (DeviceFamily_PARENT == DeviceFamily_PARENT_CC35XX))
+    ECDSA_CurveType curveType; /*!< An ECDSA_CurveType value indicating which EC curve to use for the operation*/
+#endif
     const ECCParams_CurveParams *curve; /*!< A pointer to the elliptic curve parameters */
     const CryptoKey *myPrivateKey;      /*!< A pointer to the private ECC key that will
                                          *   sign the hash of the message
@@ -551,26 +697,30 @@ typedef struct
  */
 typedef struct
 {
+#if ((DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX) || (DeviceFamily_PARENT == DeviceFamily_PARENT_CC35XX))
+    ECDSA_CurveType curveType;
+#else
     const ECCParams_CurveParams *curve; /*!< A pointer to the elliptic curve parameters */
-    const CryptoKey *theirPublicKey;    /*!< A pointer to the public key of the party
-                                         *   that signed the hash of the message
-                                         */
-    const uint8_t *hash;                /*!< A pointer to the hash of the message in
-                                         *   octet string format.
-                                         *   Must be the same length as the other curve parameters.
-                                         */
-    const uint8_t *r;                   /*!< A pointer to the r component of the received
-                                         *   signature.
-                                         *   Formatted in octet string format.
-                                         *   Must be of the same length
-                                         *   as other params of the curve used.
-                                         */
-    const uint8_t *s;                   /*!< A pointer to the s component of the received
-                                         *   signature.
-                                         *   Formatted in octet string format.
-                                         *   Must be of the same length
-                                         *   as other params of the curve used.
-                                         */
+#endif
+    const CryptoKey *theirPublicKey; /*!< A pointer to the public key of the party
+                                      *   that signed the hash of the message
+                                      */
+    const uint8_t *hash;             /*!< A pointer to the hash of the message in
+                                      *   octet string format.
+                                      *   Must be the same length as the other curve parameters.
+                                      */
+    const uint8_t *r;                /*!< A pointer to the r component of the received
+                                      *   signature.
+                                      *   Formatted in octet string format.
+                                      *   Must be of the same length
+                                      *   as other params of the curve used.
+                                      */
+    const uint8_t *s;                /*!< A pointer to the s component of the received
+                                      *   signature.
+                                      *   Formatted in octet string format.
+                                      *   Must be of the same length
+                                      *   as other params of the curve used.
+                                      */
 } ECDSA_OperationVerify;
 
 /*!
@@ -744,6 +894,7 @@ void ECDSA_OperationVerify_init(ECDSA_OperationVerify *operation);
  *  @retval #ECDSA_STATUS_ERROR                 The operation failed.
  *  @retval #ECDSA_STATUS_RESOURCE_UNAVAILABLE  The required hardware resource was not available. Try again later.
  *  @retval #ECDSA_STATUS_CANCELED              The operation was canceled.
+ *  @retval #ECDSA_STATUS_KEYSTORE_ERROR                The keystore module returned an error.
  */
 int_fast16_t ECDSA_sign(ECDSA_Handle handle, ECDSA_OperationSign *operation);
 
@@ -772,6 +923,7 @@ int_fast16_t ECDSA_sign(ECDSA_Handle handle, ECDSA_OperationSign *operation);
  *  @retval #ECDSA_STATUS_PUBLIC_KEY_LARGER_THAN_PRIME  One of the public key coordinates is larger the the curve's
  * prime.
  *  @retval #ECDSA_STATUS_POINT_AT_INFINITY             The public key to verify against is the point at infinity.
+ *  @retval #ECDSA_STATUS_KEYSTORE_ERROR                The keystore module returned an error.
  */
 int_fast16_t ECDSA_verify(ECDSA_Handle handle, ECDSA_OperationVerify *operation);
 

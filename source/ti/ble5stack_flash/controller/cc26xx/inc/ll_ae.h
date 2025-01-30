@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2024, Texas Instruments Incorporated
+ Copyright (c) 2009-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -437,9 +437,16 @@
 #define LE_COUNT_ALL_ADV_SETS                               0
 #define LE_COUNT_ENABLED_ADV_SETS                           1
 
-// parameter to indicate if common data operation is for Adv or Scan Response
+// Parameters to indicate if common data set operation is for Adv, Scan Response or update during Adv
 #define LE_AE_EXT_DATA_CMD_ADV                              0
 #define LE_AE_EXT_DATA_CMD_SCAN_RSP                         1
+#define LE_AE_EXT_DATA_CMD_ADV_LAST_CMD_DONE                2
+#define LE_AE_EXT_DATA_CMD_SCAN_LAST_CMD_DONE               3
+
+// Flags to identify which data was updated
+#define LE_AE_EXT_DATA_NO_PENDING                           0
+#define LE_AE_EXT_DATA_ADV_PENDING                          1
+#define LE_AE_EXT_DATA_SCAN_RSP_PENDING                     2
 
 // Indicate that the adv data was not changed during advertising
 #define EXT_DATA_NO_UPDATE_DURING_ADV                       0xFF
@@ -1518,6 +1525,8 @@ struct advSet_t
   uint8           fragLen;                        // length of fragment
   uint8           lastFragLen;                    // length of last fragment
   uint8           numFrags;                       // number of advertising data fragments
+  aeSetDataCmd_t  *pPendingData;                  // pointer to the ext data that is pending while adv is on
+  uint8           pendingDataUpdate;              // flag to signal if there is a pending data update
 #endif
   uint16          dataLen;                        // original length of data
   uint8          *pData;                          // pointer to raw data

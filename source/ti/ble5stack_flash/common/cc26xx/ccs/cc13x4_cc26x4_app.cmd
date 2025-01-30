@@ -26,7 +26,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2017-2024, Texas Instruments Incorporated
+ Copyright (c) 2017-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -298,6 +298,7 @@ SECTIONS
     .pinit          :   > APP_SLOT
     .init_array     :   > APP_SLOT
     .emb_text       :   > APP_SLOT
+    .log_data       :   > APP_SLOT
 
 #else
 
@@ -311,6 +312,7 @@ SECTIONS
     .pinit          :   > PERSITENT_SLOT
     .init_array     :   > PERSITENT_SLOT
     .emb_text       :   > PERSITENT_SLOT
+    .log_data       :   > PERSITENT_SLOT
 
 #endif //defined(OAD_APP_OFFCHIP) || defined(OAD_APP_ONCHIP)
 
@@ -328,6 +330,7 @@ SECTIONS
     .pinit          :   > FLASH
     .init_array     :   > FLASH
     .emb_text       :   > FLASH
+    .log_data       :   > FLASH
 
 #endif //defined(OAD_APP_OFFCHIP) || defined(OAD_APP_ONCHIP) || defined(OAD_PERSISTENT)
 

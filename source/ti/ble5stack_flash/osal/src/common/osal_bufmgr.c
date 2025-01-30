@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2008-2024, Texas Instruments Incorporated
+ Copyright (c) 2008-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -126,10 +126,20 @@ void *osal_bm_alloc( uint16 size )
 {
   halIntState_t  cs;
   bm_desc_t     *bd_ptr;
+  uint16 allocSize;
+
+  allocSize = sizeof( bm_desc_t ) + size;
+
+  // If 'size' is very large and 'allocSize' overflows, the result will be
+  // smaller than size. In this case, don't try to allocate.
+  if ( allocSize < size )
+  {
+    return ((void *)NULL);
+  }
 
   HAL_ENTER_CRITICAL_SECTION(cs);
 
-  bd_ptr = osal_mem_alloc( sizeof( bm_desc_t ) + size );
+  bd_ptr = osal_mem_alloc( allocSize );
 
   if ( bd_ptr != NULL )
   {
@@ -164,8 +174,14 @@ void osal_bm_free( void *payload_ptr )
   bm_desc_t *loop_ptr;
   bm_desc_t *prev_ptr;
 
+  if (NULL == payload_ptr)
+  {
+    return;
+  }
+
   HAL_ENTER_CRITICAL_SECTION(cs);
 
+#if defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_CONN_CFG | INIT_CFG))
   // start the search for the address inside the TX queue only if Health check was defined or the callback was defined
 #if defined (USE_HEALTH_CHECK)
   if (MAP_llQueryTxQueue((uint32_t)payload_ptr) == TRUE)
@@ -191,6 +207,8 @@ void osal_bm_free( void *payload_ptr )
     }
   }
 #endif
+#endif // ADV_CONN_CFG | INIT_CFG
+
   prev_ptr = NULL;
 
   loop_ptr = bm_list_ptr;

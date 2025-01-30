@@ -6,13 +6,13 @@
  */
 #include <string.h>
 #include "psa/crypto.h"
+#include "psa/error.h"
 #include "tfm_sp_log.h"
 #include "bootutil_priv.h"
 #include "bootutil/bootutil.h"
 #include "bootutil/image.h"
 #include "flash_map_backend/flash_map_backend.h"
 #include "sysflash/sysflash.h"
-#include "tfm_api.h"
 #include "tfm_bootloader_fwu_abstraction.h"
 #include "tfm_boot_status.h"
 #include "service_api.h"
@@ -21,13 +21,9 @@
     #error "FWU_COMPONENT_NUMBER mismatch with MCUBOOT_IMAGE_NUMBER"
 #endif
 
-#if (MCUBOOT_IMAGE_NUMBER == 1)
-#define MAX_IMAGE_INFO_LENGTH    (sizeof(struct image_version) + \
-                                  SHARED_DATA_ENTRY_HEADER_SIZE)
-#else
-#define MAX_IMAGE_INFO_LENGTH    2 * (sizeof(struct image_version) + \
-                                      SHARED_DATA_ENTRY_HEADER_SIZE)
-#endif
+#define MAX_IMAGE_INFO_LENGTH   (MCUBOOT_IMAGE_NUMBER * \
+                                (sizeof(struct image_version) + \
+                                 SHARED_DATA_ENTRY_HEADER_SIZE))
 
 /*
  * \struct fwu_image_info_data
@@ -53,7 +49,7 @@ typedef struct tfm_fwu_mcuboot_ctx_s {
 static tfm_fwu_mcuboot_ctx_t mcuboot_ctx[FWU_COMPONENT_NUMBER];
 static fwu_image_info_data_t __attribute__((aligned(4))) boot_shared_data;
 
-static int fwu_bootloader_get_shared_data(void)
+static psa_status_t fwu_bootloader_get_shared_data(void)
 {
     return tfm_core_get_boot_data(TLV_MAJOR_FWU,
                                   (struct tfm_boot_data *)&boot_shared_data,
@@ -98,7 +94,7 @@ static psa_status_t get_active_image_version(psa_fwu_component_t component,
 
 psa_status_t fwu_bootloader_init(void)
 {
-    if (fwu_bootloader_get_shared_data() != TFM_SUCCESS) {
+    if (fwu_bootloader_get_shared_data() != PSA_SUCCESS) {
         return PSA_ERROR_STORAGE_FAILURE;
     }
     /* add Init of specific flash driver */

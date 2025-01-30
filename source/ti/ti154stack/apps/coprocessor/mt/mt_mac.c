@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -1504,6 +1504,10 @@ static void macReadKeyReq(Mt_mpb_t *pMpb)
 
 /*!
  * @brief   Process MAC_RESET_REQ command issued by host
+ *          There is no need to have an async response to this
+ *          command, because SRSP is sent after the reset sequence
+ *          is executed. This MAC API is executed in the app task
+ *          context itself
  *
  * @param   pMpb - pointer to incoming message parameter block
  */

@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../empty.c -> empty.c",
+            "+../main_freertos.c -> main_freertos.c",
+            "+../empty.syscfg -> empty.syscfg",
+            "+../../../../../../../source/ti/boards/LP_EM_CC2674P10/Board.html -> Board.html",
+            "+cc13x4_cc26x4_freertos_ns.cmd -> cc13x4_cc26x4_freertos_ns.cmd"
+        ]
+    }
+]

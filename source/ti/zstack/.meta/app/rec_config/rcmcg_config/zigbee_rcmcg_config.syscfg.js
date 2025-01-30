@@ -70,6 +70,11 @@ for (let i in clusters) {
       }
     }
   }
+
+  if (tempClientCommandOptions.length == 0) {
+    rcmcgClientAlwaysHidden.push(cluster._id + "rcmcgClient");
+    tempClientCommandOptions.push({name: "dummy", displayName: "dummy"});
+  }
   rcmcgModule.config.push({
     name: cluster._id + "rcmcgClient",
     displayName: cluster._name + " Client Commands Generated",
@@ -81,7 +86,6 @@ for (let i in clusters) {
     minSelections: 0
   })
   rcmcgClientDropDowns.push(cluster._id + "rcmcgClient");
-  if (tempClientCommandOptions.length == 0) { rcmcgClientAlwaysHidden.push(cluster._id + "rcmcgClient"); }
 
   let tempServerCommandDefault = [];
   let tempServerCommandOptions = [];
@@ -94,6 +98,11 @@ for (let i in clusters) {
       }
     }
   }
+
+  if (tempServerCommandOptions.length == 0) {
+    rcmcgServerAlwaysHidden.push(cluster._id + "rcmcgServer");
+    tempServerCommandOptions.push({name: "dummy", displayName: "dummy"});
+  }
   rcmcgModule.config.push({
     name: cluster._id + "rcmcgServer",
     displayName: cluster._name + " Server Commands Generated",
@@ -105,7 +114,6 @@ for (let i in clusters) {
     minSelections: 0
   })
   rcmcgServerDropDowns.push(cluster._id + "rcmcgServer");
-  if (tempServerCommandOptions.length == 0) { rcmcgServerAlwaysHidden.push(cluster._id + "rcmcgServer"); }
 }
 
 /* Function to handle changes in the recommended server clusters */

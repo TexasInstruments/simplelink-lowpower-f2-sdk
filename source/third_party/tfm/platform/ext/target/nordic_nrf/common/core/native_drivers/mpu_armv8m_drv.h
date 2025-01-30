@@ -25,14 +25,6 @@ extern "C" {
 #define MPU_ARMV8M_MAIR_ATTR_DATA_VAL        0xFF
 #define MPU_ARMV8M_MAIR_ATTR_DATA_IDX        2
 
-#if defined(NRF9160_XXAA)
-#define MPU_ARMV8M_NUM_REGIONS 16
-#elif defined(NRF5340_XXAA_APPLICATION)
-#define MPU_ARMV8M_NUM_REGIONS 8
-#else
-#error "Unknown device"
-#endif
-
 struct mpu_armv8m_dev_t {
     const uint32_t base;
 };

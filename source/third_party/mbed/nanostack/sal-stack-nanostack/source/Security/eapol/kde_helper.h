@@ -102,6 +102,8 @@ uint8_t *kde_lifetime_write(uint8_t *ptr, uint32_t lifetime);
  *
  */
 uint8_t *kde_gtkl_write(uint8_t *ptr, uint8_t gtkl);
+uint8_t *kde_nr_write(uint8_t *ptr, uint8_t val);
+uint8_t *kde_lgtkl_write(uint8_t *ptr, uint8_t val);
 
 /**
  *  kde_gtk_read reads GTK

@@ -1,6 +1,6 @@
 # Copyright (c) 2020, Linaro. All rights reserved.
 # Copyright (c) 2020, Arm Limited. All rights reserved.
-# Copyright (c) 2021, NXP Semiconductors. All rights reserved.
+# Copyright 2020-2023 NXP. All rights reserved.
 # SPDX-License-Identifier: BSD-3-Clause
 
 import os
@@ -32,8 +32,7 @@ if os.path.isfile(FILE):
 os.system('echo r >> ' + FILE)                                                      # reset the target
 os.system('echo erase  >> ' + FILE)                                                 # erase the flash memory
 os.system('echo loadfile bl2.hex >> ' + FILE)                                       # flash the bootloader file into target
-os.system('echo loadfile tfm_s_signed.bin ' + BL2_S_IMAGE_START + ' >> ' + FILE)    # flash the signed secure image into target
-os.system('echo loadfile tfm_ns_signed.bin ' + BL2_NS_IMAGE_START + ' >> ' + FILE)  # flash the signed non-secure image into target
+os.system('echo loadfile tfm_s_ns_signed.bin ' + BL2_S_IMAGE_START + ' >> ' + FILE) # flash the signed image into target
 os.system('echo r >> ' + FILE)                                                      # reset the target
 os.system('echo go >> ' + FILE)                                                     # run the program
 os.system('echo exit >> ' + FILE)                                                   # exit the JLinkCommander

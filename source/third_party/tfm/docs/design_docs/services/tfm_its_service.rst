@@ -84,6 +84,9 @@ manifest)
 - ``tfm_internal_trusted_storage.h`` - TF-M ITS API (with client_id parameter)
 - ``tfm_internal_trusted_storage.c`` - TF-M ITS implementation, using the
   flash_fs as a backend
+- ``its_crypto_interface.h`` - APIs for encrypting ITS assets used by ITS implementation  (optional)
+- ``its_crypto_interface.c`` - Implementation for ITS encryption (optional)
+- ``platform/ext/target/.../tfm_hal_its_encryption.c`` - Platform implementation for ITS encryption HAL APIs (optional)
 - ``flash_fs/`` - Filesystem
 - ``flash/`` - Flash interface
 
@@ -279,6 +282,60 @@ With this approach, mutual exclusion to the flash device would need to be
 implemented separately, as would some way of isolating static memory belonging
 to each partition but not the code. Because of these complications, this option
 has not been considered further at this time.
+
+
+Encryption in ITS
+=================
+
+The ITS can optionally be configured to encrypt the internal trusted storage
+data.
+To support encryption in ITS the target platform must provide an
+implementation of the APIs defined in ``platform/include/tfm_hal_its_encryption.h``::
+
+    enum tfm_hal_status_t tfm_hal_its_aead_generate_nonce(uint8_t *nonce,
+                                                          const size_t nonce_size);
+
+    enum tfm_hal_status_t tfm_hal_its_aead_encrypt(
+                                         struct tfm_hal_its_auth_crypt_ctx *ctx,
+                                         const uint8_t *plaintext,
+                                         const size_t plaintext_size,
+                                         uint8_t *ciphertext,
+                                         const size_t ciphertext_size,
+                                         uint8_t *tag,
+                                         const size_t tag_size);
+
+    enum tfm_hal_status_t tfm_hal_its_aead_decrypt(
+                                         struct tfm_hal_its_auth_crypt_ctx *ctx,
+                                         const uint8_t *ciphertext,
+                                         const size_t ciphertext_size,
+                                         uint8_t *tag,
+                                         const size_t tag_size,
+                                         uint8_t *plaintext,
+                                         const size_t plaintext_size);
+
+
+Then encryption can be enabled by setting the build option ``-DITS_ENCRYPTION=ON``.
+
+The figure :numref:`fig-tfm_eits` describes the encryption and decryption
+process happening when calling ``tfm_its_set`` and ``tfm_its_get``.
+
+.. figure:: /design_docs/media/tfm_its_encryption.*
+    :align: center
+    :name: fig-tfm_eits
+    :width: 80%
+
+    En/Decryption of ITS
+
+By using an AEAD scheme, it is possible to not only encrypt the file data but
+also authenticate the file meta data, which include:
+
+- File id
+- File size
+- File flags
+
+The key used to perform the AEAD operation must be derived from a long-term
+key-derivation key and the file id, which is used as a derivation label.
+The long-term key-derivation key must be managed by the target platform.
 
 --------------
 

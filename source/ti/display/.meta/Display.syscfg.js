@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -381,7 +381,7 @@ function validate(inst, validation)
     {
         if (inst.lcdFontSize < 12 || inst.lcdFontSize > 48 || inst.lcdFontSize % 2 != 0)
         {
-            logError(validation, inst, 'lcdFontSize', 
+            logError(validation, inst, 'lcdFontSize',
                      'Must be an even integer between 12 and 48, both included.');
         }
     }
@@ -418,7 +418,7 @@ function onChange(inst, ui)
         ui.mutexTimeout.hidden = true;
         ui.mutexTimeoutValue.hidden = true;
         inst.displayImplementation = "DisplaySharp";
-        
+
         if(inst.lcdFont == "Fixed")
         {
             ui.lcdFontSize.hidden = true;
@@ -583,6 +583,7 @@ and portable APIs.
     templates             : {
         /* contribute to TI-DRIVERS configuration file */
         boardc: "/ti/display/Display.Board.c.xdt",
+        boardh: "/ti/display/Display.Board.h.xdt",
 
         /* contribute libraries to linker command file */
         "/ti/utils/build/GenLibs.cmd.xdt":

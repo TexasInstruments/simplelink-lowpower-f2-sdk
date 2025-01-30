@@ -1,53 +1,22 @@
-# VS Code Configs
-.vscode/*
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/settings.json
-!.vscode/extensions.json
+# Build output
+#build/*
+#source/ti/grlib/lib/
+#source/ti/grlib/lib/**/*.a
 
-# Platforms
-.DS_Store
-
-# Temporary Directories
-.tmp/
-
-# Xcode, other development environment stuff
-*.pbxuser
-*.mode1v3
-*.mode2v3
-*.perspectivev3
-*.xcuserstate
-project.xcworkspace/
-xcuserdata/
-*.xcodeproj/*
-*.xcworkspace/*
-TAGS
-
-# Text editors
-.*.sw[a-z]
-
-# Patch files
-*.rej
-*.orig
-
-# C-Lion / IDEA files
-.idea/**
-
-# Python bytecodes
-__pycache__
-*.pyc
-*.egg-info
-
-# VSCode java extensions
-.project
-
-# clangd index files
-.cache
-
-# backup files
-*~
-
-# built binaries
-/build/
-**/bin/
-**/lib/
+# Build output
+build/*
+kernel/**/lib/
+source/third_party/fatfs/lib/
+source/third_party/psa_crypto/library/lib/
+source/third_party/spiffs/lib/
+source/ti/devices/*/driverlib/bin/
+source/ti/**/lib/
+# But special case no-source-provided libraries that belong in the repo
+!source/ti/dmm/lib
+!source/ti/mesh/ti/kernel/tirtos7/lib
+!source/ti/ti154stack/lib/
+!source/ti/ti_wisunfan/lib/
+!source/ti/ti_wisunfan/ncp_interface/src/lib
+!source/ti/ti_wisunfan/uip/lib
+!source/ti/ti_wisunfan/wisunfan_mac/
+!source/ti/zstack/lib/

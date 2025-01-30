@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018-2022 Arm Limited. All rights reserved.
- * Copyright (c) 2019-2020 NXP. All rights reserved.
+ * Copyright 2019-2023 NXP. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,60 +21,10 @@
 #include "device_definition.h"
 #include "region_defs.h"
 #include "tfm_plat_defs.h"
-#include "region.h"
 #include "utilities.h"
 #include "tfm_spm_log.h"
 
-/* The section names come from the scatter file */
-REGION_DECLARE(Load$$LR$$, LR_NS_PARTITION, $$Base);
-REGION_DECLARE(Image$$, ER_VENEER, $$Base);
-REGION_DECLARE(Image$$, VENEER_ALIGN, $$Limit);
-#ifdef BL2
-REGION_DECLARE(Load$$LR$$, LR_SECONDARY_PARTITION, $$Base);
-#endif /* BL2 */
-
-const struct memory_region_limits memory_regions = {
-    .non_secure_code_start =
-        (uint32_t)&REGION_NAME(Load$$LR$$, LR_NS_PARTITION, $$Base) +
-        BL2_HEADER_SIZE,
-
-    .non_secure_partition_base =
-        (uint32_t)&REGION_NAME(Load$$LR$$, LR_NS_PARTITION, $$Base),
-
-    .non_secure_partition_limit =
-        (uint32_t)&REGION_NAME(Load$$LR$$, LR_NS_PARTITION, $$Base) +
-        NS_PARTITION_SIZE - 1,
-
-    .veneer_base =
-        (uint32_t)&REGION_NAME(Image$$, ER_VENEER, $$Base),
-
-    .veneer_limit =
-        (uint32_t)&REGION_NAME(Image$$, VENEER_ALIGN, $$Limit),
-
-#ifdef BL2
-    .secondary_partition_base =
-        (uint32_t)&REGION_NAME(Load$$LR$$, LR_SECONDARY_PARTITION, $$Base),
-
-    .secondary_partition_limit =
-        (uint32_t)&REGION_NAME(Load$$LR$$, LR_SECONDARY_PARTITION, $$Base) +
-        SECONDARY_PARTITION_SIZE - 1,
-#endif /* BL2 */
-};
-
-/* Allows software, via SAU, to define the code region as a NSC */
-#define NSCCFG_CODENSC  1
-
-/* Define Peripherals NS address range for the platform */
-#define PERIPHERALS_BASE_NS_START (0x40000000)
-#define PERIPHERALS_BASE_NS_END   (0x4FFFFFFF)
-
-/* Enable system reset request for CPU 0 */
-#define ENABLE_CPU0_SYSTEM_RESET_REQUEST (1U << 4U)
-
-/* To write into AIRCR register, 0x5FA value must be write to the VECTKEY field,
- * otherwise the processor ignores the write.
- */
-#define SCB_AIRCR_WRITE_MASK ((0x5FAUL << SCB_AIRCR_VECTKEY_Pos))
+extern const struct memory_region_limits memory_regions;
 
 struct platform_data_t tfm_peripheral_std_uart = {
         USART0_BASE_NS,
@@ -89,125 +39,6 @@ struct platform_data_t tfm_peripheral_timer0 = {
         &(AHB_SECURE_CTRL->SEC_CTRL_APB_BRIDGE[0].SEC_CTRL_APB_BRIDGE1_MEM_CTRL1),
         AHB_SECURE_CTRL_SEC_CTRL_APB_BRIDGE1_MEM_CTRL1_CTIMER2_RULE_SHIFT
 };
-
-enum tfm_plat_err_t enable_fault_handlers(void)
-{
-    /* Explicitly set secure fault priority to the highest */
-    NVIC_SetPriority(SecureFault_IRQn, 0);
-
-    /* Enables BUS, MEM, USG and Secure faults */
-    SCB->SHCSR |= SCB_SHCSR_USGFAULTENA_Msk
-                  | SCB_SHCSR_BUSFAULTENA_Msk
-                  | SCB_SHCSR_MEMFAULTENA_Msk
-                  | SCB_SHCSR_SECUREFAULTENA_Msk;
-    return TFM_PLAT_ERR_SUCCESS;
-}
-
-enum tfm_plat_err_t system_reset_cfg(void)
-{
-    uint32_t reg_value = SCB->AIRCR;
-
-    /* Clear SCB_AIRCR_VECTKEY value */
-    reg_value &= ~(uint32_t)(SCB_AIRCR_VECTKEY_Msk);
-
-    /* Enable system reset request only to the secure world */
-    reg_value |= (uint32_t)(SCB_AIRCR_WRITE_MASK | SCB_AIRCR_SYSRESETREQS_Msk);
-
-    SCB->AIRCR = reg_value;
-
-    return TFM_PLAT_ERR_SUCCESS;
-}
-
-enum tfm_plat_err_t init_debug(void)
-{
-
-#if !defined(DAUTH_CHIP_DEFAULT)
-#error "Debug features are set during provisioning. Application is not able to change them as the SYSCTRL->DEBUG_LOCK_EN is locked by the MCU secure boot.  "
-#endif
-    return TFM_PLAT_ERR_SUCCESS;
-}
-
-/*----------------- NVIC interrupt target state to NS configuration ----------*/
-enum tfm_plat_err_t nvic_interrupt_target_state_cfg(void)
-{
-    /* Target every interrupt to NS; unimplemented interrupts will be WI */
-    for (uint8_t i=0; i<sizeof(NVIC->ITNS)/sizeof(NVIC->ITNS[0]); i++) {
-        NVIC->ITNS[i] = 0xFFFFFFFF;
-    }
-
-    /* Make sure that MPC and PPC are targeted to S state */
-    NVIC_ClearTargetState(SEC_VIO_IRQn);
-
-    return TFM_PLAT_ERR_SUCCESS;
-}
-
-/*----------------- NVIC interrupt enabling for S peripherals ----------------*/
-enum tfm_plat_err_t nvic_interrupt_enable(void)
-{
-
-    /* MPC/PPC interrupt enabling */
-
-    NVIC_EnableIRQ(SEC_VIO_IRQn);
-
-    return TFM_PLAT_ERR_SUCCESS;
-}
-
-/*------------------- SAU/IDAU configuration functions -----------------------*/
-
-void sau_and_idau_cfg(void)
-{
-    /* Enables SAU */
-    TZ_SAU_Enable();
-
-    /* Configures SAU regions to be non-secure */
-    SAU->RNR  = 0U;
-    SAU->RBAR = (memory_regions.non_secure_partition_base
-                & SAU_RBAR_BADDR_Msk);
-    SAU->RLAR = (memory_regions.non_secure_partition_limit
-                & SAU_RLAR_LADDR_Msk)
-                | SAU_RLAR_ENABLE_Msk;
-
-    SAU->RNR  = 1U;
-    SAU->RBAR = (NS_DATA_START & SAU_RBAR_BADDR_Msk);
-    SAU->RLAR = (NS_DATA_LIMIT & SAU_RLAR_LADDR_Msk) | SAU_RLAR_ENABLE_Msk;
-
-    /* Configures veneers region to be non-secure callable */
-    SAU->RNR  = 2U;
-    SAU->RBAR = (memory_regions.veneer_base  & SAU_RBAR_BADDR_Msk);
-    SAU->RLAR = (memory_regions.veneer_limit & SAU_RLAR_LADDR_Msk)
-                | SAU_RLAR_ENABLE_Msk
-                | SAU_RLAR_NSC_Msk;
-
-    /* Configure the peripherals space */
-    SAU->RNR  = 3U;
-    SAU->RBAR = (PERIPHERALS_BASE_NS_START & SAU_RBAR_BADDR_Msk);
-    SAU->RLAR = (PERIPHERALS_BASE_NS_END & SAU_RLAR_LADDR_Msk)
-                | SAU_RLAR_ENABLE_Msk;
-
-#ifdef BL2
-    /* Secondary image partition */
-    SAU->RNR  = 4U;
-    SAU->RBAR = (memory_regions.secondary_partition_base  & SAU_RBAR_BADDR_Msk);
-    SAU->RLAR = (memory_regions.secondary_partition_limit & SAU_RLAR_LADDR_Msk)
-                | SAU_RLAR_ENABLE_Msk;
-#endif /* BL2 */
-
-#if TARGET_DEBUG_LOG
-    SPMLOG_DBGMSG("=== [SAU NS] =======\r\n");
-    SPMLOG_DBGMSGVAL("NS ROM starts from : ",
-                                      memory_regions.non_secure_partition_base);
-    SPMLOG_DBGMSGVAL("NS ROM ends at : ",
-                                      memory_regions.non_secure_partition_base +
-                                     memory_regions.non_secure_partition_limit);
-    SPMLOG_DBGMSGVAL("NS DATA start from : ", NS_DATA_START);
-    SPMLOG_DBGMSGVAL("NS DATA ends at : ", NS_DATA_START + NS_DATA_LIMIT);
-    SPMLOG_DBGMSGVAL("NSC starts with : ", memory_regions.veneer_base);
-    SPMLOG_DBGMSGVAL("NSC ends at : ", memory_regions.veneer_base +
-                                       memory_regions.veneer_limit);
-    SPMLOG_DBGMSGVAL("PERIPHERALS starts with : ", PERIPHERALS_BASE_NS_START);
-    SPMLOG_DBGMSGVAL("PERIPHERALS ends at : ", PERIPHERALS_BASE_NS_END);
-#endif
-}
 
 /*------------------- Memory configuration functions -------------------------*/
 
@@ -408,6 +239,8 @@ int32_t ppc_init_cfg(void)
      *  2    Secure, user access allowed.
      *  3    Secure, privileged access allowed. */
 
+    /* Write access attributes for AHB_SECURE_CTRL module are tier-4 (secure privileged). */ 
+
     /* Security access rules for APB Bridge 0 peripherals. */
     AHB_SECURE_CTRL->SEC_CTRL_APB_BRIDGE[0].SEC_CTRL_APB_BRIDGE0_MEM_CTRL0 =
         (0x30000000U) |                                                                     /* Bits have to be set to '1' according to UM.*/
@@ -537,19 +370,4 @@ int32_t ppc_init_cfg(void)
                                         AHB_SECURE_CTRL_MISC_CTRL_DP_REG_ENABLE_SECURE_CHECKING(0x1U);
 
     return ARM_DRIVER_OK;
-}
-
-void ppc_configure_to_secure(volatile uint32_t *bank, uint32_t pos, bool privileged)
-{
-    /* Clear NS flag for peripheral to prevent NS access */
-    if(bank)
-    {
-        /*  0b00..Non-secure and Non-priviledge user access allowed.
-         *  0b01..Non-secure and Privilege access allowed.
-         *  0b10..Secure and Non-priviledge user access allowed.
-         *  0b11..Secure and Priviledge/Non-priviledge user access allowed.
-         */
-        /* Set to secure and privileged user access 0x3. */
-        *bank = (*bank) | (((privileged == true)?0x3:0x2) << (pos));
-    }
 }

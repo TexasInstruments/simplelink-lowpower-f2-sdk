@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -55,6 +55,7 @@
 #include "icall_ble_api.h"
 #include "icall_hci_tl.h"
 #include "ll.h"
+#include "rom_jt.h"
 
 #ifdef CC33xx
 #include "icall_porting.h"
@@ -608,7 +609,6 @@ static hciEntry_t hciTranslationTable[] =
 
   // Vendor Specific HCI Commands
   HCI_TRANSLATION_ENTRY(HCI_EXT_SET_TX_POWER,                          IDX_CAST IDX_HCI_EXT_SetTxPowerCmd,                        HU8,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP),
-  HCI_TRANSLATION_ENTRY(HCI_EXT_SET_TX_POWER_DBM,                      IDX_CAST IDX_HCI_EXT_SetTxPowerDbmCmd,                     HU8,     HU8,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP),
   HCI_TRANSLATION_ENTRY(HCI_EXT_BUILD_REVISION,                        IDX_CAST IDX_HCI_EXT_BuildRevisionCmd,                     HU8,     HU16,    HNP,     HNP,     HNP,     HNP,     HNP,     HNP),
   HCI_TRANSLATION_ENTRY(HCI_EXT_DELAY_SLEEP,                           IDX_CAST IDX_HCI_EXT_DelaySleepCmd,                        HU16,    HNP,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP),
   HCI_TRANSLATION_ENTRY(HCI_EXT_DECRYPT,                               IDX_CAST IDX_HCI_EXT_DecryptCmd,                           HKB,     HKB,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP),
@@ -624,7 +624,6 @@ static hciEntry_t hciTranslationTable[] =
   HCI_TRANSLATION_ENTRY(HCI_EXT_RESET_SYSTEM,                          IDX_CAST IDX_HCI_EXT_ResetSystemCmd,                       HU8,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP),
   HCI_TRANSLATION_ENTRY(HCI_EXT_SET_LOCAL_SUPPORTED_FEATURES,          IDX_CAST IDX_HCI_EXT_SetLocalSupportedFeaturesCmd,         H8B,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP),
   HCI_TRANSLATION_ENTRY(HCI_EXT_SET_MAX_DTM_TX_POWER,                  IDX_CAST IDX_HCI_EXT_SetMaxDtmTxPowerCmd,                  HU8,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP),
-  HCI_TRANSLATION_ENTRY(HCI_EXT_SET_MAX_DTM_TX_POWER_DBM,              IDX_CAST IDX_HCI_EXT_SetMaxDtmTxPowerDbmCmd,               HU8,     HU8,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP),
   HCI_TRANSLATION_ENTRY(HCI_EXT_SET_RX_GAIN,                           IDX_CAST IDX_HCI_EXT_SetRxGainCmd,                         HU8,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP),
   HCI_TRANSLATION_ENTRY(HCI_EXT_EXTEND_RF_RANGE,                       IDX_CAST IDX_HCI_EXT_ExtendRfRangeCmd,                     HNP,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP),
   HCI_TRANSLATION_ENTRY(HCI_EXT_HALT_DURING_RF,                        IDX_CAST IDX_HCI_EXT_HaltDuringRfCmd,                      HU8,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP),
@@ -703,9 +702,7 @@ static hciEntry_t hciTranslationTable[] =
   HCI_TRANSLATION_ENTRY(HCI_READ_BDADDR,                               IDX_CAST IDX_HCI_ReadBDADDRCmd,                            HNP,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP),
   HCI_TRANSLATION_ENTRY(HCI_EXT_SET_BDADDR,                            IDX_CAST IDX_HCI_EXT_SetBDADDRCmd,                         HAB,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP),
   HCI_TRANSLATION_ENTRY(HCI_EXT_SET_TX_POWER,                          IDX_CAST IDX_HCI_EXT_SetTxPowerCmd,                        HU8,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP),
-  HCI_TRANSLATION_ENTRY(HCI_EXT_SET_TX_POWER_DBM,                      IDX_CAST IDX_HCI_EXT_SetTxPowerDbmCmd,                     HU8,     HU8,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP),
   HCI_TRANSLATION_ENTRY(HCI_EXT_SET_MAX_DTM_TX_POWER,                  IDX_CAST IDX_HCI_EXT_SetMaxDtmTxPowerCmd,                  HU8,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP),
-  HCI_TRANSLATION_ENTRY(HCI_EXT_SET_MAX_DTM_TX_POWER_DBM,              IDX_CAST IDX_HCI_EXT_SetMaxDtmTxPowerDbmCmd,               HU8,     HU8,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP),
   HCI_TRANSLATION_ENTRY(HCI_EXT_EXTEND_RF_RANGE,                       IDX_CAST IDX_HCI_EXT_ExtendRfRangeCmd,                     HNP,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP),
   HCI_TRANSLATION_ENTRY(HCI_EXT_HALT_DURING_RF,                        IDX_CAST IDX_HCI_EXT_HaltDuringRfCmd,                      HU8,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP),
   HCI_TRANSLATION_ENTRY(HCI_READ_TRANSMIT_POWER,                       IDX_CAST IDX_HCI_ReadTransmitPowerLevelCmd,                HU16,    HU8,     HNP,     HNP,     HNP,     HNP,     HNP,     HNP),
@@ -1015,7 +1012,7 @@ uint8 isValidRandomAddressForCreateConn ( aeCreateConnCmd_t HCI_TL_createConnPar
     }
 
     // else, own address type is random. Check if random address was configured.
-    return LL_IsRandomAddressConfigured();
+    return MAP_LL_IsRandomAddressConfigured();
 }
 
 
@@ -1600,82 +1597,6 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
             HCI_ResetCmd();
             return;
         }
-//Legacy BT Commands for MCU attached with Bluetopia
-#ifdef CC33xx
-#ifdef HOST_BLUETOPIA
-        case HCI_READ_LOCAL_BUFFER_SIZE:
-        {
-            uint8_t res[4];
-            res[0] = HCI_SUCCESS;
-            res[1] = LO_UINT16(maximumPduSize);
-            res[2] = HI_UINT16(maximumPduSize);
-            res[3] = maxNumTxDataBufs;
-            HCI_CommandCompleteEvent(cmdOpCode, sizeof(res), &res);
-            break;
-        }
-        case HCI_WRITE_LOCAL_NAME:
-        {
-            uint8_t status;
-            status = HCI_SUCCESS;
-            HCI_CommandCompleteEvent(cmdOpCode, 1, &status);
-            break;
-        }
-        case HCI_READ_SCAN_ENABLE:
-        {
-            uint8_t res[2];
-            res[0] = HCI_SUCCESS;
-            res[1] = 0;
-            HCI_CommandCompleteEvent(cmdOpCode, sizeof(res), &res);
-            break;
-        }
-        case HCI_WRITE_SCAN_ENABLE:
-        {
-            uint8_t status;
-            status = HCI_SUCCESS;
-            HCI_CommandCompleteEvent(cmdOpCode, 1, &status);
-            break;
-        }
-        case HCI_READ_CLASS_OF_DEVICE:
-        {
-            uint8_t res[4];
-            res[0] = HCI_SUCCESS;
-            res[1] = 0x0;
-            res[2] = 0x1;
-            res[3] = 0x4;
-            HCI_CommandCompleteEvent(cmdOpCode, sizeof(res), &res);
-            break;
-        }
-        case HCI_WRITE_CLASS_OF_DEVICE:
-        {
-            uint8_t status;
-            status = HCI_SUCCESS;
-            HCI_CommandCompleteEvent(cmdOpCode, 1, &status);
-            break;
-        }
-        case HCI_WRITE_CURRENT_IAC_LAP:
-        {
-            uint8_t status;
-            status = HCI_SUCCESS;
-            HCI_CommandCompleteEvent(cmdOpCode, 1, &status);
-            break;
-        }
-        case HCI_READ_LE_HOST_SUPPORT:
-        {
-            uint8_t res[2];
-            res[0] = HCI_SUCCESS;
-            res[1] = 0x1;
-            HCI_CommandCompleteEvent(cmdOpCode, sizeof(res), &res);
-            break;
-        }
-        case HCI_WRITE_LE_HOST_SUPPORT:
-        {
-            uint8_t status;
-            status = HCI_SUCCESS;
-            HCI_CommandCompleteEvent(cmdOpCode, 1, &status);
-            break;
-        }
-#endif // HOST_BLUETOPIA
-#endif // CC33xx
 //Advertiser
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_NCONN_CFG | ADV_CONN_CFG))
         case HCI_LE_SET_ADV_PARAM:
@@ -1755,7 +1676,14 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
                 status = LE_SetExtAdvParams(&pAdvSet->advCmdParams, &retParams);
                 if (status != LL_STATUS_SUCCESS)
                 {
+                  // Remove the ADV set only if it is disabled
+                  // If the set was already enabled it means the controller allocated
+                  // its memory. We need to avoid removing it only from here.
+                  // In addition, the set can keep running with the last vaid parameters.
+                  if (pAdvSet->enableCmdParams.enable == LL_ADV_MODE_OFF)
+                  {
                     hci_tl_RemoveAdvSet(ADV_LEGACY_SET_HANDLE);
+                  }
                 }
             }
             else
@@ -2181,7 +2109,14 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
 
                 if (rsp[0] != LL_STATUS_SUCCESS)
                 {
+                  // Remove the ADV set only if it is disabled
+                  // If the set was already enabled it means the controller allocated
+                  // its memory. We need to avoid removing it only from here.
+                  // In addition, the set can keep running with the last vaid parameters.
+                  if (pAdvSet->enableCmdParams.enable == LL_ADV_MODE_OFF)
+                  {
                     hci_tl_RemoveAdvSet(param[0]);
+                  }
                 }
 
             }
@@ -3008,7 +2943,7 @@ uint8 hci_tl_isValidRandomAddressForAdv (hci_tl_advSet_t *pAdvSet)
   }
 
   // else, own address type is random
-  return LL_IsRandomAddressConfigured();
+  return MAP_LL_IsRandomAddressConfigured();
 }
 
 #endif // (ADV_NCONN_CFG | ADV_CONN_CFG)
@@ -3377,7 +3312,7 @@ uint8 hci_tl_isValidRandomAddressForScan (aeSetScanParamCmd_t hci_tl_cmdScanPara
   }
 
   // else, own address type is random. Check if random address was configured.
-  return LL_IsRandomAddressConfigured();
+  return MAP_LL_IsRandomAddressConfigured();
 }
 
 #ifdef LEGACY_CMD
@@ -4338,16 +4273,10 @@ static void hci_tl_managedAEdata(uint16_t mode, aeSetDataCmd_t *pCmdData, uint8_
             }
             case AE_DATA_OP_COMPLETE:
             {
-                // if the lenght of the data is 0 return SUCCESS and do not continue to memory allocation
-                if (pCmdData->dataLen == 0)
-                {
-                    status = LL_STATUS_SUCCESS;
-                    break;
-                }
-
+                // Free the previous allocated data and allocate the a pointer for the new data
                 pCmdData->pData = hci_tl_createPendingData(pCmdData->pData, pCmdData->dataLen, pData);
 
-                if(pCmdData->pData)
+                if(pCmdData->dataLen == 0 || pCmdData->pData != NULL)
                 {
                     if ((mode == HCI_LE_SET_EXT_ADV_DATA)     ||
                         (mode == HCI_EXT_LE_SET_EXT_ADV_DATA) ||
@@ -4416,19 +4345,22 @@ static void hci_tl_removePendingData(uint8_t* pendingAdvData)
  */
 static uint8_t* hci_tl_createPendingData(uint8_t *pStorage, uint16_t len, uint8_t* pData)
 {
-    uint8_t* pDataStore;
-    pDataStore = ICall_malloc(len);
-    if (pDataStore)
+    uint8_t* pDataStore = NULL;
+    if(len > 0)
     {
-        memcpy(pDataStore, pData, len);
+        pDataStore = ICall_malloc(len);
+        if(pDataStore != NULL)
+        {
+            memcpy(pDataStore, pData, len);
+        }
     }
-    if(pStorage)
+    if(pStorage != NULL)
     {
         ICall_free(pStorage);
     }
     return pDataStore;
-
 }
+
 /*********************************************************************
  * @fn      hci_tl_appendPendingData
  *
@@ -4670,21 +4602,19 @@ static void HCI_TL_SendDataPkt(uint8_t *pMsg)
   // LE only accepts Data packets of type ACL.
   if ((pDataPkt) && (pDataPkt->pktType == HCI_ACL_DATA_PACKET))
   {
-    uint8_t *pData = pDataPkt->pData;
-
-    // Replace data with bm data
-    pDataPkt->pData = (uint8_t *) HCI_bm_alloc(pDataPkt->pktLen);
+    // Allocate data with bm data
+    uint8_t *pData = (uint8_t *) HCI_bm_alloc(pDataPkt->pktLen);
 
     if ((pDataPkt->pData) && (pData))
     {
-      memcpy(pDataPkt->pData, pData, pDataPkt->pktLen);
+      memcpy(pData, pDataPkt->pData, pDataPkt->pktLen);
 
       if (HCI_SendDataPkt(pDataPkt->connHandle,
                           pDataPkt->pbFlag,
                           pDataPkt->pktLen,
-                          pDataPkt->pData) != HCI_SUCCESS )
+                          pData) != HCI_SUCCESS )
       {
-        HCI_bm_free(pDataPkt->pData);
+        HCI_bm_free(pData);
       }
     }
   }
@@ -5723,6 +5653,7 @@ static uint8_t processExtMsgATT(uint8_t cmdID, hciExtCmd_t *pCmd)
         if (ATT_ParseHandleValueInd(ATT_SIG_NOT_INCLUDED, FALSE, pPayload,
                                       pCmd->len-3, &msg) == SUCCESS)
         {
+          value = 0;
           pNoti = &msg.handleValueNoti;
           // only if handle is bigger than zero, look at the ATT table for permission
           if(pNoti->handle > 0)

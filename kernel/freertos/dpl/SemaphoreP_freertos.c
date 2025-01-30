@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2022, Texas Instruments Incorporated
+ * Copyright (c) 2015-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -76,7 +76,7 @@ SemaphoreP_Handle SemaphoreP_construct(SemaphoreP_Struct *handle, unsigned int c
          *  a queue of length maxCount, where maxCount is the
          *  maximum count that the semaphore should ever reach.
          *  However, the queue item size (queueSEMAPHORE_QUEUE_ITEM_LENGTH),
-         *  is 0, so no actual memoory is allocated for the queue items.
+         *  is 0, so no actual memory is allocated for the queue items.
          *  Therefore we can pass any non-zero number as the maximum
          *  semaphore count.
          */
@@ -151,7 +151,7 @@ SemaphoreP_Handle SemaphoreP_create(unsigned int count, SemaphoreP_Params *param
          *  a queue of length maxCount, where maxCount is the
          *  maximum count that the semaphore should ever reach.
          *  However, the queue item size (queueSEMAPHORE_QUEUE_ITEM_LENGTH),
-         *  is 0, so no actual memoory is allocated for the queue items.
+         *  is 0, so no actual memory is allocated for the queue items.
          *  Therefore we can pass any non-zero number as the maximum
          *  semaphore count.
          */

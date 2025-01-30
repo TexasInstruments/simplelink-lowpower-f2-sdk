@@ -24,14 +24,25 @@
 #include "its_utils.h"
 #include "tfm_sp_log.h"
 
+#ifdef ITS_ENCRYPTION
+#include "its_crypto_interface.h"
+#endif
+
 #ifdef TFM_PARTITION_PROTECTED_STORAGE
 #include "ps_object_defs.h"
 #endif
 
-static uint8_t g_fid[ITS_FILE_ID_SIZE];
-static struct its_file_info_t g_file_info;
+/* TI-TFM: Added TI_CRYPTO_ITS_INTEGRATION */
+#if !defined(TFM_PARTITION_INTERNAL_TRUSTED_STORAGE) && !defined(TI_CRYPTO_ITS_INTEGRATION)
+extern uint8_t *p_psa_src_data;
+extern uint8_t *p_psa_dest_data;
+#endif /* !TFM_PARTITION_INTERNAL_TRUSTED_STORAGE */
 
-#if PSA_FRAMEWORK_HAS_MM_IOVEC != 1
+static uint8_t g_fid[ITS_FILE_ID_SIZE];
+static struct its_flash_fs_file_info_t g_file_info;
+
+/* TI-TFM: Added TI_CRYPTO_ITS_INTEGRATION */
+#if (PSA_FRAMEWORK_HAS_MM_IOVEC != 1) && (defined(TFM_PARTITION_INTERNAL_TRUSTED_STORAGE) || defined(TI_CRYPTO_ITS_INTEGRATION))
 /* Buffer to store asset data from the caller.
  * Note: size must be aligned to the max flash program unit to meet the
  * alignment requirement of the filesystem.
@@ -40,6 +51,8 @@ static uint8_t __ALIGNED(4) asset_data[ITS_UTILS_ALIGN(ITS_BUF_SIZE,
                                           ITS_FLASH_MAX_ALIGNMENT)];
 #endif
 
+/* TI-TFM: Added TI_CRYPTO_ITS_INTEGRATION */
+#if defined(TFM_PARTITION_INTERNAL_TRUSTED_STORAGE) || defined(TI_CRYPTO_ITS_INTEGRATION)
 static its_flash_fs_ctx_t fs_ctx_its;
 static struct its_flash_fs_config_t fs_cfg_its = {
     .flash_dev = &ITS_FLASH_DEV,
@@ -47,6 +60,7 @@ static struct its_flash_fs_config_t fs_cfg_its = {
     .max_file_size = ITS_UTILS_ALIGN(ITS_MAX_ASSET_SIZE, ITS_FLASH_ALIGNMENT),
     .max_num_files = ITS_NUM_ASSETS + 1, /* Extra file for atomic replacement */
 };
+#endif /* TFM_PARTITION_INTERNAL_TRUSTED_STORAGE */
 
 #ifdef TFM_PARTITION_PROTECTED_STORAGE
 static its_flash_fs_ctx_t fs_ctx_ps;
@@ -61,12 +75,118 @@ static struct its_flash_fs_config_t fs_cfg_ps = {
 static its_flash_fs_ctx_t *get_fs_ctx(int32_t client_id)
 {
 #ifdef TFM_PARTITION_PROTECTED_STORAGE
+/* TI-TFM: Added TI_CRYPTO_ITS_INTEGRATION */
+#if !defined(TFM_PARTITION_INTERNAL_TRUSTED_STORAGE) && !defined(TI_CRYPTO_ITS_INTEGRATION)
+    (void)client_id;
+    return &fs_ctx_ps;
+#else
     return (client_id == TFM_SP_PS) ? &fs_ctx_ps : &fs_ctx_its;
+#endif /* !TFM_PARTITION_INTERNAL_TRUSTED_STORAGE */
 #else
     (void)client_id;
     return &fs_ctx_its;
 #endif
 }
+
+#ifdef ITS_ENCRYPTION
+/* Buffer to store the encrypted asset data before it is stored in the
+ * filesystem.
+ */
+static uint8_t enc_asset_data[ITS_UTILS_ALIGN(ITS_BUF_SIZE,
+                                              ITS_FLASH_MAX_ALIGNMENT)];
+
+static psa_status_t buffer_size_check(int32_t client_id, size_t buffer_size)
+{
+/* With protected storage no encryption is used */
+#ifdef TFM_PARTITION_PROTECTED_STORAGE
+    if (client_id != TFM_SP_PS) {
+#else
+    {
+#endif /* TFM_PARTITION_PROTECTED_STORAGE */
+        /* When encryption is enabled the whole file needs to fit in the
+         * global buffer.
+         */
+        if (buffer_size > sizeof(enc_asset_data)) {
+            return PSA_ERROR_BUFFER_TOO_SMALL;
+        }
+    }
+    return PSA_SUCCESS;
+}
+
+static psa_status_t tfm_its_crypt_data(int32_t client_id,
+                                uint8_t **input,
+                                size_t input_size)
+{
+    psa_status_t status;
+#ifdef TFM_PARTITION_PROTECTED_STORAGE
+    if (client_id != TFM_SP_PS) {
+#else
+    {
+#endif /* TFM_PARTITION_PROTECTED_STORAGE */
+        status = tfm_its_crypt_file(&g_file_info,
+                                    g_fid,
+                                    sizeof(g_fid),
+                                    *input,
+                                    input_size,
+                                    enc_asset_data,
+                                    sizeof(enc_asset_data),
+                                    true);
+
+        if (status != PSA_SUCCESS) {
+            return status;
+        }
+        *input = enc_asset_data;
+    }
+    return PSA_SUCCESS;
+}
+
+static psa_status_t tfm_its_get_encrypted(int32_t client_id,
+                         size_t data_offset,
+                         size_t data_size,
+                         size_t *p_data_length)
+{
+    psa_status_t status;
+
+    if (g_file_info.size_max > sizeof(enc_asset_data)) {
+            return PSA_ERROR_BUFFER_TOO_SMALL;
+    }
+
+    /* When encryption is enabled we need to read the whole file */
+    status = its_flash_fs_file_read(get_fs_ctx(client_id),
+                                    g_fid,
+                                    g_file_info.size_current,
+                                    0,
+                                    enc_asset_data);
+    if (status != PSA_SUCCESS) {
+        *p_data_length = 0;
+        return status;
+    }
+
+    status = tfm_its_crypt_file(&g_file_info,
+                                g_fid,
+                                sizeof(g_fid),
+                                enc_asset_data,
+                                g_file_info.size_current,
+                                asset_data,
+                                sizeof(asset_data),
+                                false);
+    if (status != PSA_SUCCESS) {
+        *p_data_length = 0;
+        return status;
+    }
+
+    #if (PSA_FRAMEWORK_HAS_MM_IOVEC == 1) /* PSA_FRAMEWORK_HAS_MM_IOVEC */
+    memcpy(its_req_mngr_get_vec_base(), asset_data + data_offset, data_size);
+    #else
+    /* Write asset data to the caller in one go as due to buffer check before
+     * it is ensured that all data fit into asset_data
+     */
+    its_req_mngr_write(asset_data + data_offset, data_size);
+    #endif /* PSA_FRAMEWORK_HAS_MM_IOVEC */
+
+    return PSA_SUCCESS;
+}
+#endif /* ITS_ENCRYPTION */
 
 /**
  * \brief Maps a pair of client id and uid to a file id.
@@ -83,13 +203,15 @@ static void tfm_its_get_fid(int32_t client_id,
     memcpy(fid + sizeof(client_id), (const void *)&uid, sizeof(uid));
 }
 
+/* TI-TFM: Added TI_CRYPTO_ITS_INTEGRATION */
+#if defined(TFM_PARTITION_INTERNAL_TRUSTED_STORAGE) || defined(TI_CRYPTO_ITS_INTEGRATION)
 /**
- * \brief Initialise the static filesystem configurations.
+ * \brief Initialise the static ITS filesystem configurations.
  *
  * \return Returns PSA_ERROR_PROGRAMMER_ERROR if there is a configuration error,
  *         and PSA_SUCCESS otherwise.
  */
-static psa_status_t init_fs_cfg(void)
+static psa_status_t init_its_fs_cfg(void)
 {
     struct tfm_hal_its_fs_info_t its_fs_info;
 
@@ -114,7 +236,19 @@ static psa_status_t init_fs_cfg(void)
                             * its_fs_info.sectors_per_block;
     fs_cfg_its.num_blocks = its_fs_info.flash_area_size / fs_cfg_its.block_size;
 
+    return PSA_SUCCESS;
+}
+#endif /* TFM_PARTITION_INTERNAL_TRUSTED_STORAGE */
+
 #ifdef TFM_PARTITION_PROTECTED_STORAGE
+/**
+ * \brief Initialise the static PS filesystem configurations.
+ *
+ * \return Returns PSA_ERROR_PROGRAMMER_ERROR if there is a configuration error,
+ *         and PSA_SUCCESS otherwise.
+ */
+static psa_status_t init_ps_fs_cfg(void)
+{
     struct tfm_hal_ps_fs_info_t ps_fs_info;
 
     /* Check the compile-time program unit matches the runtime value */
@@ -136,16 +270,18 @@ static psa_status_t init_fs_cfg(void)
     fs_cfg_ps.flash_area_addr = ps_fs_info.flash_area_addr;
     fs_cfg_ps.block_size = fs_cfg_ps.sector_size * ps_fs_info.sectors_per_block;
     fs_cfg_ps.num_blocks = ps_fs_info.flash_area_size / fs_cfg_ps.block_size;
-#endif
 
     return PSA_SUCCESS;
 }
+#endif /* TFM_PARTITION_PROTECTED_STORAGE */
 
 psa_status_t tfm_its_init(void)
 {
-    psa_status_t status;
+    psa_status_t status = PSA_SUCCESS;
 
-    status = init_fs_cfg();
+/* TI-TFM: Added TI_CRYPTO_ITS_INTEGRATION */
+#if defined(TFM_PARTITION_INTERNAL_TRUSTED_STORAGE) || defined(TI_CRYPTO_ITS_INTEGRATION)
+    status = init_its_fs_cfg();
     if (status != PSA_SUCCESS) {
         return status;
     }
@@ -184,9 +320,15 @@ psa_status_t tfm_its_init(void)
         status = its_flash_fs_prepare(&fs_ctx_its);
     }
 #endif /* ITS_CREATE_FLASH_LAYOUT */
+#endif /* TFM_PARTITION_INTERNAL_TRUSTED_STORAGE */
 
 #ifdef TFM_PARTITION_PROTECTED_STORAGE
     /* Check status of ITS initialisation before continuing with PS */
+    if (status != PSA_SUCCESS) {
+        return status;
+    }
+
+    status = init_ps_fs_cfg();
     if (status != PSA_SUCCESS) {
         return status;
     }
@@ -245,17 +387,48 @@ static psa_status_t get_file_info(psa_storage_uid_t uid, int32_t client_id)
                                       &g_file_info);
 }
 
+
+static psa_status_t tfm_its_write_data_to_fs(const int32_t client_id,
+                                     const uint8_t *fid,
+                                     struct its_flash_fs_file_info_t *finfo,
+                                     const size_t data_size,
+                                     const size_t offset,
+                                     uint8_t *data)
+{
+    psa_status_t status;
+    uint8_t *buffer_ptr = data;
+#ifdef ITS_ENCRYPTION /* ITS_ENCRYPTION */
+    /* If the data will be encrypted the whole file needs to be written */
+    if (offset != 0) {
+        return PSA_ERROR_INVALID_ARGUMENT;
+    }
+    status = tfm_its_crypt_data(client_id, &buffer_ptr, data_size);
+    if (status != PSA_SUCCESS) {
+        return status;
+    }
+#endif /* ITS_ENCRYPTION */
+    status = its_flash_fs_file_write(get_fs_ctx(client_id),
+                                        fid,
+                                        &g_file_info,
+                                        data_size, offset, buffer_ptr);
+    if (status != PSA_SUCCESS) {
+        return status;
+    }
+
+    return PSA_SUCCESS;
+}
+
 psa_status_t tfm_its_set(int32_t client_id,
                          psa_storage_uid_t uid,
                          size_t data_length,
                          psa_storage_create_flags_t create_flags)
 {
     psa_status_t status;
-#if PSA_FRAMEWORK_HAS_MM_IOVEC != 1
+/* TI-TFM: Added TI_CRYPTO_ITS_INTEGRATION */
+#if (PSA_FRAMEWORK_HAS_MM_IOVEC != 1) && (defined(TFM_PARTITION_INTERNAL_TRUSTED_STORAGE) || defined(TI_CRYPTO_ITS_INTEGRATION))
     size_t write_size;
     size_t offset;
 #endif
-    uint32_t flags;
 
     /* Check that the UID is valid */
     if (uid == TFM_ITS_INVALID_UID) {
@@ -268,6 +441,13 @@ psa_status_t tfm_its_set(int32_t client_id,
                          PSA_STORAGE_FLAG_NO_REPLAY_PROTECTION)) {
         return PSA_ERROR_NOT_SUPPORTED;
     }
+
+#if defined ITS_ENCRYPTION && defined TFM_PARTITION_INTERNAL_TRUSTED_STORAGE
+    status = buffer_size_check(client_id, data_length);
+    if (status != PSA_SUCCESS) {
+        return status;
+    }
+#endif /* ITS_ENCRYPTION && TFM_PARTITION_INTERNAL_TRUSTED_STORAGE*/
 
     /* Read file info */
     status = get_file_info(uid, client_id);
@@ -285,14 +465,24 @@ psa_status_t tfm_its_set(int32_t client_id,
         return status;
     }
 
-    flags = (uint32_t)create_flags |
-            ITS_FLASH_FS_FLAG_CREATE | ITS_FLASH_FS_FLAG_TRUNCATE;
+    g_file_info.size_max = data_length;
+    g_file_info.flags = (uint32_t)create_flags |
+                        ITS_FLASH_FS_FLAG_CREATE | ITS_FLASH_FS_FLAG_TRUNCATE;
 
-#if PSA_FRAMEWORK_HAS_MM_IOVEC == 1
-    /* Write to the file in the file system */
-    status = its_flash_fs_file_write(get_fs_ctx(client_id), g_fid, flags,
-                                     data_length, data_length, 0,
-                                     its_req_mngr_get_vec_base());
+/* TI-TFM: Added TI_CRYPTO_ITS_INTEGRATION */
+#if !defined(TFM_PARTITION_INTERNAL_TRUSTED_STORAGE) && !defined(TI_CRYPTO_ITS_INTEGRATION)
+    /* Write to the file in the file system
+     * No encryption needed as this will be stored in the Protected Storage
+     * Partition if ITS partition is not enabled.
+     */
+    status = its_flash_fs_file_write(get_fs_ctx(client_id), g_fid, &g_file_info,
+                                     data_length, 0, p_psa_src_data);
+#elif PSA_FRAMEWORK_HAS_MM_IOVEC == 1
+    status = tfm_its_write_data_to_fs(client_id,
+                                      g_fid,
+                                      &g_file_info,
+                                      data_length, 0,
+                                      its_req_mngr_get_vec_base());
 #else
     offset = 0;
 
@@ -306,16 +496,14 @@ psa_status_t tfm_its_set(int32_t client_id,
         /* Read asset data from the caller */
         (void)its_req_mngr_read(asset_data, write_size);
 
-        /* Write to the file in the file system */
-        status = its_flash_fs_file_write(get_fs_ctx(client_id), g_fid, flags,
-                                         data_length, write_size, offset,
-                                         asset_data);
-        if (status != PSA_SUCCESS) {
-            return status;
-        }
+        status = tfm_its_write_data_to_fs(client_id, g_fid, &g_file_info,
+                                          write_size, offset, asset_data);
 
+        if (status != PSA_SUCCESS) {
+                return status;
+        }
         /* Do not create or truncate after the first iteration */
-        flags &= ~(ITS_FLASH_FS_FLAG_CREATE | ITS_FLASH_FS_FLAG_TRUNCATE);
+        g_file_info.flags &= ~(ITS_FLASH_FS_FLAG_CREATE | ITS_FLASH_FS_FLAG_TRUNCATE);
 
         offset += write_size;
         data_length -= write_size;
@@ -325,56 +513,36 @@ psa_status_t tfm_its_set(int32_t client_id,
     return status;
 }
 
-psa_status_t tfm_its_get(int32_t client_id,
-                         psa_storage_uid_t uid,
+static psa_status_t tfm_its_get_plain(int32_t client_id,
                          size_t data_offset,
                          size_t data_size,
                          size_t *p_data_length)
 {
     psa_status_t status;
-#if PSA_FRAMEWORK_HAS_MM_IOVEC != 1
+/* TI-TFM: Added TI_CRYPTO_ITS_INTEGRATION */
+#if (PSA_FRAMEWORK_HAS_MM_IOVEC != 1) && (defined(TFM_PARTITION_INTERNAL_TRUSTED_STORAGE) || defined(TI_CRYPTO_ITS_INTEGRATION))
     size_t read_size;
 #endif
 
-#ifdef TFM_PARTITION_TEST_PS
-    /* The PS test partition can call tfm_its_get() through PS code. Treat it
-     * as if it were PS.
-     */
-    if (client_id == TFM_SP_PS_TEST) {
-        client_id = TFM_SP_PS;
-    }
-#endif
-
-    /* Check that the UID is valid */
-    if (uid == TFM_ITS_INVALID_UID) {
-        return PSA_ERROR_INVALID_ARGUMENT;
-    }
-
-    /* Read file info */
-    status = get_file_info(uid, client_id);
+/* TI-TFM: Added TI_CRYPTO_ITS_INTEGRATION */
+#if !defined(TFM_PARTITION_INTERNAL_TRUSTED_STORAGE) && !defined(TI_CRYPTO_ITS_INTEGRATION)
+    /* Read file data from the filesystem */
+    status = its_flash_fs_file_read(get_fs_ctx(client_id), g_fid, data_size,
+                                    data_offset, p_psa_dest_data);
     if (status != PSA_SUCCESS) {
+        *p_data_length = 0;
         return status;
     }
 
-    /* Boundary check the incoming request */
-    if (data_offset > g_file_info.size_current) {
-        return PSA_ERROR_INVALID_ARGUMENT;
+#elif (PSA_FRAMEWORK_HAS_MM_IOVEC == 1)
+    /* Read file data from the filesystem */
+    status = its_flash_fs_file_read(get_fs_ctx(client_id), g_fid, data_size,
+                                    data_offset, its_req_mngr_get_vec_base());
+    if (status != PSA_SUCCESS) {
+        *p_data_length = 0;
+        return status;
     }
 
-    /* Copy the object data only from within the file boundary */
-    data_size = ITS_UTILS_MIN(data_size,
-                              g_file_info.size_current - data_offset);
-
-    /* Update the size of the output data */
-    *p_data_length = data_size;
-#if PSA_FRAMEWORK_HAS_MM_IOVEC == 1
-        /* Read file data from the filesystem */
-        status = its_flash_fs_file_read(get_fs_ctx(client_id), g_fid, data_size,
-                                        data_offset, its_req_mngr_get_vec_base());
-        if (status != PSA_SUCCESS) {
-            *p_data_length = 0;
-            return status;
-        }
 #else
 
     /* Iteratively read data from the filesystem and write it to the caller, in
@@ -398,8 +566,73 @@ psa_status_t tfm_its_get(int32_t client_id,
         data_offset += read_size;
         data_size -= read_size;
     } while (data_size > 0);
-#endif
+#endif /* TFM_PARTITION_INTERNAL_TRUSTED_STORAGE & PSA_FRAMEWORK_HAS_MM_IOVEC */
+
     return PSA_SUCCESS;
+}
+
+psa_status_t tfm_its_get(int32_t client_id,
+                         psa_storage_uid_t uid,
+                         size_t data_offset,
+                         size_t data_size,
+                         size_t *p_data_length)
+{
+    psa_status_t status;
+
+#ifdef TFM_PARTITION_TEST_PS
+    /* The PS test partition can call tfm_its_get() through PS code. Treat it
+     * as if it were PS.
+     */
+    if (client_id == TFM_SP_PS_TEST) {
+        client_id = TFM_SP_PS;
+    }
+#endif
+
+    /* Check that the UID is valid */
+    if (uid == TFM_ITS_INVALID_UID) {
+        return PSA_ERROR_INVALID_ARGUMENT;
+    }
+
+#if defined ITS_ENCRYPTION && defined TFM_PARTITION_INTERNAL_TRUSTED_STORAGE
+    status = buffer_size_check(client_id, data_offset + data_size);
+    if (status != PSA_SUCCESS) {
+        return status;
+    }
+#endif /* ITS_ENCRYPTION && TFM_PARTITION_INTERNAL_TRUSTED_STORAGE */
+
+    /* Read file info */
+    status = get_file_info(uid, client_id);
+    if (status != PSA_SUCCESS) {
+        return status;
+    }
+
+    /* Boundary check the incoming request */
+    if (data_offset > g_file_info.size_current) {
+        return PSA_ERROR_INVALID_ARGUMENT;
+    }
+
+    /* Copy the object data only from within the file boundary */
+    data_size = ITS_UTILS_MIN(data_size,
+                              g_file_info.size_current - data_offset);
+
+    /* Update the size of the output data */
+    *p_data_length = data_size;
+
+#if defined ITS_ENCRYPTION && defined TFM_PARTITION_INTERNAL_TRUSTED_STORAGE
+#if defined TFM_PARTITION_PROTECTED_STORAGE
+    /* With protected storage no encryption is used */
+    if (client_id == TFM_SP_PS) {
+        return tfm_its_get_plain(client_id, data_offset, data_size, p_data_length);
+    } else
+#endif /* TFM_PARTITION_PROTECTED_STORAGE */
+    {
+        return tfm_its_get_encrypted(client_id, data_offset, data_size, p_data_length);
+    }
+#else
+    {
+        return tfm_its_get_plain(client_id, data_offset, data_size, p_data_length);
+    }
+#endif /* ITS_ENCRYPTION  && TFM_PARTITION_INTERNAL_TRUSTED_STORAGE */
 }
 
 psa_status_t tfm_its_get_info(int32_t client_id, psa_storage_uid_t uid,

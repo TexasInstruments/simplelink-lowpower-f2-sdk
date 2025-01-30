@@ -1,6 +1,6 @@
 %%{
 /*
- * Copyright (c) 2018-2022, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,8 +60,11 @@
 % if (system.modules["/ti/utils/TrustZone"]) {
 #include <ti/drivers/aescbc/AESCBCCC26X4_ns.h>
 #include <ti/drivers/aescbc/AESCBCCC26X4_s.h>
-/* These object arrays store non-secure copies of the secure callback struct and handle parameters required for
- * Secure/Non-secure driver functionality. The size of the arrays depend on the number of driver instances. */
+/* These object arrays store non-secure copies of the secure callback struct and
+ * handle parameters required for Secure/Non-secure driver functionality. The
+ * SECURE_CALLBACK_COUNT is the total number of static and dynamic driver
+ * instances supported by the TF-M.
+ */
 AESCBC_s_SecureCallback aescbcSecureCB_ns[AESCBC_SECURE_CALLBACK_COUNT];
 AESCBCCC26X4_ns_Object aescbcObject_ns[AESCBC_SECURE_CALLBACK_COUNT];
 % }

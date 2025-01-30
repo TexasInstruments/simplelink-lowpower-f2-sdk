@@ -7,7 +7,9 @@
 #
 #-------------------------------------------------------------------------------
 
-# The "manifest" field must be relative path to this file or absolute path.
+# The "manifest" field must be a path relative to this file, a path relative to
+# the directory that tfm_parse_manifest_list.py is run in (which by default is
+# the TF-M root directory), or an absolute path.
 #
 # Files per Secure Partition are generated to:
 #   - "output_path", if it is a absolute path - not recommended
@@ -24,7 +26,7 @@
   "manifest_list": [
     {
       "description": "Non-Secure Mailbox Agent",
-      "manifest": "${CMAKE_SOURCE_DIR}/secure_fw/partitions/ns_agent_mailbox/ns_agent_mailbox.yaml",
+      "manifest": "secure_fw/partitions/ns_agent_mailbox/ns_agent_mailbox.yaml",
       "output_path": "secure_fw/partitions/ns_agent_mailbox",
       "conditional": "TFM_MULTI_CORE_TOPOLOGY",
       "version_major": 0,
@@ -34,11 +36,12 @@
         "library_list": [
            "*tfm_*ns_agent_mailbox.*"
          ],
-      }
+      },
+      "non_ffm_attributes": ['ns_agent']
     },
     {
       "description": "TFM Crypto Service",
-      "manifest": "${CMAKE_SOURCE_DIR}/platform/ext/target/arm/rss/common/manifest/tfm_crypto.yaml",
+      "manifest": "platform/ext/target/arm/rss/common/manifest/tfm_crypto.yaml",
       "output_path": "secure_fw/partitions/crypto",
       "conditional": "TFM_PARTITION_CRYPTO",
       "version_major": 0,
@@ -52,7 +55,7 @@
     },
     {
       "description": "TFM Platform Service",
-      "manifest": "${CMAKE_SOURCE_DIR}/secure_fw/partitions/platform/tfm_platform.yaml",
+      "manifest": "secure_fw/partitions/platform/tfm_platform.yaml",
       "output_path": "secure_fw/partitions/platform",
       "conditional": "TFM_PARTITION_PLATFORM",
       "version_major": 0,
@@ -66,7 +69,7 @@
     },
     {
       "description": "TFM Initial Attestation Service",
-      "manifest": "${CMAKE_SOURCE_DIR}/platform/ext/target/arm/rss/common/manifest/tfm_initial_attestation.yaml",
+      "manifest": "platform/ext/target/arm/rss/common/manifest/tfm_initial_attestation.yaml",
       "output_path": "secure_fw/partitions/initial_attestation",
       "conditional": "TFM_PARTITION_INITIAL_ATTESTATION",
       "version_major": 0,

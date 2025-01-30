@@ -16,6 +16,7 @@
 
 #include "utilities.h"
 #include "target_cfg.h"
+#include "tfm_plat_defs.h"
 
 /*------------------- DMA configuration functions -------------------------*/
 enum tfm_plat_err_t dma_init_cfg(void)

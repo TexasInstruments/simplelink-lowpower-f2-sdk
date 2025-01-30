@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2021-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -239,6 +239,7 @@ __PACKED_STRUCT plat_otp_layout_t {
         uint8_t bl2_image_hash[32];
 
         uint8_t bl1_2_image[BL1_2_CODE_SIZE];
+        uint8_t bl1_2_image_len[4];
 #else /* PLATFORM_DEFAULT_BL1 */
         uint8_t bl1_rotpk_0[32];
         uint8_t bl1_nv_counter[16];
@@ -390,6 +391,12 @@ static enum tfm_plat_err_t otp_write(uint8_t *addr, size_t size,
      */
     if (zero_byte_buf != NULL) {
         zero_count = count_buffer_zero_bits(in, in_len);
+        if (in_len < size) {
+            /* If the buffer is smaller than the OTP item, count the remainder
+             * of the OTP item as well.
+             */
+            zero_count += count_otp_zero_bits(addr + in_len, size - in_len);
+        }
 
         err = otp_write(zero_byte_buf, 2, sizeof(zero_count), (uint8_t*)&zero_count, NULL);
         if (err != TFM_PLAT_ERR_SUCCESS) {
@@ -742,6 +749,10 @@ enum tfm_plat_err_t tfm_plat_otp_read(enum tfm_otp_element_id_t id,
     case PLAT_OTP_ID_BL1_2_IMAGE:
         return otp_read(otp->bl1_2_image,
                         sizeof(otp->bl1_2_image), out_len, out);
+    case PLAT_OTP_ID_BL1_2_IMAGE_LEN:
+        return otp_read(otp->bl1_2_image_len,
+                         sizeof(otp->bl1_2_image_len), out_len, out);
+
 #endif /* PLATFORM_DEFAULT_BL1 */
 #endif /* BL1 */
 
@@ -979,6 +990,10 @@ enum tfm_plat_err_t tfm_plat_otp_write(enum tfm_otp_element_id_t id,
     case PLAT_OTP_ID_BL1_2_IMAGE:
         return otp_write(otp->bl1_2_image,
                          sizeof(otp->bl1_2_image), in_len, in, NULL);
+    case PLAT_OTP_ID_BL1_2_IMAGE_LEN:
+        return otp_write(otp->bl1_2_image_len,
+                         sizeof(otp->bl1_2_image_len), in_len, in, NULL);
+
 #endif /* PLATFORM_DEFAULT_BL1 */
 #endif /* BL1 */
 

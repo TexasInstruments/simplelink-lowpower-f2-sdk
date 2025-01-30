@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2024, Texas Instruments Incorporated
+ Copyright (c) 2009-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -314,8 +314,9 @@ uint8 *publicKeyY  //!< Local Public Key Y-Coordinate when ECC keys were request
 extern void SM_RegisterTask( uint8 taskID );
 
 /**
- * @brief  Get ECC private and public keys.  Keys are returned through the
- *         callback registered in SM_RegisterCb.
+ * @brief  Get ECC private and public keys. Keys are returned through
+ *         a SM_ECC_KEYS_EVENT event passed in the task the Security Manager
+ *         has been registered into using SM_RegisterTask().
  *
  * @return @ref SUCCESS if processing
  * @return @ref FAILURE if SM is pairing
@@ -324,9 +325,9 @@ extern void SM_RegisterTask( uint8 taskID );
 extern bStatus_t SM_GetEccKeys( void );
 
 /**
- * @brief   Request a Diffie-Hellman key from the ECC engine. Key is returned
- *          through the callback registered in SM_RegisterCb, in the first
- *          parameter.
+ * @brief   Request a Diffie-Hellman key from the ECC engine. Key is returned through
+ *          a SM_DH_KEY_EVENT event passed in the task the Security Manager
+ *          has been registered into using SM_RegisterTask().
  *
  * @param   secretKey - the local private key
  * @param   publicKeyX - the remote public key, X-Coordinate.

@@ -1,12 +1,17 @@
 # SimpleLink&trade; CC2651P3 LaunchPad&trade; Settings & Resources
 
-The [__SimpleLink&trade; CC2651P3 LaunchPad&trade;__][launchpad] contains a
+The [__SimpleLink&trade; CC2651P3 LaunchPad&trade;__][board] contains a
 [__CC2651P31T0RGZR__][device] device.
 
 ## Jumper Settings
 
-* Close the __`LEDs`__ jumper to enable the on-board LEDs.
+* Close the __`LEDs`__ jumpers to enable the on-board LEDs.
 * Close the __`RXD<<`__ and __`TXD>>`__ jumpers to enable UART via the XDS110 on-board USB debugger.
+* In order to get the lowest shutdown current (see the
+  `gpioshutdown` example), remove the jumpers for the __`TCK`__ and __`TMS`__
+  JTAG pins. TMS and TCK have internal pull-up and are driven low when
+  inactive from the emulator, hence after programming the device these jumpers
+  should be removed to avoid the extra leakage current.
 
 ## SysConfig Board File
 
@@ -67,7 +72,7 @@ __i2copt3001_cpp__ example.
 
 ### [__CC3200 Audio BoosterPack__][cc3200audboost]
 
-The BoostPack's `DIN`, `DOUT`, `BCLK` and `FSYNC`/`WCLK` signal pins are not
+The BoosterPack's `DIN`, `DOUT`, `BCLK` and `FSYNC`/`WCLK` signal pins are not
 compatible with this LaunchPad. Use the following modifications to enable the
 CC3200 Audio BoosterPack's usage with the __i2secho__ example.
 
@@ -96,7 +101,7 @@ below, for information on where these pins are located.
 ![CC3200 Audio BoosterPack Jumper Wire Diagram](images/cc3200audboost_jumpers_annotated.png)
 
 [device]: https://www.ti.com/product/CC2651P3
-[launchpad]: https://www.ti.com/tool/LP-CC2651P3
+[board]: https://www.ti.com/tool/LP-CC2651P3
 [boostxl-canfd-lin]: https://www.ti.com/tool/BOOSTXL-CANFD-LIN
 [boostxl-sharp128]: https://www.ti.com/tool/BOOSTXL-SHARP128
 [bp-bassensorsmkii]: https://www.ti.com/tool/BP-BASSENSORSMKII

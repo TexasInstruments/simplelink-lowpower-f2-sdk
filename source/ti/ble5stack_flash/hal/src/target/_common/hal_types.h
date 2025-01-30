@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2006-2024, Texas Instruments Incorporated
+ Copyright (c) 2006-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -166,7 +166,6 @@ typedef uint32          halDataAlign_t;
 #define PACKED                              __attribute__((__packed__))
 #endif
 #define PACKED_STRUCT                       struct PACKED
-#define PACKED_TYPEDEF_STRUCT               typedef struct PACKED
 #define PACKED_TYPEDEF_STRUCT               typedef struct PACKED
 #define PACKED_TYPEDEF_CONST_STRUCT         typedef const struct PACKED
 #define PACKED_TYPEDEF_UNION                typedef union PACKED

@@ -9,7 +9,7 @@ Target Device: cc13xx_cc26xx
 
 ******************************************************************************
 
- Copyright (c) 2022-2024, Texas Instruments Incorporated
+ Copyright (c) 2022-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -394,6 +394,7 @@ void BLEAppUtil_stackInit(void)
         // TODO: Call Error Handler
     }
 
+#if defined( HOST_CONFIG ) && ( HOST_CONFIG & ( PERIPHERAL_CFG | CENTRAL_CFG ) )
     // Init GATT
     status = bleStack_initGatt(BLEAppUtilLocal_GeneralParams->profileRole,
                                BLEAppUtilSelfEntity,
@@ -402,6 +403,7 @@ void BLEAppUtil_stackInit(void)
     {
         // TODO: Call Error Handler
     }
+#endif
 
     // Initialize GAP layer to receive GAP events
     status = GAP_DeviceInit(BLEAppUtilLocal_GeneralParams->profileRole,

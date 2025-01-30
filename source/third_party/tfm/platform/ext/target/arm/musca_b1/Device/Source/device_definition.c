@@ -365,17 +365,17 @@ struct uart_pl011_dev_t UART1_PL011_DEV_NS = {&(UART1_PL011_DEV_CFG_NS),
 /** CMSDK Timers driver structures */
 #ifdef CMSDK_TIMER0_S
 static const struct timer_cmsdk_dev_cfg_t CMSDK_TIMER0_DEV_CFG_S
-#ifdef TEST_NS_SLIH_IRQ
+#ifdef TFM_PARTITION_SLIH_TEST
     TFM_LINK_SET_RO_IN_PARTITION_SECTION("TFM_SP_SLIH_TEST", "APP-ROT")
 #endif
     = {.base = MUSCA_B1_CMSDK_TIMER0_S_BASE};
 static struct timer_cmsdk_dev_data_t CMSDK_TIMER0_DEV_DATA_S
-#ifdef TEST_NS_SLIH_IRQ
+#ifdef TFM_PARTITION_SLIH_TEST
     TFM_LINK_SET_RW_IN_PARTITION_SECTION("TFM_SP_SLIH_TEST", "APP-ROT")
 #endif
     = {.is_initialized = 0};
 struct timer_cmsdk_dev_t CMSDK_TIMER0_DEV_S
-#ifdef TEST_NS_SLIH_IRQ
+#ifdef TFM_PARTITION_SLIH_TEST
     TFM_LINK_SET_RW_IN_PARTITION_SECTION("TFM_SP_SLIH_TEST", "APP-ROT")
 #endif
     = {&(CMSDK_TIMER0_DEV_CFG_S), &(CMSDK_TIMER0_DEV_DATA_S)};

@@ -212,7 +212,7 @@ target_compile_definitions(bl1_main
         MCUBOOT_FIH_PROFILE_${MCUBOOT_FIH_PROFILE}
         $<$<BOOL:${PLATFORM_DEFAULT_NV_COUNTERS}>:PLATFORM_DEFAULT_NV_COUNTERS>
         $<$<BOOL:${PLATFORM_DEFAULT_OTP}>:PLATFORM_DEFAULT_OTP>
-        $<$<BOOL:${OTP_NV_COUNTERS_RAM_EMULATION}>:OTP_NV_COUNTERS_RAM_EMULATION>
+        $<$<BOOL:${OTP_NV_COUNTERS_RAM_EMULATION}>:OTP_NV_COUNTERS_RAM_EMULATION=1>
         $<$<BOOL:${TFM_DUMMY_PROVISIONING}>:TFM_DUMMY_PROVISIONING>
         $<$<BOOL:${PLATFORM_DEFAULT_OTP_WRITEABLE}>:OTP_WRITEABLE>
 )
@@ -257,7 +257,7 @@ if (PLATFORM_IS_FVP)
 target_sources(bl1_main
     PRIVATE
         ${PLATFORM_DIR}/ext/target/arm/drivers/flash/strata/spi_strataflashj3_flash_lib.c
-        ../Native_Driver/cfi_drv.c
+        ${PLATFORM_DIR}/ext/target/arm/drivers/flash/cfi/cfi_drv.c
 )
 else()
 target_sources(bl1_main
@@ -278,6 +278,7 @@ target_include_directories(bl1_main
         ../Native_Driver
         ../fw_update_agent
         ${PLATFORM_DIR}/ext/target/arm/drivers/flash/common
+        ${PLATFORM_DIR}/ext/target/arm/drivers/flash/cfi
         ${PLATFORM_DIR}/ext/target/arm/drivers/flash/strata
         ${PLATFORM_DIR}/ext/target/arm/drivers/qspi/xilinx_pg153_axi
         ${PLATFORM_DIR}/ext/target/arm/drivers/flash/n25q256a
@@ -310,7 +311,7 @@ target_include_directories(signing_layout_for_bl2
         ../partition
 )
 
-if (CONFIG_TFM_BOOT_STORE_MEASUREMENTS)
+if (CONFIG_TFM_BOOT_STORE_MEASUREMENTS AND CONFIG_TFM_BOOT_STORE_ENCODED_MEASUREMENTS)
     set(MCUBOOT_MEASURED_BOOT ON)
 endif()
 

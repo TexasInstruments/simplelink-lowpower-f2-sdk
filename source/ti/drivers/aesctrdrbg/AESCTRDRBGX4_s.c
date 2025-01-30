@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,9 +39,7 @@
 #include <ti/drivers/aesctrdrbg/AESCTRDRBGXX.h>
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
 
-#include <psa_manifest/crypto_sp.h> /* Auto-generated header */
-
-#include <third_party/tfm/interface/include/tfm_api.h>
+#include <third_party/tfm/secure_fw/spm/core/spm.h>
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
 #include <third_party/tfm/secure_fw/spm/include/utilities.h>
@@ -280,7 +278,7 @@ static inline psa_status_t AESCTRDRBG_s_construct(psa_msg_t *msg)
             configPtr_s->object = NULL;
         }
     }
-    else if (TFM_CLIENT_ID_IS_S(msg->client_id))
+    else if (!TFM_CLIENT_ID_IS_NS(msg->client_id))
     {
         /*
          * Return the pointer to the secure config struct provided by the

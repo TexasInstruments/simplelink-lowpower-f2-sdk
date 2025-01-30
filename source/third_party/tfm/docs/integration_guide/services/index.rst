@@ -10,7 +10,7 @@ Services
     Internal Trusted Storage <tfm_its_integration_guide>
     Platform <tfm_platform_integration_guide>
     Protected Storage <tfm_ps_integration_guide>
-    Adding a New Service <tfm_secure_partition_addition>
+    Adding a New Secure Partition <tfm_secure_partition_addition>
     Manifest Tool <tfm_manifest_tool_user_guide>
 
 --------------

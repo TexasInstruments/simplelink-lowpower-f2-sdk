@@ -17,35 +17,30 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/psa/framework_feature.h.in
                ${CMAKE_BINARY_DIR}/generated/interface/include/psa/framework_feature.h
                @ONLY)
 
-if (EXISTS ${TARGET_PLATFORM_PATH}/preload_ns.cmake)
-    include(${TARGET_PLATFORM_PATH}/preload_ns.cmake)
-    tfm_toolchain_reload_compiler()
-endif()
-
 ###################### PSA interface (header only) #############################
 
 add_library(psa_interface INTERFACE)
 
 target_include_directories(psa_interface
     INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ${CMAKE_BINARY_DIR}/generated/interface/include
-        $<$<BOOL:${TFM_MULTI_CORE_TOPOLOGY}>:${CMAKE_CURRENT_SOURCE_DIR}/include/multi_core>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/generated/interface/include>
+        $<BUILD_INTERFACE:$<$<BOOL:${TFM_MULTI_CORE_TOPOLOGY}>:${CMAKE_CURRENT_SOURCE_DIR}/include/multi_core>>
 )
 
 target_link_libraries(psa_interface
     INTERFACE
         tfm_config
-        tfm_partition_defs
 )
 
 target_compile_definitions(psa_interface
     INTERFACE
         $<$<BOOL:${CONFIG_TFM_ENABLE_CTX_MGMT}>:CONFIG_TFM_ENABLE_CTX_MGMT>
-        $<$<BOOL:${TFM_ISOLATION_LEVEL}>:TFM_LVL=${TFM_ISOLATION_LEVEL}>
+        $<$<BOOL:${TFM_ISOLATION_LEVEL}>:TFM_ISOLATION_LEVEL=${TFM_ISOLATION_LEVEL}>
         $<$<BOOL:${CONFIG_TFM_USE_TRUSTZONE}>:CONFIG_TFM_USE_TRUSTZONE>
         $<$<BOOL:${TFM_MULTI_CORE_TOPOLOGY}>:TFM_MULTI_CORE_TOPOLOGY>
         $<$<BOOL:${CONFIG_TFM_PARTITION_META}>:CONFIG_TFM_PARTITION_META>
+        $<$<BOOL:${TEST_NS_MULTI_CORE}>:TFM_MULTI_CORE_TEST>
 )
 
 ###################### PSA api (S lib) #########################################
@@ -58,7 +53,7 @@ target_sources(tfm_sprt
         $<$<BOOL:${TFM_PARTITION_INTERNAL_TRUSTED_STORAGE}>:${CMAKE_CURRENT_SOURCE_DIR}/src/tfm_its_api.c>
         $<$<BOOL:${TFM_PARTITION_PLATFORM}>:${CMAKE_CURRENT_SOURCE_DIR}/src/tfm_platform_api.c>
         $<$<BOOL:${TFM_PARTITION_PROTECTED_STORAGE}>:${CMAKE_CURRENT_SOURCE_DIR}/src/tfm_ps_api.c>
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/tfm_psa_call_pack.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/tfm_psa_call.c
 )
 
 ###################### Export configurations to NS #############################

@@ -37,7 +37,7 @@
 --define_symbol FHDH1CF_getTxChannelNum=0x100312b1
 //--define_symbol FHIE_getCcaSfdTime=0x10032519
 --define_symbol FHIE_genUTIE=0x10032755
---define_symbol FHIE_genBTIE=0x1003248d
+//--define_symbol FHIE_genBTIE=0x1003248d
 --define_symbol FHIE_getChannelPlan=0x100326f1
 --define_symbol FHIE_isChannelPlanValid=0x10032805
 --define_symbol FHIE_genExcludedChannelMask=0x10032689
@@ -168,14 +168,14 @@
 --define_symbol macBuildAssociateRsp=0x1003560d
 --define_symbol macBuildRealign=0x10035d4d
 --define_symbol macPendAddrLen=0x100364a9
---define_symbol macBuildPendAddr=0x10035bb5
+//--define_symbol macBuildPendAddr=0x10035bb5
 --define_symbol macBuildBeacon=0x1003576d
 --define_symbol macIndirectMark=0x100361e5
 --define_symbol macIndirectSend=0x10035e09
 --define_symbol macIndirectExpire=0x100358c5
 --define_symbol macIndirectTxFrame=0x10036085
 --define_symbol macIndirectRequeueFrame=0x10036171
---define_symbol macRxAssociateReq=0x100362b1
+//--define_symbol macRxAssociateReq=0x100362b1
 --define_symbol macApiAssociateRsp=0x10036399
 --define_symbol macRxOrphan=0x10036355
 --define_symbol macApiOrphanRsp=0x100360fd
@@ -296,7 +296,7 @@
 --define_symbol MAC_MlmeDisassociateReq=0x10039dc1
 --define_symbol macUpdateCsmPhyParam=0x10039ea5
 --define_symbol macIsCsmOperational=0x10039e7d
---define_symbol MAC_MlmeResetReq=0x100391c9
+//--define_symbol MAC_MlmeResetReq=0x100391c9
 //--define_symbol MAC_ResumeReq=0x10039729
 --define_symbol MAC_YieldReq=0x10039c69
 --define_symbol MAC_MlmeSyncReq=0x10039ddd

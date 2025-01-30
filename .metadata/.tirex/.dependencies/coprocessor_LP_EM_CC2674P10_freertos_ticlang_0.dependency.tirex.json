@@ -1,0 +1,11 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../application/defines/coprocessor.opt -> application/defines/coprocessor.opt",
+            "+../coprocessor.syscfg -> coprocessor.syscfg",
+            "+cc13x4_cc26x4.cmd -> cc13x4_cc26x4.cmd"
+        ]
+    }
+]

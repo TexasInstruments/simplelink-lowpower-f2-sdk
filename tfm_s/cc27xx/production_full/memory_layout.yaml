@@ -1,0 +1,20 @@
+#-------------------------------------------------------------------------------
+# Copyright (c) 2024, Texas Instruments Incorporated
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+#-------------------------------------------------------------------------------
+
+{
+    # 0x0-0x6800 reserved for pre-provisioned keys + BL2 + BIM info
+    # 0x6800-0xD000 reserved for ITS, PS, & NV counters storage
+    "S_ROM_BASE":   "0x0000D000",    # S ROM base is fixed at 0xD000
+    "S_ROM_LIMIT":  "0x00038000",    # S ROM size: 172 KB
+    "S_RAM_BASE":   "0x20000000",    # S RAM base is fixed at 0x2000_0000
+    "S_RAM_LIMIT":  "0x2000C000",    # S RAM size: 32 KB - 32 B
+    # Bit 28 is set for all NS address as required by the TCM
+    "NS_ROM_BASE":  "0x10038000",    # NS ROM base starts after S ROM limit
+    "NS_ROM_LIMIT": "0x100E8000",    # NS ROM limit fixed at end of flash (1 MB) - HSM FW size (96KB)
+    "NS_RAM_BASE":  "0x3000C000",    # NS RAM base starts after S RAM limit
+    "NS_RAM_LIMIT": "0x30028800"     # NS RAM limit fixed at end of RAM (162 KB)
+}

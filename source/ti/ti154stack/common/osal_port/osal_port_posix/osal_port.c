@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -59,16 +59,8 @@
 #include <ti/drivers/power/PowerCC26XX.h>
 #include <ti/drivers/utils/Random.h>
 
-// SW Tracer
-
-#ifdef DEBUG_SW_TRACE
-#include "dbg.h"
-#define DBG_ENABLE
-#ifndef _DBGFILE
-#define _DBGFILE osal_port_c
-#endif
-#include "dbgid_sys_mst.h"
-#endif // DEBUG_SW_TRACE
+/* TI Logging Files */
+#include <ti/log/Log.h>
 
 /***** Defines *****/
 /* Only 1 application can talk to the MAC */
@@ -280,7 +272,7 @@ uint8_t*  OsalPort_msgAllocate_dbg(uint16_t len, const char *caller)
 {
     uint32_t addr = (uint32_t)__builtin_extract_return_addr (__builtin_return_address (0));
 
-    DBG_PRINTL2(DBGSYS, "OsalPort_msgAllocate: Size) %u Called By) %u", len + sizeof( OsalPort_MsgHdr ), addr);
+    Log_printf(LogModule_154_MALLOC_DEBUG, Log_DEBUG, "OsalPort_msgAllocate: Size) %u Called By) %u", len + sizeof( OsalPort_MsgHdr ), addr);
 
     return  OsalPort_msgAllocate(len );
 }
@@ -319,7 +311,7 @@ uint8_t OsalPort_msgDeallocate( uint8_t *pMsg )
     if ( OsalPort_MSG_ID( pMsg ) != OsalPort_TASK_NO_TASK )
     {
 #ifdef MALLOC_DEBUG
-        DBG_PRINTL1(DBGSYS, "OsalPort_msgDeallocate_dbg: Failed to deallocate buffer: %u", pMsg);
+        Log_printf(LogModule_154_MALLOC_DEBUG, Log_DEBUG, "OsalPort_msgDeallocate_dbg: Failed to deallocate buffer: %u", pMsg);
 #endif
         return ( OsalPort_MSG_BUFFER_NOT_AVAIL );
     }
@@ -337,7 +329,7 @@ uint8_t OsalPort_msgDeallocate_dbg(uint8_t *pMsg, const char *caller)
 {
     uint32_t addr = (uint32_t)__builtin_extract_return_addr (__builtin_return_address (0));
 
-    DBG_PRINTL2(DBGSYS, "OsalPort_msgDeallocate_dbg: Buffer Address) %u Called By) %u", (uint8_t *)((uint8_t *)pMsg - sizeof( OsalPort_MsgHdr )), addr);
+    Log_printf(LogModule_154_MALLOC_DEBUG, Log_DEBUG, "OsalPort_msgDeallocate_dbg: Buffer Address) %u Called By) %u", (uint8_t *)((uint8_t *)pMsg - sizeof( OsalPort_MsgHdr )), addr);
 
     return  OsalPort_msgDeallocate(pMsg);
 }
@@ -1172,7 +1164,7 @@ void* OsalPort_malloc_dbg(uint32_t size, const char *caller)
    buf =  OsalPort_malloc(size);
    uint32_t addr = (uint32_t)__builtin_extract_return_addr (__builtin_return_address (0));
 
-   DBG_PRINTL2(DBGSYS, "OsalPort_malloc_dbg: Size) %u Called By) %u", size,(uint32_t) addr);
+   Log_printf(LogModule_154_MALLOC_DEBUG, Log_DEBUG, "OsalPort_malloc_dbg: Size) %u Called By) %u", size,(uint32_t) addr);
    return buf;
 }
 #endif
@@ -1210,7 +1202,7 @@ void OsalPort_free_dbg(void* buf, const char *caller)
 {
     uint32_t addr = (uint32_t)__builtin_extract_return_addr (__builtin_return_address (0));
 
-    DBG_PRINTL2(DBGSYS, "OsalPort_free_dbg: Buffer Address) %u Called By) %u", buf ,(uint32_t) addr);
+    Log_printf(LogModule_154_MALLOC_DEBUG, Log_DEBUG, "OsalPort_free_dbg: Buffer Address) %u Called By) %u", buf ,(uint32_t) addr);
 
     OsalPort_free(buf);
 }
@@ -1374,5 +1366,29 @@ uint8_t OsalPort_isBufSet( uint8_t *buf, uint8_t val, uint8_t len )
 uint16_t OsalPort_rand( void )
 {
     return (Random_getNumber() & 0xFFFF);
+}
+
+/*********************************************************************
+ * @fn        OsalPort_clearTaskQueues
+ *
+ * @brief    Clears all Queues used for intertask communications. If
+ *           needed, make it atomic at caller level
+ *
+ * @param   none
+ *
+ * @return  none
+ */
+void OsalPort_clearTaskQueues( void )
+{
+    uint8_t  i;
+    uint8_t *pMsg;
+
+    for(i = 0; i < taskCnt; i++)
+    {
+      while((pMsg = OsalPort_msgReceive(i)) != NULL)
+      {
+          OsalPort_msgDeallocate(pMsg);
+      }
+    }
 }
 

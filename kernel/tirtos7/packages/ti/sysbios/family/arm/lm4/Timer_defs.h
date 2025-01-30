@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2020-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -128,10 +128,8 @@
 #undef Timer_initDevice
 #undef Timer_write
 #undef Timer_disableTiva
-#undef Timer_disableCC3200
 #undef Timer_disableCC26xx
 #undef Timer_enableTiva
-#undef Timer_enableCC3200
 #undef Timer_enableCC26xx
 #undef Timer_masterEnable
 #undef Timer_masterDisable
@@ -233,10 +231,8 @@
 #define Timer_initDevice ti_sysbios_family_arm_lm4_Timer_initDevice
 #define Timer_write ti_sysbios_family_arm_lm4_Timer_write
 #define Timer_disableTiva ti_sysbios_family_arm_lm4_Timer_disableTiva
-#define Timer_disableCC3200 ti_sysbios_family_arm_lm4_Timer_disableCC3200
 #define Timer_disableCC26xx ti_sysbios_family_arm_lm4_Timer_disableCC26xx
 #define Timer_enableTiva ti_sysbios_family_arm_lm4_Timer_enableTiva
-#define Timer_enableCC3200 ti_sysbios_family_arm_lm4_Timer_enableCC3200
 #define Timer_enableCC26xx ti_sysbios_family_arm_lm4_Timer_enableCC26xx
 #define Timer_masterEnable ti_sysbios_family_arm_lm4_Timer_masterEnable
 #define Timer_masterDisable ti_sysbios_family_arm_lm4_Timer_masterDisable
@@ -244,7 +240,6 @@
 #define Timer_Params_default ti_sysbios_family_arm_lm4_Timer_Params_default
 #define Timer_postInit ti_sysbios_family_arm_lm4_Timer_postInit
 #define TimerDevices_CC26XX ti_sysbios_family_arm_lm4_TimerDevices_CC26XX
-#define TimerDevices_CC32XX ti_sysbios_family_arm_lm4_TimerDevices_CC32XX
 #define Timer_handles ti_sysbios_family_arm_lm4_Timer_handles
 #define Timer_getTimerFromObjElem  ti_sysbios_family_arm_lm4_Timer_getTimerFromObjElem
 

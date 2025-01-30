@@ -2,7 +2,7 @@
     {
         "name": "Release Notes",
         "resourceType": "file",
-        "location": "../../release_notes_simplelink_cc13xx_cc26xx_sdk_7_41_00_17.html",
+        "location": "../../release_notes_simplelink_cc13xx_cc26xx_sdk_8_30_01_01.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -15,7 +15,12 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -34,7 +39,12 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -53,7 +63,12 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -72,7 +87,12 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -91,7 +111,12 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -110,10 +135,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "BLE5-Stack"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -132,10 +162,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "BLE5-Stack"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -154,10 +189,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "BLE5-Stack"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -176,10 +216,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "BLE5-Stack"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -198,10 +243,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "BLE5-Stack"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -218,10 +268,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "Proprietary RF"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -238,10 +293,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "Proprietary RF"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -258,10 +318,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "Proprietary RF"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -278,10 +343,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "Proprietary RF"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -300,10 +370,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Z-Stack"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -322,10 +397,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Z-Stack"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -344,10 +424,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Z-Stack"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -366,10 +451,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Z-Stack"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -388,10 +478,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Z-Stack"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -410,10 +505,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Z-Stack"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -432,10 +532,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Z-Stack"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -454,10 +559,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
-            "TI 15.4-Stack"
+            "TI Z-Stack"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -476,10 +586,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI 15.4-Stack"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -498,10 +613,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI 15.4-Stack"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -520,10 +640,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI 15.4-Stack"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -542,10 +667,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI 15.4-Stack"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -568,10 +698,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -594,10 +729,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -620,10 +760,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -646,10 +791,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -673,10 +823,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Wireless Solar Management System"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -700,10 +855,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Wireless Solar Management System"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -727,10 +887,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Wireless Solar Management System"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -754,10 +919,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Wireless Solar Management System"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -776,10 +946,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI DMM"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -798,10 +973,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI DMM"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -820,10 +1000,15 @@
             "Documents"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI DMM"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -843,10 +1028,15 @@
             "Drivers"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Drivers"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -866,10 +1056,15 @@
             "Drivers"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Drivers"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -889,10 +1084,15 @@
             "Drivers"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Drivers"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -912,10 +1112,15 @@
             "TI-RTOS 7 Kernel (SYS/BIOS)"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI-RTOS 7 Kernel"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -935,10 +1140,15 @@
             "TI-RTOS 7 Kernel (SYS/BIOS)"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI-RTOS 7 Kernel"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -958,10 +1168,15 @@
             "TI-RTOS 7 Kernel (SYS/BIOS)"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI-RTOS 7 Kernel"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -979,75 +1194,17 @@
         "categories": [
             "Documents",
             "TI-RTOS Kernel (SYS/BIOS)"
-        ]
-    },
-    {
-        "name": "Driverlib Release Notes",
-        "resourceType": "file",
-        "location": "../../docs/driverlib_cc13xx_cc26xx/release_notes_driverlib_cc13xx_cc26xx.html",
-        "devices": [
-            "CC1352R1F3",
-            "CC2642R1F"
-        ],
-        "devtools": [
-            "LAUNCHXL-CC13X2R1",
-            "LAUNCHXL-CC26X2R1"
-        ],
-        "categories": [
-            "Documents",
-            "DriverLib"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
-            "DriverLib"
-        ]
-    },
-    {
-        "name": "Driverlib Documentation",
-        "resourceType": "file",
-        "location": "../../docs/driverlib_cc13xx_cc26xx/doc_overview_driverlib_cc13xx_cc26xx.html",
-        "devices": [
-            "CC1352R1F3",
-            "CC2642R1F"
+            "TI-RTOS 7 Kernel"
         ],
-        "devtools": [
-            "LAUNCHXL-CC13X2R1",
-            "LAUNCHXL-CC26X2R1"
-        ],
-        "categories": [
-            "Documents",
-            "DriverLib"
-        ],
-        "mainCategories": [
-            "Documents"
-        ],
-        "subCategories": [
-            "DriverLib"
-        ]
-    },
-    {
-        "name": "Lib Search Readme",
-        "resourceType": "file",
-        "location": "../../tools/ble5stack/lib_search/readme.html",
-        "devices": [
-            "CC1352R1F3",
-            "CC2642R1F"
-        ],
-        "devtools": [
-            "LAUNCHXL-CC13X2R1",
-            "LAUNCHXL-CC26X2R1"
-        ],
-        "categories": [
-            "Tools",
-            "BLE5-Stack"
-        ],
-        "mainCategories": [
-            "Tools"
-        ],
-        "subCategories": [
-            "BLE5-Stack"
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -1067,10 +1224,15 @@
             "TI Amazon Sidewalk"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Amazon Sidewalk"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -1090,10 +1252,15 @@
             "TI Amazon Sidewalk"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Amazon Sidewalk"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -1109,16 +1276,21 @@
             "LAUNCHXL-CC26X2R1"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "Graphics Library"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
         "name": "TI 15.4-Stack Release Notes",
         "resourceType": "file",
-        "location": "../../docs/ti154stack/release_notes_ti154stack_6_41_00_00.html",
+        "location": "../../docs/ti154stack/release_notes_ti154stack_7_30_00_00.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1128,16 +1300,21 @@
             "LAUNCHXL-CC26X2R1"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI 15.4-Stack"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
         "name": "TI Wireless Solar Management System Release Notes",
         "resourceType": "file",
-        "location": "../../docs/wsms/release_notes_wsms_2_41_00_00.html",
+        "location": "../../docs/wsms/release_notes_wsms_3_30_00_00.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1147,10 +1324,15 @@
             "LAUNCHXL-CC26X2R1"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Wireless Solar Management System"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -1166,16 +1348,21 @@
             "LAUNCHXL-CC26X2R1"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Amazon Sidewalk"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
         "name": "TI BLE5-Stack Release Notes",
         "resourceType": "file",
-        "location": "../../docs/ble5stack/release_notes_ble5stack_2_02_09_00.html",
+        "location": "../../docs/ble5stack/release_notes_ble5stack_2_2_11_00.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1185,16 +1372,21 @@
             "LAUNCHXL-CC26X2R1"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "BLE5-Stack"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
         "name": "SimpleLink Common Components Module (SCCM) Release Notes",
         "resourceType": "file",
-        "location": "../../docs/sccm/release_notes_sccm_8_20_00.html",
+        "location": "../../docs/sccm/release_notes_sccm_8_30_00.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1204,16 +1396,21 @@
             "LAUNCHXL-CC26X2R1"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "Common Components"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
         "name": "TI DMM Release Notes",
         "resourceType": "file",
-        "location": "../../docs/dmm/release_notes_dmm_5_40_00.html",
+        "location": "../../docs/dmm/release_notes_dmm_6_30_00.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1223,16 +1420,21 @@
             "LAUNCHXL-CC26X2R1"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI DMM"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
         "name": "Radio Config Release Notes",
         "resourceType": "file",
-        "location": "../../docs/radioconfig/release_notes_radioconfig_1_15.html",
+        "location": "../../docs/radioconfig/release_notes_radioconfig_1_19.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1242,16 +1444,21 @@
             "LAUNCHXL-CC26X2R1"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "Radio Config"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
         "name": "TI Wi-SUN FAN Release Notes",
         "resourceType": "file",
-        "location": "../../docs/ti_wisunfan/release_notes_wisun_2_41_00_00.html",
+        "location": "../../docs/ti_wisunfan/release_notes_wisun_3_30_00_00.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1261,10 +1468,15 @@
             "LAUNCHXL-CC26X2R1"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
@@ -1280,16 +1492,21 @@
             "LAUNCHXL-CC26X2R1"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Drivers"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
         "name": "TI Z-Stack Release Notes",
         "resourceType": "file",
-        "location": "../../docs/zigbee/release_notes_zigbee_7_40_00.html",
+        "location": "../../docs/zigbee/release_notes_zigbee_8_30_00.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1299,16 +1516,21 @@
             "LAUNCHXL-CC26X2R1"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Z-Stack"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
         "name": "CoreSDK Release Notes",
         "resourceType": "file",
-        "location": "../../docs/simplelink_mcu_sdk/release_notes_coresdk_cc13xx_cc26xx_7_40_04_00.html",
+        "location": "../../docs/simplelink_mcu_sdk/release_notes_coresdk_cc13xx_cc26xx_8_30_02_00.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1318,16 +1540,21 @@
             "LAUNCHXL-CC26X2R1"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "TI Drivers"
+        ],
+        "resourceClass": [
+            "document"
         ]
     },
     {
         "name": "TI Proprietary RF Release Notes",
         "resourceType": "file",
-        "location": "../../docs/proprietary-rf/release_notes_proprietary-rf_6_30_00.html",
+        "location": "../../docs/proprietary-rf/release_notes_proprietary-rf_7_30_00.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1337,10 +1564,15 @@
             "LAUNCHXL-CC26X2R1"
         ],
         "mainCategories": [
-            "Documents"
+            [
+                "Documents"
+            ]
         ],
         "subCategories": [
             "Proprietary RF"
+        ],
+        "resourceClass": [
+            "document"
         ]
     }
 ]

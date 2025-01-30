@@ -1196,6 +1196,74 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/dmm/dmm_154collector_remote_display_app_2_4g/README.html",
+        "resourceType": "categoryInfo",
+        "name": "dmm_154collector_remote_display_app_2_4g",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "dmm"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/dmm/dmm_154collector_remote_display_app_2_4g/tirtos7/ticlang/dmm_154collector_remote_display_app_2_4g_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
+        "name": "dmm_154collector_remote_display_app_2_4g",
+        "description": "dmm_154collector_remote_display_app_2_4g",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "dmm",
+            "dmm_154collector_remote_display_app_2_4g",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
         "location": "../../examples/rtos/LP_CC2652RSIP/dmm/dmm_154collector_remote_display_app_2_4g/README.html",
         "resourceType": "categoryInfo",
         "name": "dmm_154collector_remote_display_app_2_4g",
@@ -1777,6 +1845,45 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_154collector_remote_display_app_2_4g/tirtos7/iar/dmm_154collector_remote_display_app_2_4g_CC1352P_2_LAUNCHXL_tirtos7_iar.ipcf",
+        "name": "dmm_154collector_remote_display_app_2_4g",
+        "description": "dmm_154collector_remote_display_app_2_4g",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "dmm",
+            "dmm_154collector_remote_display_app_2_4g",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/dmm/dmm_154collector_remote_display_app_2_4g/tirtos7/iar/dmm_154collector_remote_display_app_2_4g_LP_EM_CC2674P10_tirtos7_iar.ipcf",
         "name": "dmm_154collector_remote_display_app_2_4g",
         "description": "dmm_154collector_remote_display_app_2_4g",
         "kernel": [
@@ -4834,6 +4941,74 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/dmm/dmm_154collector_sm_remote_display_app_2_4g/README.html",
+        "resourceType": "categoryInfo",
+        "name": "dmm_154collector_sm_remote_display_app_2_4g",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "dmm"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/dmm/dmm_154collector_sm_remote_display_app_2_4g/tirtos7/ticlang/dmm_154collector_sm_remote_display_app_2_4g_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
+        "name": "dmm_154collector_sm_remote_display_app_2_4g",
+        "description": "dmm_154collector_sm_remote_display_app_2_4g",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "dmm",
+            "dmm_154collector_sm_remote_display_app_2_4g",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
         "location": "../../examples/rtos/LP_CC2652RSIP/dmm/dmm_154collector_sm_remote_display_app_2_4g/README.html",
         "resourceType": "categoryInfo",
         "name": "dmm_154collector_sm_remote_display_app_2_4g",
@@ -5415,6 +5590,45 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_154collector_sm_remote_display_app_2_4g/tirtos7/iar/dmm_154collector_sm_remote_display_app_2_4g_CC1352P_2_LAUNCHXL_tirtos7_iar.ipcf",
+        "name": "dmm_154collector_sm_remote_display_app_2_4g",
+        "description": "dmm_154collector_sm_remote_display_app_2_4g",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "dmm",
+            "dmm_154collector_sm_remote_display_app_2_4g",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/dmm/dmm_154collector_sm_remote_display_app_2_4g/tirtos7/iar/dmm_154collector_sm_remote_display_app_2_4g_LP_EM_CC2674P10_tirtos7_iar.ipcf",
         "name": "dmm_154collector_sm_remote_display_app_2_4g",
         "description": "dmm_154collector_sm_remote_display_app_2_4g",
         "kernel": [
@@ -6867,6 +7081,74 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/dmm/dmm_154sensor_remote_display_app_2_4g/README.html",
+        "resourceType": "categoryInfo",
+        "name": "dmm_154sensor_remote_display_app_2_4g",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "dmm"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/dmm/dmm_154sensor_remote_display_app_2_4g/tirtos7/ticlang/dmm_154sensor_remote_display_app_2_4g_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
+        "name": "dmm_154sensor_remote_display_app_2_4g",
+        "description": "dmm_154sensor_remote_display_app_2_4g",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "dmm",
+            "dmm_154sensor_remote_display_app_2_4g",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
         "location": "../../examples/rtos/LP_CC2652RSIP/dmm/dmm_154sensor_remote_display_app_2_4g/README.html",
         "resourceType": "categoryInfo",
         "name": "dmm_154sensor_remote_display_app_2_4g",
@@ -7448,6 +7730,45 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_154sensor_remote_display_app_2_4g/tirtos7/iar/dmm_154sensor_remote_display_app_2_4g_CC1352P_2_LAUNCHXL_tirtos7_iar.ipcf",
+        "name": "dmm_154sensor_remote_display_app_2_4g",
+        "description": "dmm_154sensor_remote_display_app_2_4g",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "dmm",
+            "dmm_154sensor_remote_display_app_2_4g",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/dmm/dmm_154sensor_remote_display_app_2_4g/tirtos7/iar/dmm_154sensor_remote_display_app_2_4g_LP_EM_CC2674P10_tirtos7_iar.ipcf",
         "name": "dmm_154sensor_remote_display_app_2_4g",
         "description": "dmm_154sensor_remote_display_app_2_4g",
         "kernel": [
@@ -10505,6 +10826,74 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/dmm/dmm_154sensor_sm_remote_display_app_2_4g/README.html",
+        "resourceType": "categoryInfo",
+        "name": "dmm_154sensor_sm_remote_display_app_2_4g",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "dmm"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/dmm/dmm_154sensor_sm_remote_display_app_2_4g/tirtos7/ticlang/dmm_154sensor_sm_remote_display_app_2_4g_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
+        "name": "dmm_154sensor_sm_remote_display_app_2_4g",
+        "description": "dmm_154sensor_sm_remote_display_app_2_4g",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "dmm",
+            "dmm_154sensor_sm_remote_display_app_2_4g",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
         "location": "../../examples/rtos/LP_CC2652RSIP/dmm/dmm_154sensor_sm_remote_display_app_2_4g/README.html",
         "resourceType": "categoryInfo",
         "name": "dmm_154sensor_sm_remote_display_app_2_4g",
@@ -11116,6 +11505,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/dmm/dmm_154sensor_sm_remote_display_app_2_4g/tirtos7/iar/dmm_154sensor_sm_remote_display_app_2_4g_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "dmm_154sensor_sm_remote_display_app_2_4g",
+        "description": "dmm_154sensor_sm_remote_display_app_2_4g",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "dmm",
+            "dmm_154sensor_sm_remote_display_app_2_4g",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -11660,6 +12088,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "dmm_zc_switch_remote_display_app",
+        "description": "dmm_zc_switch_remote_display_app",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "dmm",
+            "dmm_zc_switch_remote_display_app",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/dmm/dmm_zc_switch_remote_display_app/README.html",
+        "resourceType": "categoryInfo",
+        "name": "dmm_zc_switch_remote_display_app",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "dmm"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "dmm_zc_switch_remote_display_app",
         "description": "dmm_zc_switch_remote_display_app",
         "kernel": [
@@ -12263,6 +12759,45 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zc_switch_remote_display_app/tirtos7/iar/dmm_zc_switch_remote_display_app_CC1352P_2_LAUNCHXL_tirtos7_iar.ipcf",
+        "name": "dmm_zc_switch_remote_display_app",
+        "description": "dmm_zc_switch_remote_display_app",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "dmm",
+            "dmm_zc_switch_remote_display_app",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/dmm/dmm_zc_switch_remote_display_app/tirtos7/iar/dmm_zc_switch_remote_display_app_LP_EM_CC2674P10_tirtos7_iar.ipcf",
         "name": "dmm_zc_switch_remote_display_app",
         "description": "dmm_zc_switch_remote_display_app",
         "kernel": [
@@ -13822,6 +14357,74 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/dmm/dmm_zed_switch_remote_display_app/README.html",
+        "resourceType": "categoryInfo",
+        "name": "dmm_zed_switch_remote_display_app",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "dmm"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
+        "name": "dmm_zed_switch_remote_display_app",
+        "description": "dmm_zed_switch_remote_display_app",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "dmm",
+            "dmm_zed_switch_remote_display_app",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
         "location": "../../examples/rtos/LP_CC2652RSIP/dmm/dmm_zed_switch_remote_display_app/README.html",
         "resourceType": "categoryInfo",
         "name": "dmm_zed_switch_remote_display_app",
@@ -14403,6 +15006,45 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zed_switch_remote_display_app/tirtos7/iar/dmm_zed_switch_remote_display_app_CC1352P_2_LAUNCHXL_tirtos7_iar.ipcf",
+        "name": "dmm_zed_switch_remote_display_app",
+        "description": "dmm_zed_switch_remote_display_app",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "dmm",
+            "dmm_zed_switch_remote_display_app",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/dmm/dmm_zed_switch_remote_display_app/tirtos7/iar/dmm_zed_switch_remote_display_app_LP_EM_CC2674P10_tirtos7_iar.ipcf",
         "name": "dmm_zed_switch_remote_display_app",
         "description": "dmm_zed_switch_remote_display_app",
         "kernel": [
@@ -15962,6 +16604,74 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/dmm/dmm_zr_light_remote_display_app/README.html",
+        "resourceType": "categoryInfo",
+        "name": "dmm_zr_light_remote_display_app",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "dmm"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
+        "name": "dmm_zr_light_remote_display_app",
+        "description": "dmm_zr_light_remote_display_app",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "dmm",
+            "dmm_zr_light_remote_display_app",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
         "location": "../../examples/rtos/LP_CC2652RSIP/dmm/dmm_zr_light_remote_display_app/README.html",
         "resourceType": "categoryInfo",
         "name": "dmm_zr_light_remote_display_app",
@@ -16543,6 +17253,45 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zr_light_remote_display_app/tirtos7/iar/dmm_zr_light_remote_display_app_CC1352P_2_LAUNCHXL_tirtos7_iar.ipcf",
+        "name": "dmm_zr_light_remote_display_app",
+        "description": "dmm_zr_light_remote_display_app",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "dmm",
+            "dmm_zr_light_remote_display_app",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/dmm/dmm_zr_light_remote_display_app/tirtos7/iar/dmm_zr_light_remote_display_app_LP_EM_CC2674P10_tirtos7_iar.ipcf",
         "name": "dmm_zr_light_remote_display_app",
         "description": "dmm_zr_light_remote_display_app",
         "kernel": [

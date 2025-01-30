@@ -11,7 +11,7 @@
 #include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include "tfm_api.h"
+#include "psa/client.h"
 
 #ifdef __cplusplus
 extern "C" {

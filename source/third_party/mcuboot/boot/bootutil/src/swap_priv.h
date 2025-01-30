@@ -19,7 +19,7 @@
 #ifndef H_SWAP_PRIV_
 #define H_SWAP_PRIV_
 
-#include "mcuboot_config/mcuboot_config.h"
+#include "mcuboot_config.h"
 
 #if defined(MCUBOOT_SWAP_USING_SCRATCH) || defined(MCUBOOT_SWAP_USING_MOVE)
 
@@ -95,10 +95,15 @@ void swap_run(struct boot_loader_state *state,
 
 static inline size_t boot_scratch_area_size(const struct boot_loader_state *state)
 {
-    return BOOT_SCRATCH_AREA(state)->fa_size;
+    return flash_area_get_size(BOOT_SCRATCH_AREA(state));
 }
 #endif
 
 #endif /* defined(MCUBOOT_SWAP_USING_SCRATCH) || defined(MCUBOOT_SWAP_USING_MOVE) */
+
+/**
+ * Returns the maximum size of an application that can be loaded to a slot.
+ */
+int app_max_size(struct boot_loader_state *state);
 
 #endif /* H_SWAP_PRIV_ */

@@ -39,12 +39,12 @@ Platform specific option settings in ``TARGET_CONFIG_HEADER_FILE`` overrides tho
 
 .. code-block:: c
 
-    #ifdef PROJECT_CONFIG_HEADER_FILE
-    #include PROJECT_CONFIG_HEADER_FILE
-    #endif
-
     #ifdef TARGET_CONFIG_HEADER_FILE
     #include TARGET_CONFIG_HEADER_FILE
+    #endif
+
+    #ifdef PROJECT_CONFIG_HEADER_FILE
+    #include PROJECT_CONFIG_HEADER_FILE
     #endif
 
     #include "config_base.h"

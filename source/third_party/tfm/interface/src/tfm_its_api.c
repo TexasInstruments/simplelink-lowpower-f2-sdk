@@ -8,7 +8,6 @@
 #include "psa/client.h"
 #include "psa/internal_trusted_storage.h"
 #include "psa_manifest/sid.h"
-#include "tfm_api.h"
 #include "tfm_its_defs.h"
 
 psa_status_t psa_its_set(psa_storage_uid_t uid,

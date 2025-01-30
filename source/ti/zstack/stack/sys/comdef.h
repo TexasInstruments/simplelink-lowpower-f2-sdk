@@ -115,6 +115,22 @@ extern "C"
 #define NV_BAD_ITEM_LEN           0x0C
 #define NV_INVALID_DATA           0x0D
 
+#ifndef USUCCESS
+  #define USUCCESS SUCCESS
+#endif
+
+#ifndef UFAILURE
+  #define UFAILURE FAILURE
+#endif
+
+#ifndef UFALSE
+  #define UFALSE FALSE
+#endif
+
+#ifndef UTRUE
+  #define UTRUE TRUE
+#endif
+
 /*** NV Error Mask ***/
 #define NV_NIB_INIT_FAILURE       0x01
 #define NV_ADDR_MGR_INIT_FAILURE  0x02

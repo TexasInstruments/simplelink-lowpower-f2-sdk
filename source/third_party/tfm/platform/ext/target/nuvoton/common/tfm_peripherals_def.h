@@ -17,6 +17,7 @@ extern "C" {
 
 #define TFM_TIMER0_IRQ    (TMR0_IRQn)
 #define TFM_TIMER1_IRQ    (TMR1_IRQn)
+#define DEFAULT_IRQ_PRIORITY    (1UL << (__NVIC_PRIO_BITS - 2))
 
 struct platform_data_t;
 

@@ -258,10 +258,90 @@
                         ]
                     },
                     {
-                        "_name": "pRegOverrideTxStd"
+                        "_name": "pRegOverrideTxStd",
+                        "Block": [
+                            {
+                                "_name": "override_txstd_placeholder.json",
+                                "Element32b": [
+                                    {
+                                        "_type": "TXSTDPA",
+                                        "_comment": "TX Standard power override",
+                                        "$": "0x00000000"
+                                    },
+                                    {
+                                        "_type": "ANADIV",
+                                        "_comment": "The ANADIV radio parameter based on LO divider and front end settings",
+                                        "$": "0x00000000"
+                                    }
+                                ]
+                            },
+                            {
+                                "_name": "override_phy_tx_pa_ramp_genfsk_std.json",
+                                "Element32b": [
+                                    {
+                                        "_type": "HW_REG_OVERRIDE",
+                                        "_comment": "Tx: Configure PA ramping, set wait time before turning off (0x1A ticks of 16\/24 us = 17.3 us).",
+                                        "$": "0x6028,0x001A"
+                                    },
+                                    {
+                                        "_type": "HW_REG_OVERRIDE",
+                                        "_comment": "Set TXRX pin to 0 in RX and high impedance in idle\/TX. ",
+                                        "$": "0x60A8,0x0401"
+                                    }
+                                ]
+                            },
+                            {
+                                "_name": "override_patable_14dbm.json",
+                                "Element32b": {
+                                    "_type": "ADI_REG_OVERRIDE",
+                                    "_comment": "Tx: Set PA trim to max to maximize its output power (in ADI0, set PACTL0=0xF8)",
+                                    "$": "0,12,0xF8"
+                                }
+                            }
+                        ]
                     },
                     {
-                        "_name": "pRegOverrideTx20"
+                        "_name": "pRegOverrideTx20",
+                        "Block": [
+                            {
+                                "_name": "override_tx20_placeholder.json",
+                                "Element32b": [
+                                    {
+                                        "_type": "TX20PA",
+                                        "_comment": "TX HighPA power override",
+                                        "$": "0x00000000"
+                                    },
+                                    {
+                                        "_type": "ANADIV",
+                                        "_comment": "The ANADIV radio parameter based on LO divider and front end settings",
+                                        "$": "0x00000000"
+                                    }
+                                ]
+                            },
+                            {
+                                "_name": "override_phy_tx_pa_ramp_genfsk_hpa.json",
+                                "Element32b": [
+                                    {
+                                        "_type": "HW_REG_OVERRIDE",
+                                        "_comment": "Tx: Configure PA ramping, set wait time before turning off (0x1F ticks of 16\/24 us = 20.3 us).",
+                                        "$": "0x6028,0x001F"
+                                    },
+                                    {
+                                        "_type": "HW_REG_OVERRIDE",
+                                        "_comment": "Set TXRX pin to 0 in RX\/TX and high impedance in idle. ",
+                                        "$": "0x60A8,0x0001"
+                                    }
+                                ]
+                            },
+                            {
+                                "_name": "override_patable_14dbm.json",
+                                "Element32b": {
+                                    "_type": "ADI_REG_OVERRIDE",
+                                    "_comment": "Tx: Set PA trim to max to maximize its output power (in ADI0, set PACTL0=0xF8)",
+                                    "$": "0,12,0xF8"
+                                }
+                            }
+                        ]
                     }
                 ]
             },

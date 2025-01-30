@@ -69,12 +69,12 @@
 <p>To trigger various events, buttons can be used as well as the configurable user interface. The <a href="#ExampleUsage">Example Usage</a> section of this document explains how to use the user interface, although both the button presses and the UART perform the same actions.</p>
 </blockquote>
 <ul>
-<li><code>CONFIG_GPIO_RLED</code> - Set when the collector application is initialized. Flashes when the network is open for joining.</li>
-<li><code>CONFIG_GPIO_BTN1</code> - Press to initialize the collector application.</li>
-<li><code>CONFIG_GPIO_BTN2</code> - Press to allow new devices to join the network. While the network is open for joining, <code>CONFIG_GPIO_RLED</code> will flash. Press again to disallow joining.</li>
+<li><code>CONFIG_LED_RED</code> - Set when the collector application is initialized. Flashes when the network is open for joining.</li>
+<li><code>CONFIG_BTN_LEFT</code> - Press to initialize the collector application.</li>
+<li><code>CONFIG_BTN_RIGHT</code> - Press to allow new devices to join the network. While the network is open for joining, <code>CONFIG_LED_RED</code> will flash. Press again to disallow joining.</li>
 </ul>
 <blockquote>
-<p>If <code>CONFIG_GPIO_BTN2</code> is held while power is applied to the Launchpad, NV Flash will be erased.</p>
+<p>To erase NV flash, Hold <code>CONFIG_BTN_RIGHT</code> down, then press and release the reset button. Wait a second then release BTN-2. You should see a CUI message indicating NV erase. If BTN-2 is not held down constantly during the boot process the NVS flash will not be erased.</p>
 </blockquote>
 <h2 id="resources-jumper-settings"><a name="Resources&amp;JumperSettings"></a>Resources &amp; Jumper Settings</h2>
 <p>The following hardware is required to run TI 15.4-Stack Out of Box (OOB) example applications:</p>
@@ -250,7 +250,7 @@ Status: Waiting...
 Device Status: --
 Number of Joined Devices: --</code></pre>
 <ul>
-<li>Start the application by pressing <code>CONFIG_GPIO_BTN1</code> or selecting <code>FORM NWK</code> under the <code>NETWORK ACTIONS</code> tab. ``` TI Collector Press Enter for Help &lt; HELP &gt;</li>
+<li>Start the application by pressing <code>CONFIG_BTN_LEFT</code> or selecting <code>FORM NWK</code> under the <code>NETWORK ACTIONS</code> tab. ``` TI Collector Press Enter for Help &lt; HELP &gt;</li>
 </ul>
 <p>Security Status: – Status: Starting… Device Status: – Number of Joined Devices: 0</p>
 <pre><code>
@@ -259,7 +259,7 @@ After starting, sensor specific application information will be displayed, such 
 <p>&lt; NETWORK ACTIONS &gt;</p>
 <p>Status: Started–Mode=NBCN, Addr=0xaabb, PanId=0x0001, Ch=0, PermitJoin=Off Device Status: – Number of Joined Devices: 0</p>
 <pre><code>
-Now turn on permit join using `CONFIG_GPIO_BTN2` or by selecting `OPEN NWK` under the `NETWORK ACTIONS` tab.
+Now turn on permit join using `CONFIG_BTN_RIGHT` or by selecting `OPEN NWK` under the `NETWORK ACTIONS` tab.
 Once the network is started, and sensors begin to join, each of the status lines will update accordingly.
 The network coordinator (Collector) will update the Security Status line with the Commissioning progress:
 
@@ -342,7 +342,7 @@ The common user interface (CUI) is a UART based interface that allows users to c
   with 100,000+ analog ICs and embedded processors, along with software, tools
   and the industry‘s largest sales/support staff.</p>
   <p>
-    <a href="https://www.ti.com/corp/docs/legal/copyright.shtml">© Copyright 1995-2024</a>, Texas Instruments Incorporated. All rights reserved. <br>
+    <a href="https://www.ti.com/corp/docs/legal/copyright.shtml">© Copyright 1995-2025</a>, Texas Instruments Incorporated. All rights reserved. <br>
     <a href="https://www.ti.com/corp/docs/legal/trademark/trademrk.htm">Trademarks</a> | <a href="https://www.ti.com/corp/docs/legal/privacy.shtml">Privacy policy</a> | <a href="https://www.ti.com/corp/docs/legal/termsofuse.shtml">Terms of use</a> | <a href="https://www.ti.com/lsds/ti/legal/termsofsale.page">Terms of sale</a>
   </p>
 </footer>

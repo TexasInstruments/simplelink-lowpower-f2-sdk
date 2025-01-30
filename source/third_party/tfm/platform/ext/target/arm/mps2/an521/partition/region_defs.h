@@ -36,11 +36,6 @@
 #define NS_HEAP_SIZE            (0x00001000)
 #define NS_STACK_SIZE           (0x000001E0)
 
-/* This size of buffer is big enough to store an attestation
- * token produced by initial attestation service
- */
-#define PSA_INITIAL_ATTEST_TOKEN_MAX_SIZE   (0x250)
-
 /* MPC granularity is 128 KB on AN521 Castor MPS2 FPGA image. Alignment
  * of partitions is defined in accordance with this constraint.
  */

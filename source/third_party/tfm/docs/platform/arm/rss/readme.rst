@@ -49,11 +49,10 @@ key distributed with TF-M, use the following command::
         --align 1 \
         -v "0.0.1" \
         -s 1 \
-        -H 0x1000 \
+        -H 0x2000 \
         --pad-header \
         -S 0x80000 \
         --pad \
-        --boot-record "HOST" \
         -L <load address> \
         <binary infile> \
         <signed binary outfile>
@@ -61,7 +60,7 @@ key distributed with TF-M, use the following command::
 The ``load address`` is the logical address in the RSS memory map to which BL2
 will load the image. RSS FW expects the first host image to be loaded to address
 ``0x70000000`` (the beginning of the RSS ATU host access region), and each
-subsequent host image to be loaded at an offset of ``0x100000`` from the
+subsequent host image to be loaded at an offset of ``0x1000000`` from the
 previous image. The RSS ATU should be configured to map these logical addresses
 to the physical addresses in the host system that the images need to be loaded
 to.
@@ -77,20 +76,18 @@ For more information on the ``imgtool`` parameters, see the MCUBoot
 Running the code
 ----------------
 
-To run the built images, they need to be concatenated into binaries that can be
-placed in ROM and flash. To create the ROM image, navigate to the TF-M build
-directory and run the following ``srec_cat`` command::
+To run the built images, first the ROM image must be created from the bl1_1
+binary and the ROM DMA Initial Command Sequence (ICS).::
 
     srec_cat \
-        bl1_1.bin -Binary -offset 0x0 \
-        bl1_provisioning_bundle.bin -Binary -offset 0xE000 \
-        -o rom.bin -Binary
+            bl1_1.bin -Binary     -offset 0x0 \
+            rom_dma_ics.bin -Binary -offset 0x1F000 \
+            -o rom.bin -Binary
 
-For development purposes, the OTP image is included as a provisioning bundle in
-the ROM image and provisioned into OTP by BL1_1.
-
-To create the flash image, the following ``fiptool`` command should be run.
-``fiptool`` documentation can be found `here <https://trustedfirmware-a.readthedocs.io/en/latest/getting_started/tools-build.html?highlight=fiptool#building-and-using-the-fip-tool>`_.
+Then, the flash image must be created by concatenating the images that are
+output from the build. To create the flash image, the following ``fiptool``
+command should be run. ``fiptool`` documentation can be found `here
+<https://trustedfirmware-a.readthedocs.io/en/latest/getting_started/tools-build.html?highlight=fiptool#building-and-using-the-fip-tool>`_.
 Note that an up-to-date fiptool that supports the RSS UUIDs must be used.::
 
     fiptool create \
@@ -113,8 +110,8 @@ create the flash image::
 
     fiptool create \
         --align 8192 --rss-bl2           bl2_signed.bin \
-        --align 8192 --rss-ns            tfm_ns.bin \
-        --align 8192 --rss-s             tfm_s.bin \
+        --align 8192 --rss-ns            tfm_ns_encrypted.bin \
+        --align 8192 --rss-s             tfm_s_encrypted.bin \
         --align 8192 --rss-sic-tables-ns tfm_ns_sic_tables_signed.bin \
         --align 8192 --rss-sic-tables-s  tfm_s_sic_tables_signed.bin \
         --align 8192 --rss-scp-bl1       <signed Host SCP BL1 image> \
@@ -169,9 +166,23 @@ image::
             fip_gpt.bin -Binary -offset 0x0 \
             -o host_flash.bin -Binary
 
-The ROM binary should be placed in RSS ROM at ``0x11000000`` and the host flash
-binary should be placed at the base of the host flash. For the TC platform,
-this is at ``0x80000000``.
+The RSS ROM binary should be placed in RSS ROM at ``0x11000000`` and the host
+flash binary should be placed at the base of the host flash. For the TC
+platform, this is at ``0x80000000``.
+
+The RSS OTP must be provisioned. On a development platform with
+``TFM_DUMMY_PROVISIONING`` enabled, BL1_1 expects provisioning bundles to be
+preloaded into SRAM. Preload ``encrypted_cm_provisioning_bundle_0.bin`` to the
+base of VM0, and ``encrypted_dm_provisioning_bundle.bin`` to the base of VM1.
+
+If ``TFM_DUMMY_PROVISIONING`` is disabled and provisioning is required, then
+BL1_1 will first wait for the TP mode to be set by a debugger (setting the
+``tp_mode`` variable in the current stack frame is easiest). BL1_1 will then
+wait for provisioning bundles to be loaded to VM0 and VM1 in the same way as
+when ``TFM_DUMMY_PROVISIONING`` is enabled, except that it will not
+automatically perform the reset once each provisioning state is complete. For
+more details about provisioning flows, see
+:doc:`RSS provisioning </platform/arm/rss/rss_provisioning>`.
 
 --------------
 

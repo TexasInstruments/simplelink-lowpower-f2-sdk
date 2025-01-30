@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -1326,41 +1326,47 @@ static void beaconNotifyIndCb(ApiMac_mlmeBeaconNotifyInd_t *pData)
                 /* Check for beacon order match */
                 if(checkBeaconOrder(pData->panDesc.superframeSpec) == true)
                 {
+                    /* Device can join any network , associate with
+                     * first coordinator from which beacon is received */
                     if(devInfoBlock.panID == JDLLC_INVALID_PAN)
                     {
-                        /* Device can join any network , associate with
-                         * first coordinator from which beacon is received */
                         devInfoBlock.panID = pData->panDesc.coordPanId;
                         panIdMatch = true;
+                        parentFound = true;
                     }
-                    /* Check the incoming PAN ID to see if it's a valid coordinator */
+                    /* Otherwise check the incoming PAN ID to see if it matches what we want */
                     else if (devInfoBlock.panID == pData->panDesc.coordPanId)
                     {
-                        panIdMatch = true;
                         numSyncLoss = 0;
+                        panIdMatch = true;
+                        parentFound = true;
                         ApiMac_mlmeSetReqBool(ApiMac_attribute_autoRequest, true);
                     }
-
-                    devInfoBlock.channel = pData->panDesc.logicalChannel;
-                    devInfoBlock.coordShortAddr = pData->panDesc
-                                    .coordAddress.addr.shortAddr;
-                    if(APIMAC_SFS_BEACON_ORDER( pData->panDesc.superframeSpec)
-                                    != JDLLC_BEACON_ORDER_NON_BEACON)
+                    
+                    /* Update devInfoBlock and call relevant functions if we found a parent */
+                    if(parentFound)
                     {
-                        devInfoBlock.beaconOrder = APIMAC_SFS_BEACON_ORDER(
-                                        pData->panDesc.superframeSpec);
-                        devInfoBlock.superframeOrder =
-                            APIMAC_SFS_SUPERFRAME_ORDER(
+                        /* Update devInfoBlock */
+                        devInfoBlock.channel = pData->panDesc.logicalChannel;
+                        devInfoBlock.coordShortAddr = pData->panDesc
+                                        .coordAddress.addr.shortAddr;
+                        if(APIMAC_SFS_BEACON_ORDER( pData->panDesc.superframeSpec)
+                                        != JDLLC_BEACON_ORDER_NON_BEACON)
+                        {
+                            devInfoBlock.beaconOrder = APIMAC_SFS_BEACON_ORDER(
                                             pData->panDesc.superframeSpec);
-                    }
+                            devInfoBlock.superframeOrder =
+                                APIMAC_SFS_SUPERFRAME_ORDER(
+                                                pData->panDesc.superframeSpec);
+                        }
 
-                    if(devInfoBlock.beaconOrder == JDLLC_BEACON_ORDER_NON_BEACON)
-                    {
-                        parentFound = true;
+                        if(devInfoBlock.beaconOrder == JDLLC_BEACON_ORDER_NON_BEACON)
+                        {
 #ifdef FREQ_2_4G
                             ApiMac_srcMatchEnable();
 #endif
-                        Ssf_stopScanBackoffClock();
+                            Ssf_stopScanBackoffClock();
+                        }
                     }
                 }
             }

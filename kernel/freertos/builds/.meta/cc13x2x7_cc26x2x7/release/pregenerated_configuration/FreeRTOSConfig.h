@@ -75,16 +75,13 @@
  * to 0xa5a5a5a5. The stack peak can then be displayed in Runtime Object View.
  */
 #define configENABLE_ISR_STACK_INIT 1
-/* Enable debugging features in the UI to use the queue registry or ROV features */
+/*
+ * Kernel Object Tracking disabled.  Enable Kernel Object Tracking in SysConfig
+ * (FreeRTOS.rovQueueEnabled = true) to use the queue registry and/or ROV
+ * features.
+ */
 #define configQUEUE_REGISTRY_SIZE 0
 
-#define configASSERT(x)           \
-    if ((x) == 0)                 \
-    {                             \
-        taskDISABLE_INTERRUPTS(); \
-        for (;;)                  \
-            ;                     \
-    }
 
 /* Floating point unit enabled or disabled */
 #define configENABLE_FPU 1
@@ -149,7 +146,7 @@
  */
 #if defined(__TI_COMPILER_VERSION__) || defined(__ti_version__) || defined(__IAR_SYSTEMS_ICC__)
 
-#define configNUM_THREAD_LOCAL_STORAGE_POINTERS 2
+#define configNUM_THREAD_LOCAL_STORAGE_POINTERS 1
 
 #if defined(__TI_COMPILER_VERSION__) || defined(__ti_version__)
 #define PTLS_TLS_INDEX 0 /* ti.posix.freertos.PTLS */
@@ -157,13 +154,9 @@
 #define MTX_TLS_INDEX 0 /* ti.posix.freertos.Mtx */
 #endif
 
-#define NDK_TLS_INDEX 1 /* Reserve an index for NDK TLS */
-
 #elif defined(__GNUC__)
 
-#define configNUM_THREAD_LOCAL_STORAGE_POINTERS 1
-
-#define NDK_TLS_INDEX 0 /* Reserve an index for NDK TLS */
+#define configNUM_THREAD_LOCAL_STORAGE_POINTERS 0
 
 /* note: system locks required by newlib are not implemented */
 #define configUSE_NEWLIB_REENTRANT 1
@@ -202,7 +195,7 @@
  * The lowest interrupt priority that can be used in a call to a "set priority"
  * function.
  */
-#define configLIBRARY_LOWEST_INTERRUPT_PRIORITY 0x07
+#define configLIBRARY_LOWEST_INTERRUPT_PRIORITY 7
 
 /*
  * The highest interrupt priority that can be used by any interrupt service
@@ -222,9 +215,9 @@
  * !!!! configMAX_SYSCALL_INTERRUPT_PRIORITY must not be set to zero !!!!
  * See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html.
  *
- * Priority 1 (shifted 5 since only the top 3 bits are implemented).
- * Priority 1 is the second highest priority.
+ * The priority is shifted since NVIC priority bits are placed MSB.
  * Priority 0 is the highest priority.
+ * Priority 1 is the second highest priority, etc.
  */
 #define configMAX_SYSCALL_INTERRUPT_PRIORITY (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY << (8 - configPRIO_BITS))
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,8 +56,8 @@
  *  @endcode
  *
  *  This module implements two functions that are required by the Log API:
- *   - printf(const Log_Module *handle, uint32_t header, uint32_t index, uint32_t numArgs, ...);
- *   - buf(const Log_Module *handle, uint32_t header, uint32_t index, uint8_t *data, size_t size);
+ *   - printf(const Log_Module *handle, uint32_t header, uint32_t headerPtr, uint32_t numArgs, ...);
+ *   - buf(const Log_Module *handle, uint32_t header, uint32_t headerPtr, uint8_t *data, size_t size);
  *
  *  Whenever a log-statement is invoked, that uses LogSinkITM as its sink, the functions above are ultimately invoked.
  *
@@ -70,7 +70,7 @@
  *
  *  @anchor ti_log_LogSinkITM_Channels
  *  # ITM Channels
- *  LogSinkITM uses certain channels for different purposes. Seperate channels are used for data transfer,
+ *  LogSinkITM uses certain channels for different purposes. Separate channels are used for data transfer,
  *  time synchronization, etc. For a complete overview, refer to LogSinkITM_StimulusPorts
  *
  *  @anchor ti_log_LogSinkITM_Timestamps
@@ -166,29 +166,93 @@ extern void LogSinkITM_init(void);
  */
 extern void LogSinkITM_finalize(void);
 
-/*
- *  ======== LogSinkITM_printf ========
+/*!
+ *  @cond NODOC
+ *  @brief Create a packet from a #Log_printf call and send it out over ITM.
+ *
+ *  Function to create a packet from a #Log_printf call and send it out over
+ *  ITM.
+ *
+ *  This is a singleton implementation. It assumes that there is only one
+ *  LogSinkITM instance in the application.
+ *  This allows the compiler in an LTO-enabled application to avoid generating
+ *  instructions that load the @c handle since it is not needed.
+ *
+ *  @note Applications must not call this function directly. This is a helper
+ *  function to implement #Log_printf
+ *
+ *  @param[in]  handle     Unused handle
+ *
+ *  @param[in]  header     Unused metadata pointer
+ *
+ *  @param[in]  headerPtr  Pointer to metadata pointer
+ *
+ *  @param[in]  numArgs    Number of arguments
+ *
+ *  @param[in]  ...        Variable number of arguments
+ *
+ *  @endcond
  */
-extern void ti_log_LogSinkITM_printf(const Log_Module *handle, uint32_t header, uint32_t index, uint32_t numArgs, ...);
+extern void LogSinkITM_printfSingleton(const Log_Module *handle,
+                                       uint32_t header,
+                                       uint32_t headerPtr,
+                                       uint32_t numArgs,
+                                       ...);
 
-/*
- *  ======== LogSinkITM_buf ========
+extern void LogSinkITM_printfSingleton0(const Log_Module *handle, uint32_t header, uint32_t headerPtr, ...);
+
+extern void LogSinkITM_printfSingleton1(const Log_Module *handle, uint32_t header, uint32_t headerPtr, ...);
+
+extern void LogSinkITM_printfSingleton2(const Log_Module *handle, uint32_t header, uint32_t headerPtr, ...);
+
+extern void LogSinkITM_printfSingleton3(const Log_Module *handle, uint32_t header, uint32_t headerPtr, ...);
+/*! @endcond NODOC */
+
+/*!
+ *  @cond NODOC
+ *  @brief Create a packet from a #Log_buf call and send it out over ITM.
+ *
+ *  Function to create a packet from a #Log_buf call and send it out over
+ *  ITM.
+ *
+ *  This is a singleton implementation. It assumes that there is only one
+ *  LogSinkITM instance in the application.
+ *  This allows the compiler in an LTO-enabled application to avoid generating
+ *  instructions that load the @c handle since it is not needed.
+ *
+ *  @note Applications must not call this function directly. This is a helper
+ *  function to implement #Log_buf
+ *
+ *  @param[in]  handle     Unused handle
+ *
+ *  @param[in]  header     Unused metadata pointer
+ *
+ *  @param[in]  headerPtr  Pointer to metadata pointer
+ *
+ *  @param[in]  data       Pointer to data to send out
+ *
+ *  @param[in]  size       Size of @c data in bytes
+ *
+ *  @endcond
  */
-extern void ti_log_LogSinkITM_buf(const Log_Module *handle,
-                                  uint32_t header,
-                                  uint32_t index,
-                                  uint8_t *data,
-                                  size_t size);
+extern void LogSinkITM_bufSingleton(const Log_Module *handle,
+                                    uint32_t header,
+                                    uint32_t headerPtr,
+                                    uint8_t *data,
+                                    size_t size);
+/*! @endcond NODOC */
 
 /*
  * Helpers to define/use instance. ITM is a singleton so no arguments are taken.
  */
 #define Log_SINK_ITM_DEFINE() LogSinkITM_Instance LogSinkITM_singletonConfig = {.serial = 0}
 #define Log_SINK_ITM_USE()    extern LogSinkITM_Instance LogSinkITM_singletonConfig
-#define Log_MODULE_INIT_SINK_ITM(name, _levels)                                                                      \
-    {                                                                                                                \
-        .sinkConfig = &LogSinkITM_singletonConfig, .printf = ti_log_LogSinkITM_printf, .buf = ti_log_LogSinkITM_buf, \
-        .levels = _levels,                                                                                           \
+#define Log_MODULE_INIT_SINK_ITM(name, _levels, printfDelegate, bufDelegate, _dynamicLevelsPtr)   \
+    {                                                                                             \
+        .sinkConfig = &LogSinkITM_singletonConfig, .printf = LogSinkITM_printfSingleton,          \
+        .printf0 = LogSinkITM_printfSingleton0, .printf1 = LogSinkITM_printfSingleton1,           \
+        .printf2 = LogSinkITM_printfSingleton2, .printf3 = LogSinkITM_printfSingleton3,           \
+        .buf = LogSinkITM_bufSingleton, .levels = _levels, .dynamicLevelsPtr = _dynamicLevelsPtr, \
     }
 
 _Log_DEFINE_LOG_VERSION(LogSinkITM, Log_TI_LOG_SINK_ITM_VERSION);

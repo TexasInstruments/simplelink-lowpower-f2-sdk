@@ -280,7 +280,7 @@ function(fetch_remote_library)
     endif()
 
     if (ARG_LIB_FORCE_PATCH)
-        set(FORCE_PATCH ${${ARG_LIB_FORCE_PATCH}})
+        set(FORCE_PATCH ${ARG_LIB_FORCE_PATCH})
     endif()
 
     if (ARG_LIB_PATCH_DIR AND (SOURCE_PATH_IS_DOWNLOAD OR FORCE_PATCH))

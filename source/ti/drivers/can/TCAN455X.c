@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Texas Instruments Incorporated
+ * Copyright (c) 2023-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -91,19 +91,21 @@ extern const TCAN455X_Config TCAN455X_config;
  *  - Each extended filter element occupies 8-bytes.
  *  - Each Rx/Tx buffer occupies 72-bytes when CAN FD is enabled or 16-bytes
  *    for classic CAN.
+ *  - Each Tx Event occupies 8-bytes.
  */
-const CAN_MsgRAMConfig TCAN455X_defaultMsgRAMConfig = {
+const CAN_MsgRamConfig TCAN455X_defaultMsgRamConfig = {
     .stdFilterNum       = 0U,
     .extFilterNum       = 0U,
     .stdMsgIDFilterList = NULL,
     .extMsgIDFilterList = NULL,
 
-    .rxFIFONum[0U] = 18U,
-    .rxFIFONum[1U] = 0U,
-    .rxBufNum      = 0U,
-    .txBufNum      = 0U,
-    .txFIFOQNum    = 10U,
-    .txFIFOQMode   = 1U, /* Tx Queue mode */
+    .rxFifoNum[0U]  = 18U,
+    .rxFifoNum[1U]  = 0U,
+    .rxBufNum       = 0U,
+    .txBufNum       = 0U,
+    .txFifoQNum     = 10U,
+    .txFifoQMode    = 1U, /* Tx Queue mode */
+    .txEventFifoNum = 4U,
 };
 
 static SPI_Handle TCAN455X_spiHandle;
@@ -121,20 +123,22 @@ static uint32_t TCAN455X_readReg(uint16_t offset);
 static inline void TCAN455X_disableInterrupt(void);
 static inline void TCAN455X_enableInterrupt(void);
 static bool TCAN455X_isRxStructRingBufFull(CAN_Handle handle);
-static void TCAN455X_handleRxFIFO(CAN_Handle handle, uint32_t fifoNum);
+static void TCAN455X_handleRxFifo(CAN_Handle handle, uint32_t fifoNum);
 static void TCAN455X_handleRxBuf(CAN_Handle handle);
 static void TCAN455X_irqHandler(uint_least8_t index);
 static inline int_fast16_t TCAN455X_initSPI(void);
-static void TCAN455X_clearMsgRAM(void);
+static void TCAN455X_clearMsgRam(void);
 static int_fast16_t TCAN455X_setBitRate(const CAN_Config *config, uint32_t canInputClkFreq);
 static void TCAN455X_setInterruptEnable(uint32_t ie);
 static void TCAN455X_clearInterrupt(uint32_t mask);
 static void TCAN455X_modifyModeReg(uint32_t mask, uint32_t val);
 static void TCAN455X_reset(void);
 static int_fast16_t TCAN455X_init(const CAN_Config *config,
-                                  const CAN_MsgRAMConfig *msgRAMConfig,
-                                  const CAN_BitRateTimingRaw *bitTiming);
+                                  const CAN_MsgRamConfig *msgRamConfig,
+                                  const CAN_BitRateTimingRaw *bitTiming,
+                                  uint32_t tsPrescaler);
 static void TCAN455X_enableLoopback(bool externalModeEnable);
+static inline int_fast16_t TCAN455X_setExtTsPrescaler(uint32_t prescalar);
 static void TCAN455X_taskFxn(void *arg);
 
 /* Definitions for extern functions defined in MCAN.h */
@@ -163,9 +167,9 @@ void MCAN_writeReg(uint32_t offset, uint32_t value)
 }
 
 /*
- *  ======== MCAN_writeMsgRAM ========
+ *  ======== MCAN_writeMsgRam ========
  */
-void MCAN_writeMsgRAM(uint32_t offset, const uint8_t *src, size_t numBytes)
+void MCAN_writeMsgRam(uint32_t offset, const uint8_t *src, size_t numBytes)
 {
     size_t bytesRemaining;
     size_t bytesWritten = 0U;
@@ -229,9 +233,9 @@ uint32_t MCAN_readReg(uint32_t offset)
 }
 
 /*
- *  ======== MCAN_readMsgRAM ========
+ *  ======== MCAN_readMsgRam ========
  */
-void MCAN_readMsgRAM(uint8_t *dst, uint32_t offset, size_t numBytes)
+void MCAN_readMsgRam(uint8_t *dst, uint32_t offset, size_t numBytes)
 {
     size_t numWords = numBytes >> 2U;
     SPI_Transaction xfer;
@@ -448,14 +452,14 @@ static bool TCAN455X_isRxStructRingBufFull(CAN_Handle handle)
 }
 
 /*
- *  ======== TCAN455X_handleRxFIFO ========
+ *  ======== TCAN455X_handleRxFifo ========
  */
-static void TCAN455X_handleRxFIFO(CAN_Handle handle, uint32_t fifoNum)
+static void TCAN455X_handleRxFifo(CAN_Handle handle, uint32_t fifoNum)
 {
     CAN_Object *object           = (CAN_Object *)handle->object;
-    MCAN_RxFIFOStatus fifoStatus = {0};
+    MCAN_RxFifoStatus fifoStatus = {0};
 
-    MCAN_getRxFIFOStatus(fifoNum, &fifoStatus);
+    MCAN_getRxFifoStatus(fifoNum, &fifoStatus);
 
     if ((fifoStatus.fillLvl > 0U) && !TCAN455X_isRxStructRingBufFull(handle))
     {
@@ -475,7 +479,7 @@ static void TCAN455X_handleRxFIFO(CAN_Handle handle, uint32_t fifoNum)
             fifoStatus.getIdx++;
 
             /* Check for rollover */
-            if (fifoStatus.getIdx >= object->rxFIFONum[fifoNum])
+            if (fifoStatus.getIdx >= object->rxFifoNum[fifoNum])
             {
                 fifoStatus.getIdx = 0U;
             }
@@ -483,7 +487,7 @@ static void TCAN455X_handleRxFIFO(CAN_Handle handle, uint32_t fifoNum)
     }
 
     /* Return value can be ignored since the inputs are known to be valid */
-    (void)MCAN_setRxFIFOAck(fifoNum, fifoStatus.getIdx);
+    (void)MCAN_setRxFifoAck(fifoNum, fifoStatus.getIdx);
 }
 
 /*
@@ -600,12 +604,12 @@ static inline int_fast16_t TCAN455X_initSPI(void)
 }
 
 /*
- *  ======== TCAN455X_clearMsgRAM ========
+ *  ======== TCAN455X_clearMsgRam ========
  * To avoid ECC errors right after initialization, the MRAM should be zeroed out
  * during the initialization, power up, power on reset and wake events, a
  * process thus ensuring ECC is properly calculated.
  */
-static void TCAN455X_clearMsgRAM(void)
+static void TCAN455X_clearMsgRam(void)
 {
     uint16_t endAddr;
     uint32_t addr;
@@ -616,7 +620,7 @@ static void TCAN455X_clearMsgRAM(void)
 
     while (addr < endAddr)
     {
-        MCAN_writeMsgRAM(addr, &buf[0], sizeof(buf));
+        MCAN_writeMsgRam(addr, &buf[0], sizeof(buf));
         addr += sizeof(buf);
     }
 }
@@ -633,39 +637,47 @@ static int_fast16_t TCAN455X_setBitRate(const CAN_Config *config, uint32_t canIn
     /* Only 40MHz input clock is supported for maximum bit rate */
     if (canInputClkFreq == 40U)
     {
-        /* NOTE: Add 1 to each programmed bit time to get functional value and +1 for for prop segment */
+        /* NOTE: Add 1 to each programmed bit time to get functional value and +1 for for sync segment.
+         *    Bit Time = TSEG1 + TSEG2 + 1
+         *    Bit Rate = (MCAN clock / Prescaler) / (Bit Time)
+         *    Sample Point % = ((TSEG1 + 1) / (Bit Time)) * 100
+         * - All TSEG1 and TSEG2 values above refer to the functional values
+         *
+         * Sampling Point % was chosen to be < 80 according to CiA 601 CAN FD Node
+         * and System Design, Part 3 System Design Recommendation v1.0.0.
+         */
         switch (hwAttrs->nominalBitRate)
         {
             case 125000U:
-                /* 125kbps nominal with 40MHz clk and 87.5% sample point: ((40E6 / 2) / (140 + 19 + 1) = 125E3) */
-                bitTiming.nomRatePrescalar  = 1U;
-                bitTiming.nomTimeSeg1       = 139U;
-                bitTiming.nomTimeSeg2       = 18U;
-                bitTiming.nomSynchJumpWidth = 18U; /* typically set equal to seg 2 */
+                /* 125kbps nominal with 40MHz clk and 75% sample point: ((40E6 / 2) / (119 + 40 + 1) = 125E3) */
+                bitTiming.nomRatePrescaler  = 1U;
+                bitTiming.nomTimeSeg1       = 118U;
+                bitTiming.nomTimeSeg2       = 39U;
+                bitTiming.nomSynchJumpWidth = 39U; /* typically set equal to seg 2 */
                 break;
 
             case 250000U:
-                /* 250kbps nominal with 40MHz clk and 87.5% sample point: ((40E6 / 1) / (140 + 19 + 1) = 250E3) */
-                bitTiming.nomRatePrescalar  = 0U;
-                bitTiming.nomTimeSeg1       = 139U;
-                bitTiming.nomTimeSeg2       = 18U;
-                bitTiming.nomSynchJumpWidth = 18U; /* typically set equal to seg 2 */
+                /* 250kbps nominal with 40MHz clk and 75% sample point: ((40E6 / 1) / (119 + 40 + 1) = 250E3) */
+                bitTiming.nomRatePrescaler  = 0U;
+                bitTiming.nomTimeSeg1       = 118U;
+                bitTiming.nomTimeSeg2       = 39U;
+                bitTiming.nomSynchJumpWidth = 39U; /* typically set equal to seg 2 */
                 break;
 
             case 500000U:
-                /* 500kbps nominal with 40MHz clk and 87.5% sample point ((40E6 / 1) / (70 + 9 + 1) = 500E3) */
-                bitTiming.nomRatePrescalar  = 0U;
-                bitTiming.nomTimeSeg1       = 69U;
-                bitTiming.nomTimeSeg2       = 8U;
-                bitTiming.nomSynchJumpWidth = 8U; /* typically set equal to seg 2 */
+                /* 500kbps nominal with 40MHz clk and 75% sample point ((40E6 / 1) / (59 + 20 + 1) = 500E3) */
+                bitTiming.nomRatePrescaler  = 0U;
+                bitTiming.nomTimeSeg1       = 58U;
+                bitTiming.nomTimeSeg2       = 19U;
+                bitTiming.nomSynchJumpWidth = 19U; /* typically set equal to seg 2 */
                 break;
 
             case 1000000U:
-                /* 1Mbps nominal with 40MHz clk and 85% sample point ((40E6 / 1) / (33 + 6 + 1) = 1E6) */
-                bitTiming.nomRatePrescalar  = 0U;
-                bitTiming.nomTimeSeg1       = 32U;
-                bitTiming.nomTimeSeg2       = 5U;
-                bitTiming.nomSynchJumpWidth = 5U; /* typically set equal to seg 2 */
+                /* 1Mbps nominal with 40MHz clk and 75% sample point ((40E6 / 1) / (29 + 10 + 1) = 1E6) */
+                bitTiming.nomRatePrescaler  = 0U;
+                bitTiming.nomTimeSeg1       = 28U;
+                bitTiming.nomTimeSeg2       = 9U;
+                bitTiming.nomSynchJumpWidth = 9U; /* typically set equal to seg 2 */
                 break;
 
             default:
@@ -678,40 +690,40 @@ static int_fast16_t TCAN455X_setBitRate(const CAN_Config *config, uint32_t canIn
             switch (hwAttrs->dataBitRate)
             {
                 case 125000U:
-                    /* 125kbps with 40MHz clk and 87.5% sample point: ((40E6 / 10) / (27 + 4 + 1) = 125E3) */
-                    bitTiming.dataRatePrescalar  = 9U;
-                    bitTiming.dataTimeSeg1       = 26U;
-                    bitTiming.dataTimeSeg2       = 3U;
-                    bitTiming.dataSynchJumpWidth = 3U; /* typically set equal to seg 2 */
+                    /* 125kbps with 40MHz clk and 75% sample point: ((40E6 / 10) / (23 + 8 + 1) = 125E3) */
+                    bitTiming.dataRatePrescaler  = 9U;
+                    bitTiming.dataTimeSeg1       = 22U;
+                    bitTiming.dataTimeSeg2       = 7U;
+                    bitTiming.dataSynchJumpWidth = 7U; /* typically set equal to seg 2 */
                     break;
 
                 case 250000U:
-                    /* 250kbps with 40MHz clk and 85% sample point: ((40E6 / 8) / (16 + 3 + 1) = 250E3) */
-                    bitTiming.dataRatePrescalar  = 7U;
-                    bitTiming.dataTimeSeg1       = 15U;
-                    bitTiming.dataTimeSeg2       = 2U;
-                    bitTiming.dataSynchJumpWidth = 2U; /* typically set equal to seg 2 */
+                    /* 250kbps with 40MHz clk and 75% sample point: ((40E6 / 8) / (14 + 5 + 1) = 250E3) */
+                    bitTiming.dataRatePrescaler  = 7U;
+                    bitTiming.dataTimeSeg1       = 13U;
+                    bitTiming.dataTimeSeg2       = 4U;
+                    bitTiming.dataSynchJumpWidth = 4U; /* typically set equal to seg 2 */
                     break;
 
                 case 500000U:
-                    /* 500kbps with 40MHz clk and 85% sample point ((40E6 / 4) / (16 + 3 + 1) = 500E3) */
-                    bitTiming.dataRatePrescalar  = 3U;
-                    bitTiming.dataTimeSeg1       = 15U;
-                    bitTiming.dataTimeSeg2       = 2U;
-                    bitTiming.dataSynchJumpWidth = 2U; /* typically set equal to seg 2 */
+                    /* 500kbps with 40MHz clk and 75% sample point ((40E6 / 2) / (29 + 10 + 1) = 500E3) */
+                    bitTiming.dataRatePrescaler  = 1U;
+                    bitTiming.dataTimeSeg1       = 28U;
+                    bitTiming.dataTimeSeg2       = 9U;
+                    bitTiming.dataSynchJumpWidth = 9U; /* typically set equal to seg 2 */
                     break;
 
                 case 1000000U:
-                    /* 1Mbps with 40MHz clk and 80% sample point ((40E6 / 2) / (15 + 4 + 1) = 1E6) */
-                    bitTiming.dataRatePrescalar  = 1U;
-                    bitTiming.dataTimeSeg1       = 14U;
-                    bitTiming.dataTimeSeg2       = 3U;
-                    bitTiming.dataSynchJumpWidth = 3U; /* typically set equal to seg 2 */
+                    /* 1Mbps with 40MHz clk and 75% sample point ((40E6 / 1) / (29 + 10 + 1) = 1E6) */
+                    bitTiming.dataRatePrescaler  = 0U;
+                    bitTiming.dataTimeSeg1       = 28U;
+                    bitTiming.dataTimeSeg2       = 9U;
+                    bitTiming.dataSynchJumpWidth = 9U; /* typically set equal to seg 2 */
                     break;
 
                 case 2000000U:
                     /* 2Mbps with 40MHz clk and 75% sample point ((40E6 / 1) / (14 + 5 + 1) = 2E6) */
-                    bitTiming.dataRatePrescalar  = 0U;
+                    bitTiming.dataRatePrescaler  = 0U;
                     bitTiming.dataTimeSeg1       = 13U;
                     bitTiming.dataTimeSeg2       = 4U;
                     bitTiming.dataSynchJumpWidth = 4U; /* typically set equal to seg 2 */
@@ -719,7 +731,7 @@ static int_fast16_t TCAN455X_setBitRate(const CAN_Config *config, uint32_t canIn
 
                 case 4000000U:
                     /* 4Mbps with 40MHz clk and 70% sample point ((40E6 / 1) / (6 + 3 + 1) = 4E6) */
-                    bitTiming.dataRatePrescalar  = 0U;
+                    bitTiming.dataRatePrescaler  = 0U;
                     bitTiming.dataTimeSeg1       = 5U;
                     bitTiming.dataTimeSeg2       = 2U;
                     bitTiming.dataSynchJumpWidth = 2U; /* typically set equal to seg 2 */
@@ -727,7 +739,7 @@ static int_fast16_t TCAN455X_setBitRate(const CAN_Config *config, uint32_t canIn
 
                 case 5000000U:
                     /* 5Mbps with 40MHz clk and 62.5% sample point ((40E6 / 1) / (4 + 3 + 1) = 5E6) */
-                    bitTiming.dataRatePrescalar  = 0U;
+                    bitTiming.dataRatePrescaler  = 0U;
                     bitTiming.dataTimeSeg1       = 3U;
                     bitTiming.dataTimeSeg2       = 2U;
                     bitTiming.dataSynchJumpWidth = 2U; /* typically set equal to seg 2 */
@@ -804,6 +816,31 @@ static void TCAN455X_modifyModeReg(uint32_t mask, uint32_t val)
 }
 
 /*
+ *  ======== TCAN455X_setExtTsPrescaler ========
+ */
+static inline int_fast16_t TCAN455X_setExtTsPrescaler(uint32_t prescaler)
+{
+    /* Copy the parameter - MISRA 17.8 */
+    uint32_t myPrescaler = prescaler;
+
+    if (myPrescaler == 1U)
+    {
+        myPrescaler = 0U;
+    }
+
+    /* Return error if prescaler value is not a multiple of 8 */
+    if ((myPrescaler & 0x7U) != 0U)
+    {
+        return CAN_STATUS_ERROR;
+    }
+
+    /* Divide prescaler value by 8 when writing the register */
+    TCAN455X_writeReg(TCAN455X_TS_PRESCALER, myPrescaler >> 3U);
+
+    return CAN_STATUS_SUCCESS;
+}
+
+/*
  *  ======== TCAN455X_setMode ========
  */
 void TCAN455X_setMode(uint32_t mode)
@@ -864,8 +901,9 @@ static void TCAN455X_reset(void)
  *  ======== TCAN455X_init ========
  */
 static int_fast16_t TCAN455X_init(const CAN_Config *config,
-                                  const CAN_MsgRAMConfig *msgRAMConfig,
-                                  const CAN_BitRateTimingRaw *bitTiming)
+                                  const CAN_MsgRamConfig *msgRamConfig,
+                                  const CAN_BitRateTimingRaw *bitTiming,
+                                  uint32_t tsPrescaler)
 {
     const CAN_HWAttrs *hwAttrs     = config->hwAttrs;
     CAN_Object *object             = config->object;
@@ -873,7 +911,7 @@ static int_fast16_t TCAN455X_init(const CAN_Config *config,
     MCAN_ConfigParams configParams = {0U};
     MCAN_InitParams initParams     = {0U};
     MCAN_RxNewDataStatus newDataStatus;
-    const CAN_MsgRAMConfig *tempMsgRAMConfig;
+    const CAN_MsgRamConfig *tempMsgRamConfig;
 
     TCAN455X_reset();
 
@@ -902,17 +940,6 @@ static int_fast16_t TCAN455X_init(const CAN_Config *config,
     initParams.fdMode    = hwAttrs->enableCANFD ? 1U : 0U;
     initParams.brsEnable = hwAttrs->enableBRS ? 1U : 0U;
 
-    if ((hwAttrs->enableBRS) && (bitTiming != NULL))
-    {
-        /* Check for Transmitter Delay Compensation settings */
-        if ((bitTiming->dataTiming->tdcOffset != 0U) || (bitTiming->dataTiming->tdcFilterWinLen != 0U))
-        {
-            initParams.tdcEnable      = 1U;
-            initParams.tdcConfig.tdco = bitTiming->dataTiming->tdcOffset;
-            initParams.tdcConfig.tdcf = bitTiming->dataTiming->tdcFilterWinLen;
-        }
-    }
-
     if (MCAN_init(&initParams) != MCAN_STATUS_SUCCESS)
     {
         status = CAN_STATUS_ERROR;
@@ -920,11 +947,17 @@ static int_fast16_t TCAN455X_init(const CAN_Config *config,
 
     if (status == CAN_STATUS_SUCCESS)
     {
+        /* TCAN455X uses a prescaler off of the Host Clock frequency
+         * (crystal/clkin) that allows for a divided down clock value to be used
+         * as the timestamp.
+         */
+        status = TCAN455X_setExtTsPrescaler(tsPrescaler);
+    }
+
+    if (status == CAN_STATUS_SUCCESS)
+    {
         /* CAN FD requires using "external" timestamp value. "External" means
-         * external to MCAN IP. TCAN455X uses a standard divider off of the Host
-         * Clock frequency (crystal/clkin) that allows for a divided down clock
-         * value to be used as the timestamp. By default, a clock divider of 16
-         * is used. Timestamp Prescalar device register is located at 0x0804.
+         * external to MCAN IP.
          */
         configParams.tsSelect = MCAN_TSCC_COUNTER_EXTERNAL;
 
@@ -956,7 +989,7 @@ static int_fast16_t TCAN455X_init(const CAN_Config *config,
         /* Always enable transmit complete IRQ if there is a Tx FIFO/Queue
          * and the Tx ring buffer size is non-zero.
          */
-        if ((object->txFIFOQNum != 0U) && (hwAttrs->txRingBufSize != 0U))
+        if ((object->txFifoQNum != 0U) && (hwAttrs->txRingBufSize != 0U))
         {
             object->intMask |= (uint32_t)MCAN_INT_SRC_TRANS_COMPLETE;
         }
@@ -984,27 +1017,28 @@ static int_fast16_t TCAN455X_init(const CAN_Config *config,
     if (status == CAN_STATUS_SUCCESS)
     {
         /* Clear message RAM to avoid ECC errors */
-        TCAN455X_clearMsgRAM();
+        TCAN455X_clearMsgRam();
 
-        if (msgRAMConfig == NULL)
+        if (msgRamConfig == NULL)
         {
             /* If msg RAM config is NULL use default */
-            tempMsgRAMConfig = &TCAN455X_defaultMsgRAMConfig;
+            tempMsgRamConfig = &TCAN455X_defaultMsgRamConfig;
         }
         else
         {
-            tempMsgRAMConfig = msgRAMConfig;
+            tempMsgRamConfig = msgRamConfig;
         }
 
         /* Copy config attributes needed for run-time */
-        object->txBufNum     = tempMsgRAMConfig->txBufNum;
-        object->txFIFOQNum   = tempMsgRAMConfig->txFIFOQNum;
-        object->rxBufNum     = tempMsgRAMConfig->rxBufNum;
-        object->rxFIFONum[0] = tempMsgRAMConfig->rxFIFONum[0];
-        object->rxFIFONum[1] = tempMsgRAMConfig->rxFIFONum[1];
+        object->txBufNum       = tempMsgRamConfig->txBufNum;
+        object->txFifoQNum     = tempMsgRamConfig->txFifoQNum;
+        object->txEventFifoNum = tempMsgRamConfig->txEventFifoNum;
+        object->rxBufNum       = tempMsgRamConfig->rxBufNum;
+        object->rxFifoNum[0]   = tempMsgRamConfig->rxFifoNum[0];
+        object->rxFifoNum[1]   = tempMsgRamConfig->rxFifoNum[1];
 
         /* Setup message RAM sections and filters */
-        status = CANMCAN_configMsgRAM(tempMsgRAMConfig, TCAN455X_MRAM_SIZE, hwAttrs->enableCANFD);
+        status = CANMCAN_configMsgRam(tempMsgRamConfig, TCAN455X_MRAM_SIZE, hwAttrs->enableCANFD);
     }
 
     if (status == CAN_STATUS_SUCCESS)
@@ -1027,7 +1061,8 @@ static void TCAN455X_taskFxn(void *arg)
     CAN_Object *object = (CAN_Object *)handle->object;
     int32_t rxCnt;
     MCAN_ProtocolStatus protStatus;
-    MCAN_TxFIFOQStatus fifoQStatus;
+    MCAN_TxFifoQStatus fifoQStatus;
+    MCAN_TxEventFifoStatus txEventFifoStatus;
     uint32_t event;
     uint32_t intStatus;
     uint32_t txOccurred = 0U;
@@ -1090,12 +1125,12 @@ static void TCAN455X_taskFxn(void *arg)
 
             if ((intStatus & MCAN_INT_SRC_RX_FIFO0_NEW_MSG) != 0U)
             {
-                TCAN455X_handleRxFIFO(handle, MCAN_RX_FIFO_NUM_0);
+                TCAN455X_handleRxFifo(handle, MCAN_RX_FIFO_NUM_0);
             }
 
             if ((intStatus & MCAN_INT_SRC_RX_FIFO1_NEW_MSG) != 0U)
             {
-                TCAN455X_handleRxFIFO(handle, MCAN_RX_FIFO_NUM_1);
+                TCAN455X_handleRxFifo(handle, MCAN_RX_FIFO_NUM_1);
             }
 
             if ((intStatus & MCAN_INT_SRC_DEDICATED_RX_BUFF_MSG) != 0U)
@@ -1113,9 +1148,9 @@ static void TCAN455X_taskFxn(void *arg)
                     txOccurred = MCAN_getTxBufTransmissionStatus();
                 }
 
-                if ((object->txFIFOQNum != 0U) && (StructRingBuf_getCount(&object->txStructRingBuf) > 0))
+                if ((object->txFifoQNum != 0U) && (StructRingBuf_getCount(&object->txStructRingBuf) > 0))
                 {
-                    MCAN_getTxFIFOQStatus(&fifoQStatus);
+                    MCAN_getTxFifoQStatus(&fifoQStatus);
 
                     if (fifoQStatus.fifoFull == 0U)
                     {
@@ -1135,6 +1170,26 @@ static void TCAN455X_taskFxn(void *arg)
                 {
                     /* Call the event callback function provided by the application */
                     object->eventCbk(handle, CAN_EVENT_TX_FINISHED, txOccurred, object->userArg);
+                }
+            }
+
+            if ((intStatus & MCAN_INT_SRC_TX_EVT_FIFO_ELEM_LOST) != 0U)
+            {
+                if ((object->eventMask & CAN_EVENT_TX_EVENT_LOST) != 0U)
+                {
+                    /* Call the event callback function provided by the application */
+                    object->eventCbk(handle, CAN_EVENT_TX_EVENT_LOST, 0U, object->userArg);
+                }
+            }
+
+            if ((intStatus & MCAN_INT_SRC_TX_EVT_FIFO_NEW_ENTRY) != 0U)
+            {
+                MCAN_getTxEventFifoStatus(&txEventFifoStatus);
+
+                if ((object->eventMask & CAN_EVENT_TX_EVENT_AVAIL) != 0U)
+                {
+                    /* Call the event callback function provided by the application */
+                    object->eventCbk(handle, CAN_EVENT_TX_EVENT_AVAIL, txEventFifoStatus.fillLvl, object->userArg);
                 }
             }
 
@@ -1194,7 +1249,7 @@ int_fast16_t CAN_initDevice(uint_least8_t index, CAN_Params *params)
          */
         TCAN455X_disableInterrupt();
 
-        status = TCAN455X_init(config, params->msgRAMConfig, params->bitTiming);
+        status = TCAN455X_init(config, params->msgRamConfig, params->bitTiming, params->tsPrescaler);
     }
 
     if (status == CAN_STATUS_SUCCESS)
@@ -1324,4 +1379,16 @@ int_fast16_t CAN_disableLoopback(CAN_Handle handle)
     TCAN455X_setMode(TCAN455X_MODE_OPMODE_NORMAL);
 
     return CAN_STATUS_SUCCESS;
+}
+
+/*
+ *  ======== CAN_getBitTiming ========
+ */
+void CAN_getBitTiming(CAN_Handle handle, CAN_BitTimingParams *bitTiming, uint32_t *clkFreq)
+{
+    (void)handle; /* unused arg */
+
+    MCAN_getBitTime(bitTiming);
+
+    *clkFreq = TCAN455X_config.clkFreqMHz * 1000U;
 }

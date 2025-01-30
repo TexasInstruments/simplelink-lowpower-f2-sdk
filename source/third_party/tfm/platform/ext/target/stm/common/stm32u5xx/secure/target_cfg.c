@@ -1,5 +1,8 @@
 /*
  * Copyright (c) 2018-2022 Arm Limited
+ * Copyright (c) 2022 Cypress Semiconductor Corporation (an Infineon
+ * company) or an affiliate of Cypress Semiconductor Corporation. All rights
+ * reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +45,7 @@ REGION_DECLARE(Load$$LR$$, LR_NS_PARTITION, $$Base);
 REGION_DECLARE(Load$$LR$$, LR_VENEER, $$Base);
 REGION_DECLARE(Load$$LR$$, LR_VENEER, $$Limit);
 REGION_DECLARE(Load$$LR$$, LR_SECONDARY_PARTITION, $$Base);
-REGION_DECLARE(Image$$, TFM_UNPRIV_CODE, $$RO$$Base);
+REGION_DECLARE(Image$$, TFM_UNPRIV_CODE_START, $$RO$$Base);
 REGION_DECLARE(Image$$, TFM_APP_RW_STACK_END, $$Base);
 
 #define NON_SECURE_BASE (uint32_t) &REGION_NAME(Load$$LR$$, LR_NS_PARTITION, $$Base)
@@ -512,7 +515,7 @@ void gtzc_init_cfg(void)
       GTZC_MPCBB3_S->CFGLOCKR1=MPCBB_LOCK(SRAM3_SIZE);
       GTZC_MPCBB4_S->CFGLOCKR1=MPCBB_LOCK(SRAM4_SIZE);
       /* privileged secure internal flash */
-      gtzc_internal_flash_priv(0x0, (uint32_t)(&REGION_NAME(Image$$, TFM_UNPRIV_CODE, $$RO$$Base)) - FLASH_BASE_S - 1);
+      gtzc_internal_flash_priv(0x0, (uint32_t)(&REGION_NAME(Image$$, TFM_UNPRIV_CODE_START, $$RO$$Base)) - FLASH_BASE_S - 1);
 
       /*  use sticky bit to lock all SRAM config  */
 
@@ -608,7 +611,7 @@ void gtzc_init_cfg(void)
       if (GTZC_MPCBB2_S->CFGLOCKR1 != MPCBB_LOCK(SRAM2_SIZE)) Error_Handler();
       if (GTZC_MPCBB3_S->CFGLOCKR1 != MPCBB_LOCK(SRAM3_SIZE)) Error_Handler();
       if (GTZC_MPCBB4_S->CFGLOCKR1 != MPCBB_LOCK(SRAM4_SIZE)) Error_Handler();
-      gtzc_internal_flash_priv(0x0, (uint32_t)(&REGION_NAME(Image$$, TFM_UNPRIV_CODE, $$RO$$Base)) - FLASH_BASE_S - 1);
+      gtzc_internal_flash_priv(0x0, (uint32_t)(&REGION_NAME(Image$$, TFM_UNPRIV_CODE_START, $$RO$$Base)) - FLASH_BASE_S - 1);
       HAL_GTZC_TZSC_GetConfigPeriphAttributes(GTZC_PERIPH_HASH, &gtzc_periph_att);
       if (gtzc_periph_att != (GTZC_TZSC_PERIPH_SEC | GTZC_TZSC_PERIPH_PRIV)) {
           Error_Handler();

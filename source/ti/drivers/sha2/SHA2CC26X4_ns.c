@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -182,10 +182,9 @@ SHA2_Handle SHA2_open(uint_least8_t index, const SHA2_Params *params)
         sha2Object_ns[index].semaphoreTimeout = params->returnBehavior == SHA2_RETURN_BEHAVIOR_BLOCKING
                                                     ? params->timeout
                                                     : SemaphoreP_NO_WAIT;
+        /* Set power dependency */
+        (void)Power_setDependency(PowerCC26XX_PERIPH_CRYPTO);
     }
-
-    /* Set power dependency */
-    (void)Power_setDependency(PowerCC26XX_PERIPH_CRYPTO);
 
     return handle;
 }
@@ -256,10 +255,10 @@ SHA2_Handle SHA2_construct(SHA2_Config *config, const SHA2_Params *params)
         sha2Object_ns[index].semaphoreTimeout = params->returnBehavior == SHA2_RETURN_BEHAVIOR_BLOCKING
                                                     ? params->timeout
                                                     : SemaphoreP_NO_WAIT;
-    }
 
-    /* Set power dependency */
-    (void)Power_setDependency(PowerCC26XX_PERIPH_CRYPTO);
+        /* Set power dependency */
+        (void)Power_setDependency(PowerCC26XX_PERIPH_CRYPTO);
+    }
 
     return handle;
 }
@@ -468,7 +467,7 @@ int_fast16_t SHA2_hashData(SHA2_Handle handle, const void *data, size_t length, 
 /*
  *  ======== SHA2_setupHmac ========
  */
-int_fast16_t SHA2_setupHmac(SHA2_Handle handle, CryptoKey *key)
+int_fast16_t SHA2_setupHmac(SHA2_Handle handle, const CryptoKey *key)
 {
     SHA2_s_SetupHmacMsg setupHmacMsg;
     int_fast16_t result = SHA2_STATUS_ERROR;
@@ -580,7 +579,7 @@ int_fast16_t SHA2_finalizeHmac(SHA2_Handle handle, void *hmac)
 /*
  *  ======== SHA2_hmac ========
  */
-int_fast16_t SHA2_hmac(SHA2_Handle handle, CryptoKey *key, const void *data, size_t size, void *hmac)
+int_fast16_t SHA2_hmac(SHA2_Handle handle, const CryptoKey *key, const void *data, size_t size, void *hmac)
 {
     SHA2_s_HmacMsg hmacMsg;
     int_fast16_t result = SHA2_STATUS_ERROR;

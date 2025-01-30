@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -229,10 +229,10 @@ ECDH_Handle ECDH_open(uint_least8_t index, const ECDH_Params *params)
         ecdhObject_ns[index].semaphoreTimeout = (params->returnBehavior == ECDH_RETURN_BEHAVIOR_BLOCKING)
                                                     ? params->timeout
                                                     : SemaphoreP_NO_WAIT;
-    }
 
-    /* Set power dependency - i.e. power up and enable clock for PKA */
-    (void)Power_setDependency(PowerCC26X2_PERIPH_PKA);
+        /* Set power dependency - i.e. power up and enable clock for PKA */
+        (void)Power_setDependency(PowerCC26X2_PERIPH_PKA);
+    }
 
     return handle;
 }
@@ -304,10 +304,10 @@ ECDH_Handle ECDH_construct(ECDH_Config *config, const ECDH_Params *params)
         ecdhObject_ns[index].semaphoreTimeout = (params->returnBehavior == ECDH_RETURN_BEHAVIOR_BLOCKING)
                                                     ? params->timeout
                                                     : SemaphoreP_NO_WAIT;
-    }
 
-    /* Set power dependency - i.e. power up and enable clock for PKA */
-    (void)Power_setDependency(PowerCC26X2_PERIPH_PKA);
+        /* Set power dependency - i.e. power up and enable clock for PKA */
+        (void)Power_setDependency(PowerCC26X2_PERIPH_PKA);
+    }
 
     return handle;
 }

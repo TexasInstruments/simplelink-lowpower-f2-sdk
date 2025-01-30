@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017 Linaro Limited
+ * Copyright (c) 2021-2023 Arm Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +34,7 @@ extern "C" {
 uint32_t bootutil_get_caps(void);
 
 #define BOOTUTIL_CAP_RSA2048                (1<<0)
-#define BOOTUTIL_CAP_ECDSA_P224             (1<<1)
+                                /* reserved (1<<1) */
 #define BOOTUTIL_CAP_ECDSA_P256             (1<<2)
 #define BOOTUTIL_CAP_SWAP_USING_SCRATCH     (1<<3)
 #define BOOTUTIL_CAP_OVERWRITE_UPGRADE      (1<<4)
@@ -47,6 +48,11 @@ uint32_t bootutil_get_caps(void);
 #define BOOTUTIL_CAP_DOWNGRADE_PREVENTION   (1<<12)
 #define BOOTUTIL_CAP_ENC_X25519             (1<<13)
 #define BOOTUTIL_CAP_BOOTSTRAP              (1<<14)
+#define BOOTUTIL_CAP_AES256                 (1<<15)
+#define BOOTUTIL_CAP_RAM_LOAD               (1<<16)
+#define BOOTUTIL_CAP_DIRECT_XIP             (1<<17)
+#define BOOTUTIL_CAP_HW_ROLLBACK_PROT       (1<<18)
+#define BOOTUTIL_CAP_ECDSA_P384             (1<<19)
 
 /*
  * Query the number of images this bootloader is configured for.  This

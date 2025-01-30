@@ -8818,6 +8818,116 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/prop_rf/rfDiagnostics/README.html",
+        "resourceType": "categoryInfo",
+        "name": "rfDiagnostics",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Proprietary RF"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/prop_rf/rfDiagnostics/tirtos7/gcc/rfDiagnostics_LP_EM_CC2674P10_tirtos7_gcc.projectspec",
+        "name": "rfDiagnostics",
+        "description": "rfDiagnostics",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "gcc"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Proprietary RF",
+            "rfDiagnostics",
+            "TI-RTOS7",
+            "GCC Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/prop_rf/rfDiagnostics/tirtos7/ticlang/rfDiagnostics_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
+        "name": "rfDiagnostics",
+        "description": "rfDiagnostics",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Proprietary RF",
+            "rfDiagnostics",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
         "location": "../../examples/rtos/LP_CC2652RSIP/prop_rf/rfDiagnostics/README.html",
         "resourceType": "categoryInfo",
         "name": "rfDiagnostics",

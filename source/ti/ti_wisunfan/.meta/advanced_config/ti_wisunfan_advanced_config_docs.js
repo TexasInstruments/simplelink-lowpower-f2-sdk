@@ -40,6 +40,7 @@
 // ======== Top Level ========
 
 const rapidJoin = {
+    readOnly: "Rapid join is only supported for network responsiveness profile configuration.",
     description: "Enable rapid join network configuration",
     longDescription: `
 Enables rapid join network configuration. These settings are settings calibrated for an expedited join process
@@ -96,9 +97,30 @@ __Default__ : 7200
 `
 };
 
+const networkProfile = {
+    description: "Configure the network traffic profile used in network joining, upkeep, and multicast latency.",
+    longDescription: `
+Configures network traffic profile. Given the objectives of the network and estimated network size,
+configure specific internal network timing and behavior for async (PA/PC), RPL, EAPOL, and MPL messages.
+
+Maximum Responsiveness profile provides the fastest join times, fastest disconnection detection and recovery of network nodes, and
+lowest multicast latency at the cost of more network bandwidth used and a less scalable network.
+
+Maximum scalability profile allows support for a larger network and minimization of bandwidth at the cost of slower join times and
+network responsiveness.
+
+Balanced profile provides a middle ground between the above options.
+
+After changing the network profile, the rapid join, MPL low latency, and disconnection detection times in sysconfig will be set to the
+recommended value for the selected network profile. It is possible, but not recommended to change these configurations except in
+the small network configuration, and could result in reduced performance.
+`
+}
+
 exports = {
     rapidJoin: rapidJoin,
     mplLowLatency: mplLowLatency,
     rapidDisconnectDetectBr: rapidDisconnectDetectBr,
-    rapidDisconnectDetectRn: rapidDisconnectDetectRn
+    rapidDisconnectDetectRn: rapidDisconnectDetectRn,
+    networkProfile: networkProfile
 };

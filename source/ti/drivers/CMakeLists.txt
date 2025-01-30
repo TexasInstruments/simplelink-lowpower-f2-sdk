@@ -1,4 +1,4 @@
-# Copyright (c) 2022-2023, Texas Instruments Incorporated
+# Copyright (c) 2022-2024, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,16 +30,26 @@
 cmake_minimum_required(VERSION ${TI_MIN_CMAKE_VERSION})
 get_install_dir(MBEDTLS_INSTALL_DIR)
 get_install_dir(TFM_INSTALL_DIR)
+get_install_dir(HSMDDK_INSTALL_DIR)
 
 include(${CMAKE_CURRENT_LIST_DIR}/CMakeSources_common.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/CMakeSources_cc13xx_cc26xx.cmake OPTIONAL)
 include(${CMAKE_CURRENT_LIST_DIR}/CMakeSources_cc23x0.cmake OPTIONAL)
 include(${CMAKE_CURRENT_LIST_DIR}/CMakeSources_cc27xx.cmake OPTIONAL)
-include(${CMAKE_CURRENT_LIST_DIR}/CMakeSources_cc32xx.cmake OPTIONAL)
 include(${CMAKE_CURRENT_LIST_DIR}/CMakeSources_cc35xx.cmake OPTIONAL)
 
 project(drivers LANGUAGES C ASM)
-ti_init_package(NAMESPACE Drivers DEPENDS_ON DriversUtils TrustZone ThirdPartyEccLib)
+# Note: Required to import both TiUtils and TiUtilsJson for now
+# TiUtilsJson should declare its own dependency, but currently does not
+ti_init_package(
+    NAMESPACE Drivers
+              DEPENDS_ON
+              DriversUtils
+              TrustZone
+              ThirdPartyEccLib
+              TiUtils
+              TiUtilsJson
+)
 foreach(TI_PLATFORM ${SUPPORTED_PLATFORMS})
     if(${TI_PLATFORM} MATCHES "cc(13|26).1")
         ti_add_package_dependency(DriverlibCC13X1CC26X1)
@@ -49,9 +59,26 @@ foreach(TI_PLATFORM ${SUPPORTED_PLATFORMS})
             SOURCES ${SOURCES_CC13X1_CC26X1}
             ADD_SDK_INCLUDE_PATH source
             LINK_PUBLIC Driverlib::${TI_PLATFORM} CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
+                        TiUtils::json_${ARCH_${TI_PLATFORM}}
             # This is only needed for PDMCC26XX to find xdc/std.h
             LINK_PRIVATE Tirtos7Generic::tirtos7
         )
+
+        ti_add_library(
+            drivers_${TI_PLATFORM}_log
+            SOURCES ${SOURCES_CC13X1_CC26X1}
+            ADD_SDK_INCLUDE_PATH source
+            LINK_PUBLIC Driverlib::${TI_PLATFORM} CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
+                        TiUtils::json_${ARCH_${TI_PLATFORM}}
+            # This is only needed for PDMCC26XX to find xdc/std.h
+            LINK_PRIVATE Tirtos7Generic::tirtos7
+        )
+
+        # Set global Log include switch for this library
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE)
+        # Set module-level Log include switches for this library
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE_LogModule_Power=1)
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE_LogModule_UART2=1)
 
     elseif(${TI_PLATFORM} MATCHES "cc(13|26).2.7")
         ti_add_package_dependency(DriverlibCC13X2X7CC26X2X7)
@@ -61,9 +88,26 @@ foreach(TI_PLATFORM ${SUPPORTED_PLATFORMS})
             SOURCES ${SOURCES_CC13X2_CC26X2}
             ADD_SDK_INCLUDE_PATH source
             LINK_PUBLIC Driverlib::${TI_PLATFORM} CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
+                        TiUtils::json_${ARCH_${TI_PLATFORM}}
             # This is only needed for PDMCC26XX to find xdc/std.h
             LINK_PRIVATE Tirtos7Generic::tirtos7
         )
+
+        ti_add_library(
+            drivers_${TI_PLATFORM}_log
+            SOURCES ${SOURCES_CC13X2_CC26X2}
+            ADD_SDK_INCLUDE_PATH source
+            LINK_PUBLIC Driverlib::${TI_PLATFORM} CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
+                        TiUtils::json_${ARCH_${TI_PLATFORM}}
+            # This is only needed for PDMCC26XX to find xdc/std.h
+            LINK_PRIVATE Tirtos7Generic::tirtos7
+        )
+
+        # Set global Log include switch for this library
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE)
+        # Set module-level Log include switches for this library
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE_LogModule_Power=1)
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE_LogModule_UART2=1)
 
     elseif(${TI_PLATFORM} MATCHES "cc(13|26).2")
         ti_add_package_dependency(DriverlibCC13X2CC26X2)
@@ -73,9 +117,26 @@ foreach(TI_PLATFORM ${SUPPORTED_PLATFORMS})
             SOURCES ${SOURCES_CC13X2_CC26X2}
             ADD_SDK_INCLUDE_PATH source
             LINK_PUBLIC Driverlib::${TI_PLATFORM} CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
+                        TiUtils::json_${ARCH_${TI_PLATFORM}}
             # This is only needed for PDMCC26XX to find xdc/std.h
             LINK_PRIVATE Tirtos7Generic::tirtos7
         )
+
+        ti_add_library(
+            drivers_${TI_PLATFORM}_log
+            SOURCES ${SOURCES_CC13X2_CC26X2}
+            ADD_SDK_INCLUDE_PATH source
+            LINK_PUBLIC Driverlib::${TI_PLATFORM} CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
+                        TiUtils::json_${ARCH_${TI_PLATFORM}}
+            # This is only needed for PDMCC26XX to find xdc/std.h
+            LINK_PRIVATE Tirtos7Generic::tirtos7
+        )
+
+        # Set global Log include switch for this library
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE)
+        # Set module-level Log include switches for this library
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE_LogModule_Power=1)
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE_LogModule_UART2=1)
 
         # C26X3 is deliberately excluded from this regex, as the 26x4 libraries are good enough
     elseif(${TI_PLATFORM} MATCHES "cc(13|26).4")
@@ -86,51 +147,133 @@ foreach(TI_PLATFORM ${SUPPORTED_PLATFORMS})
             SOURCES ${SOURCES_SEC_ONLY_CC13X4_CC26X3_CC26X4}
             ADD_SDK_INCLUDE_PATH source
             LINK_PUBLIC Driverlib::${TI_PLATFORM} CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
+                        TiUtils::json_${ARCH_${TI_PLATFORM}}
             # This is only needed for PDMCC26XX to find xdc/std.h
             LINK_PRIVATE Tirtos7Generic::tirtos7
         )
 
         ti_add_library(
-            drivers_${TI_PLATFORM}_ns SOURCES ${SOURCES_NONSEC_CC13X4_CC26X3_CC26X4} ADD_SDK_INCLUDE_PATH source
-            LINK_PUBLIC Driverlib::${TI_PLATFORM} DriversUtils::tfm_enabled TrustZone::tfm_dependencies_cc26x4
-                        CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}} LINK_PRIVATE Tirtos7Generic::tirtos7
+            drivers_${TI_PLATFORM}_log
+            SOURCES ${SOURCES_SEC_ONLY_CC13X4_CC26X3_CC26X4}
+            ADD_SDK_INCLUDE_PATH source
+            LINK_PUBLIC Driverlib::${TI_PLATFORM} CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
+                        TiUtils::json_${ARCH_${TI_PLATFORM}}
+            # This is only needed for PDMCC26XX to find xdc/std.h
+            LINK_PRIVATE Tirtos7Generic::tirtos7
         )
+
+        # Set global Log include switch for this library
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE)
+        # Set module-level Log include switches for this library
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE_LogModule_Power=1)
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE_LogModule_UART2=1)
+
+        ti_add_library(
+            drivers_${TI_PLATFORM}_ns
+            SOURCES ${SOURCES_NONSEC_CC13X4_CC26X3_CC26X4}
+            ADD_SDK_INCLUDE_PATH source
+            LINK_PUBLIC Driverlib::${TI_PLATFORM} DriversUtils::tfm_enabled TrustZone::tfm_dependencies_cc26x4
+                        CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}} TiUtils::json_${ARCH_${TI_PLATFORM}}
+            LINK_PRIVATE Tirtos7Generic::tirtos7
+        )
+
+        ti_add_library(
+            drivers_${TI_PLATFORM}_ns_log
+            SOURCES ${SOURCES_NONSEC_CC13X4_CC26X3_CC26X4}
+            ADD_SDK_INCLUDE_PATH source
+            LINK_PUBLIC Driverlib::${TI_PLATFORM} DriversUtils::tfm_enabled TrustZone::tfm_dependencies_cc26x4
+                        CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}} TiUtils::json_${ARCH_${TI_PLATFORM}}
+            LINK_PRIVATE Tirtos7Generic::tirtos7
+        )
+
+        # Set global Log include switch for this library
+        target_compile_definitions(drivers_${TI_PLATFORM}_ns_log PRIVATE ti_log_Log_ENABLE)
+        # Set module-level Log include switches for this library
+        target_compile_definitions(drivers_${TI_PLATFORM}_ns_log PRIVATE ti_log_Log_ENABLE_LogModule_Power=1)
+        target_compile_definitions(drivers_${TI_PLATFORM}_ns_log PRIVATE ti_log_Log_ENABLE_LogModule_UART2=1)
 
     elseif(${TI_PLATFORM} STREQUAL "cc23x0r5")
         ti_add_package_dependency(DriverlibCC23X0R5)
         ti_add_library(
             drivers_${TI_PLATFORM} SOURCES ${SOURCES_CC23X0R5} ADD_SDK_INCLUDE_PATH source
             LINK_PUBLIC ThirdPartyEccLib::ecc_cc23x0 Driverlib::${TI_PLATFORM}
-                        CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
+                        CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}} TiUtils::json_${ARCH_${TI_PLATFORM}}
+        )
+
+        ti_add_library(
+            drivers_${TI_PLATFORM}_log SOURCES ${SOURCES_CC23X0R5} ADD_SDK_INCLUDE_PATH source
+            LINK_PUBLIC ThirdPartyEccLib::ecc_cc23x0 Driverlib::${TI_PLATFORM}
+                        CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}} TiUtils::json_${ARCH_${TI_PLATFORM}}
         )
         add_dependencies(drivers_${TI_PLATFORM} ecc_deploy)
+        add_dependencies(drivers_${TI_PLATFORM}_log ecc_deploy)
+
+        # Set global Log include switch for this library
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE)
+        # Set module-level Log include switches for this library
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE_LogModule_Power=1)
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE_LogModule_UART2=1)
 
     elseif(${TI_PLATFORM} STREQUAL "cc23x0r2")
         ti_add_package_dependency(DriverlibCC23X0R2)
         ti_add_library(
             drivers_${TI_PLATFORM} SOURCES ${SOURCES_CC23X0R2} ADD_SDK_INCLUDE_PATH source
             LINK_PUBLIC ThirdPartyEccLib::ecc_cc23x0 Driverlib::${TI_PLATFORM}
-                        CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
+                        CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}} TiUtils::json_${ARCH_${TI_PLATFORM}}
+        )
+
+        ti_add_library(
+            drivers_${TI_PLATFORM}_log SOURCES ${SOURCES_CC23X0R2} ADD_SDK_INCLUDE_PATH source
+            LINK_PUBLIC ThirdPartyEccLib::ecc_cc23x0 Driverlib::${TI_PLATFORM}
+                        CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}} TiUtils::json_${ARCH_${TI_PLATFORM}}
         )
         add_dependencies(drivers_${TI_PLATFORM} ecc_deploy)
+        add_dependencies(drivers_${TI_PLATFORM}_log ecc_deploy)
+
+        # Set global Log include switch for this library
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE)
+        # Set module-level Log include switches for this library
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE_LogModule_Power=1)
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE_LogModule_UART2=1)
 
     elseif(${TI_PLATFORM} STREQUAL "cc27xx")
         ti_add_package_dependency(DriverlibCC27XX)
+        ti_add_package_dependency(ThirdPartyHSMDDKLibCC27XX)
         ti_add_library(
-            drivers_${TI_PLATFORM} SOURCES ${SOURCES_SEC_ONLY_CC27XX} ADD_SDK_INCLUDE_PATH source
-            LINK_PUBLIC ThirdPartyEccLib::ecc_cc27xx Driverlib::${TI_PLATFORM}
-                        CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
+            drivers_${TI_PLATFORM}
+            SOURCES ${SOURCES_SEC_ONLY_CC27XX}
+            ADD_SDK_INCLUDE_PATH source
+            LINK_PUBLIC
+                ThirdPartyEccLib::ecc_cc27xx
+                Driverlib::${TI_PLATFORM}
+                CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
+                ThirdPartyHSMDDKLib::hsmddk_${TI_PLATFORM}
+                TiUtils::json_${ARCH_${TI_PLATFORM}}
+                DriversUtils::secure_key_storage_enabled
+                TrustZone::tfm_dependencies_cc27xx
+        )
+
+        ti_add_library(
+            drivers_${TI_PLATFORM}_log
+            SOURCES ${SOURCES_SEC_ONLY_CC27XX}
+            ADD_SDK_INCLUDE_PATH source
+            LINK_PUBLIC
+                ThirdPartyEccLib::ecc_cc27xx
+                Driverlib::${TI_PLATFORM}
+                CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
+                ThirdPartyHSMDDKLib::hsmddk_${TI_PLATFORM}
+                TiUtils::json_${ARCH_${TI_PLATFORM}}
+                DriversUtils::secure_key_storage_enabled
+                TrustZone::tfm_dependencies_cc27xx
         )
         add_dependencies(drivers_${TI_PLATFORM} ecc_deploy)
+        add_dependencies(drivers_${TI_PLATFORM}_log ecc_deploy)
 
-        # Add library with workarounds for Rev A devices
-        ti_add_library(
-            drivers_${TI_PLATFORM}_reva SOURCES ${SOURCES_SEC_ONLY_CC27XX} ADD_SDK_INCLUDE_PATH source
-            LINK_PUBLIC ThirdPartyEccLib::ecc_cc27xx Driverlib::${TI_PLATFORM}
-                        CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
-        )
-        target_compile_definitions(drivers_${TI_PLATFORM}_reva PRIVATE CC27XX_REVA_WORKAROUNDS)
-        add_dependencies(drivers_${TI_PLATFORM}_reva ecc_deploy)
+        # Set global Log include switch for this library
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE)
+        # Set module-level Log include switches for this library
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE_LogModule_Power=1)
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE_LogModule_UART2=1)
 
         # ti_add_library(
         #     drivers_${TI_PLATFORM}_ns SOURCES ${SOURCES_NONSEC_CC27XX} ADD_SDK_INCLUDE_PATH source
@@ -138,21 +281,32 @@ foreach(TI_PLATFORM ${SUPPORTED_PLATFORMS})
         #                 CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
         # )
 
-    elseif(${TI_PLATFORM} MATCHES "cc32")
-        ti_add_package_dependency(DriverlibCC32XX)
-        ti_add_library(
-            drivers_${TI_PLATFORM} SOURCES ${SOURCES_CC32XX} ADD_SDK_INCLUDE_PATH source
-            LINK_PUBLIC Driverlib::${TI_PLATFORM} CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
-        )
-
     elseif(${TI_PLATFORM} MATCHES "cc35")
         ti_add_package_dependency(DriverlibCC35XX)
+        ti_add_package_dependency(ThirdPartyHSMDDKLibCC35XX)
+
         ti_add_library(
             drivers_${TI_PLATFORM} SOURCES ${SOURCES_SEC_ONLY_CC35XX} ADD_SDK_INCLUDE_PATH source
             LINK_PUBLIC Driverlib::${TI_PLATFORM} CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
+                        ThirdPartyHSMDDKLib::hsmddk_${TI_PLATFORM} TiUtils::json_${ARCH_${TI_PLATFORM}}
         )
+
+        ti_add_library(
+            drivers_${TI_PLATFORM}_log SOURCES ${SOURCES_SEC_ONLY_CC35XX} ADD_SDK_INCLUDE_PATH source
+            LINK_PUBLIC Driverlib::${TI_PLATFORM} CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
+                        ThirdPartyHSMDDKLib::hsmddk_${TI_PLATFORM} TiUtils::json_${ARCH_${TI_PLATFORM}}
+        )
+
+        # Set global Log include switch for this library
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE)
+        # Set module-level Log include switches for this library
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE_LogModule_Power=1)
+        target_compile_definitions(drivers_${TI_PLATFORM}_log PRIVATE ti_log_Log_ENABLE_LogModule_UART2=1)
+
     endif()
+
 endforeach()
+
 ti_export_package()
 
 #
@@ -214,16 +368,24 @@ target_include_directories(tfm_dependencies_cc27xx BEFORE INTERFACE ${CMAKE_SOUR
 if(TI_INTERNAL_BUILD)
     target_include_directories(
         tfm_dependencies_cc27xx
-        INTERFACE ${TFM_INSTALL_DIR}/source/ ${TFM_INSTALL_DIR}/source/third_party/tfm/interface/include
-                  ${MBEDTLS_INSTALL_DIR}/source ${MBEDTLS_INSTALL_DIR}/source/third_party/mbedtls/include
-                  ${MBEDTLS_INSTALL_DIR}/source/third_party/mbedtls/ti
+        INTERFACE ${TFM_INSTALL_DIR}/source/
+                  ${TFM_INSTALL_DIR}/source/third_party/tfm/config
+                  ${TFM_INSTALL_DIR}/source/third_party/tfm/interface/include
+                  ${TFM_INSTALL_DIR}/source/third_party/tfm/platform/ext/driver
+                  ${TFM_INSTALL_DIR}/source/third_party/tfm/platform/include
+                  ${TFM_INSTALL_DIR}/source/third_party/tfm/secure_fw/include
+                  ${TFM_INSTALL_DIR}/source/third_party/tfm/secure_fw/partitions/internal_trusted_storage
     )
 else()
     target_include_directories(
         tfm_dependencies_cc27xx
-        INTERFACE ${CMAKE_SOURCE_DIR}/source/ ${CMAKE_SOURCE_DIR}/source/third_party/tfm/interface/include
-                  ${CMAKE_SOURCE_DIR}/source/third_party/mbedtls/include
-                  ${CMAKE_SOURCE_DIR}/source/third_party/mbedtls/ti
+        INTERFACE ${CMAKE_SOURCE_DIR}/source/
+                  ${CMAKE_SOURCE_DIR}/source/third_party/tfm/config
+                  ${CMAKE_SOURCE_DIR}/source/third_party/tfm/interface/include
+                  ${CMAKE_SOURCE_DIR}/source/third_party/tfm/platform/ext/driver
+                  ${CMAKE_SOURCE_DIR}/source/third_party/tfm/platform/include
+                  ${CMAKE_SOURCE_DIR}/source/third_party/tfm/secure_fw/include
+                  ${CMAKE_SOURCE_DIR}/source/third_party/tfm/secure_fw/partitions/internal_trusted_storage
     )
 endif()
 

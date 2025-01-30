@@ -8,6 +8,17 @@
 
 # config.cmake is the default build configuration for this platform.
 
+# Platform-specific compile defines
+add_compile_definitions(
+    # Define for TI custom memory layout for region_defs.h
+    TI_CUSTOM_MEMORY_LAYOUT
+
+    # Defines to build TI drivers
+    DeviceFamily_CC26X4
+    TFM_ENABLED=1
+    TFM_BUILD
+)
+
 # Platform-specific fixed configuration
 set(CONFIG_TFM_USE_TRUSTZONE          ON )
 set(TFM_MULTI_CORE_TOPOLOGY           OFF)
@@ -16,18 +27,19 @@ set(CONFIG_TFM_ENABLE_FP              ON    CACHE BOOL    "Enable/disable FP usa
 # TF-M's bundled secondary bootloader is not used.
 set(BL2                               OFF   CACHE BOOL    "Whether to build BL2")
 
-# NS app is built outside of TF-M build process.
-set(NS                                OFF   CACHE BOOL    "Whether to build NS app")
-
 # Disable FPU lazy stacking until TIRTOS7 can support it.
 set(CONFIG_TFM_LAZY_STACKING          OFF   CACHE BOOL    "Enable/disable lazy stacking")
 
-# Uncomment this one TI platform-specific attestation HAL is implemented.
+# Uncomment this once TI platform-specific attestation HAL is implemented.
 # set(PLATFORM_DEFAULT_ATTEST_HAL       OFF   CACHE BOOL    "Use default attest hal implementation.")
 
 if(NOT TEST_S AND NOT TEST_NS)
     # Disable TF-M Crypto partition as this platform implements a proprietary crypto partition.
     set(TFM_PARTITION_CRYPTO              OFF   CACHE BOOL    "Enable Crypto partition")
+
+    # Set to "ON" or comment out the following to enable platform-specific built-in key support.
+    # See docs/design_docs/tfm_builtin_keys.rst for prerequisites.
+    set(CRYPTO_TFM_BUILTIN_KEYS_DRIVER    OFF   CACHE BOOL    "Whether to allow crypto service to store builtin keys. Without this, ALL builtin keys must be stored in a platform-specific location")
 endif()
 
 if(BL2)

@@ -10,11 +10,11 @@ cmake_policy(SET CMP0076 NEW)
 set(CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
 set(NRF_BOARD_SELECTED True)
 
-add_subdirectory(../common/nrf9160 nrf9160)
+add_subdirectory(../common/nrf91 nrf91)
 
 target_include_directories(platform_region_defs
     INTERFACE
-        ../common/nrf9160/partition
+        ../common/nrf91/partition
 )
 
 target_sources(platform_s
@@ -25,27 +25,17 @@ target_sources(platform_s
 target_include_directories(platform_s
     PUBLIC
         .
-        ../common/nrf9160/partition
+        ../common/nrf91/partition
         services/include
-)
-
-target_include_directories(platform_ns
-    PUBLIC
-        .
 )
 
 if(BL2)
     target_include_directories(platform_bl2
         PUBLIC
-            ../common/nrf9160/partition
+            ../common/nrf91/partition
         PRIVATE
             .
     )
-endif()
-
-if (TFM_PARTITION_PLATFORM)
-install(FILES       services/include/tfm_ioctl_api.h
-        DESTINATION ${TFM_INSTALL_PATH}/interface/include)
 endif()
 
 #========================= tfm_spm ============================================#
@@ -53,4 +43,32 @@ endif()
 target_sources(tfm_spm
     PRIVATE
         tfm_hal_platform.c
+)
+
+#========================= Files for building NS side platform ================#
+
+install(FILES       ${CMAKE_CURRENT_LIST_DIR}/ns/cpuarch_ns.cmake
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}
+        RENAME      cpuarch.cmake
+)
+
+install(FILES       ../common/nrf9160/cpuarch.cmake
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}/common/nrf9160
+)
+
+if (TFM_PARTITION_PLATFORM)
+    install(FILES       services/include/tfm_ioctl_api.h
+            DESTINATION ${INSTALL_INTERFACE_INC_DIR}
+)
+endif()
+
+install(FILES       RTE_Device.h
+                    device_cfg.h
+                    ns/CMakeLists.txt
+                    config.cmake
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}
+)
+
+install(DIRECTORY   tests
+        DESTINATION ${INSTALL_PLATFORM_NS_DIR}
 )

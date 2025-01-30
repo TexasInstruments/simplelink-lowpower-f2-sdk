@@ -408,6 +408,74 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/gpd_switch/README.html",
+        "resourceType": "categoryInfo",
+        "name": "gpd_switch",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/gpd_switch/tirtos7/ticlang/gpd_switch_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
+        "name": "gpd_switch",
+        "description": "gpd_switch",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "gpd_switch",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
         "location": "../../examples/rtos/LP_CC2652RSIP/zstack/gpd_switch/README.html",
         "resourceType": "categoryInfo",
         "name": "gpd_switch",
@@ -1126,6 +1194,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/gpd_switch/tirtos7/iar/gpd_switch_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "gpd_switch",
+        "description": "gpd_switch",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "gpd_switch",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -1777,6 +1884,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/gpd_temperaturesensor/tirtos7/ticlang/gpd_temperaturesensor_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "gpd_temperaturesensor",
+        "description": "gpd_temperaturesensor",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "gpd_temperaturesensor",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/gpd_temperaturesensor/README.html",
+        "resourceType": "categoryInfo",
+        "name": "gpd_temperaturesensor",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/gpd_temperaturesensor/tirtos7/ticlang/gpd_temperaturesensor_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "gpd_temperaturesensor",
         "description": "gpd_temperaturesensor",
         "kernel": [
@@ -2517,6 +2692,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/gpd_temperaturesensor/tirtos7/iar/gpd_temperaturesensor_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "gpd_temperaturesensor",
+        "description": "gpd_temperaturesensor",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "gpd_temperaturesensor",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -3168,6 +3382,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zc_cie/tirtos7/ticlang/zc_cie_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zc_cie",
+        "description": "zc_cie",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_cie",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_cie/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zc_cie",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_cie/tirtos7/ticlang/zc_cie_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zc_cie",
         "description": "zc_cie",
         "kernel": [
@@ -3908,6 +4190,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_cie/tirtos7/iar/zc_cie_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zc_cie",
+        "description": "zc_cie",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_cie",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -4559,6 +4880,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zc_doorlock/tirtos7/ticlang/zc_doorlock_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zc_doorlock",
+        "description": "zc_doorlock",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_doorlock",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_doorlock/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zc_doorlock",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_doorlock/tirtos7/ticlang/zc_doorlock_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zc_doorlock",
         "description": "zc_doorlock",
         "kernel": [
@@ -5299,6 +5688,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_doorlock/tirtos7/iar/zc_doorlock_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zc_doorlock",
+        "description": "zc_doorlock",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_doorlock",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -5950,6 +6378,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zc_doorlockcontroller/tirtos7/ticlang/zc_doorlockcontroller_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zc_doorlockcontroller",
+        "description": "zc_doorlockcontroller",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_doorlockcontroller",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_doorlockcontroller/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zc_doorlockcontroller",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_doorlockcontroller/tirtos7/ticlang/zc_doorlockcontroller_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zc_doorlockcontroller",
         "description": "zc_doorlockcontroller",
         "kernel": [
@@ -6690,6 +7186,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_doorlockcontroller/tirtos7/iar/zc_doorlockcontroller_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zc_doorlockcontroller",
+        "description": "zc_doorlockcontroller",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_doorlockcontroller",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -7341,6 +7876,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zc_genericapp/tirtos7/ticlang/zc_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zc_genericapp",
+        "description": "zc_genericapp",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_genericapp",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_genericapp/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zc_genericapp",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_genericapp/tirtos7/ticlang/zc_genericapp_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zc_genericapp",
         "description": "zc_genericapp",
         "kernel": [
@@ -8081,6 +8684,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_genericapp/tirtos7/iar/zc_genericapp_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zc_genericapp",
+        "description": "zc_genericapp",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_genericapp",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -8732,6 +9374,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zc_light/tirtos7/ticlang/zc_light_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zc_light",
+        "description": "zc_light",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_light",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_light/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zc_light",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_light/tirtos7/ticlang/zc_light_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zc_light",
         "description": "zc_light",
         "kernel": [
@@ -9472,6 +10182,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_light/tirtos7/iar/zc_light_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zc_light",
+        "description": "zc_light",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_light",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -10123,6 +10872,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zc_light_sink/tirtos7/ticlang/zc_light_sink_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zc_light_sink",
+        "description": "zc_light_sink",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_light_sink",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_light_sink/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zc_light_sink",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_light_sink/tirtos7/ticlang/zc_light_sink_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zc_light_sink",
         "description": "zc_light_sink",
         "kernel": [
@@ -10863,6 +11680,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_light_sink/tirtos7/iar/zc_light_sink_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zc_light_sink",
+        "description": "zc_light_sink",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_light_sink",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -11514,6 +12370,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zc_ota_server/tirtos7/ticlang/zc_ota_server_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zc_ota_server",
+        "description": "zc_ota_server",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_ota_server",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_ota_server/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zc_ota_server",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_ota_server/tirtos7/ticlang/zc_ota_server_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zc_ota_server",
         "description": "zc_ota_server",
         "kernel": [
@@ -12254,6 +13178,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_ota_server/tirtos7/iar/zc_ota_server_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zc_ota_server",
+        "description": "zc_ota_server",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_ota_server",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -12905,6 +13868,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zc_sampleapp/tirtos7/ticlang/zc_sampleapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zc_sampleapp",
+        "description": "zc_sampleapp",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_sampleapp",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_sampleapp/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zc_sampleapp",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_sampleapp/tirtos7/ticlang/zc_sampleapp_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zc_sampleapp",
         "description": "zc_sampleapp",
         "kernel": [
@@ -13645,6 +14676,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_sampleapp/tirtos7/iar/zc_sampleapp_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zc_sampleapp",
+        "description": "zc_sampleapp",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_sampleapp",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -14296,6 +15366,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zc_sw/tirtos7/ticlang/zc_sw_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zc_sw",
+        "description": "zc_sw",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_sw",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_sw/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zc_sw",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_sw/tirtos7/ticlang/zc_sw_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zc_sw",
         "description": "zc_sw",
         "kernel": [
@@ -15006,6 +16144,45 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zc_sw/tirtos7/iar/zc_sw_CC1352P_2_LAUNCHXL_tirtos7_iar.ipcf",
+        "name": "zc_sw",
+        "description": "zc_sw",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_sw",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_sw/tirtos7/iar/zc_sw_LP_EM_CC2674P10_tirtos7_iar.ipcf",
         "name": "zc_sw",
         "description": "zc_sw",
         "kernel": [
@@ -17100,6 +18277,74 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_temperaturesensor/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zc_temperaturesensor",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_temperaturesensor/tirtos7/ticlang/zc_temperaturesensor_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
+        "name": "zc_temperaturesensor",
+        "description": "zc_temperaturesensor",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_temperaturesensor",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
         "location": "../../examples/rtos/LP_CC2652RSIP/zstack/zc_temperaturesensor/README.html",
         "resourceType": "categoryInfo",
         "name": "zc_temperaturesensor",
@@ -17818,6 +19063,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_temperaturesensor/tirtos7/iar/zc_temperaturesensor_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zc_temperaturesensor",
+        "description": "zc_temperaturesensor",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_temperaturesensor",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -18469,6 +19753,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zc_thermostat/tirtos7/ticlang/zc_thermostat_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zc_thermostat",
+        "description": "zc_thermostat",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_thermostat",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_thermostat/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zc_thermostat",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_thermostat/tirtos7/ticlang/zc_thermostat_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zc_thermostat",
         "description": "zc_thermostat",
         "kernel": [
@@ -19209,6 +20561,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_thermostat/tirtos7/iar/zc_thermostat_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zc_thermostat",
+        "description": "zc_thermostat",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_thermostat",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -19860,6 +21251,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zc_thermostat_sink/tirtos7/ticlang/zc_thermostat_sink_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zc_thermostat_sink",
+        "description": "zc_thermostat_sink",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_thermostat_sink",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_thermostat_sink/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zc_thermostat_sink",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_thermostat_sink/tirtos7/ticlang/zc_thermostat_sink_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zc_thermostat_sink",
         "description": "zc_thermostat_sink",
         "kernel": [
@@ -20600,6 +22059,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_thermostat_sink/tirtos7/iar/zc_thermostat_sink_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zc_thermostat_sink",
+        "description": "zc_thermostat_sink",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_thermostat_sink",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -21251,6 +22749,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zc_warningdevice/tirtos7/ticlang/zc_warningdevice_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zc_warningdevice",
+        "description": "zc_warningdevice",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_warningdevice",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_warningdevice/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zc_warningdevice",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_warningdevice/tirtos7/ticlang/zc_warningdevice_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zc_warningdevice",
         "description": "zc_warningdevice",
         "kernel": [
@@ -21991,6 +23557,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_warningdevice/tirtos7/iar/zc_warningdevice_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zc_warningdevice",
+        "description": "zc_warningdevice",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_warningdevice",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -22642,6 +24247,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zc_zone/tirtos7/ticlang/zc_zone_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zc_zone",
+        "description": "zc_zone",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_zone",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_zone/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zc_zone",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_zone/tirtos7/ticlang/zc_zone_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zc_zone",
         "description": "zc_zone",
         "kernel": [
@@ -23382,6 +25055,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zc_zone/tirtos7/iar/zc_zone_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zc_zone",
+        "description": "zc_zone",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zc_zone",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -24033,6 +25745,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zed_cie/tirtos7/ticlang/zed_cie_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zed_cie",
+        "description": "zed_cie",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zed_cie",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_cie/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zed_cie",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_cie/tirtos7/ticlang/zed_cie_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zed_cie",
         "description": "zed_cie",
         "kernel": [
@@ -24773,6 +26553,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_cie/tirtos7/iar/zed_cie_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zed_cie",
+        "description": "zed_cie",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zed_cie",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -25424,6 +27243,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zed_doorlock/tirtos7/ticlang/zed_doorlock_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zed_doorlock",
+        "description": "zed_doorlock",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zed_doorlock",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_doorlock/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zed_doorlock",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_doorlock/tirtos7/ticlang/zed_doorlock_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zed_doorlock",
         "description": "zed_doorlock",
         "kernel": [
@@ -26164,6 +28051,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_doorlock/tirtos7/iar/zed_doorlock_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zed_doorlock",
+        "description": "zed_doorlock",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zed_doorlock",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -26815,6 +28741,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zed_doorlockcontroller/tirtos7/ticlang/zed_doorlockcontroller_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zed_doorlockcontroller",
+        "description": "zed_doorlockcontroller",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zed_doorlockcontroller",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_doorlockcontroller/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zed_doorlockcontroller",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_doorlockcontroller/tirtos7/ticlang/zed_doorlockcontroller_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zed_doorlockcontroller",
         "description": "zed_doorlockcontroller",
         "kernel": [
@@ -27555,6 +29549,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_doorlockcontroller/tirtos7/iar/zed_doorlockcontroller_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zed_doorlockcontroller",
+        "description": "zed_doorlockcontroller",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zed_doorlockcontroller",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -28206,6 +30239,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zed_genericapp/tirtos7/ticlang/zed_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zed_genericapp",
+        "description": "zed_genericapp",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zed_genericapp",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_genericapp/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zed_genericapp",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_genericapp/tirtos7/ticlang/zed_genericapp_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zed_genericapp",
         "description": "zed_genericapp",
         "kernel": [
@@ -28946,6 +31047,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_genericapp/tirtos7/iar/zed_genericapp_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zed_genericapp",
+        "description": "zed_genericapp",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zed_genericapp",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -29597,6 +31737,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zed_light/tirtos7/ticlang/zed_light_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zed_light",
+        "description": "zed_light",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zed_light",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_light/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zed_light",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_light/tirtos7/ticlang/zed_light_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zed_light",
         "description": "zed_light",
         "kernel": [
@@ -30337,6 +32545,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_light/tirtos7/iar/zed_light_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zed_light",
+        "description": "zed_light",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zed_light",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -30988,6 +33235,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zed_sampleapp/tirtos7/ticlang/zed_sampleapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zed_sampleapp",
+        "description": "zed_sampleapp",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zed_sampleapp",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_sampleapp/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zed_sampleapp",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_sampleapp/tirtos7/ticlang/zed_sampleapp_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zed_sampleapp",
         "description": "zed_sampleapp",
         "kernel": [
@@ -31728,6 +34043,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_sampleapp/tirtos7/iar/zed_sampleapp_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zed_sampleapp",
+        "description": "zed_sampleapp",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zed_sampleapp",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -32379,6 +34733,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zed_sw/tirtos7/ticlang/zed_sw_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zed_sw",
+        "description": "zed_sw",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zed_sw",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_sw/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zed_sw",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_sw/tirtos7/ticlang/zed_sw_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zed_sw",
         "description": "zed_sw",
         "kernel": [
@@ -33089,6 +35511,45 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zed_sw/tirtos7/iar/zed_sw_CC1352P_2_LAUNCHXL_tirtos7_iar.ipcf",
+        "name": "zed_sw",
+        "description": "zed_sw",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zed_sw",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_sw/tirtos7/iar/zed_sw_LP_EM_CC2674P10_tirtos7_iar.ipcf",
         "name": "zed_sw",
         "description": "zed_sw",
         "kernel": [
@@ -35183,6 +37644,74 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_temperaturesensor/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zed_temperaturesensor",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_temperaturesensor/tirtos7/ticlang/zed_temperaturesensor_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
+        "name": "zed_temperaturesensor",
+        "description": "zed_temperaturesensor",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zed_temperaturesensor",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
         "location": "../../examples/rtos/LP_CC2652RSIP/zstack/zed_temperaturesensor/README.html",
         "resourceType": "categoryInfo",
         "name": "zed_temperaturesensor",
@@ -35901,6 +38430,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_temperaturesensor/tirtos7/iar/zed_temperaturesensor_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zed_temperaturesensor",
+        "description": "zed_temperaturesensor",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zed_temperaturesensor",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -36552,6 +39120,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zed_thermostat/tirtos7/ticlang/zed_thermostat_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zed_thermostat",
+        "description": "zed_thermostat",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zed_thermostat",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_thermostat/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zed_thermostat",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_thermostat/tirtos7/ticlang/zed_thermostat_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zed_thermostat",
         "description": "zed_thermostat",
         "kernel": [
@@ -37292,6 +39928,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_thermostat/tirtos7/iar/zed_thermostat_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zed_thermostat",
+        "description": "zed_thermostat",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zed_thermostat",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -37943,6 +40618,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zed_warningdevice/tirtos7/ticlang/zed_warningdevice_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zed_warningdevice",
+        "description": "zed_warningdevice",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zed_warningdevice",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_warningdevice/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zed_warningdevice",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_warningdevice/tirtos7/ticlang/zed_warningdevice_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zed_warningdevice",
         "description": "zed_warningdevice",
         "kernel": [
@@ -38683,6 +41426,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_warningdevice/tirtos7/iar/zed_warningdevice_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zed_warningdevice",
+        "description": "zed_warningdevice",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zed_warningdevice",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -39334,6 +42116,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zed_zone/tirtos7/ticlang/zed_zone_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zed_zone",
+        "description": "zed_zone",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zed_zone",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_zone/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zed_zone",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_zone/tirtos7/ticlang/zed_zone_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zed_zone",
         "description": "zed_zone",
         "kernel": [
@@ -40074,6 +42924,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zed_zone/tirtos7/iar/zed_zone_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zed_zone",
+        "description": "zed_zone",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zed_zone",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -40725,6 +43614,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/znp/tirtos7/ticlang/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "znp",
+        "description": "znp",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "znp",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/znp/README.html",
+        "resourceType": "categoryInfo",
+        "name": "znp",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/znp/tirtos7/ticlang/znp_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "znp",
         "description": "znp",
         "kernel": [
@@ -41465,6 +44422,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/znp/tirtos7/iar/znp_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "znp",
+        "description": "znp",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "znp",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -42116,6 +45112,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zr_cie/tirtos7/ticlang/zr_cie_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zr_cie",
+        "description": "zr_cie",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_cie",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_cie/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zr_cie",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_cie/tirtos7/ticlang/zr_cie_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zr_cie",
         "description": "zr_cie",
         "kernel": [
@@ -42856,6 +45920,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_cie/tirtos7/iar/zr_cie_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zr_cie",
+        "description": "zr_cie",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_cie",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -43507,6 +46610,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zr_doorlock/tirtos7/ticlang/zr_doorlock_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zr_doorlock",
+        "description": "zr_doorlock",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_doorlock",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_doorlock/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zr_doorlock",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_doorlock/tirtos7/ticlang/zr_doorlock_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zr_doorlock",
         "description": "zr_doorlock",
         "kernel": [
@@ -44247,6 +47418,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_doorlock/tirtos7/iar/zr_doorlock_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zr_doorlock",
+        "description": "zr_doorlock",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_doorlock",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -44898,6 +48108,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zr_doorlockcontroller/tirtos7/ticlang/zr_doorlockcontroller_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zr_doorlockcontroller",
+        "description": "zr_doorlockcontroller",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_doorlockcontroller",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_doorlockcontroller/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zr_doorlockcontroller",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_doorlockcontroller/tirtos7/ticlang/zr_doorlockcontroller_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zr_doorlockcontroller",
         "description": "zr_doorlockcontroller",
         "kernel": [
@@ -45638,6 +48916,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_doorlockcontroller/tirtos7/iar/zr_doorlockcontroller_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zr_doorlockcontroller",
+        "description": "zr_doorlockcontroller",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_doorlockcontroller",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -46289,6 +49606,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zr_genericapp/tirtos7/ticlang/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zr_genericapp",
+        "description": "zr_genericapp",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_genericapp",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_genericapp/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zr_genericapp",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_genericapp/tirtos7/ticlang/zr_genericapp_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zr_genericapp",
         "description": "zr_genericapp",
         "kernel": [
@@ -47029,6 +50414,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_genericapp/tirtos7/iar/zr_genericapp_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zr_genericapp",
+        "description": "zr_genericapp",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_genericapp",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -47680,6 +51104,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zr_light/tirtos7/ticlang/zr_light_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zr_light",
+        "description": "zr_light",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_light",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_light/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zr_light",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_light/tirtos7/ticlang/zr_light_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zr_light",
         "description": "zr_light",
         "kernel": [
@@ -48420,6 +51912,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_light/tirtos7/iar/zr_light_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zr_light",
+        "description": "zr_light",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_light",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -49071,6 +52602,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zr_light_sink/tirtos7/ticlang/zr_light_sink_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zr_light_sink",
+        "description": "zr_light_sink",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_light_sink",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_light_sink/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zr_light_sink",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_light_sink/tirtos7/ticlang/zr_light_sink_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zr_light_sink",
         "description": "zr_light_sink",
         "kernel": [
@@ -49811,6 +53410,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_light_sink/tirtos7/iar/zr_light_sink_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zr_light_sink",
+        "description": "zr_light_sink",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_light_sink",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -50462,6 +54100,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zr_ota_server/tirtos7/ticlang/zr_ota_server_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zr_ota_server",
+        "description": "zr_ota_server",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_ota_server",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_ota_server/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zr_ota_server",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_ota_server/tirtos7/ticlang/zr_ota_server_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zr_ota_server",
         "description": "zr_ota_server",
         "kernel": [
@@ -51202,6 +54908,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_ota_server/tirtos7/iar/zr_ota_server_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zr_ota_server",
+        "description": "zr_ota_server",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_ota_server",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -51853,6 +55598,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zr_sampleapp/tirtos7/ticlang/zr_sampleapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zr_sampleapp",
+        "description": "zr_sampleapp",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_sampleapp",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_sampleapp/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zr_sampleapp",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_sampleapp/tirtos7/ticlang/zr_sampleapp_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zr_sampleapp",
         "description": "zr_sampleapp",
         "kernel": [
@@ -52593,6 +56406,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_sampleapp/tirtos7/iar/zr_sampleapp_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zr_sampleapp",
+        "description": "zr_sampleapp",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_sampleapp",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -53244,6 +57096,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zr_sw/tirtos7/ticlang/zr_sw_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zr_sw",
+        "description": "zr_sw",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_sw",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_sw/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zr_sw",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_sw/tirtos7/ticlang/zr_sw_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zr_sw",
         "description": "zr_sw",
         "kernel": [
@@ -53954,6 +57874,45 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zr_sw/tirtos7/iar/zr_sw_CC1352P_2_LAUNCHXL_tirtos7_iar.ipcf",
+        "name": "zr_sw",
+        "description": "zr_sw",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_sw",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_sw/tirtos7/iar/zr_sw_LP_EM_CC2674P10_tirtos7_iar.ipcf",
         "name": "zr_sw",
         "description": "zr_sw",
         "kernel": [
@@ -56048,6 +60007,74 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_temperaturesensor/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zr_temperaturesensor",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_temperaturesensor/tirtos7/ticlang/zr_temperaturesensor_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
+        "name": "zr_temperaturesensor",
+        "description": "zr_temperaturesensor",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_temperaturesensor",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
         "location": "../../examples/rtos/LP_CC2652RSIP/zstack/zr_temperaturesensor/README.html",
         "resourceType": "categoryInfo",
         "name": "zr_temperaturesensor",
@@ -56766,6 +60793,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_temperaturesensor/tirtos7/iar/zr_temperaturesensor_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zr_temperaturesensor",
+        "description": "zr_temperaturesensor",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_temperaturesensor",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -57417,6 +61483,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zr_thermostat/tirtos7/ticlang/zr_thermostat_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zr_thermostat",
+        "description": "zr_thermostat",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_thermostat",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_thermostat/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zr_thermostat",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_thermostat/tirtos7/ticlang/zr_thermostat_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zr_thermostat",
         "description": "zr_thermostat",
         "kernel": [
@@ -58157,6 +62291,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_thermostat/tirtos7/iar/zr_thermostat_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zr_thermostat",
+        "description": "zr_thermostat",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_thermostat",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -58808,6 +62981,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zr_thermostat_sink/tirtos7/ticlang/zr_thermostat_sink_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zr_thermostat_sink",
+        "description": "zr_thermostat_sink",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_thermostat_sink",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_thermostat_sink/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zr_thermostat_sink",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_thermostat_sink/tirtos7/ticlang/zr_thermostat_sink_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zr_thermostat_sink",
         "description": "zr_thermostat_sink",
         "kernel": [
@@ -59548,6 +63789,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_thermostat_sink/tirtos7/iar/zr_thermostat_sink_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zr_thermostat_sink",
+        "description": "zr_thermostat_sink",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_thermostat_sink",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -60199,6 +64479,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zr_warningdevice/tirtos7/ticlang/zr_warningdevice_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zr_warningdevice",
+        "description": "zr_warningdevice",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_warningdevice",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_warningdevice/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zr_warningdevice",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_warningdevice/tirtos7/ticlang/zr_warningdevice_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zr_warningdevice",
         "description": "zr_warningdevice",
         "kernel": [
@@ -60939,6 +65287,45 @@
             "example.general"
         ],
         "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_warningdevice/tirtos7/iar/zr_warningdevice_LP_EM_CC2674P10_tirtos7_iar.ipcf",
+        "name": "zr_warningdevice",
+        "description": "zr_warningdevice",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_warningdevice",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
             "CC2652R1F"
         ],
         "coreTypes": [
@@ -61590,6 +65977,74 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zr_zone/tirtos7/ticlang/zr_zone_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "zr_zone",
+        "description": "zr_zone",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_zone",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_zone/README.html",
+        "resourceType": "categoryInfo",
+        "name": "zr_zone",
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_zone/tirtos7/ticlang/zr_zone_LP_EM_CC2674P10_tirtos7_ticlang.projectspec",
         "name": "zr_zone",
         "description": "zr_zone",
         "kernel": [
@@ -62300,6 +66755,45 @@
             "LAUNCHXL-CC1352P-2"
         ],
         "location": "../../examples/rtos/CC1352P_2_LAUNCHXL/zstack/zr_zone/tirtos7/iar/zr_zone_CC1352P_2_LAUNCHXL_tirtos7_iar.ipcf",
+        "name": "zr_zone",
+        "description": "zr_zone",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "Z-Stack",
+            "zr_zone",
+            "TI-RTOS7",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2674P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2674P10"
+        ],
+        "devtools": [
+            "LP-EM-CC2674P10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC2674P10/zstack/zr_zone/tirtos7/iar/zr_zone_LP_EM_CC2674P10_tirtos7_iar.ipcf",
         "name": "zr_zone",
         "description": "zr_zone",
         "kernel": [

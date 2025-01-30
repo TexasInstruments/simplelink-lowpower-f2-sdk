@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2018-2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2023 Cypress Semiconductor Corporation (an Infineon company)
+ * or an affiliate of Cypress Semiconductor Corporation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -80,13 +82,11 @@ typedef struct psa_msg_t {
                                  *  - secure partition id;
                                  *  - non secure client endpoint id.
                                  */
-#if CONFIG_TFM_CONNECTION_BASED_SERVICE_API == 1
     void *rhandle;              /* Be useful for binding a connection to some
                                  * application-specific data or function
                                  * pointer within the RoT Service
                                  * implementation.
                                  */
-#endif
     size_t in_size[PSA_MAX_IOVEC]; /* Provide the size of each client input
                                     * vector in bytes.
                                     */

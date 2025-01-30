@@ -31,8 +31,8 @@ include(${CMAKE_SOURCE_DIR}/config/tfm_platform.cmake)
 
 # Some compiler flags depend on the CPU / platform config. This include should
 # be run before the toolchain file so the compiler can be configured properly.
-if (NOT EXISTS ${TARGET_PLATFORM_PATH}/preload.cmake)
-    Message(FATAL_ERROR "preload.cmake is not found in ${TFM_PLATFORM}")
+if (NOT EXISTS ${TARGET_PLATFORM_PATH}/cpuarch.cmake)
+    Message(FATAL_ERROR "cpuarch.cmake is not found in ${TFM_PLATFORM}")
 else()
-    include(${TARGET_PLATFORM_PATH}/preload.cmake)
+    include(${TARGET_PLATFORM_PATH}/cpuarch.cmake)
 endif()

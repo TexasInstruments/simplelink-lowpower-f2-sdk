@@ -65,6 +65,7 @@
 /* Cache */
 #define SSE_200_CACHE_S
 
+#define DEFAULT_UART_CONTROL 0
 /* Default UART baud rate */
 #define DEFAULT_UART_BAUDRATE 115200
 

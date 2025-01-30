@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2012-2024, Texas Instruments Incorporated
+ Copyright (c) 2012-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -64,6 +64,7 @@
  * GLOBAL VARIABLES
  ********************************************************************/
 uint8_t finalHash[ECDSA_KEY_LEN] = {0};
+bool periphRequired_g = true;
 
 /********************************************************************
  * EXTERN VARIABLES

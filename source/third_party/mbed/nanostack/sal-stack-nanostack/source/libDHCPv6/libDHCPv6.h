@@ -122,7 +122,7 @@ typedef NS_LIST_HEAD(dhcpv6_client_server_data_t, link) dhcpv6_client_server_ent
 
 typedef struct dhcpv6_relay_msg {
     uint8_t    type;
-    uint8_t    hop_limit;
+    uint8_t    hop_count;
     uint8_t    *link_address;
     uint8_t    *peer_address;
     dhcp_options_msg_t relay_interface_id;
@@ -294,7 +294,7 @@ uint16_t libdhcpv6_address_reply_message_len(uint16_t clientDUIDLength, uint16_t
 #endif
 
 uint8_t *libdhcpv6_generic_nontemporal_address_message_write(uint8_t *ptr, dhcpv6_solication_base_packet_s *packet, dhcpv6_ia_non_temporal_address_s *nonTemporalAddress, dhcp_duid_options_params_t *serverLink);
-uint8_t *libdhcpv6_dhcp_relay_msg_write(uint8_t *ptr, uint8_t type, uint8_t hop_limit,  uint8_t *peer_addres, uint8_t *link_address);
+uint8_t *libdhcpv6_dhcp_relay_msg_write(uint8_t *ptr, uint8_t type, uint8_t hop_count,  uint8_t *peer_addres, uint8_t *link_address);
 uint8_t *libdhcpv6_dhcp_option_header_write(uint8_t *ptr, uint16_t option_type, uint16_t length);
 
 int libdhcpv6_get_IA_address(uint8_t *ptr, uint16_t data_length, dhcp_ia_non_temporal_params_t *params);

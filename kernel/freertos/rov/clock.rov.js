@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, Texas Instruments Incorporated
+ * Copyright (c) 2022-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -195,10 +195,10 @@ function getListOfClockAddresses(device){
         }
     }
     else {
-        /* If the current device is a CC32XX (or any other device which uses
-         * ClockP_freertos.c) in dpl then then no global list or queue
-         * keeps track of all Clock objects. Thus we iterate over the
-         * FreeRTOS timers and see which of them are owned by a Clock obj */
+        /* If the current device is a device which uses ClockP_freertos.c in
+         * dpl then then no global list or queue keeps track of all Clock
+         * objects. Thus we iterate over the FreeRTOS timers and see which of
+         * them are owned by a Clock obj */
         list = getClockListByReadingTimers();
     }
 

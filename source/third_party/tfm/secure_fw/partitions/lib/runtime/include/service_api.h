@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 #include "tfm_boot_status.h"
+#include "psa/error.h"
 
 /**
  * \brief Retrieve secure partition related data from shared memory area, which
@@ -18,8 +19,8 @@
  * \param[out] boot_data   Pointer to boot data.
  * \param[in]  len         The length of the boot data.
  */
-int32_t tfm_core_get_boot_data(uint8_t major_type,
-                               struct tfm_boot_data *boot_data,
-                               uint32_t len);
+psa_status_t tfm_core_get_boot_data(uint8_t major_type,
+                                    struct tfm_boot_data *boot_data,
+                                    uint32_t len);
 
 #endif /* __SERVICE_API_H__ */

@@ -23,6 +23,9 @@
 #define __PLATFORM_BASE_ADDRESS_H__
 
 #include "rss_memory_sizes.h"
+#ifdef RSS_HAS_EXPANSION_PERIPHERALS
+#include "rss_expansion_base_address.h"
+#endif /* RSS_HAS_EXPANSION_PERIPHERALS */
 
 /* ======= Defines peripherals memory map addresses ======= */
 /* Non-secure memory map addresses */
@@ -72,7 +75,9 @@
 #define HOST_ACCESS_BASE_NS              0x60000000 /* Can access the Host region based on ATU config */
 #define HOST_ACCESS_LIMIT_NS             (HOST_ACCESS_BASE_NS + HOST_ACCESS_SIZE - 1)
 /* ATU regions open in bootloader and runtime */
+#ifdef RSS_USE_HOST_UART
 #define HOST_UART0_BASE_NS               (HOST_ACCESS_BASE_NS + 0xFF00000) /* UART 0 Non-Secure base address */
+#endif /* RSS_USE_HOST_UART */
 
 /* Secure memory map addresses */
 #define ITCM_BASE_S                      0x10000000 /* Instruction TCM Secure base address */
@@ -143,7 +148,9 @@
 #define HOST_IMAGE_MAX_SIZE              0x1000000 /* 16 MiB */
 
 /* ATU regions open in bootloader and runtime */
+#ifdef RSS_USE_HOST_UART
 #define HOST_UART0_BASE_S                (HOST_ACCESS_BASE_S + 0xFF00000) /* UART 0 Secure base address */
+#endif /* RSS_USE_HOST_UART */
 /* ATU regions open in BL1 */
 #define HOST_FLASH0_TEMP_BASE_S          (HOST_ACCESS_BASE_S + 2 * HOST_IMAGE_MAX_SIZE) /* Temporary address for mapping host flash areas */
 #define HOST_FLASH0_IMAGE0_BASE_S        (HOST_ACCESS_BASE_S + 3 * HOST_IMAGE_MAX_SIZE) /* Host flash image 0 input secure address */
@@ -157,12 +164,16 @@
 /* ATU regions open at runtime */
 #define FWU_HOST_IMAGE_BASE_S            (HOST_ACCESS_BASE_S + 0 * HOST_IMAGE_MAX_SIZE) /* Region to allow writing new RSS FW images */
 #define HOST_COMMS_MAPPABLE_BASE_S       (HOST_ACCESS_BASE_S + 1 * HOST_IMAGE_MAX_SIZE) /* Region into which to map host comms pointers */
+#ifdef TFM_PARTITION_PROTECTED_STORAGE
+#define HOST_ACCESS_PS_BASE_S            (HOST_ACCESS_BASE_S + 2 * HOST_IMAGE_MAX_SIZE) /* Region into which to map Protected Storage */
+#define HOST_ACCESS_PS_BASE_OFFSET       (HOST_ACCESS_PS_BASE_S - HOST_ACCESS_BASE_S)
+#endif /* TFM_PARTITION_PROTECTED_STORAGE */
 
-/* SIC regions open in BL2 and runtime */
+/* SIC regions open in BL2 and runtime. These must be contiguous */
 #define RSS_RUNTIME_S_XIP_BASE_S         SIC_HOST_BASE_S              /* RSS runtime secure image XIP secure address */
-#define RSS_RUNTIME_NS_XIP_BASE_S        (SIC_HOST_BASE_S + 0x060000) /* RSS runtime non-secure image XIP secure address */
+#define RSS_RUNTIME_NS_XIP_BASE_S        (SIC_HOST_BASE_S + FLASH_S_PARTITION_SIZE) /* RSS runtime non-secure image XIP secure address */
 
-#define RSS_RUNTIME_NS_XIP_BASE_NS       (SIC_HOST_BASE_NS + 0x060000) /* RSS runtime non-secure image XIP non-secure address */
+#define RSS_RUNTIME_NS_XIP_BASE_NS       (SIC_HOST_BASE_NS + FLASH_S_PARTITION_SIZE) /* RSS runtime non-secure image XIP non-secure address */
 
 /* Memory map addresses exempt from memory attribution by both the SAU and IDAU */
 #define RSS_EWIC_BASE                    0xE0047000 /* External Wakeup Interrupt Controller

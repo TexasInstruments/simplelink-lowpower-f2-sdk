@@ -9,7 +9,7 @@ design in Trusted Firmware-M (`TF-M`).
     specifications:
     `FF-M v1.1 Update <https://developer.arm.com/documentation/aes0039/latest>`_
     on
-    `FF-M v1.0 <https://developer.arm.com/-/media/Files/pdf/PlatformSecurityArchitecture/Architect/DEN0063-PSA_Firmware_Framework-1.0.0-2.pdf?revision=2d1429fa-4b5b-461a-a60e-4ef3d8f7f4b4&la=en&hash=BE8C59DBC98212591E1F935C2312D497011CD8C7>`_.
+    `FF-M v1.0 <https://developer.arm.com/documentation/den0063/latest/>`_.
   - The words marked as `interpreted` are defined terms. Find the terms in
     referenced documents if it is not described in this document.
 

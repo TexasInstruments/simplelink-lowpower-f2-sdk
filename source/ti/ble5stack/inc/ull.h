@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2024, Texas Instruments Incorporated
+ Copyright (c) 2009-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -117,6 +117,7 @@ extern "C"
 #define ULL_EVT_MONITOR_RX_WINDOW_COMPLETE    17 //!< Monitor event rx window complete
 #define ULL_EVT_MONITOR_RX_RADIO_AVAILABLE    18 //!< Monitor event radio available
 #define ULL_EVT_MONITOR_RX_STARTED            19 //!< Monitor event rx started
+#define ULL_EVT_MONITOR_CONTINUE              20 //!< Monitor event continue monitoring the next session
 
 /**
  * Link layer Scanner number of rx entries

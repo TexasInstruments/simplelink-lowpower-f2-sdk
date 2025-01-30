@@ -395,11 +395,17 @@ for(deviceNum = 0; deviceNum < app.length; deviceNum++)
         }
 
         if (currAttribute._type.endsWith('[]')) {
-          attributeDefaults += 'WEAK const ' + currAttribute._type.substring(0, currAttribute._type.length-2) + ' ' + defaultName + '[] = ' + currAttribute._default + ';\n';
+          if (!attributeDefaults.includes(defaultName))
+          {
+            attributeDefaults += 'WEAK const ' + currAttribute._type.substring(0, currAttribute._type.length-2) + ' ' + defaultName + '[] = ' + currAttribute._default + ';\n';
+          }
         }
         else {
-          attributeDefaults += 'WEAK const ' + currAttribute._type + ' ' + defaultName + ' = ' + currAttribute._default + ';\n';
-          attributeResets += '\t' + variableName + ' = ' + defaultName + ';\n';
+          if (!attributeDefaults.includes(defaultName))
+          {
+            attributeDefaults += 'WEAK const ' + currAttribute._type + ' ' + defaultName + ' = ' + currAttribute._default + ';\n';
+            attributeResets += '\t' + variableName + ' = ' + defaultName + ';\n';
+          }
         }
       }
 
@@ -523,15 +529,24 @@ for(deviceNum = 0; deviceNum < app.length; deviceNum++)
         }
         if(currAttribute._default == 18446744073709551615) // Append "ULL" to DEFAULT_OTA_UPGRADE_UPGRADE_SERVER_ID
         {
-          attributeDefaults += 'WEAK const ' + currAttribute._type + ' ' + defaultName + ' = ' + currAttribute._default + 'ULL;\n';
-          attributeResets += '\t' + variableName + ' = ' + defaultName + ';\n';
+          if (!attributeDefaults.includes(defaultName))
+          {
+            attributeDefaults += 'WEAK const ' + currAttribute._type + ' ' + defaultName + ' = ' + currAttribute._default + 'ULL;\n';
+            attributeResets += '\t' + variableName + ' = ' + defaultName + ';\n';
+          }
         }
         else if (currAttribute._type.endsWith('[]')) {
-          attributeDefaults += 'WEAK const ' + currAttribute._type.substring(0, currAttribute._type.length-2) + ' ' + defaultName + '[] = ' + currAttribute._default + ';\n';
+          if (!attributeDefaults.includes(defaultName))
+          {
+            attributeDefaults += 'WEAK const ' + currAttribute._type.substring(0, currAttribute._type.length-2) + ' ' + defaultName + '[] = ' + currAttribute._default + ';\n';
+          }
         }
         else {
-          attributeDefaults += 'WEAK const ' + currAttribute._type + ' ' + defaultName + ' = ' + currAttribute._default + ';\n';
-          attributeResets += '\t' + variableName + ' = ' + defaultName + ';\n';
+          if (!attributeDefaults.includes(defaultName))
+          {
+            attributeDefaults += 'WEAK const ' + currAttribute._type + ' ' + defaultName + ' = ' + currAttribute._default + ';\n';
+            attributeResets += '\t' + variableName + ' = ' + defaultName + ';\n';
+          }
         }
       }
 

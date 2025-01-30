@@ -456,7 +456,8 @@ const deviceToBoard = {
   CC2340R5_Q1: "LP_EM_CC2340R5_Q1",
   CC2340R2: "LP_EM_CC2340R2",
   CC2674R10RGZ: "LP_CC2674R10_RGZ",
-  CC2674P10RGZ: "LP_CC2674P10_RGZ"
+  CC2674P10RGZ: "LP_CC2674P10_RGZ",
+  LP_EM_CC2674P10: "LP_EM_CC2674P10"
 };
 
 const deviceToDefines = {
@@ -481,7 +482,8 @@ const deviceToDefines = {
   "LP_EM_CC1354P10_6": ["-DCC1354P10_6_LP", "-DCC13X4", "-DCC13XX"],
   "LP_CC2340R2": ["-DCC23X0"],
   "LP_CC2340R5": ["-DCC23X0"],
-  "LP_CC2340R5_Q1": ["-DCC23X0"]
+  "LP_CC2340R5_Q1": ["-DCC23X0"],
+  "LP_EM_CC2674P10": ["-DCC2674P10_LP", "-DCC2674P10", "-DCC13X4"],
 };
 
 const txPowerValueToIndex = [
@@ -535,7 +537,8 @@ const bleCentralCCFGSettings = {
   LP_EM_CC1354P10_1_CCFG_SETTINGS: {},
   LP_EM_CC1354P10_6_CCFG_SETTINGS: {},
   LP_CC2674R10_RGZ_CCFG_SETTINGS: {},
-  LP_CC2674P10_RGZ_CCFG_SETTINGS: {}
+  LP_CC2674P10_RGZ_CCFG_SETTINGS: {},
+  LP_EM_CC2674P10_CCFG_SETTINGS: {}
 };
 
 const profiles_list = [
@@ -613,6 +616,9 @@ const supportedMigrations = {
     {target: "LP_CC2674P10_RGZ"},
     {target: "CC2674P10RGZ"},
     {target: "LP_CC2674P10_RGZ"},
+  ],
+  LP_EM_CC2674P10:  [
+    {target: "LP_EM_CC2674P10"},
   ],
   LP_CC2674R10_RGZ:  [
     {target: "LP_CC2674R10_RGZ"},
@@ -1449,6 +1455,11 @@ function getRadioScript(rfDesign, deviceId)
         {
             radioSettings = system.getScript("/ti/ble5stack/rf_config/"
                 + "LP_EM_CC1354P10_6_rf_defaults.js");
+        }
+        else if(rfDesign === "LP_EM_CC2674P10")
+        {
+            radioSettings = system.getScript("/ti/ble5stack/rf_config/"
+                + "LP_EM_CC2674P10_rf_defaults.js");
         }
         else if(rfDesign === "LP_EM_CC2340R2")
         {

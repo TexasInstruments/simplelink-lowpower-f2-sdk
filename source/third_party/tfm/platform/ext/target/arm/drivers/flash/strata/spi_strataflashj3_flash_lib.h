@@ -11,7 +11,6 @@
 
 #include "cfi_drv.h"
 #include <stdbool.h>
-#include "xilinx_pg153_axi_qspi_controller_drv.h"
 
 #ifdef __cplusplus
 extern "C" {

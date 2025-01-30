@@ -8,6 +8,7 @@
 #include "cmsis.h"
 #include "common_target_cfg.h"
 #include "utilities.h"
+/* "exception_info.h" must be the last include because of the IAR pragma */
 #include "exception_info.h"
 
 void C_MPC_Handler(void)

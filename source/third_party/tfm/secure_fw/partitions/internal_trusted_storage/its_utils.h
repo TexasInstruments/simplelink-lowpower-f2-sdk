@@ -18,6 +18,8 @@ extern "C" {
 #endif
 
 #define ITS_FILE_ID_SIZE 12
+#define ITS_DATA_SIZE_FIELD_SIZE 4
+#define ITS_FLAG_SIZE 4
 #define ITS_DEFAULT_EMPTY_BUFF_VAL 0
 
 /**

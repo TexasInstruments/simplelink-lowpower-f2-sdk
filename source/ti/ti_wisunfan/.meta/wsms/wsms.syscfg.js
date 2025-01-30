@@ -59,6 +59,10 @@ const testModeScript = system.getScript("/ti/ti_wisunfan/test_config/"
 const securityScript = system.getScript("/ti/ti_wisunfan/security_config/"
     + "ti_wisunfan_security_config");
 
+// Get wfantund settings script
+const wfantundScript = system.getScript("/ti/ti_wisunfan/wfantund_config/"
+    + "ti_wisunfan_wfantund_config");
+
 // Get advanced settings script
 const advancedScript = system.getScript("/ti/ti_wisunfan/advanced_config/"
     + "ti_wisunfan_advanced_config");
@@ -153,6 +157,7 @@ const wsmsStatic = {
         networkScript.config,
         powerScript.config,
         securityScript.config,
+        wfantundScript.config,
         advancedScript.config
         //testModeScript.config
     ],

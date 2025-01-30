@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2024, Texas Instruments Incorporated
+ Copyright (c) 2016-2025, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -1617,7 +1617,14 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
                 status = LE_SetExtAdvParams_sPatch(&pAdvSet->advCmdParams, &retParams);
                 if (status != LL_STATUS_SUCCESS)
                 {
+                  // Remove the ADV set only if it is disabled
+                  // If the set was already enabled it means the controller allocated
+                  // its memory. We need to avoid removing it only from here.
+                  // In addition, the set can keep running with the last vaid parameters.
+                  if (pAdvSet->enableCmdParams.enable == LL_ADV_MODE_OFF)
+                  {
                     hci_tl_RemoveAdvSet(ADV_LEGACY_SET_HANDLE);
+                  }
                 }
             }
             else
@@ -1799,7 +1806,7 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
             hci_tl_cmdScanParams.extScanParam[0].scanInterval = BUILD_UINT16(param[1], param[2]);
             hci_tl_cmdScanParams.extScanParam[0].scanWindow   = BUILD_UINT16(param[3], param[4]);
 
-            status = LE_SetExtScanParams(&hci_tl_cmdScanParams);
+            status = LE_SetExtScanParams_sPatch(&hci_tl_cmdScanParams);
 
             HCI_CommandCompleteEvent(cmdOpCode,
                                      sizeof(status),
@@ -1843,7 +1850,7 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
                 hci_tl_setDefaultScanParams(&hci_tl_cmdScanParams);
 
                 // Set the parameters
-                LE_SetExtScanParams(&hci_tl_cmdScanParams);
+                LE_SetExtScanParams_sPatch(&hci_tl_cmdScanParams);
             }
 
             // Copy the scan enable parameters
@@ -1972,7 +1979,14 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
                 rsp[1] = retParams.txPower;
                 if (rsp[0] != LL_STATUS_SUCCESS)
                 {
+                  // Remove the ADV set only if it is disabled
+                  // If the set was already enabled it means the controller allocated
+                  // its memory. We need to avoid removing it only from here.
+                  // In addition, the set can keep running with the last vaid parameters.
+                  if (pAdvSet->enableCmdParams.enable == LL_ADV_MODE_OFF)
+                  {
                     hci_tl_RemoveAdvSet(param[0]);
+                  }
                 }
             }
             else
@@ -2288,7 +2302,7 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
                 hci_tl_setDefaultScanParams(&hci_tl_cmdScanParams);
 
                 // Set the parameters
-                LE_SetExtScanParams(&hci_tl_cmdScanParams);
+                LE_SetExtScanParams_sPatch(&hci_tl_cmdScanParams);
             }
 
             status = LE_SetExtScanEnable(&hci_tl_cmdScanEnable);
@@ -2318,7 +2332,7 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
             // even if the call to  LE_SetExtAdvParams fails
             hci_tl_cmdScanParams = *((aeSetScanParamCmd_t *)param);
 
-            status = LE_SetExtScanParams(&hci_tl_cmdScanParams);
+            status = LE_SetExtScanParams_sPatch(&hci_tl_cmdScanParams);
 
             HCI_CommandCompleteEvent(cmdOpCode,
                                      sizeof(status),
@@ -4236,21 +4250,19 @@ static void HCI_TL_SendDataPkt(uint8_t *pMsg)
   // LE only accepts Data packets of type ACL.
   if ((pDataPkt) && (pDataPkt->pktType == HCI_ACL_DATA_PACKET))
   {
-    uint8_t *pData = pDataPkt->pData;
-
-    // Replace data with bm data
-    pDataPkt->pData = (uint8_t *) HCI_bm_alloc(pDataPkt->pktLen);
+    // Allocate data with bm data
+    uint8_t *pData = (uint8_t *) HCI_bm_alloc(pDataPkt->pktLen);
 
     if ((pDataPkt->pData) && (pData))
     {
-      memcpy(pDataPkt->pData, pData, pDataPkt->pktLen);
+      memcpy(pData, pDataPkt->pData, pDataPkt->pktLen);
 
       if (HCI_SendDataPkt(pDataPkt->connHandle,
                           pDataPkt->pbFlag,
                           pDataPkt->pktLen,
-                          pDataPkt->pData) != HCI_SUCCESS )
+                          pData) != HCI_SUCCESS )
       {
-        HCI_bm_free(pDataPkt->pData);
+        HCI_bm_free(pData);
       }
     }
   }

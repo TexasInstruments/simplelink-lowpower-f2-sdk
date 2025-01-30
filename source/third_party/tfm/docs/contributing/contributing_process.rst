@@ -65,6 +65,11 @@ Contributions to the TF-M project need to follow the process below.
 - You may be asked to provide further details or make additional changes.
 - You can discuss further with code owner(s) and maintainer(s) directly via
   `TF-M mailing list <mailing_list_>`_ if necessary.
+- If multiple patches are linked in a chain then code owners and maintainers
+  should review and merge individual patches when they are ready, rather than
+  waiting for the entire chain to be reviewed. If multiple patches are intended
+  to be merged together then authors shall use topics or explicitly mention
+  that in the commit message.
 - Click ``Allow-CI +1`` button on Gerrit page to run CI to validate your patch.
   Your patch shall pass CI successfully before being merged. Code owner(s) and
   maintainer(s) may ask for additional test.

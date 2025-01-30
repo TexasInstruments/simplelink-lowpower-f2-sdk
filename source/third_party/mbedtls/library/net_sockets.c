@@ -20,10 +20,9 @@
 /* Enable definition of getaddrinfo() even when compiling with -std=c99. Must
  * be set before mbedtls_config.h, which pulls in glibc's features.h indirectly.
  * Harmless on other platforms. */
-/* TI-MBEDTLS: Disabling POSIX defines that conflict with TI POSIX */
-// #ifndef _POSIX_C_SOURCE
-// #define _POSIX_C_SOURCE 200112L
-// #endif
+#ifndef _POSIX_C_SOURCE
+#define _POSIX_C_SOURCE 200112L
+#endif
 #ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE 600 /* sockaddr_storage */
 #endif
@@ -49,11 +48,6 @@
     !defined(EFI32)
 
 #define IS_EINTR(ret) ((ret) == WSAEINTR)
-
-#if !defined(_WIN32_WINNT)
-/* Enables getaddrinfo() & Co */
-#define _WIN32_WINNT 0x0501
-#endif
 
 #include <ws2tcpip.h>
 
@@ -91,6 +85,7 @@ static int wsa_init_done = 0;
 #include <errno.h>
 
 #define IS_EINTR(ret) ((ret) == EINTR)
+#define SOCKET int
 
 #endif /* ( _WIN32 || _WIN32_WCE ) && !EFIX64 && !EFI32 */
 
@@ -495,13 +490,13 @@ int mbedtls_net_poll(mbedtls_net_context *ctx, uint32_t rw, uint32_t timeout)
     FD_ZERO(&read_fds);
     if (rw & MBEDTLS_NET_POLL_READ) {
         rw &= ~MBEDTLS_NET_POLL_READ;
-        FD_SET(fd, &read_fds);
+        FD_SET((SOCKET) fd, &read_fds);
     }
 
     FD_ZERO(&write_fds);
     if (rw & MBEDTLS_NET_POLL_WRITE) {
         rw &= ~MBEDTLS_NET_POLL_WRITE;
-        FD_SET(fd, &write_fds);
+        FD_SET((SOCKET) fd, &write_fds);
     }
 
     if (rw != 0) {
@@ -609,7 +604,7 @@ int mbedtls_net_recv_timeout(void *ctx, unsigned char *buf,
     }
 
     FD_ZERO(&read_fds);
-    FD_SET(fd, &read_fds);
+    FD_SET((SOCKET) fd, &read_fds);
 
     tv.tv_sec  = timeout / 1000;
     tv.tv_usec = (timeout % 1000) * 1000;

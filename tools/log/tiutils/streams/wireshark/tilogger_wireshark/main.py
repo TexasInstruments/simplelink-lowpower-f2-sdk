@@ -14,6 +14,7 @@ import click
 import subprocess
 import os
 import sys
+import time
 
 from typing import DefaultDict, Dict, List
 from collections import defaultdict
@@ -54,6 +55,10 @@ class WiresharkOutput(LogOutputABC):
 
     def start(self):
         start_wireshark(self.ws_pipe)
+        # Try flushing backlog until Pipe is initialized
+        while not self._pipe_inited:
+            self._try_connect_backlog()
+            time.sleep(0.5)  # Sleep to reduce CPU usage
 
     def notify_packet(self, packet: LogPacket) -> None:
         self._send(packet)
@@ -97,7 +102,7 @@ class WiresharkOutput(LogOutputABC):
                         win32file.WriteFile(self._pipe, x)
                     win32file.WriteFile(self._pipe, data)
                 except Exception:
-                    logger.warn("Could not send log packet to Wireshark")
+                    logger.warn("Could not send to Wireshark - packet stored in backlog")
                     self._pipe_backlog.append(data)
 
             else:
@@ -198,9 +203,9 @@ def start_wireshark(ws_pipe):
 
 
 # Function that adds a command to a typer instance via decorator
-def transport_factory_cli(app: typer.Typer):
+def output_factory_cli(app: typer.Typer):
     @app.command(name="wireshark")
-    def transport_factory_cb(
+    def output_factory_cb(
         ctx: typer.Context,
         start_wireshark: bool = typer.Option(False, "--start", "-s"),
         ws_pipe: str = typer.Option(WIRESHARK_PIPE_NAME, "--pipe"),

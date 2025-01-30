@@ -894,6 +894,10 @@ function getLibs(inst)
             {
                 devLibsFolder = "cc1354p10_6";
             }
+            else if(LPName == "LP_EM_CC2674P10" )
+            {
+                devLibsFolder = "cc1354p10_6";
+            }
             basePath = "ti/ble5stack_flash/libraries/";
         }
         else if(devFamily == "DeviceFamily_CC23X0R5" || devFamily == "DeviceFamily_CC23X0R2")
@@ -1086,7 +1090,7 @@ function getAppConfigOpts()
     bleMod.oadDebug && result.push("-DOAD_DEBUG");
     bleMod.oadFeature && result.push("-DFEATURE_OAD");
     bleMod.oadBleSecurity && result.push("-DOAD_BLE_SECURITY");
-    bleMod.sdaa && result.push("-DSDAA_ENABLE");
+    bleMod.adaptivity && result.push("-DSDAA_ENABLE");
 
     if(!(ccfg===undefined))
     {

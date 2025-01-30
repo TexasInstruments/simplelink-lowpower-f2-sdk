@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2023, Texas Instruments Incorporated
+ * Copyright (c) 2015-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -524,8 +524,7 @@ uint_fast32_t Power_getConstraintMask(void);
  *  declared upon a resource.
  *
  *  Resource identifiers are device specific, and defined in the
- *  device-specific Power include file.  For example, the resources for
- *  CC32XX are defined in PowerCC32XX.h.
+ *  device-specific Power include file.
  *
  *  @param[in]  resourceId  resource id
  *
@@ -571,8 +570,7 @@ int_fast16_t Power_getConstraintCount(uint_fast16_t constraintId);
  *  notifications.
  *
  *  Sleep states are device specific, and defined in the device-specific Power
- *  include file.  For example, the sleep states for CC32XX are defined in
- *  PowerCC32XX.h.
+ *  include file.
  *
  *  This function is typically called by the power policy function. The latency
  *  is reported in units of microseconds.
@@ -746,8 +744,7 @@ int_fast16_t Power_releaseConstraint(uint_fast16_t constraintId);
  *  a resource (by a call to Power_setDependency()).
  *
  *  Resource identifiers are device specific, and defined in the
- *  device-specific Power include file.  For example, the resources for
- *  CC32XX are defined in PowerCC32XX.h.
+ *  device-specific Power include file.
  *
  *  @param[in]  resourceId      resource id
  *
@@ -825,8 +822,7 @@ int_fast16_t Power_setConstraint(uint_fast16_t constraintId);
  *  released.
  *
  *  Resource identifiers are device specific, and defined in the
- *  device-specific Power include file.  For example, the resources for
- *  CC32XX are defined in PowerCC32XX.h.
+ *  device-specific Power include file.
  *
  *  @param[in]  resourceId      resource id
  *
@@ -855,14 +851,12 @@ void Power_setPolicy(Power_PolicyFxn policy);
 /*!
  *  @brief  Put the device into a shutdown state
  *
- *  This function will transition the device into a shutdown state.
- *  Before the actual transition is initiated, notifications will be sent to
- *  any clients who've registered (with Power_registerNotify()) for an
- *  'entering shutdown' event.  The event name is device specific, and defined
- *  in the device-specific Power include file.  For example, for CC32XX, the
- *  event is "PowerCC32XX_ENTERING_SHUTDOWN", which is defined in
- *  PowerCC32XX.h.  Once notifications have been completed, the device shutdown
- *  will commence.
+ *  This function will transition the device into a shutdown state. Before the
+ *  actual transition is initiated, notifications will be sent to any clients
+ *  who've registered (with Power_registerNotify()) for an 'entering shutdown'
+ *  event.  The event name is device specific, and defined in the
+ *  device-specific Power include file. Once notifications have been completed,
+ *  the device shutdown will commence.
  *
  *  If the device is successfully transitioned to shutdown, this function
  *  call will never return.  Upon wakeup, the device and application will
@@ -879,8 +873,7 @@ void Power_setPolicy(Power_PolicyFxn policy);
  *  be ignored.)  If the specified shutdownTime is zero, or otherwise less than
  *  the total shutdown latency for the device, the shutdownTime parameter will
  *  be ignored.  The shutdown latency for the device can be found in the
- *  device-specific Power include file.  For example, for the CC32XX, this
- *  latency is defined in PowerCC32XX.h, as "PowerCC32XX_TOTALTIMESHUTDOWN".)
+ *  device-specific Power include file.
  *
  *  @param[in]  shutdownState    the device-specific shutdown state
  *
@@ -948,8 +941,6 @@ void Power_unregisterNotify(Power_NotifyObj *pNotifyObj);
      DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2 || \
      DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
     #include <ti/drivers/power/PowerCC26XX.h>
-#elif (DeviceFamily_ID == DeviceFamily_ID_CC3220 || DeviceFamily_ID == DeviceFamily_ID_CC3200)
-    #include <ti/drivers/power/PowerCC32XX.h>
 #elif (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0)
     #include <ti/drivers/power/PowerCC23X0.h>
 #elif (DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX)

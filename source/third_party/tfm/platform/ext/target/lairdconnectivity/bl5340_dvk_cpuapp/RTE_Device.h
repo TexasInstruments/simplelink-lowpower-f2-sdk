@@ -16,70 +16,31 @@
  * limitations under the License.
  */
 
-//-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
-
 #ifndef __RTE_DEVICE_H
 #define __RTE_DEVICE_H
 
-// <e> USART (Universal synchronous - asynchronous receiver transmitter) [Driver_USART0]
-// <i> Configuration settings for Driver_USART0 in component ::Drivers:USART
-#define   RTE_USART0                    1
-//   <h> Pin Selection (0xFFFFFFFF means Disconnected)
-//     <o> TXD
-#define   RTE_USART0_TXD_PIN            20
-//     <o> RXD
-#define   RTE_USART0_RXD_PIN            22
-//     <o> RTS
-#define   RTE_USART0_RTS_PIN            19
-//     <o> CTS
-#define   RTE_USART0_CTS_PIN            21
-//   </h> Pin Configuration
-// </e> USART (Universal synchronous - asynchronous receiver transmitter) [Driver_USART0]
+#include <nrf-pinctrl.h>
 
-// <e> USART (Universal synchronous - asynchronous receiver transmitter) [Driver_USART1]
-// <i> Configuration settings for Driver_USART1 in component ::Drivers:USART
-#define   RTE_USART1                    1
-//   <h> Pin Selection (0xFFFFFFFF means Disconnected)
-//     <o> TXD
-#define   RTE_USART1_TXD_PIN            40
-//     <o> RXD
-#define   RTE_USART1_RXD_PIN            42
-//     <o> RTS
-#define   RTE_USART1_RTS_PIN            39
-//     <o> CTS
-#define   RTE_USART1_CTS_PIN            41
-//   </h> Pin Configuration
-// </e> USART (Universal synchronous - asynchronous receiver transmitter) [Driver_USART1]
+#define RTE_USART0 1
 
-// <e> USART (Universal synchronous - asynchronous receiver transmitter) [Driver_USART2]
-// <i> Configuration settings for Driver_USART2 in component ::Drivers:USART
-#define   RTE_USART2                    0
-//   <h> Pin Selection (0xFFFFFFFF means Disconnected)
-//     <o> TXD
-#define   RTE_USART2_TXD_PIN            0xFFFFFFFF
-//     <o> RXD
-#define   RTE_USART2_RXD_PIN            0xFFFFFFFF
-//     <o> RTS
-#define   RTE_USART2_RTS_PIN            0xFFFFFFFF
-//     <o> CTS
-#define   RTE_USART2_CTS_PIN            0xFFFFFFFF
-//   </h> Pin Configuration
-// </e> USART (Universal synchronous - asynchronous receiver transmitter) [Driver_USART2]
+#define RTE_USART0_PINS            \
+{                                  \
+        NRF_PSEL(UART_TX,  0, 20), \
+        NRF_PSEL(UART_RX,  0, 22), \
+        NRF_PSEL(UART_RTS, 0, 19), \
+        NRF_PSEL(UART_CTS, 0, 21), \
+}
 
-// <e> USART (Universal synchronous - asynchronous receiver transmitter) [Driver_USART3]
-// <i> Configuration settings for Driver_USART3 in component ::Drivers:USART
-#define   RTE_USART3                    0
-//   <h> Pin Selection (0xFFFFFFFF means Disconnected)
-//     <o> TXD
-#define   RTE_USART3_TXD_PIN            0xFFFFFFFF
-//     <o> RXD
-#define   RTE_USART3_RXD_PIN            0xFFFFFFFF
-//     <o> RTS
-#define   RTE_USART3_RTS_PIN            0xFFFFFFFF
-//     <o> CTS
-#define   RTE_USART3_RTS_PIN            0xFFFFFFFF
-//   </h> Pin Configuration
-// </e> USART (Universal synchronous - asynchronous receiver transmitter) [Driver_USART3]
+
+#define RTE_USART1 1
+
+#define RTE_USART1_PINS            \
+{                                  \
+        NRF_PSEL(UART_TX,  1,  8), \
+        NRF_PSEL(UART_RX,  1, 10), \
+        NRF_PSEL(UART_RTS, 1,  7), \
+        NRF_PSEL(UART_CTS, 1,  9), \
+}
 
 // <e> TWIM (Two-wire interface master) [Driver_TWIM2]
 // <i> Configuration settings for Driver_TWIM2 in component ::Drivers:TWIM

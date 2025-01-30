@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2023, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,12 +45,7 @@ function pinmuxRequirements(inst)
 {
     let deviceId = system.deviceData.deviceId;
 
-    let interfaceName;
-    if (deviceId.match(/CC32.*/)) {
-        interfaceName = "Timer";
-    } else {
-        interfaceName = "GPTM";
-    }
+    let interfaceName = "GPTM";
 
     let timer = {
         name          : "timer",
@@ -75,4 +70,3 @@ exports = {
     },
     getCFiles: () => { return ["ti/sysbios/family/arm/lm4/Timer.c"] }
 };
-

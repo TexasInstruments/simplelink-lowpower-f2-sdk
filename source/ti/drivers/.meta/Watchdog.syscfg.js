@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2024, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -98,17 +98,15 @@ The [__Watchdog driver__][1] allows you to configure the system watchdog.
 A watchdog timer is used to reset the system if it has become unresponsive.
 Parameters such as reset behavior and the callback function can be
 [configured][2] at runtime.
+
 * [Usage Synopsis][3]
 * [Examples][4]
 * [Configuration][5]
+
 [1]: /drivers/doxygen/html/_watchdog_8h.html#details "C API reference"
-[2]:
-/drivers/doxygen/html/_watchdog_8h.html#ti_drivers_Watchdog_example_callback
-"Example: Configure the watchdog"
-[3]: /drivers/doxygen/html/_watchdog_8h.html#ti_drivers_Watchdog_Synopsis
-"Basic C usage summary"
-[4]: /drivers/doxygen/html/_watchdog_8h.html#ti_drivers_Watchdog_Examples
-"C usage examples"
+[2]: /drivers/doxygen/html/_watchdog_8h.html#ti_drivers_Watchdog_example_callback "Example: Configure the watchdog"
+[3]: /drivers/doxygen/html/_watchdog_8h.html#ti_drivers_Watchdog_Synopsis "Basic C usage summary"
+[4]: /drivers/doxygen/html/_watchdog_8h.html#ti_drivers_Watchdog_Examples "C usage examples"
 [5]: /drivers/syscfg/html/ConfigDoc.html#Watchdog_Configuration_Options "Configuration options reference"
 `,
     modules             : Common.autoForceModules(["Board", "Power"]),

@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2024, Texas Instruments Incorporated
+ Copyright (c) 2015-2025, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -170,6 +170,7 @@ uint8 macCheckPendAddr(uint8 pendAddrSpec, uint8 *pAddrList);
 
 void MAC_ResumeReq(void);
 void macMgmtReset(void);
+uint8 MAC_MlmeResetReq(bool setDefaultPib);
 #ifdef FEATURE_FREQ_HOP_MODE
 extern MAC_INTERNAL_API void macApiWSAsyncReq(macEvent_t *pEvent);
 #endif /* FEATURE_FREQ_HOP_MODE */

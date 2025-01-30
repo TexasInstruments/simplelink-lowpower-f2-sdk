@@ -3,7 +3,7 @@
 *
 *  Description:    RF Core patch for IEEE 802.15.4-2006 with Coex in CC13x4 and CC26x4
 *
-*  Copyright (c) 2015-2023, Texas Instruments Incorporated
+*  Copyright (c) 2015-2024, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without

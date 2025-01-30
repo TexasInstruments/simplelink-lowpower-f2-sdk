@@ -71,6 +71,11 @@ for (let i in clusters) {
       }
     }
   }
+
+  if (tempServerAttributeOptions.length == 0) {
+    mcoaServerAlwaysHidden.push(cluster._id + "mcoaServer");
+    tempServerAttributeOptions.push({name: "dummy", displayName: "dummy"});
+  }
   mcoaModule.config.push({
     name: cluster._id + "mcoaServer",
     displayName: cluster._name + " Server Attributes",
@@ -83,7 +88,6 @@ for (let i in clusters) {
     onChange: bdbScript.bdbOnChange
   })
   mcoaServerDropDowns.push(cluster._id + "mcoaServer");
-  if (tempServerAttributeOptions.length == 0) { mcoaServerAlwaysHidden.push(cluster._id + "mcoaServer"); }
 
   let tempClientAttributeOptions = [];
   if (cluster.client && cluster.client.attribute) {
@@ -93,6 +97,11 @@ for (let i in clusters) {
         tempClientAttributeOptions.push({name: attribute._id, displayName: attribute._name});
       }
     }
+  }
+
+  if (tempClientAttributeOptions.length == 0) {
+    mcoaClientAlwaysHidden.push(cluster._id + "mcoaClient");
+    tempClientAttributeOptions.push({name: "dummy", displayName: "dummy"});
   }
   mcoaModule.config.push({
     name: cluster._id + "mcoaClient",
@@ -106,7 +115,6 @@ for (let i in clusters) {
     onChange: bdbScript.bdbOnChange
   })
   mcoaClientDropDowns.push(cluster._id + "mcoaClient");
-  if (tempClientAttributeOptions.length == 0) { mcoaClientAlwaysHidden.push(cluster._id + "mcoaClient"); }
 }
 
 /* Function to handle changes in the mandatory server clusters */

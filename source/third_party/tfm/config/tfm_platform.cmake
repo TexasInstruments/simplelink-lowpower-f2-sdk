@@ -5,15 +5,15 @@
 #
 #-------------------------------------------------------------------------------
 
-set(TARGET_PATH "${CMAKE_SOURCE_DIR}/platform/ext/target")
+set(TARGET_PATH "${CMAKE_CURRENT_LIST_DIR}/../platform/ext/target")
 
 if (NOT IS_ABSOLUTE "${TFM_PLATFORM}" AND NOT IS_DIRECTORY "${TARGET_PATH}/${TFM_PLATFORM}")
     # If TFM_PLATFORM is not a relative patch to ${TARGET_PATH}, then it could
     # be a platform name, for example an521. Search directories which contain
-    # the "preload.cmake" and find the the match one.
+    # the "cpuarch.cmake" and find the matching one.
 
-    # Get the list of directories which have preload.cmake
-    file(GLOB_RECURSE PLATFORM_PATHS ${TARGET_PATH} "preload.cmake")
+    # Get the list of directories which have cpuarch.cmake
+    file(GLOB_RECURSE PLATFORM_PATHS ${TARGET_PATH} "cpuarch.cmake")
 
     # Search the list with platform name and store the result in PLATFORM_PATHS
     list(FILTER PLATFORM_PATHS INCLUDE REGEX "/${TFM_PLATFORM}/")

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2021-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -21,72 +21,6 @@ extern uint8_t tfm_bl1_key_test_2_buf[];
 
 fih_int bl1_otp_read(uint8_t *dst, uint8_t *src, size_t size);
 fih_int bl1_otp_write(uint8_t *dst, uint8_t *src, size_t size);
-
-fih_int bl1_otp_init(void)
-{
-    fih_int fih_rc;
-    enum tfm_plat_err_t plat_err;
-
-    plat_err = tfm_plat_otp_init();
-    fih_rc = fih_int_encode_zero_equality(plat_err);
-    if (fih_not_eq(fih_rc, FIH_SUCCESS)) {
-        return fih_rc;
-    }
-
-    plat_err = tfm_plat_init_nv_counter();
-    fih_rc = fih_int_encode_zero_equality(plat_err);
-
-    return fih_rc;
-}
-
-fih_int bl1_otp_read_bl1_2_image_hash(uint8_t *hash)
-{
-    fih_int fih_rc;
-    enum tfm_plat_err_t plat_err;
-
-    plat_err = tfm_plat_otp_read(PLAT_OTP_ID_BL1_2_IMAGE_HASH, BL1_2_HASH_SIZE,
-                                 hash);
-    fih_rc = fih_int_encode_zero_equality(plat_err);
-
-    FIH_RET(fih_rc);
-}
-
-fih_int bl1_otp_read_bl2_image_hash(uint8_t *hash)
-{
-    fih_int fih_rc;
-    enum tfm_plat_err_t plat_err;
-
-    plat_err = tfm_plat_otp_read(PLAT_OTP_ID_BL2_IMAGE_HASH, BL2_HASH_SIZE,
-                                 hash);
-    fih_rc = fih_int_encode_zero_equality(plat_err);
-
-    FIH_RET(fih_rc);
-}
-
-fih_int bl1_otp_read_nv_counter(enum tfm_bl1_nv_counter_id_t counter_id,
-                                uint32_t *count)
-{
-    fih_int fih_rc;
-    enum tfm_plat_err_t plat_err;
-
-    plat_err = tfm_plat_read_nv_counter(PLAT_NV_COUNTER_BL1_0,
-                                        sizeof(uint32_t), (uint8_t *)count);
-    fih_rc = fih_int_encode_zero_equality(plat_err);
-
-    FIH_RET(fih_rc);
-}
-
-fih_int bl1_otp_write_nv_counter(enum tfm_bl1_nv_counter_id_t counter_id,
-                                 uint32_t count)
-{
-    fih_int fih_rc;
-    enum tfm_plat_err_t plat_err;
-
-    plat_err = tfm_plat_set_nv_counter(PLAT_NV_COUNTER_BL1_0, count);
-    fih_rc = fih_int_encode_zero_equality(plat_err);
-
-    FIH_RET(fih_rc);
-}
 
 fih_int bl1_otp_read_key(enum tfm_bl1_key_id_t key_id, uint8_t *key_buf)
 {

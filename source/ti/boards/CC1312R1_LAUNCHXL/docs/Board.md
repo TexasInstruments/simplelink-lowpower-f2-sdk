@@ -1,12 +1,17 @@
 # SimpleLink&trade; CC1312R1 LaunchPad&trade; Settings & Resources
 
-The [__SimpleLink&trade; CC1312R1 LaunchPad&trade;__][launchpad] contains a
+The [__SimpleLink&trade; CC1312R1 LaunchPad&trade;__][board] contains a
 [__CC1312R1F3RGZR__][device] device.
 
 ## Jumper Settings
 
-* Close the __`LEDs`__ jumper to enable the on-board LEDs.
+* Close the __`LEDs`__ jumpers to enable the on-board LEDs.
 * Close the __`RXD<<`__ and __`TXD>>`__ jumpers to enable UART via the XDS110 on-board USB debugger.
+* In order to get the lowest shutdown current (see the
+  `gpioshutdown` example), remove the jumpers for the __`TCK`__ and __`TMS`__
+  JTAG pins. TMS and TCK have internal pull-up and are driven low when
+  inactive from the emulator, hence after programming the device these jumpers
+  should be removed to avoid the extra leakage current.
 
 ## SysConfig Board File
 
@@ -35,7 +40,7 @@ The following BoosterPacks are used with some driver examples.
 
 ### [__CC3200 Audio BoosterPack__][cc3200audboost]
 
-The BoostPack's `DIN` signal pin is not compatible with this LaunchPad.
+The BoosterPack's `DIN` signal pin is not compatible with this LaunchPad.
 Use the following modifications to enable the CC3200 Audio BoosterPack's
 usage with the __i2secho__ example.
 
@@ -58,7 +63,7 @@ diagram below for information on where these pins are located.
 ![CC3200 Audio BoosterPack Jumper Wire Diagram](images/cc3200audboost_jumpers_annotated.png)
 
 [device]: https://www.ti.com/product/CC1312R
-[launchpad]: https://www.ti.com/tool/LAUNCHXL-CC1312R1
+[board]: https://www.ti.com/tool/LAUNCHXL-CC1312R1
 [boostxl-sharp128]: https://www.ti.com/tool/BOOSTXL-SHARP128
 [bp-bassensorsmkii]: https://www.ti.com/tool/BP-BASSENSORSMKII
 [cc3200audboost]: https://www.ti.com/tool/CC3200AUDBOOST
