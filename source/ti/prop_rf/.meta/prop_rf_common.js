@@ -97,7 +97,7 @@ const propRfCCFGSettings = {
         forceVddr: false,
         enableBootloaderBackdoor: false
     },
-    CC2652RB_LAUNCHXL_CCFG_SETTINGS: {
+    LP_CC2652RB_CCFG_SETTINGS: {
         forceVddr: false,
         enableBootloaderBackdoor: false
     },
