@@ -271,8 +271,8 @@ for(stack of Common.stacks)
         // Verify that the stack has ccfgSettings to provide before setting them
         if((stackCommon !== undefined) && (stackCommon.ccfgSettings))
         {
-            ccfgSettings = Object.assign(ccfgSettings,
-                stackCommon.ccfgSettings);
+            // Board specific settings have preference over stack common settings 
+            ccfgSettings = Object.assign({}, stackCommon.ccfgSettings, ccfgSettings);
         }
     }
 }
