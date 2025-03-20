@@ -86,6 +86,10 @@ typedef struct
     SHA2_Object object; /*!< Pointer to a driver specific data object */
 } mbedtls_sha512_context;
 
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* MBEDTLS_SHA512_ALT */
 
 #endif /* MBEDTLS_SHA512_ALT_H */
