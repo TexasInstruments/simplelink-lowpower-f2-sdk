@@ -76,7 +76,9 @@
  The stack will allocate memory proportional to the number of end devices
  requested.
  */
+#ifndef WISUN_RCP_ENABLE
 #define FH_NUM_NON_SLEEPY_HOPPING_NEIGHBORS MAX_DEVICE_TABLE_ENTRIES
+#endif
 
 /*!
  The number of non sleepy fixed channel end devices to be supported.
@@ -86,13 +88,13 @@
  */
 #define FH_NUM_NON_SLEEPY_FIXED_CHANNEL_NEIGHBORS 2
 
-
+#ifndef WISUN_RCP_ENABLE
 #if (FH_NUM_NON_SLEEPY_HOPPING_NEIGHBORS < 2) || (FH_NUM_NON_SLEEPY_FIXED_CHANNEL_NEIGHBORS < 2)
 #error "You have an invalid value for FH neighbors. Set the values \
         for FH_NUM_NON_SLEEPY_HOPPING_NEIGHBORS and \
         FH_NUM_NON_SLEEPY_FIXED_CHANNEL_NEIGHBORS to at least 2"
 #endif
-
+#endif
 
 
 /*!

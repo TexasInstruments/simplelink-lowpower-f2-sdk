@@ -89,6 +89,16 @@ uint16_t ws_wp_nested_hopping_schedule_length(struct ws_hopping_schedule_s *hopp
             length += hopping_schedule->excluded_channels.channel_mask_bytes_inline;
         }
     }
+#ifdef WISUN_RCP_ENABLE
+    // update the BS-IE exclude channel
+    if ((!unicast_schedule) && hopping_schedule->bc_excluded_channels.excuded_channel_ctrl) {
+        if (hopping_schedule->bc_excluded_channels.excuded_channel_ctrl == WS_EXC_CHAN_CTRL_RANGE) {
+            length += (hopping_schedule->bc_excluded_channels.excluded_range_length * 4) + 1;
+        } else {
+            length += hopping_schedule->bc_excluded_channels.channel_mask_bytes_inline;
+        }
+    }
+#endif
     return length;
 }
 
@@ -172,6 +182,8 @@ uint8_t *ws_wp_nested_hopping_schedule_write(uint8_t *ptr, struct ws_hopping_sch
         channel_info_base |= (hopping_schedule->excluded_channels.excuded_channel_ctrl << 6);
     } else {
         channel_info_base |= (hopping_schedule->bc_channel_function << 3);
+        //Set Excluded Channel control part
+        channel_info_base |= (hopping_schedule->bc_excluded_channels.excuded_channel_ctrl << 6);
     }
 
     *ptr++ = channel_info_base;
@@ -218,6 +230,44 @@ uint8_t *ws_wp_nested_hopping_schedule_write(uint8_t *ptr, struct ws_hopping_sch
 
     }
 
+#ifdef WISUN_RCP_ENABLE
+    // need to support both UC and BC exclude channel list
+    ws_excluded_channel_data_t *p_excluded_channels;
+
+    if (unicast_schedule)
+    {   // UNICAST case
+        p_excluded_channels = &(hopping_schedule->excluded_channels);
+    }
+    else
+    {   //Broadcast case
+        p_excluded_channels = &(hopping_schedule->bc_excluded_channels);
+    }
+    if (p_excluded_channels->excuded_channel_ctrl) {
+        if (p_excluded_channels->excuded_channel_ctrl == WS_EXC_CHAN_CTRL_RANGE) {
+            uint8_t range_length = p_excluded_channels->excluded_range_length;
+            ws_excluded_channel_range_data_t *range_ptr = p_excluded_channels->exluded_range;
+            *ptr++ = range_length;
+            while (range_length) {
+                ptr = common_write_16_bit_inverse(range_ptr->range_start, ptr);
+                ptr = common_write_16_bit_inverse(range_ptr->range_end, ptr);
+                range_length--;
+                range_ptr++;
+            }
+        } else if (p_excluded_channels->excuded_channel_ctrl == WS_EXC_CHAN_CTRL_BITMASK) {
+            //Set Mask
+            uint16_t channel_mask_length = p_excluded_channels->channel_mask_bytes_inline * 8;
+
+            for (uint8_t i = 0; i < NUM_BYTES_IN_CHAN_MASK; i++) {
+                uint8_t mask_value =p_excluded_channels->channel_mask4[i];
+                *ptr++ = mask_value;
+                channel_mask_length -= 8;
+                if (channel_mask_length == 0) {
+                    break;
+                }
+            }
+        }
+    }
+#else
     if (unicast_schedule && hopping_schedule->excluded_channels.excuded_channel_ctrl) {
         if (hopping_schedule->excluded_channels.excuded_channel_ctrl == WS_EXC_CHAN_CTRL_RANGE) {
             uint8_t range_length = hopping_schedule->excluded_channels.excluded_range_length;
@@ -254,6 +304,7 @@ uint8_t *ws_wp_nested_hopping_schedule_write(uint8_t *ptr, struct ws_hopping_sch
             }
         }
     }
+#endif //WISUN_RCP_ENABLE
 
     return ptr;
 }
@@ -268,18 +319,18 @@ uint8_t *ws_wp_nested_vp_write(uint8_t *ptr, uint8_t *vendor_payload, uint16_t v
     return ptr;
 }
 
-uint8_t *ws_wp_nested_pan_info_write(uint8_t *ptr, struct ws_pan_information_s *pan_congiguration)
+uint8_t *ws_wp_nested_pan_info_write(uint8_t *ptr, struct ws_pan_information_s *pan_configuration)
 {
-    if (!pan_congiguration) {
+    if (!pan_configuration) {
         return mac_ie_nested_ie_short_base_write(ptr, WP_PAYLOAD_IE_PAN_TYPE, 0);
     }
     ptr = mac_ie_nested_ie_short_base_write(ptr, WP_PAYLOAD_IE_PAN_TYPE, 5);
-    ptr = common_write_16_bit_inverse(pan_congiguration->pan_size, ptr);
-    ptr = common_write_16_bit_inverse(pan_congiguration->routing_cost, ptr);
+    ptr = common_write_16_bit_inverse(pan_configuration->pan_size, ptr);
+    ptr = common_write_16_bit_inverse(pan_configuration->routing_cost, ptr);
     uint8_t temp8 = 0;
-    temp8 |= (pan_congiguration->use_parent_bs << 0);
-    temp8 |= (pan_congiguration->rpl_routing_method << 1);
-    temp8 |= pan_congiguration->version << 5;
+    temp8 |= (pan_configuration->use_parent_bs << 0);
+    temp8 |= (pan_configuration->rpl_routing_method << 1);
+    temp8 |= pan_configuration->version << 5;
     *ptr++ = temp8;
     return ptr;
 }
@@ -295,13 +346,13 @@ uint8_t *ws_wp_nested_netname_write(uint8_t *ptr, uint8_t *network_name, uint8_t
     return ptr;
 }
 
-uint8_t *ws_wp_nested_pan_ver_write(uint8_t *ptr, struct ws_pan_information_s *pan_congiguration)
+uint8_t *ws_wp_nested_pan_ver_write(uint8_t *ptr, struct ws_pan_information_s *pan_configuration)
 {
-    if (!pan_congiguration) {
+    if (!pan_configuration) {
         return ptr;
     }
     ptr = mac_ie_nested_ie_short_base_write(ptr, WP_PAYLOAD_IE_PAN_VER_TYPE, 2);
-    return common_write_16_bit_inverse(pan_congiguration->pan_version, ptr);
+    return common_write_16_bit_inverse(pan_configuration->pan_version, ptr);
 }
 
 uint8_t *ws_wp_nested_gtkhash_write(uint8_t *ptr, uint8_t *gtkhash, uint8_t gtkhash_length)
@@ -313,6 +364,63 @@ uint8_t *ws_wp_nested_gtkhash_write(uint8_t *ptr, uint8_t *gtkhash, uint8_t gtkh
     }
     return ptr;
 }
+
+#ifdef WISUN_FAN_CORE_1_1
+uint8_t *ws_wp_nested_pom_write(uint8_t *ptr, struct ws_pom_ie_s *ptr_pom_ie)
+{
+    uint8_t len, i;
+    uint8_t capacity_ie;
+    if (ptr_pom_ie == NULL)
+    {
+        return ptr;
+    }
+    len = ptr_pom_ie->phy_op_mode_number + 1;
+    ptr = mac_ie_nested_ie_short_base_write(ptr, WP_PAYLOAD_IE_POM, len);
+
+    // capacity IE
+    capacity_ie = ptr_pom_ie->phy_op_mode_number  |
+                  ptr_pom_ie->mdr_command_capable << WS_WPIE_POM_PHY_OP_MODE_NUMBER_SHIFT;
+    *ptr++ = capacity_ie;
+
+    // write the PHY Operating mode
+    for (i=0; i<len ; i++)
+    {
+        *ptr++ = ptr_pom_ie->phy_op_mode_id[i];
+    }
+    return ptr;
+}
+
+uint8_t *ws_wp_nested_jm_write(uint8_t *ptr, struct ws_pan_information_s *pan_congiguration)
+{
+    uint8_t temp, len;
+    if (pan_congiguration == NULL)
+    {
+        return ptr;
+    }
+    len = WS_WPIE_JM_IE_PLF_LENGTH;
+    ptr = mac_ie_nested_ie_short_base_write(ptr, WP_PAYLOAD_IE_JM, len);
+
+    /* version : Figure 68B JM-IE
+     * The Content Version field is a relative version number which MUST be incremented when any of the metric
+     * data within the List of Metrics has changed (where change is defined in the metrics definitions).
+    */
+    *ptr++ = pan_congiguration->jm_version;
+
+    /* JM-IE Metric : Figure 68c
+     * Metric ID: PAN Load Factor Join Metric
+     * Metric Length: 1
+     * Metric Value: PAN Load Factor
+    */
+    temp = (WS_JM_PLF << WS_WPIE_JM_METRIC_ID_SHIFT);
+    temp = temp | (1 & WS_WPIE_JM_METRIC_LEN_MASK);
+    *ptr++ = temp;
+
+    // write the PAN Load Factor
+    *ptr++ = pan_congiguration->jm_plf;
+
+    return ptr;
+}
+#endif
 
 bool ws_wh_utt_read(uint8_t *data, uint16_t length, struct ws_utt_ie *utt_ie)
 {
@@ -580,11 +688,41 @@ bool ws_wp_nested_bs_read(uint8_t *data, uint16_t length, struct ws_bs_ie *bs_ie
             return false;
 
     }
+#ifdef WISUN_RCP_ENABLE
+    switch (bs_ie->excluded_channel_ctrl) {
+        case WS_EXC_CHAN_CTRL_NONE:
 
+            break;
+        case WS_EXC_CHAN_CTRL_RANGE:
+            bs_ie->excluded_channels.range.number_of_range = *data;
+            if (nested_payload_ie.length < (bs_ie->excluded_channels.range.number_of_range * 4) + 1) {
+                return false;
+            }
+            //Set Range start after validation
+            bs_ie->excluded_channels.range.range_start = data + 1;
+            break;
+
+        case WS_EXC_CHAN_CTRL_BITMASK:
+            if (bs_ie->channel_plan == 1) {
+                bs_ie->excluded_channels.mask.mask_len_inline = ((bs_ie->plan.one.number_of_channel + 7) / 8);
+                if (bs_ie->excluded_channels.mask.mask_len_inline != nested_payload_ie.length) {
+                    //Channel mask length is not correct
+                    return false;
+                }
+            } else {
+                bs_ie->excluded_channels.mask.mask_len_inline = nested_payload_ie.length;
+            }
+
+            bs_ie->excluded_channels.mask.channel_mask = data;
+            break;
+        default:
+            return false;
+    }
+#endif
     return true;
 }
 
-bool ws_wp_nested_pan_read(uint8_t *data, uint16_t length, struct ws_pan_information_s *pan_congiguration)
+bool ws_wp_nested_pan_read(uint8_t *data, uint16_t length, struct ws_pan_information_s *pan_configuration)
 {
     mac_nested_payload_IE_t nested_payload_ie;
     nested_payload_ie.id = WP_PAYLOAD_IE_PAN_TYPE;
@@ -593,11 +731,11 @@ bool ws_wp_nested_pan_read(uint8_t *data, uint16_t length, struct ws_pan_informa
         return false;
     }
 
-    pan_congiguration->pan_size = common_read_16_bit_inverse(nested_payload_ie.content_ptr);
-    pan_congiguration->routing_cost = common_read_16_bit_inverse(nested_payload_ie.content_ptr + 2);
-    pan_congiguration->use_parent_bs = (nested_payload_ie.content_ptr[4] & 0x01) == 0x01;
-    pan_congiguration->rpl_routing_method = (nested_payload_ie.content_ptr[4] & 0x02) == 0x02;
-    pan_congiguration->version = (nested_payload_ie.content_ptr[4] & 0xe0) >> 5;
+    pan_configuration->pan_size = common_read_16_bit_inverse(nested_payload_ie.content_ptr);
+    pan_configuration->routing_cost = common_read_16_bit_inverse(nested_payload_ie.content_ptr + 2);
+    pan_configuration->use_parent_bs = (nested_payload_ie.content_ptr[4] & 0x01) == 0x01;
+    pan_configuration->rpl_routing_method = (nested_payload_ie.content_ptr[4] & 0x02) == 0x02;
+    pan_configuration->version = (nested_payload_ie.content_ptr[4] & 0xe0) >> 5;
 
     return true;
 }
@@ -644,6 +782,69 @@ bool ws_wp_nested_network_name_read(uint8_t *data, uint16_t length, ws_wp_networ
     network_name->network_name_length = nested_payload_ie.length;
     return true;
 }
+
+#ifdef WISUN_FAN_CORE_1_1
+bool ws_wp_nested_pom_read(uint8_t *data, uint16_t length, struct ws_pom_ie_s *ptr_pom_ie)
+{
+    mac_nested_payload_IE_t nested_payload_ie;
+    nested_payload_ie.id = WP_PAYLOAD_IE_POM;
+    nested_payload_ie.type_long = false;
+
+    uint8_t capacity_ie,len, i, *pdata;
+
+    if (0 == mac_ie_nested_discover(data, length, &nested_payload_ie)) {
+        return false;
+    }
+    capacity_ie = *(nested_payload_ie.content_ptr);
+    len = capacity_ie & WS_WPIE_POM_PHY_OP_MODE_NUMBER_MASK;
+    if (nested_payload_ie.length > (len+1))
+    {
+        // too long
+        return false;
+    }
+    ptr_pom_ie->phy_op_mode_number  = capacity_ie & WS_WPIE_POM_PHY_OP_MODE_NUMBER_MASK;
+    ptr_pom_ie->mdr_command_capable = capacity_ie >> WS_WPIE_POM_MDR_CAPABLE_SHIFT;
+
+    pdata = nested_payload_ie.content_ptr + 1;
+
+    for (i=0; i<len; i++)
+    {
+        ptr_pom_ie->phy_op_mode_id[i] = pdata[i];
+    }
+
+    return true;
+}
+
+bool ws_wp_nested_jm_read(uint8_t *data, uint16_t length, struct ws_jm_ie_s *ptr_jm_ie)
+{
+    mac_nested_payload_IE_t nested_payload_ie;
+    nested_payload_ie.id = WP_PAYLOAD_IE_JM;
+    nested_payload_ie.type_long = false;
+
+    uint8_t metric_id, metric_len, *pdata;
+
+    if (0 == mac_ie_nested_discover(data, length, &nested_payload_ie)) {
+        return false;
+    }
+    pdata = nested_payload_ie.content_ptr;
+
+    ptr_jm_ie->version = *pdata++;
+
+    // PAN Load Factor
+    metric_id = (*pdata & WS_WPIE_JM_METRIC_ID_MASK) >> WS_WPIE_JM_METRIC_ID_SHIFT;
+    metric_len = (*pdata & WS_WPIE_JM_METRIC_LEN_MASK);
+    if (metric_id != WS_JM_PLF || metric_len != 1)
+    {
+        return false;
+    }
+    pdata++;
+
+    ptr_jm_ie->plf = *pdata++;
+
+    return true;
+}
+#endif
+
 #ifdef FEATURE_WISUN_SUPPORT
 #define MSG_ID_PANID     (0x01)
 bool ws_wp_nested_vp_read(uint8_t *data, uint16_t length, struct ws_vp_ie *vp_ie)
@@ -698,4 +899,3 @@ bool ws_wp_nested_vp_get(uint8_t *data, uint16_t length, struct ws_vp_ie *vp_ie)
 
 }
 #endif
-

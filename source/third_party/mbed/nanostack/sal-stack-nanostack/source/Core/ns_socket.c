@@ -72,6 +72,12 @@ socket_list_t socket_list = NS_LIST_INIT(socket_list);
 static int8_t socket_event_handler = -1;
 static uint8_t last_allocated_socket = SOCKETS_MAX - 1;
 
+#define DEBUG_SOCKET_EVENT
+#ifdef DEBUG_SOCKET_EVENT
+uint8_t ns_socket_event_high_water=0;
+uint8_t ns_socket_event =0;
+#endif
+
 /**
  * Generate random port number between RANDOM_PORT_NUMBER_START and RANDOM_PORT_NUMBER_END.
  *
@@ -124,6 +130,10 @@ static void socket_data_event_push(buffer_t *buf)
         .priority = ARM_LIB_HIGH_PRIORITY_EVENT,
     };
 
+#ifdef DEBUG_SOCKET_EVENT
+    ns_socket_event++;
+#endif
+
     if (eventOS_event_send(&event) != 0) {
         buffer_free(buf);
     }
@@ -138,7 +148,9 @@ bool socket_data_queued_event_push(socket_t *socket)
         .data_ptr = socket_reference(socket),
         .priority = ARM_LIB_HIGH_PRIORITY_EVENT,
     };
-
+#ifdef DEBUG_SOCKET_EVENT
+    ns_socket_event++;
+#endif
     if (eventOS_event_send(&event) != 0) {
         socket_dereference(socket);
         return false;
@@ -209,6 +221,14 @@ void socket_cb_run(socket_t *socket)
 
 void socket_tasklet_event_handler(arm_event_s *event)
 {
+#ifdef DEBUG_SOCKET_EVENT
+    if (ns_socket_event > ns_socket_event_high_water)
+    {
+        ns_socket_event_high_water = ns_socket_event;
+    }
+    ns_socket_event--;
+#endif
+
     switch (event->event_type) {
         case ARM_SOCKET_INIT:
             tr_debug("Socket Tasklet Generated");
@@ -274,6 +294,9 @@ void socket_init(void)
 {
     if (socket_event_handler == -1) {
         socket_event_handler = eventOS_event_handler_create(&socket_tasklet_event_handler, ARM_SOCKET_INIT);
+#ifdef DEBUG_SOCKET_EVENT
+        ns_socket_event++;
+#endif
     }
 
     port_counter = randLIB_get_random_in_range(0, RANDOM_PORT_NUMBER_COUNT - 1);
@@ -940,6 +963,9 @@ void socket_event_push(uint8_t sock_event, socket_t *socket, int8_t interface_id
             .event_type = ARM_SOCKET_EVENT_CB,
             .priority = ARM_LIB_HIGH_PRIORITY_EVENT,
         };
+#ifdef DEBUG_SOCKET_EVENT
+        ns_socket_event++;
+#endif
         if (eventOS_event_send(&event) != 0) {
             socket_dereference(socket);
             ns_dyn_mem_free(cb_event);

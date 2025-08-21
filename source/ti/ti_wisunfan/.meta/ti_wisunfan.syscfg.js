@@ -114,6 +114,10 @@ const moduleStatic = {
                 {
                     name: "solarcoapnode",
                     displayName: "Solar Node"
+                },
+                {
+                    name: "rcplmac",
+                    displayName: "RCP LMAC"
                 }
             ],
             description: docs.project.description,
@@ -199,10 +203,20 @@ function onProjectChange(inst, ui)
     networkScript.setNetworkConfigHiddenState(inst, ui, "fhNetname");
     networkScript.setNetworkConfigHiddenState(inst, ui, "fhBroadcastDwellTime");
     networkScript.setNetworkConfigHiddenState(inst, ui, "broadcastChannelMask");
+    networkScript.setNetworkConfigHiddenState(inst, ui, "panID");
+    networkScript.setNetworkConfigHiddenState(inst, ui, "unicastChannelMask");
+    networkScript.setNetworkConfigHiddenState(inst, ui, "fhAsyncChannels");
+    networkScript.setNetworkConfigHiddenState(inst, ui, "starNetwork");
+    networkScript.setNetworkConfigHiddenState(inst, ui, "ccaThreshold");
+    
     networkScript.setNetworkConfigReadonlyState(inst, ui, "panID");
 
     // Set visibility of power group dependents
     powerScript.setPowerConfigHiddenState(inst, ui, "rxOnIdle");
+    powerScript.setPowerConfigHiddenState(inst, ui, "transmitPower");
+
+    // Set visibility of security group dependents
+    securityScript.setSecurityConfigHiddenState(inst, ui, "secureLevel");
 
     // Set visibility of test group dependents
     /*testModeScript.setTestConfigHiddenState(inst, ui,
@@ -217,6 +231,12 @@ function onProjectChange(inst, ui)
     wfantundScript.setWfantundSettingsHiddenState(inst, ui);
     advancedScript.setDefaultAdvancedSettings(inst);
     advancedScript.setAdvancedSettingsHiddenState(inst, ui);
+
+    // Specific changes for RCP LMAC project
+    if (inst.project.includes("rcplmac"))
+    {
+        ui["mode"].hidden = true;
+    }
 }
 
 /*
@@ -255,7 +275,7 @@ function onModeChange(inst, ui)
  *
  * @param ui       - user interface object
  * @param readOnly - true if config must be set to read only
- */
+ */ 
 function setProjectReadOnlyState(ui, readOnly)
 {
     // Set read only state of config
@@ -326,7 +346,10 @@ function validate(inst, vo)
 
     // Call validation methods of all groups
     radioScript.validate(inst, vo);
-    networkScript.validate(inst, vo);
+    if(!inst.project.includes("rcplmac"))
+    {
+        networkScript.validate(inst, vo);
+    }
     powerScript.validate(inst, vo);
     securityScript.validate(inst, vo);
     if(inst.project.includes("borderrouter"))
@@ -381,6 +404,7 @@ function getLibs(inst)
             case "coapnode":     mbedType = "coap"; break;
             case "solarborderrouter": mbedType = "br"; break;
             case "solarcoapnode":     mbedType = "coap"; break;
+            case "rcplmac":      mbedType = "rcplmac"; break;
         }
 
         let devType;
@@ -415,7 +439,7 @@ function getLibs(inst)
         const maclib = basePath + maclibName + ".a";
         libs.push(maclib);
 
-        if(inst.$static.genLibs !== "macOnly")
+        if(inst.$static.genLibs !== "macOnly" && mbedType != "rcplmac")
         {
             const mbedlibName = "wisun_" + mbedType + "_mbed_ns_tls_lib_" + devType + rtosPath;
             const mbedlib = basePath + mbedlibName + ".a";

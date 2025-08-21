@@ -89,6 +89,8 @@ function getProjectName(project) {
             return "Border Router";
         case "solarcoapnode":
             return "CoAP";
+        case "rcplmac":
+            return "RCP LMAC";
         default:
             throw new Error("Unhanded project type: " + project);
     }
@@ -117,7 +119,60 @@ let regChannelMask = rfCommon.getChannelMask(inst.region, inst.phyModeID, inst.C
 extern "C"
 {
 #endif
-%
+
+% if(inst.project.includes("rcplmac")) {
+
+/*! Setting for channel spacing */
+#define CONFIG_CHANNEL_SPACING           `inst.channelSpacing`
+
+/*! Setting for total number of channels */
+#define CONFIG_TOTAL_CHANNELS            `inst.totalChannels`
+
+/*! Setting to get channel 0 center frequency in MHz*/
+#define CONFIG_CENTER_FREQ              `inst.centerFrequency`
+
+/*! Setting to get phyModeID */
+#define CONFIG_PHY_ID                   `inst.phyModeID`
+
+/*! Setting for channel page*/
+#define CONFIG_CHANNEL_PAGE             9
+
+/*! Setting for operating mode selection */
+#define CONFIG_OP_MODE_ID                 OPERATING_MODE_`inst.opModeID`
+
+/*! Setting for operating mode selection */
+#define CONFIG_OP_MODE_CLASS               `inst.opModeClass`
+
+/* Setting to get customPhy */
+#define CONFIG_CUSTOM_PHY               `inst.customPhy`
+
+/* Setting for regulatory domain */
+#define CONFIG_REG_DOMAIN               `inst.regDomain`
+
+% let channelMaskHexArr = Common.channelMaskCHexStrArr(regChannelMask);
+/*!
+ Channel mask used when CONFIG_FH_ENABLE is true.
+ Represents the list of channels on which the device can hop, as defined by
+ the regulatory domain and operating mode. Does not change based on configured
+ unicast, broadcast, or async channel masks.
+ The actual sequence used shall be based on DH1CF function.
+ It is represented as a bit string with LSB representing Ch0.
+ e.g., 0x01 0x10 represents Ch0 and Ch12 are included.
+ */
+#define CONFIG_REGULATION_CHANNEL_MASK    { `_.slice(channelMaskHexArr,0,6)`, \
+                                          `_.slice(channelMaskHexArr,6,12)`, \
+                                          `_.slice(channelMaskHexArr,12)` }
+
+/*! Setting to enable frequency hopping mode */
+#define CONFIG_FH_ENABLE                `inst.mode === "frequencyHopping" || inst.mode === "fixedChannel"`
+
+% if (!powerScript.getPowerConfigHiddenState(inst, "rxOnIdle")) {
+/*! Setting to enable RX on when idle. False for sleepy device */
+#define CONFIG_RX_ON_IDLE               `inst.rxOnIdle`
+
+% }
+
+% } else { // if(inst.project == "rcplmac")
 
 /*! Setting for PAN ID */
 #define CONFIG_PAN_ID                   `Common.toHexString(inst.panID)`
@@ -141,6 +196,9 @@ extern "C"
 
 /*! Setting to get phyModeID */
 #define CONFIG_PHY_ID                   `inst.phyModeID`
+
+/*! Setting for channel page*/
+#define CONFIG_CHANNEL_PAGE             9
 
 /*! Setting for operating mode selection */
 #define CONFIG_OP_MODE_ID                 OPERATING_MODE_`inst.opModeID`
@@ -222,7 +280,7 @@ extern "C"
 /* Setting for FH network name attribute */
 #define CONFIG_NETNAME               "`inst.fhNetname`"
 
-% if (inst.project.includes("borderrouter")) {
+% if (inst.project.includes("borderrouter") || inst.project.includes("rcplmac")) {
 % // FH broadcast configs required to be generated for collector projects only
 /*! Setting for FH application broadcast msg generation interval in ms */
 #define CONFIG_BROADCAST_INTERVAL           `inst.fhBroadcastInterval`
@@ -270,27 +328,8 @@ extern "C"
 /*! Setting for network security key*/
 #define CONFIG_KEY_TABLE_DEFAULT_KEY           { `_.slice(keyTableArr,0,8)`, \
                                           `_.slice(keyTableArr,8)` }
+%} // if(inst.project == "rcplmac")
 
-% if (inst.powerTestEnable) {
-/*! Setting to enable power measurement test mode */
-#define POWER_MEAS
-
-% }
-% if (!testModeScript.getTestConfigHiddenState(inst, "powerTestProfile")) {
-/* Setting for power profile used for power measurement test mode */
-#define POWER_TEST_PROFILE              `inst.powerTestProfile`
-
-% }
-% if (!testModeScript.getTestConfigHiddenState(inst, "collectorTestRampDataSize")) {
-/* Setting for size of test data used for test modes */
-#define COLLECTOR_TEST_RAMP_DATA_SIZE   `inst.collectorTestRampDataSize`
-
-% }
-% if (!testModeScript.getTestConfigHiddenState(inst, "sensorTestRampDataSize")) {
-/* Setting for size of test data used for test modes */
-#define SENSOR_TEST_RAMP_DATA_SIZE      `inst.sensorTestRampDataSize`
-
-% }
 #ifdef __cplusplus
 }
 #endif

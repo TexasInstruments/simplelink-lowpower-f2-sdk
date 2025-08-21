@@ -2,7 +2,7 @@
     {
         "name": "Release Notes",
         "resourceType": "file",
-        "location": "../../release_notes_simplelink_cc13xx_cc26xx_sdk_8_30_01_01.html",
+        "location": "../../release_notes_simplelink_cc13xx_cc26xx_sdk_8_31_00_11.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1264,9 +1264,9 @@
         ]
     },
     {
-        "name": "SimpleLink Graphics Library Release Notes",
+        "name": "CoreSDK Release Notes",
         "resourceType": "file",
-        "location": "../../docs/grlib/release_notes_grlib_5_00_00_05.html",
+        "location": "../../docs/simplelink_mcu_sdk/release_notes_coresdk_cc13xx_cc26xx_8_30_02_00.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1281,16 +1281,16 @@
             ]
         ],
         "subCategories": [
-            "Graphics Library"
+            "TI Drivers"
         ],
         "resourceClass": [
             "document"
         ]
     },
     {
-        "name": "TI 15.4-Stack Release Notes",
+        "name": "Radio Config Release Notes",
         "resourceType": "file",
-        "location": "../../docs/ti154stack/release_notes_ti154stack_7_30_00_00.html",
+        "location": "../../docs/radioconfig/release_notes_radioconfig_1_19.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1305,7 +1305,7 @@
             ]
         ],
         "subCategories": [
-            "TI 15.4-Stack"
+            "Radio Config"
         ],
         "resourceClass": [
             "document"
@@ -1360,54 +1360,6 @@
         ]
     },
     {
-        "name": "TI BLE5-Stack Release Notes",
-        "resourceType": "file",
-        "location": "../../docs/ble5stack/release_notes_ble5stack_2_2_11_00.html",
-        "devices": [
-            "CC1352R1F3",
-            "CC2642R1F"
-        ],
-        "devtools": [
-            "LAUNCHXL-CC13X2R1",
-            "LAUNCHXL-CC26X2R1"
-        ],
-        "mainCategories": [
-            [
-                "Documents"
-            ]
-        ],
-        "subCategories": [
-            "BLE5-Stack"
-        ],
-        "resourceClass": [
-            "document"
-        ]
-    },
-    {
-        "name": "SimpleLink Common Components Module (SCCM) Release Notes",
-        "resourceType": "file",
-        "location": "../../docs/sccm/release_notes_sccm_8_30_00.html",
-        "devices": [
-            "CC1352R1F3",
-            "CC2642R1F"
-        ],
-        "devtools": [
-            "LAUNCHXL-CC13X2R1",
-            "LAUNCHXL-CC26X2R1"
-        ],
-        "mainCategories": [
-            [
-                "Documents"
-            ]
-        ],
-        "subCategories": [
-            "Common Components"
-        ],
-        "resourceClass": [
-            "document"
-        ]
-    },
-    {
         "name": "TI DMM Release Notes",
         "resourceType": "file",
         "location": "../../docs/dmm/release_notes_dmm_6_30_00.html",
@@ -1432,9 +1384,9 @@
         ]
     },
     {
-        "name": "Radio Config Release Notes",
+        "name": "SimpleLink Graphics Library Release Notes",
         "resourceType": "file",
-        "location": "../../docs/radioconfig/release_notes_radioconfig_1_19.html",
+        "location": "../../docs/grlib/release_notes_grlib_5_00_00_05.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1449,7 +1401,7 @@
             ]
         ],
         "subCategories": [
-            "Radio Config"
+            "Graphics Library"
         ],
         "resourceClass": [
             "document"
@@ -1458,7 +1410,7 @@
     {
         "name": "TI Wi-SUN FAN Release Notes",
         "resourceType": "file",
-        "location": "../../docs/ti_wisunfan/release_notes_wisun_3_30_00_00.html",
+        "location": "../../docs/ti_wisunfan/release_notes_wisun_3_31_00_00.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1474,30 +1426,6 @@
         ],
         "subCategories": [
             "TI Wi-SUN FAN"
-        ],
-        "resourceClass": [
-            "document"
-        ]
-    },
-    {
-        "name": "Radio Software Bundle Release Notes",
-        "resourceType": "file",
-        "location": "../../docs/rflib/rflib_release_notes.html",
-        "devices": [
-            "CC1352R1F3",
-            "CC2642R1F"
-        ],
-        "devtools": [
-            "LAUNCHXL-CC13X2R1",
-            "LAUNCHXL-CC26X2R1"
-        ],
-        "mainCategories": [
-            [
-                "Documents"
-            ]
-        ],
-        "subCategories": [
-            "TI Drivers"
         ],
         "resourceClass": [
             "document"
@@ -1528,9 +1456,9 @@
         ]
     },
     {
-        "name": "CoreSDK Release Notes",
+        "name": "TI BLE5-Stack Release Notes",
         "resourceType": "file",
-        "location": "../../docs/simplelink_mcu_sdk/release_notes_coresdk_cc13xx_cc26xx_8_30_02_00.html",
+        "location": "../../docs/ble5stack/release_notes_ble5stack_2_2_11_00.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1545,7 +1473,7 @@
             ]
         ],
         "subCategories": [
-            "TI Drivers"
+            "BLE5-Stack"
         ],
         "resourceClass": [
             "document"
@@ -1570,6 +1498,78 @@
         ],
         "subCategories": [
             "Proprietary RF"
+        ],
+        "resourceClass": [
+            "document"
+        ]
+    },
+    {
+        "name": "SimpleLink Common Components Module (SCCM) Release Notes",
+        "resourceType": "file",
+        "location": "../../docs/sccm/release_notes_sccm_8_30_00.html",
+        "devices": [
+            "CC1352R1F3",
+            "CC2642R1F"
+        ],
+        "devtools": [
+            "LAUNCHXL-CC13X2R1",
+            "LAUNCHXL-CC26X2R1"
+        ],
+        "mainCategories": [
+            [
+                "Documents"
+            ]
+        ],
+        "subCategories": [
+            "Common Components"
+        ],
+        "resourceClass": [
+            "document"
+        ]
+    },
+    {
+        "name": "TI 15.4-Stack Release Notes",
+        "resourceType": "file",
+        "location": "../../docs/ti154stack/release_notes_ti154stack_7_31_00_00.html",
+        "devices": [
+            "CC1352R1F3",
+            "CC2642R1F"
+        ],
+        "devtools": [
+            "LAUNCHXL-CC13X2R1",
+            "LAUNCHXL-CC26X2R1"
+        ],
+        "mainCategories": [
+            [
+                "Documents"
+            ]
+        ],
+        "subCategories": [
+            "TI 15.4-Stack"
+        ],
+        "resourceClass": [
+            "document"
+        ]
+    },
+    {
+        "name": "Radio Software Bundle Release Notes",
+        "resourceType": "file",
+        "location": "../../docs/rflib/rflib_release_notes.html",
+        "devices": [
+            "CC1352R1F3",
+            "CC2642R1F"
+        ],
+        "devtools": [
+            "LAUNCHXL-CC13X2R1",
+            "LAUNCHXL-CC26X2R1"
+        ],
+        "mainCategories": [
+            [
+                "Documents"
+            ]
+        ],
+        "subCategories": [
+            "TI Drivers"
         ],
         "resourceClass": [
             "document"

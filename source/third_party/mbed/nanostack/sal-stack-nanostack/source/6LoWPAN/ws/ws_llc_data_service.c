@@ -43,7 +43,7 @@
 #include "Service_Libs/etx/etx.h"
 #include "fhss_ws_extension.h"
 #include "Service_Libs/random_early_detection/random_early_detection_api.h"
-#ifdef FEATURE_TIMAC_SUPPORT
+#if defined(FEATURE_TIMAC_SUPPORT) && !defined(LINUX_NANOSTACK)
 #include "api_mac.h"
 #include "timac_ns_interface.h"
 #include "fh_nt.h"
@@ -94,6 +94,9 @@ typedef struct {
     uint8_t                 *network_name;          /**< Network name */
     uint8_t                 *vendor_header_data;    /**< Vendor spesific header data */
     uint8_t                 *vendor_payload;        /**< Vendor spesific payload data */
+#ifdef WISUN_FAN_CORE_1_1
+    ws_pom_ie_t             *pom_configuration;     /**< PHY Operation Mode configururation */
+#endif    
 } llc_ie_params_t;
 
 typedef struct {
@@ -112,6 +115,10 @@ typedef struct {
     wh_ie_sub_list_t ie_header_mask;
     wp_nested_ie_sub_list_t nested_wp_id;
 #endif
+#if defined(WISUN_RCP_ENABLE)    
+    uint8_t utie_time_offset;       /**< offset of UTIE time from start of HIE */
+    uint8_t btie_time_offset;       /**< offset of BTIE time from start of HIE */
+#endif    
     mcps_data_req_ie_list_t ie_ext;
     mac_data_priority_t priority;
     ns_list_link_t  link;               /**< List link entry */
@@ -124,7 +131,7 @@ typedef struct {
 typedef NS_LIST_HEAD(llc_message_t, link) llc_message_list_t;
 
 #define MAX_NEIGH_TEMPORARY_MULTICAST_SIZE 5
-#define MAX_NEIGH_TEMPORRY_EAPOL_SIZE 20
+#define MAX_NEIGH_TEMPORRY_EAPOL_SIZE 50
 #define MAX_NEIGH_TEMPORAY_LIST_SIZE (MAX_NEIGH_TEMPORARY_MULTICAST_SIZE + MAX_NEIGH_TEMPORRY_EAPOL_SIZE)
 
 typedef struct {
@@ -197,7 +204,7 @@ static ws_neighbor_temp_class_t *ws_llc_discover_eapol_temp_entry(temp_entriest_
 static void ws_llc_release_eapol_temp_entry(temp_entriest_t *base, const uint8_t *mac64);
 static ws_neighbor_temp_class_t *ws_allocate_eapol_temp_entry(temp_entriest_t *base, const uint8_t *mac64);
 
-#ifdef FEATURE_TIMAC_SUPPORT
+#if defined(FEATURE_TIMAC_SUPPORT)
 static uint8_t ws_llc_mpx_eapol_send(llc_data_base_t *base, llc_message_t *message);
 #else
 static void ws_llc_mpx_eapol_send(llc_data_base_t *base, llc_message_t *message);
@@ -205,6 +212,26 @@ static void ws_llc_mpx_eapol_send(llc_data_base_t *base, llc_message_t *message)
 
 static bool test_skip_first_init_response = false;
 static uint8_t test_drop_data_message = 0;
+
+typedef struct __llc_dbg
+{   
+    uint32_t num_alloc;
+    uint32_t num_alloc_data;
+    uint32_t num_alloc_eapol;
+    uint32_t num_alloc_async;
+
+    uint32_t num_free;
+    uint32_t num_msdu_mismatch;
+    uint32_t num_err_async;
+    uint32_t num_err_eapol;
+    uint32_t num_err_data;
+
+    uint16_t num_eapol_temp_timeout;
+    uint16_t num_eapol_temp_table_full_drop;
+    uint16_t num_eapol_mcps_failure;
+} LLC_dbg;
+
+LLC_dbg llcDbg;
 
 
 int8_t ws_test_skip_edfe_data_send(int8_t interface_id, bool skip)
@@ -272,6 +299,8 @@ static llc_message_t *llc_message_discover_mpx_user_id(uint8_t handle, uint16_t 
 //Free message and delete from list
 static void llc_message_free(llc_message_t *message, llc_data_base_t *llc_base)
 {
+    llcDbg.num_free++;
+
     ns_list_remove(&llc_base->llc_message_list, message);
     ns_dyn_mem_free(message);
     llc_base->llc_message_list_size--;
@@ -310,6 +339,8 @@ static llc_message_t *llc_message_allocate(uint16_t ie_buffer_size, llc_data_bas
     if (llc_base->llc_message_list_size >= LLC_MESSAGE_QUEUE_LIST_SIZE_MAX) {
         return NULL;
     }
+
+    llcDbg.num_alloc++;
 
     llc_message_t *message = ns_dyn_mem_temporary_alloc(sizeof(llc_message_t) + ie_buffer_size);
     if (!message) {
@@ -430,6 +461,23 @@ static uint16_t ws_wp_nested_message_length(wp_nested_ie_sub_list_t requested_li
         length += WS_WP_SUB_IE_ELEMENT_HEADER_LENGTH + ws_wp_nested_hopping_schedule_length(params->hopping_schedule, true);
     }
 
+#ifdef WISUN_FAN_CORE_1_1
+    if (requested_list.pom_ie) {
+        length += WS_WP_SUB_IE_ELEMENT_HEADER_LENGTH;
+        if (params->pom_configuration) {
+            length += params->pom_configuration->phy_op_mode_number + 1;
+        }
+    }
+
+    if (requested_list.jm_ie) {
+        /* JM-IE
+          * version, metric PAn Load Factor , 
+        */
+        length += WS_WP_SUB_IE_ELEMENT_HEADER_LENGTH + WS_WPIE_JM_IE_PLF_LENGTH;
+    }
+
+#endif
+
     return length;
 }
 
@@ -469,6 +517,8 @@ static llc_data_base_t *ws_llc_base_allocate(void)
 /** WS LLC MAC data extension confirmation  */
 static void ws_llc_mac_confirm_cb(const mac_api_t *api, const mcps_data_conf_t *data, const mcps_data_conf_payload_t *conf_data)
 {
+    uint8_t status;
+
     tr_extra_debug("\n ws_llc_mac_confirm_cb with status = %d", data->status);
     (void) conf_data;
     llc_data_base_t *base = ws_llc_discover_by_mac(api);
@@ -476,7 +526,7 @@ static void ws_llc_mac_confirm_cb(const mac_api_t *api, const mcps_data_conf_t *
         return;
     }
 
-#ifdef FEATURE_TIMAC_SUPPORT
+#if defined(FEATURE_TIMAC_SUPPORT) && !defined(WISUN_RCP_ENABLE)
     //Async message Confirmation
     if(!conf_data)
     {
@@ -490,6 +540,7 @@ static void ws_llc_mac_confirm_cb(const mac_api_t *api, const mcps_data_conf_t *
     protocol_interface_info_entry_t *interface = base->interface_ptr;
     llc_message_t *message = llc_message_discover_by_mac_handle(data->msduHandle, &base->llc_message_list);
     if (!message) {
+        llcDbg.num_msdu_mismatch++;
         return;
     }
 
@@ -582,7 +633,17 @@ static void ws_llc_mac_confirm_cb(const mac_api_t *api, const mcps_data_conf_t *
                 ns_list_remove(&base->temp_entries->llc_eap_pending_list, message);
                 base->temp_entries->llc_eap_pending_list_size--;
                 random_early_detetction_aq_calc(base->interface_ptr->llc_eapol_random_early_detection, base->temp_entries->llc_eap_pending_list_size);
-                ws_llc_mpx_eapol_send(base, message);
+                status = ws_llc_mpx_eapol_send(base, message);
+                if(status && user_cb && user_cb->data_confirm)
+                {
+                    /* Non Zero Status implies packet was not accepted by RCP for transmission
+                                        Throw data confirm with error status */
+                    mcps_data_conf_t data_conf;
+                    memset(&data_conf, 0, sizeof(mcps_data_conf_t));
+                    data_conf.msduHandle = data->msduHandle;
+                    data_conf.status = status;
+                    user_cb->data_confirm(&base->mpx_data_base.mpx_api, &data_conf);
+                }
             }
         } else {
             if (neighbor_info.ws_neighbor && neighbor_info.neighbor && neighbor_info.neighbor->link_lifetime <= WS_NEIGHBOUR_TEMPORARY_NEIGH_MAX_LIFETIME) {
@@ -594,7 +655,7 @@ static void ws_llc_mac_confirm_cb(const mac_api_t *api, const mcps_data_conf_t *
 
         return;
     }
-#ifndef FEATURE_TIMAC_SUPPORT
+#if !defined(FEATURE_TIMAC_SUPPORT) || defined(WISUN_RCP_ENABLE)
     //Async message Confirmation
     base->asynch_confirm(base->interface_ptr, messsage_type);
 #endif
@@ -783,7 +844,7 @@ static void ws_llc_data_indication_cb(const mac_api_t *api, const mcps_data_ind_
     }
     //Update BS if it is part of message
     if (bs_ie_inline) {
-        ws_neighbor_class_neighbor_broadcast_schedule_set(neighbor_info.ws_neighbor, &ws_bs_ie);
+        ws_neighbor_class_neighbor_broadcast_schedule_set(neighbor_info.ws_neighbor, &ws_bs_ie,&interface->ws_info->hopping_schdule);
     }
 
     //Update BT if it is part of message
@@ -872,6 +933,7 @@ static void ws_llc_eapol_indication_cb(const mac_api_t *api, const mcps_data_ind
         ws_neighbor_temp_class_t *temp_entry = ws_allocate_eapol_temp_entry(base->temp_entries, data->SrcAddr);
         if (!temp_entry) {
             tr_warn("EAPOL temp pool empty");
+            llcDbg.num_eapol_temp_table_full_drop++;
             return;
         }
         //Update Temporary Lifetime
@@ -890,7 +952,7 @@ static void ws_llc_eapol_indication_cb(const mac_api_t *api, const mcps_data_ind
     }
     //Update BS if it is part of message
     if (bs_ie_inline) {
-        ws_neighbor_class_neighbor_broadcast_schedule_set(neighbor_info.ws_neighbor, &ws_bs_ie);
+        ws_neighbor_class_neighbor_broadcast_schedule_set(neighbor_info.ws_neighbor, &ws_bs_ie,&interface->ws_info->hopping_schdule);
     }
 #if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(MBED_LIBRARY)
     if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH) {
@@ -1061,6 +1123,7 @@ static void ws_llc_lowpan_mpx_data_request(llc_data_base_t *base, mpx_user_t *us
     ie_header_mask.utt_ie = true;
 
     ie_header_mask.bt_ie = true;
+
     if (base->ie_params.vendor_header_length) {
         ie_header_mask.vh_ie = true;
     }
@@ -1077,8 +1140,14 @@ static void ws_llc_lowpan_mpx_data_request(llc_data_base_t *base, mpx_user_t *us
     }
 
     nested_wp_id.us_ie = true;
+#ifdef WISUN_FAN_CORE_1_1
+    // Wi-SUN FAN 1.1v09-d10 6.3.2.3.5.3 Frames for general Purpose Messaging
+    // may include the POM IE
+    nested_wp_id.pom_ie = false;
+    nested_wp_id.jm_ie  = false;
+#endif    
 
-#ifndef FEATURE_TIMAC_SUPPORT
+#if !defined(FEATURE_TIMAC_SUPPORT) || defined(WISUN_RCP_ENABLE)
     uint16_t ie_header_length = ws_wh_headers_length(ie_header_mask, &base->ie_params);
     uint16_t nested_ie_length = ws_wp_nested_message_length(nested_wp_id, &base->ie_params);
 
@@ -1093,6 +1162,7 @@ static void ws_llc_lowpan_mpx_data_request(llc_data_base_t *base, mpx_user_t *us
 #endif
 
     //Allocate Message
+    llcDbg.num_alloc_data++;
     llc_message_t *message = llc_message_allocate(over_head_size, base);
     if (!message) {
         mcps_data_conf_t data_conf;
@@ -1112,6 +1182,7 @@ static void ws_llc_lowpan_mpx_data_request(llc_data_base_t *base, mpx_user_t *us
     ns_list_add_to_end(&base->llc_message_list, message);
 
     mcps_data_req_t data_req;
+
     message->mpx_user_handle = data->msduHandle;
     message->ack_requested = data->TxAckReq;
     if (data->TxAckReq) {
@@ -1139,7 +1210,10 @@ static void ws_llc_lowpan_mpx_data_request(llc_data_base_t *base, mpx_user_t *us
 
     uint8_t *ptr = ws_message_buffer_ptr_get(message);
     message->messsage_type = WS_FT_DATA;
-#ifndef FEATURE_TIMAC_SUPPORT
+#if !defined(FEATURE_TIMAC_SUPPORT) || defined(WISUN_RCP_ENABLE)
+    uint8_t *pBaseHie;
+    pBaseHie = ptr;
+
     message->ie_vector_list[0].ieBase = ptr;
     if (ie_header_mask.fc_ie) {
         ws_fc_ie_t fc_ie;
@@ -1148,11 +1222,18 @@ static void ws_llc_lowpan_mpx_data_request(llc_data_base_t *base, mpx_user_t *us
         //Write Flow control for 1 packet send this will be modified at real data send
         ptr = ws_wh_fc_write(ptr, &fc_ie);
     }
-    //Write UTT
 
+    //Write UTT
+    data_req.utie_time_offset = ptr - pBaseHie;
     ptr = ws_wh_utt_write(ptr, message->messsage_type);
+    // add HIE header offset
+    data_req.utie_time_offset += 4;
+
     if (ie_header_mask.bt_ie) {
+        data_req.btie_time_offset = ptr - pBaseHie;
         ptr = ws_wh_bt_write(ptr);
+        // add HIE header offset
+        data_req.btie_time_offset += 3;
     }
 
     if (ie_header_mask.vh_ie) {
@@ -1175,6 +1256,13 @@ static void ws_llc_lowpan_mpx_data_request(llc_data_base_t *base, mpx_user_t *us
             //Write Broadcastcast schedule
             ptr = ws_wp_nested_hopping_schedule_write(ptr, base->ie_params.hopping_schedule, false);
         }
+
+#ifdef WISUN_FAN_CORE_1_1
+        if (nested_wp_id.pom_ie) {
+            //Write POM Phy Operation Mode
+            ptr = ws_wp_nested_pom_write(ptr, base->ie_params.pom_configuration);
+        }
+#endif        
     }
     // SET Payload IE Length
     message->ie_vector_list[1].iovLen = ptr - (uint8_t *)message->ie_vector_list[1].ieBase;
@@ -1192,13 +1280,26 @@ static void ws_llc_lowpan_mpx_data_request(llc_data_base_t *base, mpx_user_t *us
 #endif
 
     ws_llc_lowpan_mpx_header_set(message, MPX_LOWPAN_ENC_USER_ID);
+    data_req.mpx_id = MPX_LOWPAN_ENC_USER_ID;
 
-#ifndef FEATURE_TIMAC_SUPPORT
+#if !defined(FEATURE_TIMAC_SUPPORT) || defined(WISUN_RCP_ENABLE)
+#if 0
     if (data->ExtendedFrameExchange) {
         message->ie_ext.payloadIovLength = 0; //Set Back 2 at response handler
     }
-
-    base->interface_ptr->mac_api->mcps_data_req_ext(base->interface_ptr->mac_api, &data_req, &message->ie_ext, NULL, message->priority);
+#endif
+    uint8_t status;
+    status = base->interface_ptr->mac_api->mcps_data_req_ext(base->interface_ptr->mac_api, &data_req, &message->ie_ext, NULL, message->priority);
+    if(status)
+    {
+        /* Non Zero Status implies packet was not accepted by RCP for transmission
+                      Throw data confirm with error status */
+        mcps_data_conf_t data_conf;
+        memset(&data_conf, 0, sizeof(mcps_data_conf_t));
+        data_conf.msduHandle = data->msduHandle;
+        data_conf.status = status;
+        user_cb->data_confirm(&base->mpx_data_base.mpx_api, &data_conf);
+    }
 #else
     data_req.msdu = message->ie_vector_list[2].ieBase;
     data_req.msduLength = message->ie_vector_list[2].iovLen;
@@ -1261,9 +1362,10 @@ static void ws_llc_eapol_data_req_init(mcps_data_req_t *data_req, llc_message_t 
     data_req->msduHandle = message->msg_handle;
 
     ws_llc_lowpan_mpx_header_set(message, MPX_KEY_MANAGEMENT_ENC_USER_ID);
+    data_req->mpx_id = MPX_KEY_MANAGEMENT_ENC_USER_ID;
 }
 
-#ifdef FEATURE_TIMAC_SUPPORT
+#if defined(FEATURE_TIMAC_SUPPORT)
 static uint8_t ws_llc_mpx_eapol_send(llc_data_base_t *base, llc_message_t *message)
 #else
 static void ws_llc_mpx_eapol_send(llc_data_base_t *base, llc_message_t *message)
@@ -1277,9 +1379,22 @@ static void ws_llc_mpx_eapol_send(llc_data_base_t *base, llc_message_t *message)
     message->eapol_temporary = ws_llc_eapol_temp_entry_set(base, message->dst_address);
     ws_llc_eapol_data_req_init(&data_req, message);
 
-#ifndef FEATURE_TIMAC_SUPPORT
-    base->temp_entries->active_eapol_session = true;
-    base->interface_ptr->mac_api->mcps_data_req_ext(base->interface_ptr->mac_api, &data_req, &message->ie_ext, NULL, message->priority);
+#if !defined(FEATURE_TIMAC_SUPPORT) || defined(WISUN_RCP_ENABLE)
+    uint8_t status;
+    //update UTIE/BTIE time offset from llc_message
+    data_req.utie_time_offset = message->utie_time_offset;
+    data_req.btie_time_offset = message->btie_time_offset;
+
+    status = base->interface_ptr->mac_api->mcps_data_req_ext(base->interface_ptr->mac_api, &data_req, &message->ie_ext, NULL, message->priority);
+    if(!status)
+    {
+        //Set active session to true only if packet is accepted by RCP
+        base->temp_entries->active_eapol_session = true;
+    } else {
+        llcDbg.num_eapol_mcps_failure++;
+    }
+    /* For EAPOL messages error from MAC Data Req is handled at EAPOL Request */
+    return status;
 #else
     uint8_t status;
     data_req.msdu = message->ie_vector_list[2].ieBase;
@@ -1314,7 +1429,8 @@ static void ws_llc_mpx_eapol_request(llc_data_base_t *base, mpx_user_t *user_cb,
     nested_wp_id.bs_ie = ie_header_mask.ea_ie;
     nested_wp_id.us_ie = true;
 
-#ifndef FEATURE_TIMAC_SUPPORT
+//#ifndef FEATURE_TIMAC_SUPPORT 
+#if !defined(FEATURE_TIMAC_SUPPORT) || defined(WISUN_RCP_ENABLE)
     uint16_t ie_header_length = ws_wh_headers_length(ie_header_mask, &base->ie_params);
     uint16_t nested_ie_length = ws_wp_nested_message_length(nested_wp_id, &base->ie_params);
 
@@ -1329,6 +1445,7 @@ static void ws_llc_mpx_eapol_request(llc_data_base_t *base, mpx_user_t *user_cb,
 #endif
 
     //Allocate Message
+    llcDbg.num_alloc_eapol++;
     llc_message_t *message = llc_message_allocate(over_head_size, base);
     if (!message) {
         mcps_data_conf_t data_conf;
@@ -1349,12 +1466,26 @@ static void ws_llc_mpx_eapol_request(llc_data_base_t *base, mpx_user_t *user_cb,
     message->messsage_type = WS_FT_EAPOL;
 
     uint8_t *ptr = ws_message_buffer_ptr_get(message);
-#ifndef FEATURE_TIMAC_SUPPORT
+#if !defined(FEATURE_TIMAC_SUPPORT) || defined(WISUN_RCP_ENABLE)
     message->ie_vector_list[0].ieBase = ptr;
+
+    message->utie_time_offset = 0;
+    message->btie_time_offset = 0;
+
     //Write UTT
+    uint8_t *pBaseHie;
+    pBaseHie = ptr; 
+
+    message->utie_time_offset = ptr - pBaseHie;
     ptr = ws_wh_utt_write(ptr, message->messsage_type);
+    // add HIE header offset
+    message->utie_time_offset += 4;
+
     if (ie_header_mask.bt_ie) {
+        message->btie_time_offset = ptr - pBaseHie;
         ptr = ws_wh_bt_write(ptr);
+        // add HIE header offset
+        message->btie_time_offset += 3;
     }
 
     if (ie_header_mask.ea_ie) {
@@ -1411,14 +1542,14 @@ static void ws_llc_mpx_eapol_request(llc_data_base_t *base, mpx_user_t *user_cb,
         base->temp_entries->llc_eap_pending_list_size++;
         random_early_detetction_aq_calc(base->interface_ptr->llc_eapol_random_early_detection, base->temp_entries->llc_eap_pending_list_size);
     } else {
-#ifndef FEATURE_TIMAC_SUPPORT
+#if !defined(FEATURE_TIMAC_SUPPORT)
         ws_llc_mpx_eapol_send(base, message);
 #else
         uint8_t status;
         status = ws_llc_mpx_eapol_send(base, message);
         if(status)
         {
-            /* Non Zero Status from TIMAC implies packet was not accepted by TIMAC for transmission
+            /* Non Zero Status implies packet was not accepted by RCP for transmission
                                   Throw data confirm with error status */
             mcps_data_conf_t data_conf;
             memset(&data_conf, 0, sizeof(mcps_data_conf_t));
@@ -1622,11 +1753,28 @@ static void ws_llc_release_eapol_temp_entry(temp_entriest_t *base, const uint8_t
     ns_list_remove(&base->active_eapol_temp_neigh, neighbor);
     ns_list_add_to_end(&base->free_temp_neigh, neighbor);
 
-#ifdef FEATURE_FHNT_CONTROL
+#if defined(FEATURE_FHNT_CONTROL) && !defined(WISUN_RCP_ENABLE)
     FHAPI_status status = FHNT_deleteTableEntry(FHNT_TABLE_TYPE_JOIN, (uint8_t *) mac64);
     tr_warn("FHNT ns: release_eapol_temp delete: %s | status: %d", trace_array(mac64, 8), status);
 #endif
 }
+
+/* release all EAPOL temporary entries from active list to free list
+ * This is used when the device is going to stage #1 and all EAPOL messages are
+ * discarded. The temporary entries are not needed anymore.
+*/
+void ws_llc_release_all_eapol_temp_entry(protocol_interface_info_entry_t *cur)
+{
+    llc_data_base_t *base = ws_llc_discover_by_interface(cur);
+    if (!base) {
+        return;
+    }
+    ns_list_foreach_safe(ws_neighbor_temp_class_t, entry, &base->temp_entries->active_eapol_temp_neigh) {
+        ns_list_remove(&base->temp_entries->active_eapol_temp_neigh, entry);
+        ns_list_add_to_end(&base->temp_entries->free_temp_neigh, entry);
+    }
+}
+
 
 ws_neighbor_temp_class_t *ws_llc_get_multicast_temp_entry(protocol_interface_info_entry_t *interface, const uint8_t *mac64)
 {
@@ -1701,7 +1849,7 @@ static ws_neighbor_temp_class_t *ws_allocate_eapol_temp_entry(temp_entriest_t *b
     //Clear Old data
     ws_init_temporary_neigh_data(entry, mac64);
 
-#ifdef FEATURE_FHNT_CONTROL
+#if defined(FEATURE_FHNT_CONTROL) && !defined(WISUN_RCP_ENABLE)
     FHAPI_status status = FHNT_createTableEntry(FHNT_TABLE_TYPE_JOIN, (uint8_t *) mac64);
     tr_warn("FHNT ns: allocate_eapol_temp create: %s | status: %d", trace_array(mac64, 8), status);
 #endif
@@ -1728,9 +1876,20 @@ static void  ws_llc_build_edfe_response(llc_data_base_t *base, mcps_edfe_respons
 
     //Write Data to block
     uint8_t *ptr = base->ws_header_vector.ieBase;
+    uint8_t *pBaseHie;
+    pBaseHie = ptr;
+
     ptr = ws_wh_fc_write(ptr, &fc_ie);
+    response_message->utie_time_offset = ptr - pBaseHie;
     ptr = ws_wh_utt_write(ptr, WS_FT_DATA);
+    // add HIE header offset
+    response_message->utie_time_offset += 4;
+
+    response_message->btie_time_offset = ptr - pBaseHie;
     ptr = ws_wh_bt_write(ptr);
+    // add HIE header offset
+    response_message->btie_time_offset += 3;
+
     ptr = ws_wh_rsl_write(ptr, ws_neighbor_class_rsl_from_dbm_calculate(response_message->rssi));
     base->ws_header_vector.iovLen = ptr - base->ws_enhanced_response_elements;
     response_message->SrcAddrMode = MAC_ADDR_MODE_NONE;
@@ -1891,7 +2050,7 @@ int8_t ws_llc_asynch_request(struct protocol_interface_info_entry *interface, as
         return -1;
     }
 
-#ifdef FEATURE_TIMAC_SUPPORT
+#if defined(FEATURE_TIMAC_SUPPORT) && !defined(WISUN_RCP_ENABLE)
     if (request->wp_requested_nested_ie_list.pan_ie) {
         //Update Pan information
         timacStorePanInformation(base->ie_params.pan_congiguration);
@@ -1943,7 +2102,7 @@ int8_t ws_llc_asynch_request(struct protocol_interface_info_entry *interface, as
         total_length += 2 + wp_nested_payload_length;
     }
     //Allocate LLC message pointer
-
+    llcDbg.num_alloc_async++;
     llc_message_t *message = llc_message_allocate(total_length, base);
     if (!message) {
         if (base->asynch_confirm) {
@@ -1982,13 +2141,21 @@ int8_t ws_llc_asynch_request(struct protocol_interface_info_entry *interface, as
 
 
     //Write UTT
+    uint8_t *pBaseHie;
+    pBaseHie = ptr;
     if (request->wh_requested_ie_list.utt_ie) {
+        data_req.utie_time_offset = ptr - pBaseHie;
         ptr = ws_wh_utt_write(ptr, message->messsage_type);
+        // add HIE header offset
+        data_req.utie_time_offset += 4;
     }
 
     if (request->wh_requested_ie_list.bt_ie) {
         //Static 5 bytes allways
+        data_req.btie_time_offset = ptr - pBaseHie;
         ptr = ws_wh_bt_write(ptr);
+        // add HIE header offset
+        data_req.btie_time_offset += 3;
     }
 
     if (wp_nested_payload_length) {
@@ -2017,7 +2184,17 @@ int8_t ws_llc_asynch_request(struct protocol_interface_info_entry *interface, as
             //Write network name
             ptr = ws_wp_nested_netname_write(ptr, base->ie_params.network_name, base->ie_params.network_name_length);
         }
+#ifdef WISUN_FAN_CORE_1_1
+        if (request->wp_requested_nested_ie_list.pom_ie) {
+            //Write POM Phy Operation Mode
+            ptr = ws_wp_nested_pom_write(ptr, base->ie_params.pom_configuration);
+        }
 
+        if (request->wp_requested_nested_ie_list.jm_ie) {
+            //Write JM_IE
+            ptr = ws_wp_nested_jm_write(ptr, base->ie_params.pan_congiguration);
+        }
+#endif
         if (request->wp_requested_nested_ie_list.pan_version_ie) {
             //Write pan version
             ptr = ws_wp_nested_pan_ver_write(ptr, base->ie_params.pan_congiguration);
@@ -2034,7 +2211,15 @@ int8_t ws_llc_asynch_request(struct protocol_interface_info_entry *interface, as
         }
     }
 
-    base->interface_ptr->mac_api->mcps_data_req_ext(base->interface_ptr->mac_api, &data_req, &message->ie_ext, &request->channel_list, message->priority);
+    uint8_t status;
+    status = base->interface_ptr->mac_api->mcps_data_req_ext(base->interface_ptr->mac_api, &data_req, &message->ie_ext, &request->channel_list, message->priority);
+    if(status && base->asynch_confirm)
+    {
+        /* Non Zero Status implies packet was not accepted by RCP for transmission
+                                Throw data confirm with error status */
+        base->asynch_confirm(interface, request->message_type);
+    }
+
 #endif //FEATURE_TIMAC_SUPPORT
 
     return 0;
@@ -2050,8 +2235,17 @@ void ws_llc_set_vendor_header_data(struct protocol_interface_info_entry *interfa
     base->ie_params.vendor_header_data = vendor_header;
     base->ie_params.vendor_header_length = vendor_header_length;
 }
-
-
+#ifdef WISUN_FAN_CORE_1_1 
+void ws_llc_set_jm_info(struct protocol_interface_info_entry *interface)
+{
+    llc_data_base_t *base = ws_llc_discover_by_interface(interface);
+    if (!base) {
+        return;
+    }
+    base->ie_params.pan_congiguration->jm_version = interface->ws_info->pan_information.jm_version;
+    base->ie_params.pan_congiguration->jm_plf     = interface->ws_info->pan_information.jm_plf;
+}
+#endif
 void ws_llc_set_vendor_payload_data(struct protocol_interface_info_entry *interface, uint8_t *vendor_payload, uint8_t vendor_payload_length)
 {
     llc_data_base_t *base = ws_llc_discover_by_interface(interface);
@@ -2090,7 +2284,15 @@ void  ws_llc_set_gtkhash(struct protocol_interface_info_entry *interface, uint8_
     }
 }
 
+void ws_llc_set_jm_pointer(struct protocol_interface_info_entry *interface, struct ws_pan_information_s *pan_information_pointer)
+{
+    llc_data_base_t *base = ws_llc_discover_by_interface(interface);
+    if (!base) {
+        return;
+    }
 
+    base->ie_params.pan_congiguration = pan_information_pointer;
+}
 
 void ws_llc_set_pan_information_pointer(struct protocol_interface_info_entry *interface, struct ws_pan_information_s *pan_information_pointer)
 {
@@ -2155,6 +2357,7 @@ void ws_llc_timer_seconds(struct protocol_interface_info_entry *interface, uint1
         if (entry->eapol_temp_info.eapol_timeout <= seconds_update) {
             ns_list_remove(&base->temp_entries->active_eapol_temp_neigh, entry);
             ns_list_add_to_end(&base->temp_entries->free_temp_neigh, entry);
+            llcDbg.num_eapol_temp_timeout++;
         } else {
             entry->eapol_temp_info.eapol_timeout -= seconds_update;
             if (entry->eapol_temp_info.eapol_rx_relay_filter == 0) {

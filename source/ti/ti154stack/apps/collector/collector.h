@@ -87,6 +87,11 @@ extern "C"
 /*! Event ID - Generate Configs Event */
 #define COLLECTOR_CONFIG_EVT              0x0004
 #define COLLECTOR_BROADCAST_TIMEOUT_EVT   0x0008
+#ifdef FH_LOW_LATENCY_BROADCAST
+#define COLLECTOR_BROADCAST_CAMCMD_EVT    0x1000
+#define COLLECTOR_BROADCAST_SUCCESS_EVT   0x2000
+#define COLLECTOR_BROADCAST_CAMCMDACK_EVT 0x4000
+#endif // FH_LOW_LATENCY_BROADCAST
 
 /*! Event ID - Start Provisioning Event */
 #define COLLECTOR_PROV_EVT                0x0010

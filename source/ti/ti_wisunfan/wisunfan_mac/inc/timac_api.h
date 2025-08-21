@@ -81,11 +81,15 @@ extern "C" {
  *                                          Includes
  * ------------------------------------------------------------------------------------------------
  */
+#ifdef WISUN_RCP_ENABLE
+#include "rcp_mac_common.h"
+#endif
 #include "hal_types.h"
 #include "saddr.h"
 #include "sdata.h"
 
 #include "api_mac.h"
+
 /* ------------------------------------------------------------------------------------------------
  *                                           Constants
  * ------------------------------------------------------------------------------------------------
@@ -184,30 +188,6 @@ extern "C" {
 #define MAC_KEY_ID_MODE_4           0x02  /* Key is determined from the 4-byte key index */
 #define MAC_KEY_ID_MODE_8           0x03  /* Key is determined from the 8-byte key index */
 
-/* Key identifier field length in bytes */
-#define MAC_KEY_ID_IMPLICIT_LEN     0
-#define MAC_KEY_ID_1_LEN            1
-#define MAC_KEY_ID_4_LEN            5
-#define MAC_KEY_ID_8_LEN            9
-
-/* Key source maximum length in bytes */
-#define MAC_KEY_SOURCE_MAX_LEN      8
-
-/* Key index length in bytes */
-#define MAC_KEY_INDEX_LEN           1
-
-/* Frame counter length in bytes */
-#define MAC_FRAME_COUNTER_LEN       4
-
-/* Key length in bytes */
-#define MAC_KEY_MAX_LEN             16
-
-/* Key lookup data length in bytes */
-#define MAC_KEY_LOOKUP_SHORT_LEN    5
-#define MAC_KEY_LOOKUP_LONG_LEN     9
-#define MAC_MAX_KEY_LOOKUP_LEN      MAC_KEY_LOOKUP_LONG_LEN
-
-
 /* Data constants */
 #if !defined ( MAC_MAX_FRAME_SIZE )
 #ifndef FREQ_2_4G
@@ -247,25 +227,6 @@ extern "C" {
 
 /* Green Power limitations */
 #define MAC_MIN_GREEN_PWR_DELAY     5       /* GP delay must be greater than ~1.6ms or 1600/320 */
-
-#ifndef MAC_CHAN_LOWEST
-#define MAC_CHAN_LOWEST             0
-#endif
-
-#ifndef MAC_CHAN_HIGHEST
-#define MAC_CHAN_HIGHEST            128
-#endif
-
-/* Maximum number of channels */
-#define MAC_154G_MAX_NUM_CHANNEL      (MAC_CHAN_HIGHEST - MAC_CHAN_LOWEST + 1)
-
-/* Bitmap size to hold the channel list */
-#define MAC_154G_CHANNEL_BITMAP_SIZ \
-        ((MAC_154G_MAX_NUM_CHANNEL + 7) / 8)
-
-/* Supported Channel Pages */
-#define MAC_CHANNEL_PAGE_9          9     /* standard-defined SUN PHY operating modes */
-#define MAC_CHANNEL_PAGE_10         10    /* MR-FSK Generic-PHY-defined PHY modes */
 
 /* Maximum number of PHY descriptor entries */
 #define MAC_STANDARD_PHY_DESCRIPTOR_ENTRIES  10
@@ -495,37 +456,6 @@ extern "C" {
 /* PA Type */
 #define MAC_RF_PA_TYPE                    0xF8  /* RF PA Type */
 
-/* Frequency hopping PIB Get and Set Attributes */
-#define MAC_FHPIB_TRACK_PARENT_EUI        0x2000  /* The parent EUI address */
-#define MAC_FHPIB_BC_INTERVAL             0x2001  /* Time between start of two broadcast slots in msec */
-#define MAC_FHPIB_UC_EXCLUDED_CHANNELS    0x2002  /* Unicast excluded channels */
-#define MAC_FHPIB_BC_EXCLUDED_CHANNELS    0x2003  /* Broadcast excluded channels */
-#define MAC_FHPIB_UC_DWELL_INTERVAL       0x2004  /* Duration of node's unicast slot */
-#define MAC_FHPIB_BC_DWELL_INTERVAL       0x2005  /* Duration of broadcast slot */
-#define MAC_FHPIB_CLOCK_DRIFT             0x2006  /* Clock drift in PPM */
-#define MAC_FHPIB_TIMING_ACCURACY         0x2007  /* Timing accuracy in 10usec resolution */
-#define MAC_FHPIB_UC_CHANNEL_FUNCTION     0x2008  /* Unicast channel hopping function */
-#define MAC_FHPIB_BC_CHANNEL_FUNCTION     0x2009  /* Broadcast channel hopping function */
-#define MAC_FHPIB_USE_PARENT_BS_IE        0x200A  /* Node is propagating parent's BS-IE */
-#define MAC_FHPIB_BROCAST_SCHED_ID        0x200B  /* Broadcast schedule ID for broadcast channel hopping sequence */
-#define MAC_FHPIB_UC_FIXED_CHANNEL        0x200C  /* Unicast channel number when no hopping */
-#define MAC_FHPIB_BC_FIXED_CHANNEL        0x200D  /* Broadcast channel number when no hopping */
-#define MAC_FHPIB_PAN_SIZE                0x200E  /* Number of nodes in the PAN */
-#define MAC_FHPIB_ROUTING_COST            0x200F  /* Estimate of routing path ETX to the PAN coordinator */
-#define MAC_FHPIB_ROUTING_METHOD          0x2010  /* RPL(1), MHDS(0)*/
-#define MAC_FHPIB_EAPOL_READY             0x2011  /* Node can accept EAPOL message */
-#define MAC_FHPIB_FAN_TPS_VERSION         0x2012  /* Wi-SUN FAN version */
-#define MAC_FHPIB_NET_NAME                0x2013  /* Network Name */
-#define MAC_FHPIB_PAN_VERSION             0x2014  /* PAN version to notify PAN configuration changes */
-#define MAC_FHPIB_GTK_0_HASH              0x2015  /* Low order 64 bits of SHA256 hash of GTK */
-#define MAC_FHPIB_GTK_1_HASH              0x2016  /* Low order 64 bits of SHA256 hash of GTK */
-#define MAC_FHPIB_GTK_2_HASH              0x2017  /* Low order 64 bits of SHA256 hash of GTK */
-#define MAC_FHPIB_GTK_3_HASH              0x2018  /* Low order 64 bits of SHA256 hash of GTK */
-#define MAC_FHPIB_NEIGHBOR_VALID_TIME     0x2019  /* Time in min during which the node info considered as valid */
-#define MAC_FHPIB_CSMA_BASE_BACKOFF       0x201A  /* Additional base wait time to sense target channel */
-#define MAC_FHPIB_NUM_MAX_NON_SLEEP_NODES 0x201B  /* Number of non-sleepy neighbors that can be supported */
-#define MAC_FHPIB_NUM_MAX_SLEEP_NODES     0x201C  /* Number of sleepy neighbors that can be supported */
-
 /* Disassociate Reason */
 #define MAC_DISASSOC_COORD          1     /* The coordinator wishes the device to disassociate */
 #define MAC_DISASSOC_DEVICE         2     /* The device itself wishes to disassociate */
@@ -617,6 +547,7 @@ extern "C" {
 #define MAC_MLME_WS_ASYNC_CNF       17    /* WiSUN Async frame confirm */
 #define MAC_MLME_WS_ASYNC_IND       18    /* WiSUN Async frame indication */
 #define MAC_NCP_MT_MSG              19    /* NPI MP message */
+#define MAC_RCP_TO_HOST_MSG         20    /* RCP TO HOST Msg : can be data Ind, data Cnf etc*/      
 
 /* The length of the random seed is set for maximum requirement which is
  * 32 for ZigBeeIP
@@ -922,7 +853,6 @@ typedef struct _headerIeInfo
 
 } headerIeInfo_t;
 
-
 typedef struct
 {
   uint32                timestamp;
@@ -967,6 +897,7 @@ typedef struct
   } dest;
   uint8                 priority;       /* priority of packet */
   uint32                reqTimestamp;   /* data request time stamp */
+  fhnt_entry_t          fhnt_entry;
 } macTxIntData_t;
 
 /* For internal use only */
@@ -1440,6 +1371,14 @@ typedef struct _macNpiMtMsg
                                               /* message pointer to NPI MAC message */
 } macNpiMtMsg_t;
 
+/* MAC_NPI_MT_MSG type  */
+typedef struct _macRcpMsg
+{
+  macEventHdr_t       hdr;                    /* Event header contains the status of the associate attempt */
+  uint8_t rcp_cmd_type;
+  uint8_t *rcp_data;                                            /* message pointer to NPI MAC message */
+} macRcpMsg_t;
+
 /* Union of callback structures */
 typedef union
 {
@@ -1465,6 +1404,7 @@ typedef union
 #ifdef FEATURE_WISUN_SUPPORT
   macMcpsDataCnfAck_t      ackCnf;            /* MAC_MCPS_DATA_CNF */
 #endif
+  macRcpMsg_t              lmacRcpMsg;       /* LMAC RCP MSG: can contain various mac callbacks*/
 } macCbackEvent_t;
 
 /* Configurable parameters */
@@ -1492,7 +1432,7 @@ typedef enum
     REGDOMAIN_EU = 0x3,
     REGDOMAIN_BZ = 0x7,
     REGDOMAIN_UNINIT = 0xFF
-}macRegDomain_t;
+} macRegDomain_t;
 
 #ifdef MAC_DUTY_CYCLE_CHECKING
 typedef enum
@@ -1501,7 +1441,7 @@ typedef enum
     dcModeLimited,
     dcModeCritical,
     dcModeRegulated
-}macDutyCycleMode_t;
+} macDutyCycleMode_t;
 #endif
 
 #define MAC_MSG_EVT_LOG_SIZE    64

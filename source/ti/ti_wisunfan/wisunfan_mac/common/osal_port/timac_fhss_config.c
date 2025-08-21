@@ -30,6 +30,8 @@
 #include "ns_trace.h"
 #include "mac_assert.h"
 
+#include "rcp_host.h"
+
 #define TRACE_GROUP "fhss"
 
 static fhss_structure_t *fhss_struct = NULL;
@@ -82,7 +84,7 @@ fhss_structure_t *fhss_ws_enable(fhss_api_t *fhss_api, const fhss_ws_configurati
         tr_err("Invalid FHSS enable configuration");
         return NULL;
     }
-    int channel_count = channel_list_count_channels(fhss_configuration->channel_mask);
+    int channel_count = channel_list_count_channels(fhss_configuration->channel_mask1);
     if (channel_count <= 0) {
         // There must be at least one configured channel in channel list
         return NULL;
@@ -154,13 +156,19 @@ fhss_api_t *ns_fhss_ws_create(const fhss_ws_configuration_t *fhss_configuration,
     return this;
 }
 
-int ns_fhss_ws_set_parent(const fhss_api_t *fhss_api, const uint8_t eui64[8], const broadcast_timing_info_t *bc_timing_info, const bool force_synch)
+int ns_fhss_ws_set_parent(const fhss_api_t *fhss_api, const uint8_t eui64[8], broadcast_timing_info_t *bc_timing_info, const bool force_synch)
 {
+#if defined(WISUN_RCP_ENABLE)
+    rcp_host_set_bc_timing(bc_timing_info, force_synch);
+    (void) fhss_api;
+    (void) eui64;
+#else
     /* Set Parent to track broadcast schedule */
     timacSetTrackParent((uint8_t *) eui64);
     (void) fhss_api;
     (void) bc_timing_info;
     (void) force_synch;
+#endif
     return 0;
 }
 
@@ -202,7 +210,7 @@ fhss_structure_t *fhss_get_object_with_api(const fhss_api_t *fhss_api)
 
 int fhss_ws_configuration_set(fhss_structure_t *fhss_structure, const fhss_ws_configuration_t *fhss_configuration)
 {
-    int channel_count = channel_list_count_channels(fhss_configuration->channel_mask);
+    int channel_count = channel_list_count_channels(fhss_configuration->channel_mask1);
     if (channel_count <= 0) {
         return -1;
     }
@@ -216,13 +224,18 @@ int fhss_ws_configuration_set(fhss_structure_t *fhss_structure, const fhss_ws_co
     return 0;
 }
 
-int ns_fhss_ws_configuration_set(const fhss_api_t *fhss_api, const fhss_ws_configuration_t *fhss_configuration)
+int ns_fhss_ws_configuration_set(fhss_api_t *fhss_api, fhss_ws_configuration_t *fhss_configuration)
 {
+#if defined(WISUN_RCP_ENABLE)
+    rcp_host_set_config(RCP_CONFIG_BROCAST_SCHED_ID, &fhss_configuration->bsi, sizeof(fhss_configuration->bsi));
+    return 0;
+#else
     fhss_structure_t *fhss_structure = fhss_get_object_with_api(fhss_api);
     if (!fhss_structure || !fhss_structure->ws) {
         return -1;
     }
     return fhss_ws_configuration_set(fhss_structure, fhss_configuration);
+#endif
 }
 
 int ns_fhss_ws_set_hop_count(const fhss_api_t *fhss_api, const uint8_t hop_count)
@@ -242,4 +255,3 @@ int ns_fhss_ws_set_tx_allowance_level(const fhss_api_t *fhss_api, const fhss_ws_
     }
     return fhss_ws_set_tx_allowance_level(fhss_structure, global_level, ef_level);
 }
-

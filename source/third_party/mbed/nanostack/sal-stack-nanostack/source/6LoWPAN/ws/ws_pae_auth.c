@@ -988,6 +988,7 @@ static kmp_api_t *ws_pae_auth_kmp_service_api_get(kmp_service_t *service, kmp_ap
 
     supp_entry_t *supp_entry = kmp_api_data_get(kmp);
     if (!supp_entry) {
+        tr_error("can not find the supp_entry");
         return NULL;
     }
 
@@ -1394,4 +1395,3 @@ static void ws_pae_auth_waiting_supp_deleted(void *pae_auth_ptr)
 
 #endif /* HAVE_PAE_AUTH */
 #endif /* HAVE_WS */
-

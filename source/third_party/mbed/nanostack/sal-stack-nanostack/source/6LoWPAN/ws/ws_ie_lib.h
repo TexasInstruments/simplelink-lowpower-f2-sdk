@@ -25,6 +25,10 @@ struct ws_us_ie;
 struct ws_hopping_schedule_s;
 struct ws_fc_ie;
 
+#ifdef WISUN_FAN_CORE_1_1
+struct ws_pom_ie_s;
+struct ws_jm_ie_s;
+#endif
 /**
  * @brief ws_wp_network_name_t WS nested payload network name
  */
@@ -57,12 +61,44 @@ uint8_t *ws_wp_nested_pan_ver_write(uint8_t *ptr, struct ws_pan_information_s *p
 uint8_t *ws_wp_nested_gtkhash_write(uint8_t *ptr, uint8_t *gtkhash, uint8_t gtkhash_length);
 uint16_t ws_wp_nested_hopping_schedule_length(struct ws_hopping_schedule_s *hopping_schedule, bool unicast_schedule);
 
+#ifdef WISUN_FAN_CORE_1_1
+uint8_t *ws_wp_nested_pom_write(uint8_t *ptr, struct ws_pom_ie_s *ptr_pom_ie);
+// Wi-SUN FAN 1.1v09-d10 Figure 6-62 Capability IE
+#define WS_WPIE_POM_PHY_OP_MODE_NUMBER_MASK 0b00001111
+#define WS_WPIE_POM_MDR_CAPABLE_MASK        0b00010000
+#define WS_WPIE_POM_PHY_OP_MODE_NUMBER_SHIFT 0
+#define WS_WPIE_POM_MDR_CAPABLE_SHIFT        4
+
+uint8_t *ws_wp_nested_jm_write(uint8_t *ptr, struct ws_pan_information_s *pan_congiguration);
+// 20210201-FANWG-FANTPS-1.1v09-d10
+// Figure 68b JM-IE 
+// Wi-SUN FAN 1.1v06 Figure 68c JM-IE Metric
+#define WS_WPIE_JM_METRIC_ID_MASK  0xFC
+#define WS_WPIE_JM_METRIC_LEN_MASK 0x03
+#define WS_WPIE_JM_METRIC_ID_SHIFT      2
+#define WS_WPIE_JM_METRIC_LEN_SHIFT     0
+
+#define WS_WPIE_JM_IE_PLF_LENGTH        3
+
+// Wi-SUN Assigned Value Registry 0v25
+//   8. Join Metric IDs
+enum {
+    WS_JM_PLF = 1, // PAN Load Factor
+};
+
+#endif
+
 bool ws_wp_nested_us_read(uint8_t *data, uint16_t length, struct ws_us_ie *us_ie);
 bool ws_wp_nested_bs_read(uint8_t *data, uint16_t length, struct ws_bs_ie *bs_ie);
 bool ws_wp_nested_pan_read(uint8_t *data, uint16_t length, struct ws_pan_information_s *pan_congiguration);
 bool ws_wp_nested_pan_version_read(uint8_t *data, uint16_t length, uint16_t *pan_version);
 bool ws_wp_nested_network_name_read(uint8_t *data, uint16_t length, ws_wp_network_name_t *network_name);
 uint8_t *ws_wp_nested_gtkhash_read(uint8_t *data, uint16_t length);
+
+#ifdef WISUN_FAN_CORE_1_1
+bool ws_wp_nested_pom_read(uint8_t *data, uint16_t length, struct ws_pom_ie_s *ptr_pom_ie);
+bool ws_wp_nested_jm_read(uint8_t *data, uint16_t length, struct ws_jm_ie_s *ptr_jm_ie);
+#endif
 
 bool ws_wp_nested_vp_read(uint8_t *data, uint16_t length, struct ws_vp_ie *vp_ie);
 bool ws_wp_nested_vp_get(uint8_t *data, uint16_t length, struct ws_vp_ie *vp_ie);

@@ -647,6 +647,7 @@ void dhcpv6_renew(protocol_interface_info_entry_t *interface, if_address_entry_t
         packetReq.messageType = DHCPV6_SOLICATION_TYPE;
     }
 
+    // This is effectively used as a length field, returned_ptr will be incremented by however many bytes are written to the message
     uint8_t* returned_ptr;
 
     if (skip_address_info) {
@@ -679,7 +680,7 @@ void dhcpv6_renew(protocol_interface_info_entry_t *interface, if_address_entry_t
         }
     }
 
-    uint16_t payload_bytes_written = ((uint32_t) returned_ptr) - ((uint32_t) payload_ptr);
+    uint16_t payload_bytes_written = ((uintptr_t) returned_ptr) - ((uintptr_t) payload_ptr);
 
     if(payload_bytes_written > payload_len)
     {

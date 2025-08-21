@@ -57,7 +57,7 @@
 #endif
 /***** Defines *****/
 /* Only 1 application can talk to the MAC */
-#define MAX_TASKS 15
+#define MAX_TASKS 4
 
 /***** Variable declarations *****/
 

@@ -371,7 +371,9 @@ static void lowpan_nd_address_cb(protocol_interface_info_entry_t *interface, if_
                     protocol_6lowpan_bootstrap_nd_ready(interface);
                 } else {
                     //Disable protocol poll
+#ifndef WISUN_RCP_ENABLE                    
                     mac_data_poll_protocol_poll_mode_decrement(interface);
+#endif
                 }
 
             }
@@ -406,7 +408,9 @@ static void lowpan_nd_address_cb(protocol_interface_info_entry_t *interface, if_
                     interface->if_6lowpan_dad_process.count--;
                     //Enable Protocol Poll mode
                     if (interface->lowpan_info & INTERFACE_NWK_CONF_MAC_RX_OFF_IDLE) {
+#ifndef WISUN_RCP_ENABLE                        
                         mac_data_poll_init_protocol_poll(interface);
+#endif                        
                     }
                 } else {
 
@@ -1265,7 +1269,9 @@ bool nd_ra_process_abro(protocol_interface_info_entry_t *cur, buffer_t *buf, con
             } else {
                 router->nd_timer = 1;
                 tr_debug("RS Unicast Done");
+#ifndef WISUN_RCP_ENABLE                
                 mac_data_poll_protocol_poll_mode_decrement(cur);
+#endif                
             }
             router->ns_retry = nd_params.ns_retry_max;
             router->nd_state = ND_READY;
@@ -1547,7 +1553,9 @@ static uint8_t nd_router_ready_timer(nd_router_t *cur, protocol_interface_info_e
         cur->nd_timer = 1;
         cur->nd_bootstrap_tick = (nd_base_tick - 1);
         if (cur_interface->lowpan_info & INTERFACE_NWK_CONF_MAC_RX_OFF_IDLE) {
+#ifndef WISUN_RCP_ENABLE            
             mac_data_poll_init_protocol_poll(cur_interface);
+#endif            
         }
         nd_router_bootstrap_timer(cur, cur_interface, 1);
     } else { /* ND_BR_READY */

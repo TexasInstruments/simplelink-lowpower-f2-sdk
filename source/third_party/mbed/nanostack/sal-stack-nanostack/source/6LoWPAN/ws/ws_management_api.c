@@ -162,6 +162,38 @@ int ws_management_network_name_validate(
     return 0;
 }
 
+#ifdef WISUN_FAN_CORE_1_1
+int ws_management_phy_operation_mode_set(
+    int8_t interface_id,
+    uint8_t mdr_enable,
+    uint8_t num_phy_mode,
+    uint8_t *Phy_Mode_Id)
+{
+    protocol_interface_info_entry_t *cur;
+    cur = protocol_stack_interface_info_get_by_id(interface_id);
+    if (interface_id >= 0 && (!cur || !ws_info(cur))) {
+        return -1;
+    }
+    if (!Phy_Mode_Id) {
+        return -2;
+    }
+
+    ws_phy_cfg_t cfg;
+    if (ws_cfg_phy_get(&cfg, NULL) < 0) {
+        return -3;
+    }
+    // copy the POM setting
+    cfg.mdr_enable      = mdr_enable;
+    cfg.num_phy_mode    = num_phy_mode;
+    memcpy(cfg.Phy_Mode_Id, Phy_Mode_Id,num_phy_mode);
+
+    if (ws_cfg_phy_set(cur, NULL, &cfg, 0) < 0) {
+        return -4;
+    }
+    return 0;
+}
+#endif
+
 int ws_management_domain_configuration_set(
     int8_t interface_id,
     uint8_t regulatory_domain,
@@ -442,7 +474,7 @@ int ws_management_network_size_validate(
 
 int ws_management_channel_mask_set(
     int8_t interface_id,
-    uint32_t channel_mask[8])
+    uint8_t channel_mask[17])
 {
     protocol_interface_info_entry_t *cur;
 
@@ -462,10 +494,10 @@ int ws_management_channel_mask_set(
     }
 
     if (channel_mask) {
-        memcpy(cfg.fhss_channel_mask, channel_mask, sizeof(uint32_t) * 8);
+        memcpy(cfg.fhss_uc_channel_mask5, channel_mask, sizeof(cfg.fhss_uc_channel_mask5) );
     } else {
         // Use the default
-        memcpy(cfg.fhss_channel_mask, cfg_default.fhss_channel_mask, sizeof(uint32_t) * 8);
+        memcpy(cfg.fhss_uc_channel_mask5, cfg_default.fhss_uc_channel_mask5, sizeof(cfg.fhss_uc_channel_mask5) );
     }
 
 
@@ -478,7 +510,7 @@ int ws_management_channel_mask_set(
 
 int ws_management_channel_mask_get(
     int8_t interface_id,
-    uint32_t *channel_mask)
+    uint8_t *channel_mask)
 {
     protocol_interface_info_entry_t *cur;
     cur = protocol_stack_interface_info_get_by_id(interface_id);
@@ -494,14 +526,14 @@ int ws_management_channel_mask_get(
         return -2;
     }
 
-    memcpy(channel_mask, cfg.fhss_channel_mask, sizeof(uint32_t) * 8);
+    memcpy(channel_mask, cfg.fhss_uc_channel_mask5, sizeof(cfg.fhss_uc_channel_mask5) );
 
     return 0;
 }
 
 int ws_management_channel_mask_validate(
     int8_t interface_id,
-    uint32_t channel_mask[8])
+    uint8_t channel_mask[17])
 {
     protocol_interface_info_entry_t *cur;
     cur = protocol_stack_interface_info_get_by_id(interface_id);
@@ -514,7 +546,7 @@ int ws_management_channel_mask_validate(
         return -2;
     }
 
-    memcpy(cfg.fhss_channel_mask, channel_mask, sizeof(uint32_t) * 8);
+    memcpy(cfg.fhss_uc_channel_mask5, channel_mask, sizeof(cfg.fhss_uc_channel_mask5) );
 
     if (ws_cfg_fhss_validate(NULL, &cfg) < 0) {
         return -4;

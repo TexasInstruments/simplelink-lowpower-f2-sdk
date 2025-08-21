@@ -73,7 +73,9 @@ void TaskletScheduler::PostTasklet(Tasklet &aTasklet)
     {
         mTail        = &aTasklet;
         mTail->mNext = mTail;
+#ifndef LINUX_NANOSTACK
         otTaskletsSignalPending(&aTasklet.GetInstance());
+#endif
     }
     else
     {

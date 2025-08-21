@@ -65,7 +65,7 @@ extern "C"
 // ****************************************************************************
 // typedefs
 // ****************************************************************************
-
+#ifndef MT_PROTOCOL_LEN_FIELD_2BYTES
 //! \brief typedef for call back function to return a complete NPI message.
 //!        The npiFrame module encapsulates the collecting/parsing of the
 //!        complete message and returns via this callback the received message.
@@ -73,6 +73,17 @@ extern "C"
 //!        (i.e. Start of Frame, FCS/CRC or similar).
 typedef void (*npiIncomingFrameCBack_t)( uint8_t frameSize, uint8_t *pFrame,
                                          NPIMSG_Type msgType );
+#else
+
+//! \brief typedef for call back function to return a complete NPI message.
+//!        The npiFrame module encapsulates the collecting/parsing of the
+//!        complete message and returns via this callback the received message.
+//!        NOTE: the message buffer does NOT include the framing elements
+//!        (i.e. Start of Frame, FCS/CRC or similar).
+typedef void (*npiIncomingFrameCBack_t)( uint16_t frameSize, uint8_t *pFrame,
+       NPIMSG_Type msgType );
+
+#endif //MT_PROTOCOL_LEN_FIELD_2BYTES
 
 
 //*****************************************************************************

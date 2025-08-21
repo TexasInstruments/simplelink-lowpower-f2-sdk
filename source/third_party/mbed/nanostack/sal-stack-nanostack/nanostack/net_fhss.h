@@ -67,7 +67,7 @@ extern const fhss_ws_configuration_t *ns_fhss_ws_configuration_get(const fhss_ap
  * @param fhss_configuration Basic FHSS configuration.
  * @return 0 on success, -1 on fail.
  */
-extern int ns_fhss_ws_configuration_set(const fhss_api_t *fhss_api, const fhss_ws_configuration_t *fhss_configuration);
+extern int ns_fhss_ws_configuration_set(fhss_api_t *fhss_api, fhss_ws_configuration_t *fhss_configuration);
 
 /**
  * @brief Deletes a FHSS API instance and removes it from software MAC.

@@ -19,7 +19,7 @@
 #ifndef _NS_FILE_H_
 #define _NS_FILE_H_
 
-#ifndef NV_RESTORE
+#if 0
 
 /**
  * \file ns_file.h

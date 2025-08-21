@@ -84,6 +84,38 @@ typedef struct {
     uint8_t                       init_key_cnt;            /**< How many time initial EAPOL-key has been received */
 } radius_eap_tls_sec_prot_int_t;
 
+#define RADIUS_EAP_TLS_DEBUG
+
+#ifdef RADIUS_EAP_TLS_DEBUG
+/* radius eal_tls debug
+*/
+typedef struct radius_eap_tls_dbg_s {
+    uint16_t rx_num_from_supp;
+    uint16_t rx_num_from_host;
+    uint16_t rx_supp_pdu_header_err;
+    uint16_t rx_supp_err_state_not_in_response_id_state;
+    uint16_t rx_supp_err_state_not_in_eap_response_state;
+    uint16_t rx_radius_client_err_not_in_eap_request_state;
+    uint16_t rx_unknown;
+
+    uint16_t tx_eap_request;
+    uint16_t rx_eap_response;
+    uint16_t tx_trickle_timeout_in_wait_eap_response;
+
+    uint16_t tx_identity_request;
+    uint16_t rx_identity_response;
+    uint16_t tx_trickle_timeout_in_wait_identity_response;
+    uint16_t tx_eap_retry_err;
+    uint16_t client_send_pointer_null_in_eap_response;
+    uint16_t client_send_pointer_null_in_response_id;
+    uint16_t radius_client_send_error;
+    uint16_t radius_client_send_error2;
+
+} radius_eap_tls_dbg_t;
+
+radius_eap_tls_dbg_t radius_eap_tls_Dbg;
+#endif
+
 static uint16_t radius_eap_tls_sec_prot_size(void);
 static int8_t radius_eap_tls_sec_prot_init(sec_prot_t *prot);
 
@@ -159,6 +191,7 @@ static void radius_eap_tls_sec_prot_delete(sec_prot_t *prot)
 
     if (data->recv_eap_msg != NULL) {
         ns_dyn_mem_free(data->recv_eap_msg);
+        data->recv_eap_msg = NULL;
     }
 }
 
@@ -174,11 +207,16 @@ static int8_t radius_eap_tls_sec_prot_receive(sec_prot_t *prot, void *pdu, uint1
 {
     radius_eap_tls_sec_prot_int_t *data = eap_tls_sec_prot_get(prot);
     int8_t ret_val = -1;
-
+#ifdef RADIUS_EAP_TLS_DEBUG
+    radius_eap_tls_Dbg.rx_num_from_supp++;
+#endif
     // Decoding is successful
     if (eapol_parse_pdu_header(pdu, size, &data->recv_eapol_pdu)) {
         // Handle EAP messages
-        if (data->recv_eapol_pdu.packet_type == EAPOL_EAP_TYPE) {
+        if ( (data->recv_eapol_pdu.packet_type == EAPOL_EAP_TYPE ) &&
+            ( (sec_prot_state_get(&data->common) == EAP_TLS_STATE_EAP_RESPONSE) ||
+              (sec_prot_state_get(&data->common) == EAP_TLS_STATE_RESPONSE_ID) ) )
+        {
             data->eap_code = data->recv_eapol_pdu.msg.eap.eap_code;
             data->eap_type = data->recv_eapol_pdu.msg.eap.type;
 
@@ -203,8 +241,33 @@ static int8_t radius_eap_tls_sec_prot_receive(sec_prot_t *prot, void *pdu, uint1
             // Filters repeated initial EAPOL-key messages
             data->burst_filt_timer = BURST_FILTER_TIMER_TIMEOUT;
         }
+#ifdef RADIUS_EAP_TLS_DEBUG
+        else
+        {
+            if ( (data->recv_eapol_pdu.packet_type == EAPOL_EAP_TYPE ) &&
+                 (sec_prot_state_get(&data->common) != EAP_TLS_STATE_EAP_RESPONSE) )
+            {
+                radius_eap_tls_Dbg.rx_supp_err_state_not_in_eap_response_state++;
+            }
+            else if (data->recv_eapol_pdu.packet_type == EAPOL_EAP_TYPE &&
+                sec_prot_state_get(&data->common) != EAP_TLS_STATE_RESPONSE_ID)
+            {
+                radius_eap_tls_Dbg.rx_supp_err_state_not_in_response_id_state++;
+            }
+            else
+            {
+                radius_eap_tls_Dbg.rx_unknown++;
+            }
+        }
+#endif
         ret_val = 0;
     }
+#ifdef RADIUS_EAP_TLS_DEBUG
+    else
+    {
+        radius_eap_tls_Dbg.rx_supp_pdu_header_err++;
+    }
+#endif
 
     memset(&data->recv_eapol_pdu, 0, sizeof(eapol_pdu_t));
     data->eap_code = 0;
@@ -363,8 +426,17 @@ static int8_t radius_eap_tls_sec_prot_radius_client_receive(sec_prot_t *radius_c
         return -1;
     }
 
-    radius_eap_tls_sec_prot_int_t *data = eap_tls_sec_prot_get(prot);
+#ifdef RADIUS_EAP_TLS_DEBUG
+    radius_eap_tls_Dbg.rx_num_from_host++;
+#endif
 
+    radius_eap_tls_sec_prot_int_t *data = eap_tls_sec_prot_get(prot);
+#ifdef RADIUS_EAP_TLS_DEBUG
+    if ( (sec_prot_state_get(&data->common) != EAP_TLS_STATE_EAP_REQUEST))
+    {
+        radius_eap_tls_Dbg.rx_radius_client_err_not_in_eap_request_state++;
+    }
+#endif
     if (data->recv_eap_msg != NULL) {
         ns_dyn_mem_free(data->recv_eap_msg);
     }
@@ -446,7 +518,9 @@ static void radius_eap_tls_sec_prot_state_machine(sec_prot_t *prot)
 
             // Sends EAP request, Identity
             radius_eap_tls_sec_prot_message_send(prot, EAP_REQ, EAP_IDENTITY);
-
+#ifdef RADIUS_EAP_TLS_DEBUG
+            radius_eap_tls_Dbg.tx_identity_request++;
+#endif
             // Start trickle timer to re-send if no response
             sec_prot_timer_trickle_start(&data->common, &prot->sec_cfg->prot_cfg.sec_prot_trickle_params);
 
@@ -459,10 +533,16 @@ static void radius_eap_tls_sec_prot_state_machine(sec_prot_t *prot)
             // On timeout
             if (sec_prot_result_timeout_check(&data->common)) {
                 // Re-sends EAP request, Identity
+#ifdef RADIUS_EAP_TLS_DEBUG
+                radius_eap_tls_Dbg.tx_trickle_timeout_in_wait_identity_response++;
+#endif
                 radius_eap_tls_sec_prot_message_send(prot, EAP_REQ, EAP_IDENTITY);
                 return;
             }
 
+#ifdef RADIUS_EAP_TLS_DEBUG
+            radius_eap_tls_Dbg.rx_identity_response++;
+#endif
             // Handle EAP response (expected Identity)
             if (radius_eap_tls_sec_prot_message_handle(prot, data_ptr, &length) != EAP_TLS_MSG_IDENTITY) {
                 return;
@@ -485,8 +565,19 @@ static void radius_eap_tls_sec_prot_state_machine(sec_prot_t *prot)
             data->common.ticks = RADIUS_EAP_TLS_CLIENT_TIMEOUT;
 
             // Send to radius client
-            data->radius_client_send(data->radius_client_prot, (void *) &data->recv_eapol_pdu, length);
-
+            if ((data->radius_client_send) && (data->radius_client_prot)) {
+                 if(data->radius_client_send(data->radius_client_prot, (void *) &data->recv_eapol_pdu, length) != 0) {
+#ifdef RADIUS_EAP_TLS_DEBUG
+                    radius_eap_tls_Dbg.radius_client_send_error++;
+#endif
+                    return;
+                 }
+            } else {
+#ifdef RADIUS_EAP_TLS_DEBUG
+                radius_eap_tls_Dbg.client_send_pointer_null_in_response_id++;
+#endif
+                return;
+            }
             sec_prot_state_set(prot, &data->common, EAP_TLS_STATE_EAP_REQUEST);
             break;
 
@@ -506,7 +597,9 @@ static void radius_eap_tls_sec_prot_state_machine(sec_prot_t *prot)
                 tr_error("EAP-TLS: EAP message forward failed");
                 return;
             }
-
+#ifdef RADIUS_EAP_TLS_DEBUG
+            radius_eap_tls_Dbg.tx_eap_request++;
+#endif
             if (eap_code == EAP_SUCCESS) {
                 sec_prot_result_set(&data->common, SEC_RESULT_OK);
                 sec_prot_state_set(prot, &data->common, EAP_TLS_STATE_FINISH);
@@ -527,12 +620,20 @@ static void radius_eap_tls_sec_prot_state_machine(sec_prot_t *prot)
             // On timeout
             if (sec_prot_result_timeout_check(&data->common)) {
                 tr_info("EAP-TLS: retry EAP request, eui-64: %s", trace_array(sec_prot_remote_eui_64_addr_get(prot), 8));
+#ifdef RADIUS_EAP_TLS_DEBUG
+                radius_eap_tls_Dbg.tx_trickle_timeout_in_wait_eap_response++;
+#endif
                 if (radius_eap_tls_sec_prot_radius_eap_message_retry(prot) < 0) {
                     tr_error("EAP-TLS: retry msg send error");
+#ifdef RADIUS_EAP_TLS_DEBUG
+                    radius_eap_tls_Dbg.tx_eap_retry_err++;
+#endif
                 }
                 return;
             }
-
+#ifdef RADIUS_EAP_TLS_DEBUG
+            radius_eap_tls_Dbg.rx_eap_response++;
+#endif
             tr_info("EAP-TLS: EAP response, eui-64: %s", trace_array(sec_prot_remote_eui_64_addr_get(prot), 8));
 
             // Handle EAP response
@@ -550,8 +651,21 @@ static void radius_eap_tls_sec_prot_state_machine(sec_prot_t *prot)
             data->common.ticks = RADIUS_EAP_TLS_CLIENT_TIMEOUT;
 
             // Send to radius client
-            data->radius_client_send(data->radius_client_prot, (void *) &data->recv_eapol_pdu, length);
-
+            if ( (data->radius_client_send) && (data->radius_client_prot)  )
+            {
+                if (data->radius_client_send(data->radius_client_prot, (void *) &data->recv_eapol_pdu, length) !=0 )
+                {
+#ifdef RADIUS_EAP_TLS_DEBUG
+                    radius_eap_tls_Dbg.radius_client_send_error2++;
+#endif
+                }
+            }
+#ifdef RADIUS_EAP_TLS_DEBUG
+            else
+            {
+                radius_eap_tls_Dbg.client_send_pointer_null_in_eap_response++;
+            }
+#endif
             sec_prot_state_set(prot, &data->common, EAP_TLS_STATE_EAP_REQUEST);
             break;
 
@@ -589,4 +703,3 @@ static void radius_eap_tls_sec_prot_seq_id_update(sec_prot_t *prot)
 }
 
 #endif /* HAVE_WS */
-

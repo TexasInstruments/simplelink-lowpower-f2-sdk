@@ -35,6 +35,11 @@
 #ifndef LOCATOR_GETTERS_HPP_
 #define LOCATOR_GETTERS_HPP_
 
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wreturn-type"
+#endif
+
 #include "openthread-core-config.h"
 
 #include "common/instance.hpp"
@@ -60,16 +65,24 @@ template <typename Type> inline Type &InstanceLocator::Get(void) const
     // This method uses the `Instance` template method `Get<Type>`
     // to get to the given `Type` from the single OpenThread
     // instance.
+#ifndef LINUX_NANOSTACK
     return GetInstance().Get<Type>();
+#endif
 }
 
 #if !OPENTHREAD_CONFIG_MULTIPLE_INSTANCE_ENABLE
 
 template <typename OwnerType> OwnerType &OwnerLocator::GetOwner(void)
 {
+#ifndef LINUX_NANOSTACK
     return Instance::Get().Get<OwnerType>();
+#endif
 }
 
+#endif
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
 #endif
 
 } // namespace ot

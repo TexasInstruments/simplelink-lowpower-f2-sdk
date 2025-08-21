@@ -206,7 +206,13 @@ public:
      * @returns The current time in milliseconds.
      *
      */
-    static TimeMilli GetNow(void) { return TimeMilli(otPlatAlarmMilliGetNow()); }
+    static TimeMilli GetNow(void) { 
+#ifndef LINUX_NANOSTACK
+        return TimeMilli(otPlatAlarmMilliGetNow()); 
+#else
+        return TimeMilli(0);
+#endif
+    }
 };
 
 /**

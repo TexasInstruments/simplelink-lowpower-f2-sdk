@@ -135,11 +135,13 @@ MAC_INTERNAL_API void macRxAckTxDoneCallback(void);
 MAC_INTERNAL_API void macRxEDFETxDoneCallback(void);
 #endif
 
+#ifndef WISUN_RCP_ENABLE
 #ifdef TI_WISUN_FAN_DEBUG
-bool macRxIsMatchFound(sAddrExt_t euiAddress);
-bool macRx_insertAddrIntoList(uint8_t* euiAddress);
-bool macRx_removeAddrFromList(uint8_t* euiAddress);
+bool mac_filter_list_allow_packet(sAddrExt_t euiAddress);
+bool mac_filter_list_add_addr(uint8_t* euiAddress);
+bool mac_filter_list_rm_addr(uint8_t* euiAddress);
 #endif
+#endif // WISUN_RCP_ENABLE
 
 extern void macRxFrameIsr(void);
 extern void macRxNokIsr(void);

@@ -40,6 +40,11 @@ typedef struct ws_phy_cfg_s {
     uint8_t operating_mode;             /**< PHY operating mode; default "1b" symbol rate 50, modulation index 1 */
     uint8_t phy_mode_id;                /**< PHY mode ID; default 255 (not used) */
     uint8_t channel_plan_id;            /**< Channel plan ID; default 255 (not used) */
+#ifdef WISUN_FAN_CORE_1_1
+    uint8_t mdr_enable;                 /**< MDR in POM */
+    uint8_t num_phy_mode;               /**< number of phy mode in POM */
+    uint8_t Phy_Mode_Id[15];            /**< PHY mode ID list */
+#endif
 } ws_phy_cfg_t;
 
 /**
@@ -78,7 +83,14 @@ typedef struct ws_fhss_cfg_s {
     uint8_t fhss_bc_channel_function;   /**< FHSS WS broadcast channel function; default 2 direct hash channel function */
     uint16_t fhss_uc_fixed_channel;     /**< FHSS unicast fixed channel; default 0xffff */
     uint16_t fhss_bc_fixed_channel;     /**< FHSS broadcast fixed channel; default 0xffff */
-    uint32_t fhss_channel_mask[8];      /**< FHSS channel mask; default; 0xffffffff * 8 */
+    uint8_t  fhss_uc_channel_mask5[17];      /**< FHSS channel mask; default; 0xffffffff * 8 */
+    uint8_t  fhss_bc_channel_mask5[17];   /**< FHSS BC channel mask; default; 0xffffffff * 8 */
+#ifdef WISUN_RCP_ENABLE
+    /* for FAN 1.1 support */
+    uint8_t fan_support_version;        /**< 0: FAN 1.0, 1 FAN 1.1  */
+    uint8_t usie_chan_plan_selection;     /**< USIE 0: use RD+OC , 1: ch0, space + number, 2: RD+chan-ID */
+    uint8_t bsie_chan_plan_selection;     /**< BSIE 0: use RD+OC , 1: ch0, space + number, 2: RD+chan-ID */
+#endif
 } ws_fhss_cfg_t;
 
 /**
@@ -198,6 +210,7 @@ int8_t ws_cfg_fhss_default_set(ws_fhss_cfg_t *cfg);
 int8_t ws_cfg_fhss_get(ws_fhss_cfg_t *cfg, uint8_t *flags);
 int8_t ws_cfg_fhss_validate(ws_fhss_cfg_t *cfg, ws_fhss_cfg_t *new_cfg);
 int8_t ws_cfg_fhss_set(protocol_interface_info_entry_t *cur, ws_fhss_cfg_t *cfg, ws_fhss_cfg_t *new_cfg, uint8_t *flags);
+int8_t ws_cfg_fhss_save(protocol_interface_info_entry_t *cur);
 
 int8_t ws_cfg_sec_timer_get(ws_sec_timer_cfg_t *cfg, uint8_t *flags);
 int8_t ws_cfg_sec_timer_validate(ws_sec_timer_cfg_t *cfg, ws_sec_timer_cfg_t *new_cfg);

@@ -34,6 +34,7 @@
 /*
  *  ======== main_tirtos.c ========
  */
+#include <unistd.h>
 #include <stdint.h>
 
 /* RTOS header files */
@@ -54,11 +55,16 @@
 #include <ti/drivers/apps/Button.h>
 #include <ti/drivers/apps/LED.h>
 #include <ti/drivers/SPI.h>
+#ifndef WISUN_RCP_HOST_BR
 #include <ti/drivers/AESECB.h>
 #include <ti/drivers/AESCBC.h>
+#endif
 
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26XX.h>
+
+#include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(inc/hw_cpu_scs.h)
 
 /* nanostack header files */
 #include "ns_trace.h"
@@ -70,6 +76,10 @@
 #include "nvocmp.h"
 #else
 #include "nvintf.h"
+#endif
+
+#ifdef WISUN_RCP_ENABLE
+#include "rcp_host.h"
 #endif
 
 /******************************************************************************
@@ -104,11 +114,13 @@ NVINTF_nvFuncts_t *pNV = NULL;
 #define MAIN_ASSERT_MAC          3
 #define MAIN_ASSERT_HWI_TIRTOS   4
 
+#ifndef WISUN_RCP_HOST_BR
 #ifndef USE_DEFAULT_USER_CFG
 #include "mac_user_config.h"
 /* MAC user defined configuration */
 macUserCfg_t macUser0Cfg[] = MAC_USER_CFG;
 #endif /* USE_DEFAULT_USER_CFG */
+#endif
 
 uint8_t timacTaskId;
 #endif /* FEATURE_TIMAC_SUPPORT */
@@ -120,8 +132,31 @@ extern void *mainThread(void *arg0);
 
 /* Stack size in bytes */
 #define WISUNTHREADSTACKSIZE    1024
-
 #endif
+
+#ifdef WISUN_RCP_HOST_BR
+extern bool extAddrFlag;
+#endif
+
+/* 
+    To prevent the LTO to throw away these variables, adding the used attribute for the variables
+*/
+__attribute__((used)) uint32_t exc_lr;
+__attribute__((used)) uint32_t exc_sp;
+
+//__attribute__((naked)) void MacAssert_get_SP_LR(void)
+ void MacAssert_get_SP_LR(void)
+{
+    __asm volatile
+    (
+            // Get current state, add more as needed
+
+            "ldr r8, =exc_sp                    \n"
+            "str sp,[r8]                        \n"
+            "ldr r8, =exc_lr                    \n"
+            "str lr,[r8]                        \n"
+    );
+}
 
 #ifdef FEATURE_TIMAC_SUPPORT
 void Main_assertHandler(uint8_t assertReason)
@@ -162,6 +197,8 @@ void Main_excHandler(uint32_t *excStack, uint32_t lr)
  */
 void assertHandler(void)
 {
+    // save LP and SP for later debugging
+    MacAssert_get_SP_LR();    
     /* User defined function */
     Main_assertHandler(MAIN_ASSERT_MAC);
 }
@@ -171,6 +208,8 @@ void assertHandler(void)
  */
 void halAssertHandler(void)
 {
+    // save LP and SP for later debugging
+    MacAssert_get_SP_LR();        
     /* User defined function */
     Main_assertHandler(0);
 }
@@ -180,6 +219,8 @@ void halAssertHandler(void)
  */
 void macHalAssertHandler(void)
 {
+    // save LP and SP for later debugging
+    MacAssert_get_SP_LR();        
     /* User defined function */
     Main_assertHandler(MAIN_ASSERT_MAC);
 }
@@ -188,7 +229,6 @@ void macHalAssertHandler(void)
 /*
  *  ======== main ========
  */
-
 int main(void)
 {
 #if !defined(WISUN_NCP_ENABLE) || !defined(EXCLUDE_TRACE) || defined(COAP_SERVICE_ENABLE)
@@ -198,23 +238,40 @@ int main(void)
     Power_setConstraint(PowerCC26XX_SB_DISALLOW);
 #endif
 
+    // Disable write-buffering. Note that this negatively affect performance.
+    // HWREG(CPU_SCS_BASE + CPU_SCS_O_ACTLR) = CPU_SCS_ACTLR_DISDEFWBUF;
+
     /* Call driver init functions */
     Board_init();
     GPIO_init();
     Button_init();
     LED_init();
 
+#ifndef WISUN_RCP_HOST_BR
 #if defined(MBEDTLS_AES_ALT)
     AESECB_init();
     AESCBC_init();
 #endif
+#endif
 
 #ifdef FEATURE_TIMAC_SUPPORT
+#ifndef WISUN_RCP_HOST_BR
 #ifndef USE_DEFAULT_USER_CFG
     macUser0Cfg[0].pAssertFP = assertHandler;
 #endif //USE_DEFAULT_USER_CFG
     timacTaskId = macTaskInit(macUser0Cfg);
+#endif
 #endif //FEATURE_TIMAC_SUPPORT
+
+#ifdef WISUN_RCP_ENABLE
+    rcp_init();
+#ifdef WISUN_RCP_HOST_BR
+    // Wait until RCP_INIT_CNF sets deviceExtAddr (only needed in 2-chip solution)
+    while (extAddrFlag == false) {
+        usleep(100000); // 100ms sleep
+    }
+#endif
+#endif
 
 #ifndef WISUN_NCP_ENABLE
     pthread_t           thread;

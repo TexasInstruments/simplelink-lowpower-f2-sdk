@@ -113,9 +113,6 @@
  ********************************************************************************************************/
 uint32_t _ScanChannels;
 
- /*! Transmit Delay for Green Power. Defined by the ZStack but used by the Ti 15.4 library */
-bool ApiMac_mtDataReqTxOptionGp = false;
-
 extern uint8_t aExtendedAddress[];
 
 static void convertCapInfo(ApiMac_capabilityInfo_t *pDst, uint8_t srcCapInfo);
@@ -189,113 +186,6 @@ extern void NLME_SetEnergyThreshold( uint8_t value );
                                         receiving secured frames */
 #define CAPABLE_ALLOC_ADDR      0x80  /* Request allocation of a short address
                                         in the associate procedure */
-/*!
- Convert ApiMac_capabilityInfo_t data type to uint8_t capInfo
-
- Public function defined in api_mac.h
- */
-uint8_t ApiMac_convertCapabilityInfo(ApiMac_capabilityInfo_t *pMsgcapInfo)
-{
-    uint8_t capInfo = 0;
-
-    if(pMsgcapInfo->panCoord)
-    {
-        capInfo |= CAPABLE_PAN_COORD;
-    }
-
-    if(pMsgcapInfo->ffd)
-    {
-        capInfo |= CAPABLE_FFD;
-    }
-
-    if(pMsgcapInfo->mainsPower)
-    {
-        capInfo |= CAPABLE_MAINS_POWER;
-    }
-
-    if(pMsgcapInfo->rxOnWhenIdle)
-    {
-        capInfo |= CAPABLE_RX_ON_IDLE;
-    }
-
-    if(pMsgcapInfo->security)
-    {
-        capInfo |= CAPABLE_SECURITY;
-    }
-
-    if(pMsgcapInfo->allocAddr)
-    {
-        capInfo |= CAPABLE_ALLOC_ADDR;
-    }
-
-    return (capInfo);
-}
-
-/*!
- * @brief       Convert API txOptions to bitmasked txOptions.
- *
- * @param       txOptions - tx options structure
- *
- * @return      bitmasked txoptions
- */
-uint16_t convertTxOptions(ApiMac_txOptions_t txOptions)
-{
-    uint16_t retVal = 0;
-
-    if(txOptions.ack == true)
-    {
-        retVal |= MAC_TXOPTION_ACK;
-    }
-    if(txOptions.indirect == true)
-    {
-        retVal |= MAC_TXOPTION_INDIRECT;
-    }
-    if(txOptions.pendingBit == true)
-    {
-        retVal |= MAC_TXOPTION_PEND_BIT;
-    }
-    if(txOptions.noRetransmits == true)
-    {
-        retVal |= MAC_TXOPTION_NO_RETRANS;
-    }
-    if(txOptions.noConfirm == true)
-    {
-        retVal |= MAC_TXOPTION_NO_CNF;
-    }
-    if(txOptions.useAltBE == true)
-    {
-        retVal |= MAC_TXOPTION_ALT_BE;
-    }
-    if(txOptions.usePowerAndChannel == true)
-    {
-        retVal |= MAC_TXOPTION_PWR_CHAN;
-    }
-    if(txOptions.useGreenPower == true)
-    {
-        retVal |= MAC_TXOPTION_GREEN_PWR;
-    }
-    return (retVal);
-}
-
-/*!
- * @brief       Copy the common address type from App type to Mac Stack type.
- *
- * @param       pDst - pointer to the mac stack type
- * @param       pSrc - pointer to the application type
- */
-void copyApiMacAddrToMacAddr(sAddr_t *pDst, ApiMac_sAddr_t *pSrc)
-{
-    /* Copy each element of the structure */
-    pDst->addrMode = pSrc->addrMode;
-    if(pSrc->addrMode == ApiMac_addrType_short)
-    {
-        pDst->addr.shortAddr = pSrc->addr.shortAddr;
-    }
-    else
-    {
-        OsalPort_memcpy(pDst->addr.extAddr, pSrc->addr.extAddr, sizeof(sAddrExt_t));
-    }
-}
 
 /**************************************************************************************************
  * @fn          ZMacEventLoop
@@ -449,6 +339,14 @@ uint32_t ZMacEventLoop(uint8_t taskId, uint32_t events)
     hdr.status = MAC_SUCCESS;
     hdr.event = MAC_INT_BROADCAST_PEND_EVT;
     MAP_macExecute((macEvent_t *) &hdr);
+  }
+
+  if (events & MAC_BC_TIM_TASK_EVT)
+  {
+    hdr.status = MAC_SUCCESS;
+    hdr.event = MAC_BC_TIM_EXP_EVT ;
+    macExecute((macEvent_t *) &hdr);
+
   }
 
   if (events & MAC_CSMA_TIM_TASK_EVT)

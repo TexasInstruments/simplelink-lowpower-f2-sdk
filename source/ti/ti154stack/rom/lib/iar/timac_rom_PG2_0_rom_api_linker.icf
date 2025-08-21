@@ -66,7 +66,7 @@
 --define_symbol FHMGR_macGetElapsedFHTime=0x10032d29
 --define_symbol FHMGR_ucTimerIsrCb=0x10032bb5
 --define_symbol FHMGR_BCTimerEventUpd=0x10032cf5
---define_symbol FHMGR_bcTimerIsrCb=0x1003299d
+//--define_symbol FHMGR_bcTimerIsrCb=0x1003299d
 --define_symbol FHMGR_updateRadioUCChannel=0x10032acd
 --define_symbol FHMGR_updateRadioBCChannel=0x10032b45
 --define_symbol FHMGR_pendUcChUpdate=0x10032d47
@@ -114,7 +114,7 @@
 --define_symbol FHUTIL_getCurBfio=0x100340cd
 --define_symbol FHUTIL_getElapsedTime=0x100343c9
 --define_symbol FHUTIL_compBfioTxTime=0x100343e5
---define_symbol FHUTIl_updateBTIE=0x10033fc9
+//--define_symbol FHUTIl_updateBTIE=0x10033fc9
 --define_symbol FHUTIL_calcUfsi=0x10034411
 --define_symbol FHUTIL_assert=0x100343fd
 --define_symbol FHUTIL_noAction=0x1003441f

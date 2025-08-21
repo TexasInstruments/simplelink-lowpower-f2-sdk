@@ -181,7 +181,11 @@ The <b>Sensor Ramp Data Message</b> is defined as:
 /*! Tracking Response message length (over-the-air length) */
 #define SMSGS_TRACKING_RESPONSE_MSG_LENGTH 1
 /*! Broadcast Command message length (over-the-air-length) */
+#ifdef FH_LOW_LATENCY_BROADCAST
+#define SMSGS_BROADCAST_CMD_LENGTH  4
+#else  // FH_LOW_LATENCY_BROADCAST
 #define SMSGS_BROADCAST_CMD_LENGTH  3
+#endif // FH_LOW_LATENCY_BROADCAST
 
 /*! Length of a sensor data message with no configured data fields */
 #define SMSGS_BASIC_SENSOR_LEN (3 + SMGS_SENSOR_EXTADDR_LEN)
@@ -198,7 +202,11 @@ The <b>Sensor Ramp Data Message</b> is defined as:
 /*! Toggle Led Request message length (over-the-air length) */
 #define SMSGS_TOGGLE_LED_REQUEST_MSG_LEN 1
 /*! Toggle Led Request message length (over-the-air length) */
+#ifdef FH_LOW_LATENCY_BROADCAST
+#define SMSGS_TOGGLE_LED_RESPONSE_MSG_LEN 1
+#else  // FH_LOW_LATENCY_BROADCAST
 #define SMSGS_TOGGLE_LED_RESPONSE_MSG_LEN 2
+#endif // FH_LOW_LATENCY_BROADCAST
 /*! Identify Led Request message length (over-the-air length) */
 #define SMSGS_INDENTIFY_LED_REQUEST_MSG_LEN 2
 /*! Identify Led Response message length (over-the-air length) */
@@ -643,7 +651,12 @@ typedef struct _Smsgs_broadcastcmdmsg_t
 {
     /*! Command ID - 1 byte */
     Smsgs_cmdIds_t cmdId;
+#ifdef FH_LOW_LATENCY_BROADCAST
+    uint16_t destdevAddr; // destination device address
+    uint8_t camCmd;       // camera command for the destination device
+#else  // FH_LOW_LATENCY_BROADCAST
     uint16_t broadcastMsgId;
+#endif
 }Smsgs_broadcastcmdmsg_t;
 
 

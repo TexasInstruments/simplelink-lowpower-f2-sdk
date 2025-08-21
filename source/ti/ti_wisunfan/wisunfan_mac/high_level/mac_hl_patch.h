@@ -110,7 +110,7 @@ extern uint8_t switchToEDFE;
 
 extern uint32_t phyModeFSKdataRate[NUM_PHY_FSK_RATES];
 
-#define MAC_RSSI_NOT_MEASURED   (0x80)
+#define MAC_RSSI_NOT_MEASURED   (int8_t) (0x80)
 #define MAC_RSL_THERMAL_NOISE   (174)
 #define MAC_RSL_MAX             (80)
 #define MAC_RSL_NOT_MEASURED    (MAC_RSL_MAX + 1)

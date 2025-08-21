@@ -233,12 +233,16 @@ const supportedMigrations = {
         LP_CC2652R7: {}
     },
     CC1311P3: {
-        CC1311P3RGZ: {},
-        LP_CC1311P3: {}
+        CC1311P3: {},
+        LP_CC1311P3: {},
+        CC1311R3: {},
+        CC1311P3: {}
     },
     CC1311R3: {
         CC1311R3RGZ: {},
-        LP_CC1311R3: {}
+        LP_CC1311R3: {},
+        CC1311R3: {},
+        CC1311P3: {}
     },
     CC2651P3: {
         CC2651P3RGZ: {},

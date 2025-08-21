@@ -20,7 +20,7 @@
 
 
 #define MBED_CONF_NANOSTACK_CONFIGURATION                                     ti_ws_router
-#define MBED_CONF_MBED_MESH_API_HEAP_SIZE                                     42000
+#define MBED_CONF_MBED_MESH_API_HEAP_SIZE                                     47000 // 52000
 #define MBED_CONF_MBED_MESH_API_HEAP_STAT_INFO                                NULL
 #define MBED_CONF_MBED_MESH_API_USE_MALLOC_FOR_HEAP                           0
 

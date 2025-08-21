@@ -139,12 +139,23 @@
 #define APP_CONFIGRSP_MSDU_HANDLE 0x60
 
 /* Reporting Interval Min and Max (in milliseconds) */
+#ifdef FH_LOW_LATENCY_BROADCAST
+#define MIN_REPORTING_INTERVAL 0
+#define MAX_REPORTING_INTERVAL 360000
+
+/* Polling Interval Min and Max (in milliseconds) */
+#define MIN_POLLING_INTERVAL 0
+#define MAX_POLLING_INTERVAL 360000
+#define LOW_LATENCY_BROADCAST_CONFIGURATION_TIMEOUT 5000
+#define LOW_LATENCY_BROADCAST_START_TIMEOUT_DETECT_COUNT 30
+#else  // FH_LOW_LATENCY_BROADCAST
 #define MIN_REPORTING_INTERVAL 1000
 #define MAX_REPORTING_INTERVAL 360000
 
 /* Polling Interval Min and Max (in milliseconds) */
 #define MIN_POLLING_INTERVAL 1000
 #define MAX_POLLING_INTERVAL 10000
+#endif // FH_LOW_LATENCY_BROADCAST
 
 /* Blink Time for Identify LED Request (in seconds) */
 #define IDENTIFY_LED_TIME 1
@@ -286,6 +297,11 @@ Llc_netInfo_t cachedparentInfo = {0};
 #if defined(DISPLAY_PER_STATS)
 extern void Ssf_displayRxStats(int8_t rssi);
 #endif
+
+#ifdef FH_LOW_LATENCY_BROADCAST
+static uint8_t recHeartbeatBroadcast = 0;
+#endif // FH_LOW_LATENCY_BROADCAST
+
 /******************************************************************************
  Local function prototypes
  *****************************************************************************/
@@ -871,6 +887,38 @@ void Sensor_process(void)
         Util_clearEvent(&Sensor_events, SENSOR_DISASSOC_EVT);
     }
 
+#ifdef FH_LOW_LATENCY_BROADCAST
+    if(Sensor_events & SENSOR_BROADCAST_CAMCMD_EVT)
+    {
+        Ssf_setPollClock(LOW_LATENCY_BROADCAST_CONFIGURATION_TIMEOUT); // reset disconnection detection timer
+        Util_clearEvent(&Sensor_events, SENSOR_BROADCAST_CAMCMD_EVT);
+        GPIO_toggle(7); // toggle green led to indicate received command
+        GPIO_toggle(6); // toggle red led to indicate received keep alive
+    }
+
+    if(Sensor_events & SENSOR_BROADCAST_HEARTBEAT_EVT)
+    {
+        if(recHeartbeatBroadcast < LOW_LATENCY_BROADCAST_START_TIMEOUT_DETECT_COUNT)
+        {
+            recHeartbeatBroadcast += 1; // max 30 s for config message exchange interruptions
+        }
+        else
+        {
+            Ssf_setPollClock(LOW_LATENCY_BROADCAST_CONFIGURATION_TIMEOUT); // reset disconnection detection timer
+        }
+        Util_clearEvent(&Sensor_events, SENSOR_BROADCAST_HEARTBEAT_EVT);
+        GPIO_toggle(6); // toggle red led to indicate received keep alive
+    }
+
+    if(Sensor_events & SENSOR_TIMEOUT_EVT)
+    {
+        recHeartbeatBroadcast = 0;
+        Ssf_setPollClock(0);
+        Util_clearEvent(&Sensor_events, SENSOR_TIMEOUT_EVT);
+        Util_setEvent(&Sensor_events, SENSOR_START_EVT); // trigger re-join -> listen for PAN config message on async channel
+    }
+#endif // FH_LOW_LATENCY_BROADCAST
+
 #ifdef DMM_OAD
     if(Sensor_events & SENSOR_PAUSE_EVT)
     {
@@ -992,7 +1040,11 @@ bool Sensor_sendMsg(Smsgs_cmdIds_t type, ApiMac_sAddr_t *pDstAddr,
 
     dataReq.msduHandle = getMsduHandle(type);
 
+#ifdef FH_LOW_LATENCY_BROADCAST
+    dataReq.txOptions.ack = false;
+#else  // FH_LOW_LATENCY_BROADCAST
     dataReq.txOptions.ack = true;
+#endif // FH_LOW_LATENCY_BROADCAST
 
     if(CERTIFICATION_TEST_MODE)
     {
@@ -1334,6 +1386,10 @@ static void dataIndCB(ApiMac_mcpsDataInd_t *pDataInd)
             case Smsgs_cmdIds_configReq:
                 processConfigRequest(pDataInd);
                 Sensor_msgStats.configRequests++;
+#ifdef FH_LOW_LATENCY_BROADCAST
+                Ssf_setTrickleClock(0, ApiMac_wisunAsyncFrame_advertisementSolicit);
+                Ssf_setTrickleClock(0, ApiMac_wisunAsyncFrame_configSolicit);
+#endif // FH_LOW_LATENCY_BROADCAST
                 break;
 
             case Smsgs_cmdIds_trackingReq:
@@ -1366,6 +1422,7 @@ static void dataIndCB(ApiMac_mcpsDataInd_t *pDataInd)
                 break;
 
             case Smsgs_cmdIds_toggleLedReq:
+#ifndef FH_LOW_LATENCY_BROADCAST
                 /* Make sure the message is the correct size */
                 if(pDataInd->msdu.len == SMSGS_TOGGLE_LED_REQUEST_MSG_LEN)
                 {
@@ -1382,6 +1439,7 @@ static void dataIndCB(ApiMac_mcpsDataInd_t *pDataInd)
                             cmdBytes);
                     }
                 }
+#endif  // FH_LOW_LATENCY_BROADCAST
                 break;
 
             case Smgs_cmdIds_broadcastCtrlMsg:
@@ -1889,9 +1947,13 @@ static void processConfigRequest(ApiMac_mcpsDataInd_t *pDataInd)
         else
         {
 #ifndef POWER_MEAS
+#ifdef FH_LOW_LATENCY_BROADCAST
+            configSettings.reportingInterval = 0;
+#else  // FH_LOW_LATENCY_BROADCAST
             configSettings.reportingInterval = reportingInterval;
+#endif // FH_LOW_LATENCY_BROADCAST
 #endif
-            {
+#ifndef FH_LOW_LATENCY_BROADCAST
                 uint32_t randomNum;
                 randomNum = ((ApiMac_randomByte() << 16) +
                              (ApiMac_randomByte() << 8) + ApiMac_randomByte());
@@ -1900,6 +1962,7 @@ static void processConfigRequest(ApiMac_mcpsDataInd_t *pDataInd)
 #if !defined(IEEE_COEX_TEST) || !defined(COEX_MENU)
                 Ssf_setReadingClock(randomNum);
 #endif
+#endif // FH_LOW_LATENCY_BROADCAST
 #ifdef LPSTK
                 Lpstk_setSensorReadTimer((Lpstk_SensorMask)(LPSTK_HUMIDITY|
                                                              LPSTK_TEMPERATURE|
@@ -1908,11 +1971,14 @@ static void processConfigRequest(ApiMac_mcpsDataInd_t *pDataInd)
                                                              LPSTK_ACCELEROMETER),
                                                              reportingInterval);
 #endif /* LPSTK */
-            }
-
         }
+#ifdef FH_LOW_LATENCY_BROADCAST
+        configRsp.reportingInterval = reportingInterval;
+#else  // FH_LOW_LATENCY_BROADCAST
         configRsp.reportingInterval = configSettings.reportingInterval;
+#endif // FH_LOW_LATENCY_BROADCAST
 
+#ifndef FH_LOW_LATENCY_BROADCAST
         if((pollingInterval < MIN_POLLING_INTERVAL)
            || (pollingInterval > MAX_POLLING_INTERVAL))
         {
@@ -1923,7 +1989,13 @@ static void processConfigRequest(ApiMac_mcpsDataInd_t *pDataInd)
             configSettings.pollingInterval = pollingInterval;
             Jdllc_setPollRate(configSettings.pollingInterval);
         }
+#endif // FH_LOW_LATENCY_BROADCAST
+
+#ifdef FH_LOW_LATENCY_BROADCAST
+        configRsp.pollingInterval = pollingInterval;
+#else  // FH_LOW_LATENCY_BROADCAST
         configRsp.pollingInterval = configSettings.pollingInterval;
+#endif // FH_LOW_LATENCY_BROADCAST
     }
 
     /* Send the response message */
@@ -1955,6 +2027,50 @@ static void processBroadcastCtrlMsg(ApiMac_mcpsDataInd_t *pDataInd)
     /* Make sure the message is the correct size */
     if(pDataInd->msdu.len == SMSGS_BROADCAST_CMD_LENGTH)
     {
+#ifdef FH_LOW_LATENCY_BROADCAST
+        uint8_t cmdId;
+        uint16_t destDevAddr;
+        uint8_t camCmd;
+
+        /* Parse the message */
+        uint8_t *pBuf = pDataInd->msdu.p;
+        cmdId = (Smsgs_cmdIds_t)*pBuf;
+        destDevAddr = Util_buildUint16((uint8_t)*(pBuf+1), (uint8_t)*(pBuf+2));
+        camCmd = (uint8_t)*(pBuf+3);
+
+        /* Read NV device info */
+        ApiMac_deviceDescriptor_t pDevInfo;
+        Llc_netInfo_t  pParentInfo;
+        Ssf_getNetworkInfo(&pDevInfo, &pParentInfo);
+
+        /* Process Broadcast Command Message */
+        if(cmdId == Smgs_cmdIds_broadcastCtrlMsg)
+        {
+            if(destDevAddr == pDevInfo.shortAddress)
+            {
+                /* process camera commands */
+                if(camCmd == 0x1)
+                {
+                    /* send the acknowledgment message */
+                    uint8_t buffer[SMSGS_TOGGLE_LED_RESPONSE_MSG_LEN];
+                    uint8_t *pBuf = buffer;
+
+                    *pBuf = (uint8_t)Smsgs_cmdIds_toggleLedRsp;
+
+                    Sensor_sendMsg(Smsgs_cmdIds_toggleLedRsp,
+                                    &pDataInd->srcAddr, true,
+                                    SMSGS_TOGGLE_LED_RESPONSE_MSG_LEN,
+                                    buffer);
+
+                    Util_setEvent(&Sensor_events, SENSOR_BROADCAST_CAMCMD_EVT);
+                }
+            }
+            else
+            {
+                Util_setEvent(&Sensor_events, SENSOR_BROADCAST_HEARTBEAT_EVT);
+            }
+        }
+#else  // FH_LOW_LATENCY_BROADCAST
         uint8_t *pBuf = pDataInd->msdu.p;
         uint16_t broadcastMsgId;
 
@@ -1988,6 +2104,7 @@ static void processBroadcastCtrlMsg(ApiMac_mcpsDataInd_t *pDataInd)
         {
             Ssf_OffLED();
         }
+#endif // FH_LOW_LATENCY_BROADCAST
     }
 }
 
@@ -2121,7 +2238,9 @@ static void jdllcJoinedCb(ApiMac_deviceDescriptor_t *pDevInfo,
                      (ApiMac_randomByte() << 8) + ApiMac_randomByte());
         randomNum = (randomNum % configSettings.reportingInterval) +
                     SENSOR_MIN_POLL_TIME;
+#ifndef FH_LOW_LATENCY_BROADCAST
         Ssf_setReadingClock(randomNum);
+#endif
     }
     else
     {

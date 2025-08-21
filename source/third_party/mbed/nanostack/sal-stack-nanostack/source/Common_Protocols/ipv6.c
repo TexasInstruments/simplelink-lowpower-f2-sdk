@@ -645,6 +645,9 @@ buffer_t *ipv6_forwarding_down(buffer_t *buf)
      */
     if (!buf->ip_routed_up && addr_is_ipv6_multicast(buf->dst_sa.address)) {
         buf = ipv6_consider_forwarding_multicast_packet(buf, buf->interface, true);
+        if (!buf) {
+            return NULL;
+        }
     }
 
     /* Allow routing code to update extension headers */
@@ -1172,6 +1175,13 @@ static buffer_t *ipv6_consider_forwarding_multicast_packet(buffer_t *buf, protoc
     }
 #endif
 
+    /* Multicast forwarding case if the packet originates from host */
+    if (buf->from_host) {
+        ipv6_transmit_multicast_on_interface(buf, cur);
+        return NULL; // Do not forward the packet up further, as it originates from host
+    }
+
+
 #ifdef MULTICAST_FORWARDING
     uint_fast8_t group_scope = addr_ipv6_multicast_scope(buf->dst_sa.address);
     uint_fast8_t src_scope = addr_ipv6_scope(buf->src_sa.address, cur);
@@ -1276,6 +1286,7 @@ otError nanostack_process_stream_net_from_host(uint8_t* framePtr, uint16_t paylo
     buffer_data_add(buf, framePtr, payload_length);
     buf->payload_length = payload_length;
     buf->ip_routed_up = true;
+    buf->from_host = true;
     buf->info = (buffer_info_t)(B_DIR_UP | B_FROM_IPV6_TXRX | B_TO_IPV6_FWD);
 #ifdef WISUN_FAN_DEBUG
     tr_debug("ip packet from host: %d ", num_ip_packet_from_host);

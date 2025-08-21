@@ -43,6 +43,12 @@
 #define WP_PAYLOAD_IE_NETNAME_TYPE  5   /**< Network Name information */
 #define WP_PAYLOAD_IE_PAN_VER_TYPE  6   /**< Pan configuration version */
 #define WP_PAYLOAD_IE_GTKHASH_TYPE  7   /**< GTK Hash information */
+#ifdef WISUN_FAN_CORE_1_1
+#define WP_PAYLOAD_IE_POM           0x08   /**< PHY Operating Mode */
+#define WP_PAYLOAD_IE_LBATS         0x09   /**< LFN Broadcast Additional Transmit Schedule */
+#define WP_PAYLOAD_IE_JM            0x0A   /**< oin Metrics */
+#endif
+
 
 /* WS frame types to WH_IE_UTT_TYPE */
 #define WS_FT_PAN_ADVERT        0          /**< PAN Advert */
@@ -52,6 +58,8 @@
 #define WS_FT_DATA              4          /**< data type inside MPX */
 #define WS_FT_ACK               5          /**< Enhanced ACK */
 #define WS_FT_EAPOL             6          /**< EAPOL message inside MPX */
+
+#define NUM_BYTES_IN_CHAN_MASK              (17)
 
 /* WS exluded channel Control */
 #define WS_EXC_CHAN_CTRL_NONE 0             /**< No excluded channels */
@@ -71,6 +79,11 @@ typedef struct ws_pan_information_s {
     bool rpl_routing_method: 1; /**< 1 when RPL routing is selected and 0 when L2 routing. */
     bool pan_version_set: 1;    /**< 1 PAN version is set. */
     unsigned version: 3;        /**< Pan version support. */
+#ifdef WISUN_FAN_CORE_1_1
+    uint16_t max_pan_size;      /**< Maximum PAN SIZE. */
+    uint8_t  jm_version;        /**< JM IE version. */
+    uint8_t  jm_plf;            /**< JMIE PAN Load factor. */
+#endif
 } ws_pan_information_t;
 
 /**
@@ -86,11 +99,11 @@ typedef struct ws_excluded_channel_range_data_s {
  */
 typedef struct ws_excluded_channel_data_s {
     unsigned excuded_channel_ctrl: 2;
-    unsigned excluded_range_length: 3;
+    unsigned excluded_range_length;
     ws_excluded_channel_range_data_t exluded_range[WS_EXCLUDED_MAX_RANGE_TO_SEND];
     uint16_t excluded_channel_count;
     uint8_t channel_mask_bytes_inline;
-    uint32_t channel_mask[8];
+    uint8_t channel_mask4[NUM_BYTES_IN_CHAN_MASK];
 } ws_excluded_channel_data_t;
 
 /**
@@ -117,6 +130,14 @@ typedef struct ws_hopping_schedule_s {
     uint32_t fhss_broadcast_interval;
     uint_fast24_t ch0_freq; // Default should be derived from regulatory domain
     ws_excluded_channel_data_t excluded_channels;
+#ifdef WISUN_RCP_ENABLE
+    ws_excluded_channel_data_t bc_excluded_channels;
+    /* for FAN 1.1 support */
+    uint8_t fan_support_version;          /**< 0: FAN 1.0, 1 FAN 1.1  */
+    uint8_t usie_chan_plan_selection;     /**< USIE 0: use RD+OC , 1: ch0, space + number, 2: RD+chan-ID */
+    uint8_t bsie_chan_plan_selection;     /**< BSIE 0: use RD+OC , 1: ch0, space + number, 2: RD+chan-ID */
+#endif
+
 } ws_hopping_schedule_t;
 
 /**
@@ -235,7 +256,36 @@ typedef struct ws_bs_ie {
         ws_channel_function_zero_t zero;
         ws_channel_function_three_t three;
     } function;
+#if defined(WISUN_RCP_ENABLE)
+    // BS IE also needs the excluded channel info
+    union {
+        ws_excluded_channel_range_t range;
+        ws_excluded_channel_mask_t mask;
+    } excluded_channels;
+#endif
 } ws_bs_ie_t;
+
+#ifdef WISUN_FAN_CORE_1_1
+/**
+ * @brief ws_pom_ie_t
+ */
+typedef struct ws_pom_ie_s {
+    uint8_t phy_op_mode_number: 4;
+    uint8_t mdr_command_capable: 1;
+    uint8_t reserved: 3;
+    uint8_t phy_op_mode_id[15];
+} ws_pom_ie_t;
+
+/**
+ * @brief ws_jm_ie_t
+ * 20210201-FANWG-FANTPS-1.1v09-d10:
+ *   6.3.23.2.12 Join Metrics Information Element (JM-IE)
+ */
+typedef struct ws_jm_ie_s {
+    uint8_t version;
+    uint8_t plf;    /* PAN Load Factor Join Metric */
+} ws_jm_ie_t;
+#endif
 
 /**
  * @brief ws_vp_ie_t WS VP-IE read

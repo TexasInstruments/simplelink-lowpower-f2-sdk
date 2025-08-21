@@ -278,6 +278,11 @@ uint32_t prevTick;
 uint32_t currTick;
 #endif
 #endif
+
+#if FH_LOW_LATENCY_BROADCAST
+uint16_t toggleDevCount = 0;
+#endif // FH_LOW_LATENCY_BROADCAST
+
 /******************************************************************************
  Global variables
  *****************************************************************************/
@@ -389,6 +394,9 @@ static void removeTheFirstDevice(void);
 #else
 #ifndef POWER_MEAS
 static uint16_t getTheFirstDevice(void);
+#ifdef FH_LOW_LATENCY_BROADCAST
+static uint16_t getDevice(uint16_t count);
+#endif // FH_LOW_LATENCY_BROADCAST
 #endif
 #endif
 
@@ -773,7 +781,28 @@ void Csf_processEvents(void)
         /* Process the Right Key */
         if(Csf_keys == gRightButtonHandle)
         {
+#ifdef FH_LOW_LATENCY_BROADCAST
+            /* iterate over all devices in the network */
+            uint16_t activeDevs = Csf_getNumDeviceListEntries();
+            if (activeDevs > 0)
+            {
+                if (toggleDevCount == activeDevs)
+                {
+                    toggleDevCount = 0;
+                }
+
+                uint16_t devAddr = getDevice(toggleDevCount);
+                if (devAddr != CSF_INVALID_SHORT_ADDR)
+                {
+                    ApiMac_sAddr_t dev;
+                    dev.addr.shortAddr = devAddr;
+                    sendToggleAndUpdateUser(dev.addr.shortAddr);
+                    toggleDevCount += 1;
+                }
+            }
+#else  // FH_LOW_LATENCY_BROADCAST
             openCloseNwkAndUpdateUser(!permitJoining);
+#endif // FH_LOW_LATENCY_BROADCAST
         }
         /* Clear the key press indication */
         Csf_keys = NULL;
@@ -2789,6 +2818,47 @@ static uint16_t getTheFirstDevice(void)
     }
     return(found);
 }
+
+#ifdef FH_LOW_LATENCY_BROADCAST
+static uint16_t getDevice(uint16_t count)
+{
+    uint16_t found = CSF_INVALID_SHORT_ADDR;
+    if(pNV != NULL)
+    {
+        uint16_t numEntries;
+
+        numEntries = Csf_getNumDeviceListEntries();
+
+        if(numEntries > 0)
+        {
+            NVINTF_itemID_t id;
+
+            /* Setup NV ID for the device list records */
+            id.systemID = NVINTF_SYSID_APP;
+            id.itemID = CSF_NV_DEVICELIST_ID;
+            id.subID = count;
+
+            while(id.subID < CSF_MAX_DEVICELIST_IDS)
+            {
+                Llc_deviceListItem_t item;
+                uint8_t stat;
+
+                /* Read Network Information from NV */
+                stat = pNV->readItem(id, 0, sizeof(Llc_deviceListItem_t),
+                                     &item);
+                if(stat == NVINTF_SUCCESS)
+                {
+                    found = item.devInfo.shortAddress;
+                    break;
+                }
+                id.subID++;
+            }
+        }
+    }
+    return(found);
+}
+#endif // FH_LOW_LATENCY_BROADCAST
+
 #endif /* endif for POWER_MEAS */
 #endif /* endif for TEST_REMOVE_DEVICE */
 

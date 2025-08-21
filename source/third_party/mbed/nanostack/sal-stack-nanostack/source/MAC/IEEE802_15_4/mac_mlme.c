@@ -54,7 +54,7 @@
 
 #define TRACE_GROUP "mlme"
 
-#define MAC_ACK_WAIT_DURATION   90
+#define MAC_ACK_WAIT_DURATION_VAL   90
 
 static int8_t mac_mlme_rf_disable(struct protocol_interface_rf_mac_setup *rf_mac_setup);
 static int8_t mac_mlme_rf_receiver_enable(struct protocol_interface_rf_mac_setup *rf_mac_setup);
@@ -514,10 +514,10 @@ static int8_t mac_mlme_boolean_set(protocol_interface_rf_mac_setup_s *rf_mac_set
                 rf_mac_setup->dev_driver->phy_driver->extension(PHY_EXTENSION_ACCEPT_ANY_BEACON, (uint8_t *)&value);
             }
             break;
-
+#ifdef WISUN_USE_NANOSTACK_FHSS_MAC_MODULE
         case macEdfeForceStop:
             return mac_data_edfe_force_stop(rf_mac_setup);
-
+#endif
         case macAcceptByPassUnknowDevice:
             rf_mac_setup->mac_security_bypass_unknow_device = value;
             break;
@@ -786,6 +786,7 @@ int8_t mac_mlme_set_req(protocol_interface_rf_mac_setup_s *rf_mac_setup, const m
                 memcpy(rf_mac_setup->coord_long_address, set_req->value_pointer, 8);
             }
             return 0;
+#ifdef WISUN_USE_NANOSTACK_FHSS_MAC_MODULE
         case macSetDataWhitening:
             pu8 = (uint8_t *) set_req->value_pointer;
             rf_mac_setup->dev_driver->phy_driver->extension(PHY_EXTENSION_SET_DATA_WHITENING, pu8);
@@ -795,6 +796,7 @@ int8_t mac_mlme_set_req(protocol_interface_rf_mac_setup_s *rf_mac_setup, const m
             pu8 = (uint8_t *) set_req->value_pointer;
             mac_cca_thr_init(rf_mac_setup, *pu8, *((int8_t *)pu8 + 1), *((int8_t *)pu8 + 2), *((int8_t *)pu8 + 3));
             return 0;
+#endif
         case mac802_15_4Mode:
             pu8 = (uint8_t *) set_req->value_pointer;
             if (rf_mac_setup->current_mac_mode == *pu8) {
@@ -887,13 +889,13 @@ int8_t mac_mlme_get_req(struct protocol_interface_rf_mac_setup *rf_mac_setup, ml
 
             get_req->value_size = 4;
             break;
-
+#ifdef WISUN_USE_NANOSTACK_FHSS_MAC_MODULE
         case macCCAThreshold:
             cca_thr_table = mac_get_cca_threshold_table(rf_mac_setup);
             get_req->value_size = cca_thr_table->number_of_channels;
             get_req->value_pointer = cca_thr_table->ch_thresholds;
             break;
-
+#endif
         default:
             get_req->status = MLME_UNSUPPORTED_ATTRIBUTE;
             break;
@@ -962,6 +964,7 @@ void mac_mlme_active_scan_response_timer_start(void *interface)
 
 static void mac_mlme_timers_disable(protocol_interface_rf_mac_setup_s *rf_ptr)
 {
+#ifdef WISUN_USE_NANOSTACK_FHSS_MAC_MODULE    
     platform_enter_critical();
     if (rf_ptr->mac_mlme_event != ARM_NWK_MAC_MLME_IDLE) {
         eventOS_callback_timer_stop(rf_ptr->mlme_timer_id);
@@ -969,6 +972,7 @@ static void mac_mlme_timers_disable(protocol_interface_rf_mac_setup_s *rf_ptr)
     }
     timer_mac_stop(rf_ptr);
     platform_exit_critical();
+#endif    
 }
 
 void mac_mlme_event_cb(void *mac_ptr)
@@ -1097,7 +1101,9 @@ void mac_mlme_data_base_deallocate(struct protocol_interface_rf_mac_setup *rf_ma
         ns_dyn_mem_free(rf_mac->mac_beacon_payload);
 
         mac_sec_mib_deinit(rf_mac);
+#ifdef WISUN_USE_NANOSTACK_FHSS_MAC_MODULE        
         mac_cca_thr_deinit(rf_mac);
+#endif        
         ns_dyn_mem_free(rf_mac);
     }
 }
@@ -1142,12 +1148,14 @@ static int mac_mlme_allocate_tx_buffers(protocol_interface_rf_mac_setup_s *rf_ma
     if (!rf_mac_setup->dev_driver_tx_buffer.buf) {
         return -1;
     }
+#ifndef WISUN_RCP_ENABLE    
     //allocate Beacon Payload buffer
     rf_mac_setup->max_beacon_payload_length = mtu_size - MAC_IEEE_802_15_4_MAX_BEACON_OVERHEAD;
     rf_mac_setup->mac_beacon_payload = ns_dyn_mem_alloc(rf_mac_setup->max_beacon_payload_length);
     if (!rf_mac_setup->mac_beacon_payload) {
         return -1;
     }
+#endif    
     return 0;
 }
 
@@ -1191,13 +1199,13 @@ protocol_interface_rf_mac_setup_s *mac_mlme_data_base_allocate(uint8_t *mac64, a
         mac_mlme_data_base_deallocate(entry);
         return NULL;
     }
-
     entry->mac_tasklet_id = mac_mcps_sap_tasklet_init();
     if (entry->mac_tasklet_id < 0) {
         mac_mlme_data_base_deallocate(entry);
         return NULL;
     }
 
+#ifdef WISUN_USE_NANOSTACK_FHSS_MAC_MODULE
     entry->mlme_timer_id = eventOS_callback_timer_register(mac_mlme_timer_cb);
     entry->mac_timer_id = eventOS_callback_timer_register(timer_mac_interrupt);
     entry->mac_mcps_timer = eventOS_callback_timer_register(mac_mcps_timer_cb);
@@ -1209,14 +1217,18 @@ protocol_interface_rf_mac_setup_s *mac_mlme_data_base_allocate(uint8_t *mac64, a
     entry->macCapSecrutityCapability = true;
     entry->pan_id = entry->mac_short_address = 0xffff;
     mac_extended_mac_set(entry, mac64);
-    entry->mac_ack_wait_duration = MAC_ACK_WAIT_DURATION;
+    entry->mac_ack_wait_duration = MAC_ACK_WAIT_DURATION_VAL;
     entry->mac_mlme_retry_max = MAC_DEFAULT_MAX_FRAME_RETRIES;
     memset(entry->mac_default_key_source, 0xff, 8);
     memset(entry->mac_auto_request.Keysource, 0xff, 8);
     memset(entry->mac_beacon_payload, 0, entry->max_beacon_payload_length);
     entry->mac_auto_request.SecurityLevel = 6;
     entry->mac_auto_request.KeyIndex = 0xff;
+  
     mac_pd_sap_rf_low_level_function_set(entry, entry->dev_driver);
+
+#endif
+
     entry->mac_sequence = randLIB_get_8bit();
     entry->mac_bea_sequence = randLIB_get_8bit();
     entry->fhss_api = NULL;
@@ -1514,6 +1526,7 @@ void mac_mlme_scan_confirmation_handle(protocol_interface_rf_mac_setup_s *rf_ptr
 
 void mac_mlme_mac_radio_disabled(protocol_interface_rf_mac_setup_s *rf_mac_setup)
 {
+#ifdef WISUN_USE_NANOSTACK_FHSS_MAC_MODULE    
     if (!rf_mac_setup || !rf_mac_setup->dev_driver || !rf_mac_setup->dev_driver->phy_driver) {
         return;
     }
@@ -1521,6 +1534,7 @@ void mac_mlme_mac_radio_disabled(protocol_interface_rf_mac_setup_s *rf_mac_setup
     timer_mac_stop(rf_mac_setup);
     mac_mlme_rf_disable(rf_mac_setup);
     platform_exit_critical();
+#endif    
 }
 
 void mac_mlme_mac_radio_enable(protocol_interface_rf_mac_setup_s *rf_mac_setup)

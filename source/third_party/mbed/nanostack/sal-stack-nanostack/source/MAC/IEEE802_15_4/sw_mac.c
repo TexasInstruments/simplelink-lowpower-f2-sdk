@@ -33,6 +33,27 @@
 #include "common_functions.h"
 #include "ns_trace.h"
 
+#ifdef WISUN_RCP_ENABLE
+#include "rcp_host.h"
+#include "rcp_queue.h"
+#include "application.h"
+
+#ifdef LINUX_NANOSTACK
+#include <stdint.h>
+#include <time.h>
+#include <errno.h>
+#include <string.h>
+
+/// Convert seconds to microseconds
+#define SEC_TO_US(sec) ((sec)*1000000)
+
+/// Convert nanoseconds to microseconds
+#define NS_TO_US(ns)    ((ns)/1000)
+
+#endif
+
+#endif
+
 #define TRACE_GROUP "swm"
 
 //TODO: create linked list of created MACs
@@ -48,7 +69,10 @@ typedef struct mac_internal_s {
     //linked list link
 } mac_internal_t;
 
-static mac_internal_t mac_store; //Hack only at this point, later put into linked list
+extern configurable_props_t cfg_props;
+
+//static mac_internal_t mac_store; //Hack only at this point, later put into linked list
+mac_internal_t mac_store; //Hack only at this point, later put into linked list
 
 static int8_t ns_sw_mac_initialize(mac_api_t *api, mcps_data_confirm *mcps_data_conf_cb,
                                    mcps_data_indication *mcps_data_ind_cb, mcps_purge_confirm *purge_conf_cb,
@@ -56,9 +80,10 @@ static int8_t ns_sw_mac_initialize(mac_api_t *api, mcps_data_confirm *mcps_data_
 static int8_t ns_sw_mac_api_enable_mcps_ext(mac_api_t *api, mcps_data_indication_ext *data_ind_cb, mcps_data_confirm_ext *data_cnf_cb, mcps_ack_data_req_ext *ack_data_req_cb);
 static int8_t ns_sw_mac_api_enable_edfe_ext(mac_api_t *api, mcps_edfe_handler *edfe_ind_cb);
 
-static void mlme_req(const mac_api_t *api, mlme_primitive id, const void *data);
+static void mlme_req(const mac_api_t *api, mlme_primitive id, void *data);
 static void mcps_req(const mac_api_t *api, const mcps_data_req_t *data);
 static void mcps_req_ext(const mac_api_t *api, const mcps_data_req_t *data, const mcps_data_req_ie_list_t *ie_ext, const channel_list_s *asynch_channel_list,  mac_data_priority_t priority);
+static uint8_t rcp_data_req_ext(const mac_api_t *api, const mcps_data_req_t *data, const mcps_data_req_ie_list_t *ie_ext, const channel_list_s *asynch_channel_list, mac_data_priority_t priority);
 static uint8_t purge_req(const mac_api_t *api, const mcps_purge_t *data);
 static int8_t macext_mac64_address_set(const mac_api_t *api, const uint8_t *mac64);
 static int8_t macext_mac64_address_get(const mac_api_t *api, mac_extended_address_type type, uint8_t *mac64_buf);
@@ -75,10 +100,21 @@ static int8_t sw_mac_storage_decription_sizes_get(const mac_api_t *api, mac_desc
         return -1;
     }
 
+#ifdef WISUN_RCP_ENABLE
+    if (MBED_CONF_MBED_MESH_API_WISUN_DEVICE_TYPE == MESH_DEVICE_TYPE_WISUN_BORDER_ROUTER) {
+        buffer->device_decription_table_size = NANOSTACK_DEVICE_TABLE_ENTRIES_BR;
+    } else {
+        buffer->device_decription_table_size = NANOSTACK_DEVICE_TABLE_ENTRIES_RN;
+    }
+    buffer->key_description_table_size = 4;
+    buffer->key_lookup_size = 1;
+    buffer->key_usage_size = 3;
+#else
     buffer->device_decription_table_size = mac_store.setup->device_description_table_size;
     buffer->key_description_table_size = mac_store.setup->key_description_table_size;
     buffer->key_lookup_size = mac_store.setup->key_lookup_list_size;
     buffer->key_usage_size = mac_store.setup->key_usage_list_size;
+#endif
     return 0;
 }
 
@@ -101,14 +137,17 @@ mac_api_t *ns_sw_mac_create(int8_t rf_driver_id, mac_description_storage_size_t 
     memset(this, 0, sizeof(mac_api_t));
     this->parent_id = -1;
     mac_store.dev_driver = driver;
-
+#ifndef WISUN_RCP_ENABLE
     // Set default MTU size to 127 unless it is too much for PHY driver
     if (driver->phy_driver->phy_MTU > MAC_IEEE_802_15_4_MAX_PHY_PACKET_SIZE) {
         this->phyMTU = MAC_IEEE_802_15_4_MAX_PHY_PACKET_SIZE;
     } else {
         this->phyMTU = driver->phy_driver->phy_MTU;
     }
-
+#else
+    // WISUN RCP will use the user setting
+    this->phyMTU = driver->phy_driver->phy_MTU;
+#endif
     mac_store.setup = mac_mlme_data_base_allocate(mac_store.dev_driver->phy_driver->PHY_MAC, mac_store.dev_driver, storage_sizes, this->phyMTU);
 
     if (!mac_store.setup) {
@@ -123,16 +162,18 @@ mac_api_t *ns_sw_mac_create(int8_t rf_driver_id, mac_description_storage_size_t 
     }
     tr_debug("Set MAC mode to %s, MTU size: %u", "IEEE 802.15.4-2011", mac_store.setup->phy_mtu_size);
 
+#ifndef WISUN_RCP_ENABLE
     arm_net_phy_init(driver->phy_driver, &sw_mac_net_phy_rx, &sw_mac_net_phy_tx_done);
     arm_net_virtual_config_rx_cb_set(driver->phy_driver, &sw_mac_net_phy_config_parser);
     arm_net_virtual_confirmation_rx_cb_set(driver->phy_driver, &mac_mlme_virtual_confirmation_handle);
-
+#endif
     this->mac_initialize = &ns_sw_mac_initialize;
     this->mac_mcps_extension_enable = &ns_sw_mac_api_enable_mcps_ext;
     this->mac_mcps_edfe_enable = &ns_sw_mac_api_enable_edfe_ext;
     this->mlme_req = &mlme_req;
     this->mcps_data_req = &mcps_req;
-    this->mcps_data_req_ext = &mcps_req_ext;
+    // this->mcps_data_req_ext = &mcps_req_ext;
+    this->mcps_data_req_ext = &rcp_data_req_ext;
     this->mcps_purge_req = &purge_req;
     this->mac64_get = &macext_mac64_address_get;
     this->mac64_set = &macext_mac64_address_set;
@@ -140,6 +181,12 @@ mac_api_t *ns_sw_mac_create(int8_t rf_driver_id, mac_description_storage_size_t 
 
     mac_store.mac_api = this;
     mac_store.virtual_driver = NULL;
+
+//MVTODO: consider moving it appropriate place like ns_sw_mac_initialize?
+#ifdef WISUN_RCP_ENABLE
+    rcp_host_init(mac_store.mac_api,  mac_store.setup );
+#endif
+
     return this;
 }
 
@@ -151,6 +198,7 @@ int8_t ns_sw_mac_enable_frame_counter_per_key(struct mac_api_s *mac_api_s, bool 
     return mac_sec_mib_frame_counter_per_key_set(mac_store.setup, enable_feature);
 }
 
+#ifndef WISUN_RCP_ENABLE
 int8_t ns_sw_mac_virtual_client_register(mac_api_t *api, int8_t virtual_driver_id)
 {
     if (!api || api != mac_store.mac_api) {
@@ -182,9 +230,15 @@ int8_t ns_sw_mac_virtual_client_unregister(mac_api_t *api)
     }
     return 0;
 }
+#endif
 
 int ns_sw_mac_fhss_register(mac_api_t *mac_api, fhss_api_t *fhss_api)
 {
+#if defined(WISUN_RCP_ENABLE)
+    (void) mac_api;
+    (void) fhss_api;
+    return 0;
+#else
     if (!mac_api || !fhss_api) {
         return -1;
     }
@@ -214,10 +268,15 @@ int ns_sw_mac_fhss_register(mac_api_t *mac_api, fhss_api_t *fhss_api)
     callbacks.read_coord_mac_address = &mac_get_coordinator_mac_address;
     mac_setup->fhss_api->init_callbacks(mac_setup->fhss_api, &callbacks);
     return 0;
+#endif
 }
 
 int ns_sw_mac_fhss_unregister(mac_api_t *mac_api)
 {
+#if defined(WISUN_RCP_ENABLE)
+    (void) mac_api;
+    return 0;
+#else
     if (!mac_api) {
         return -1;
     }
@@ -228,10 +287,15 @@ int ns_sw_mac_fhss_unregister(mac_api_t *mac_api)
     }
     mac_setup->fhss_api = NULL;
     return 0;
+#endif
 }
 
 struct fhss_api *ns_sw_mac_get_fhss_api(struct mac_api_s *mac_api)
 {
+#if defined(WISUN_RCP_ENABLE)
+    (void) mac_api;
+    return NULL;
+#else
     if (!mac_api) {
         return NULL;
     }
@@ -240,10 +304,16 @@ struct fhss_api *ns_sw_mac_get_fhss_api(struct mac_api_s *mac_api)
         return NULL;
     }
     return mac_setup->fhss_api;
+#endif
 }
 
 int ns_sw_mac_statistics_start(struct mac_api_s *mac_api, struct mac_statistics_s *mac_statistics)
 {
+#if defined(WISUN_RCP_ENABLE)
+    (void) mac_api;
+    (void) mac_statistics;
+    return 0;
+#else
     if (!mac_api || !mac_statistics) {
         return -1;
     }
@@ -253,7 +323,14 @@ int ns_sw_mac_statistics_start(struct mac_api_s *mac_api, struct mac_statistics_
     }
     mac_setup->mac_statistics = mac_statistics;
     return 0;
+#endif
 }
+
+#ifndef LINUX_NANOSTACK
+#include "timac_ns_interface.h"
+#else
+extern void timac_initialize(struct mac_api_s *api);
+#endif // !LINUX_NANOSTACK
 
 static int8_t ns_sw_mac_initialize(mac_api_t *api, mcps_data_confirm *mcps_data_conf_cb,
                                    mcps_data_indication *mcps_data_ind_cb, mcps_purge_confirm *mcps_purge_conf_cb,
@@ -273,6 +350,8 @@ static int8_t ns_sw_mac_initialize(mac_api_t *api, mcps_data_confirm *mcps_data_
     cur->parent_id = parent_id;
 
     mac_store.setup->mac_interface_id = parent_id;
+
+    timac_initialize(api);
 
     return 0;
 }
@@ -294,6 +373,10 @@ static int8_t ns_sw_mac_api_enable_mcps_ext(mac_api_t *api, mcps_data_indication
     cur->data_ind_ext_cb = data_ind_cb;
     cur->enhanced_ack_data_req_cb = ack_data_req_cb;
     if (data_cnf_cb && data_ind_cb && ack_data_req_cb) {
+#ifdef WISUN_RCP_ENABLE
+        // in RCP module, LMAC will generate enhacned ACK, it is not needed to
+        // create the enhanced ACK buffer
+#else
         arm_device_driver_list_s *dev_driver = mac_store.setup->dev_driver;
         ns_dyn_mem_free(mac_store.setup->dev_driver_tx_buffer.enhanced_ack_buf);
 
@@ -309,7 +392,7 @@ static int8_t ns_sw_mac_api_enable_mcps_ext(mac_api_t *api, mcps_data_indication
         if (!mac_store.setup->dev_driver_tx_buffer.enhanced_ack_buf) {
             return -2;
         }
-
+#endif
         mac_store.setup->mac_extension_enabled = true;
     } else {
         mac_store.setup->mac_extension_enabled = false;
@@ -376,7 +459,7 @@ protocol_interface_rf_mac_setup_s *get_sw_mac_ptr_by_timer(int8_t id, arm_nwk_ti
         return NULL;
     }
     protocol_interface_rf_mac_setup_s *rf_ptr = mac_store.setup;
-
+#ifndef WISUN_RCP_ENABLE
     switch (type) {
         case ARM_NWK_MLME_TIMER:
             if (rf_ptr->mlme_timer_id == id) {
@@ -409,7 +492,7 @@ protocol_interface_rf_mac_setup_s *get_sw_mac_ptr_by_timer(int8_t id, arm_nwk_ti
             }
             break;
     }
-
+#endif
     return NULL;
 }
 
@@ -428,7 +511,7 @@ static int8_t build_virtual_scan_request(const mlme_scan_t *scan_request, uint8_
     if (scan_request && scan_req_ptr) {
         *scan_req_ptr++ = scan_request->ScanType;
         *scan_req_ptr++ = scan_request->ScanChannels.channel_page;
-        memcpy(scan_req_ptr, scan_request->ScanChannels.channel_mask, 32);
+        memcpy(scan_req_ptr, scan_request->ScanChannels.channel_mask3, 17);
         scan_req_ptr += 32;
         *scan_req_ptr++ = scan_request->ScanDuration;
         *scan_req_ptr++ = scan_request->ChannelPage;
@@ -468,19 +551,21 @@ static int8_t build_virtual_start_request(const mlme_start_t *start_request, uin
     return -1;
 }
 
-void mlme_req(const mac_api_t *api, mlme_primitive id, const void *data)
+void mlme_req(const mac_api_t *api, mlme_primitive id, void *data)
 {
     if (mac_store.mac_api != api) {
         return;
     }
     //TODO: cast & handle
     switch (id) {
+#ifndef WISUN_RCP_ENABLE
         case MLME_ASSOCIATE: {
             break;
         }
         case MLME_DISASSOCIATE: {
             break;
         }
+#endif
         case MLME_GET: {
             mlme_get_conf_t get_confirm;
             const mlme_get_t *dat = (const mlme_get_t *)data;
@@ -495,18 +580,22 @@ void mlme_req(const mac_api_t *api, mlme_primitive id, const void *data)
 
             break;
         }
+#ifndef WISUN_RCP_ENABLE
         case MLME_GTS: {
             //Unsupported
             break;
         }
+#endif
         case MLME_RESET: {
             const mlme_reset_t *dat = (const mlme_reset_t *)data;
             mac_mlme_reset(mac_store.setup, dat);
+            rcp_host_mac_reset();
             break;
         }
         case MLME_RX_ENABLE: {
             break;
         }
+#ifndef WISUN_RCP_ENABLE
         case MLME_SCAN: {
             const mlme_scan_t *dat = (const mlme_scan_t *)data;
             if (mac_store.dev_driver->phy_driver->arm_net_virtual_tx_cb) {
@@ -528,8 +617,9 @@ void mlme_req(const mac_api_t *api, mlme_primitive id, const void *data)
             }
             break;
         }
+#endif
         case MLME_SET: {
-            const mlme_set_t *dat = (const mlme_set_t *)data;
+            mlme_set_t *dat = (mlme_set_t *)data;
             if (dat->attr == macLoadBalancingBeaconTx && mac_store.dev_driver->mlme_observer_cb) {
                 mac_store.dev_driver->mlme_observer_cb(dat);
             } else {
@@ -539,12 +629,20 @@ void mlme_req(const mac_api_t *api, mlme_primitive id, const void *data)
                     }
                 }
             }
+            if(dat->attr == macKeyTable)
+            {
+                mlme_key_descriptor_entry_t *key_desc = (mlme_key_descriptor_entry_t *)dat->value_pointer;
+                rcp_host_set_sec_key(dat->attr_index, key_desc->Key);
+            } else if (dat->attr == macFrameCounter) {
+                rcp_host_set_tx_frame_count(dat->attr_index, *((uint32_t *) dat->value_pointer));
+            }
             break;
         }
         case MLME_START: {
-            const mlme_start_t *dat = (mlme_start_t *)data;
+            mlme_start_t *dat = (mlme_start_t *)data;
             //TODO: Populate linked list when present
             mac_mlme_start_req(dat, mac_store.setup);
+#ifndef WISUN_RCP_ENABLE
             if (mac_store.dev_driver->phy_driver->arm_net_virtual_tx_cb) {
                 virtual_data_req_t start_req;
                 uint8_t buf_temp[2];
@@ -560,16 +658,27 @@ void mlme_req(const mac_api_t *api, mlme_primitive id, const void *data)
                 start_req.msduLength = sizeof(start_req_temp);
                 mac_store.dev_driver->phy_driver->arm_net_virtual_tx_cb(&start_req, mac_store.dev_driver->id);
             }
+#endif
+#if defined(FEATURE_TIMAC_SUPPORT)
+            dat->PhyID = cfg_props.config_phy_id;
+            dat->startFH = true;
+            dat->ChannelPage = MAC_CHANNEL_PAGE_9;
+
+            rcp_host_mac_init(dat);
+#endif
             break;
         }
+#ifndef WISUN_RCP_ENABLE
         case MLME_SYNC: {
             break;
         }
+
         case MLME_POLL: {
             const mlme_poll_t *dat = (mlme_poll_t *)data;
             mac_mlme_poll_req(mac_store.setup, dat);
             break;
         }
+#endif
         default:
             break;
     }
@@ -577,29 +686,61 @@ void mlme_req(const mac_api_t *api, mlme_primitive id, const void *data)
 
 static void mcps_req(const mac_api_t *api, const mcps_data_req_t *data)
 {
+#ifdef WISUN_RCP_ENABLE
+    /* in WiSUN stack, we only use the mcps_data_req_ext interface,
+       However in lowpan_adaptation_interface_tx function, it is still checking the mcps_req function pointer.api
+       so we will keep function, but do nothing.
+    */
+#else
     //TODO: Populate linked list when present
     if (mac_store.mac_api == api) {
         /* Call direct new API but without IE extensions */
         mcps_data_req_ie_list_t ie_list;
         memset(&ie_list, 0, sizeof(mcps_data_req_ie_list_t));
+#if defined(FEATURE_TIMAC_SUPPORT) && !defined(LINUX_NANOSTACK)
         mcps_sap_data_req_handler_ext(mac_store.setup, data, &ie_list, NULL, MAC_DATA_NORMAL_PRIORITY);
+#endif
     }
+#endif
+}
+
+void rcp_process_data_request(const mcps_data_req_t *data, const mcps_data_req_ie_list_t *ie_ext, const channel_list_s *asynch_channel_list, mac_data_priority_t priority)
+{
+    rcp_sap_data_req_handler_ext(mac_store.setup, data, ie_ext, asynch_channel_list, priority);
+}
+
+static uint8_t rcp_data_req_ext(const mac_api_t *api, const mcps_data_req_t *data, const mcps_data_req_ie_list_t *ie_ext, const channel_list_s *asynch_channel_list, mac_data_priority_t priority)
+{
+    uint8_t ret;
+
+    ret = rcp_tx_data_queue_tx_request_handler(data, ie_ext,asynch_channel_list,priority);
+    if (ret == RCP_QUEUE_DATA_REQ_REJECT) {
+        return 1;
+    } else if (ret == RCP_QUEUE_DATA_REQ_CONTINUE) {
+        // continue to process the data request
+        rcp_process_data_request(data, ie_ext, asynch_channel_list, priority);
+    }
+    return 0;
 }
 
 static void mcps_req_ext(const mac_api_t *api, const mcps_data_req_t *data, const mcps_data_req_ie_list_t *ie_ext, const channel_list_s *asynch_channel_list, mac_data_priority_t priority)
 {
 //TODO: Populate linked list when present
     if (mac_store.mac_api == api) {
+#if defined(FEATURE_TIMAC_SUPPORT) && !defined(LINUX_NANOSTACK) // Issue here with needing mac_mcps_sap.c, which is dependent on timac_api.h
         mcps_sap_data_req_handler_ext(mac_store.setup, data, ie_ext, asynch_channel_list, priority);
+#endif
     }
 }
 
 
 static uint8_t purge_req(const mac_api_t *api, const mcps_purge_t *data)
 {
+#ifndef WISUN_RCP_ENABLE
     if (mac_store.mac_api == api) {
         return mcps_sap_purge_reg_handler(mac_store.setup, data);
     }
+#endif
     return MLME_INVALID_HANDLE;
 }
 
@@ -614,7 +755,7 @@ static int8_t macext_mac64_address_set(const mac_api_t *api, const uint8_t *mac6
 
 }
 
-
+extern uint8_t deviceExtAddr[8];
 static int8_t macext_mac64_address_get(const mac_api_t *api, mac_extended_address_type type, uint8_t *mac64_buf)
 {
     if (!mac64_buf || !api || mac_store.mac_api != api) {
@@ -623,10 +764,12 @@ static int8_t macext_mac64_address_get(const mac_api_t *api, mac_extended_addres
     uint8_t *ptr;
     switch (type) {
         case MAC_EXTENDED_READ_ONLY:
-            ptr = mac_store.setup->dev_driver->phy_driver->PHY_MAC;
-            break;
+            // ptr = mac_store.setup->dev_driver->phy_driver->PHY_MAC;
+            // break;
         case MAC_EXTENDED_DYNAMIC:
-            ptr = mac_store.setup->mac64;
+            // ptr = mac_store.setup->mac64;
+            // break;
+            ptr = deviceExtAddr;
             break;
         default:
             return -1;
@@ -639,7 +782,7 @@ static int8_t macext_mac64_address_get(const mac_api_t *api, mac_extended_addres
 //{
 //    //TODO:
 //}
-
+#ifndef WISUN_RCP_ENABLE
 static int8_t sw_mac_net_phy_rx(const uint8_t *data_ptr, uint16_t data_len, uint8_t link_quality, int8_t dbm, int8_t driver_id)
 {
     arm_phy_sap_msg_t phy_msg;
@@ -718,7 +861,7 @@ static int8_t sw_mac_net_phy_config_parser(int8_t driver_id, const uint8_t *data
     }
     return 0;
 }
-
+#endif
 
 void sw_mac_stats_update(protocol_interface_rf_mac_setup_s *setup, mac_stats_type_t type, uint32_t update_val)
 {
@@ -778,12 +921,40 @@ int ns_sw_mac_phy_statistics_start(struct mac_api_s *mac_api, phy_rf_statistics_
     if (!mac_setup) {
         return -1;
     }
+#ifndef WISUN_RCP_ENABLE
     mac_setup->dev_driver->phy_driver->phy_rf_statistics = phy_statistics;
+#endif
     return 0;
 }
 
 uint32_t ns_sw_mac_read_current_timestamp(struct mac_api_s *mac_api)
 {
+#ifdef WISUN_RCP_ENABLE
+#ifndef LINUX_NANOSTACK
+    // get current time in microseconds to compare with utt_rx_timestamp in us
+    // since the UT-IE rx timestamp is using the LMAC tick count so here we also need to use the tick count for current timestamp
+    // in Linux GW implementation, we may need to store host time in UT-IE (TBD)
+    //uint32_t currentTime   = ClockP_getSystemTicks() * ClockP_getSystemTickPeriod();
+    uint32_t currentTime   = ClockP_getSystemTicks() ;
+    return currentTime;
+#else
+    uint32_t microseconds;
+    struct timespec ts;
+
+    int return_code = clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+    if (return_code == -1)
+    {
+        tr_err("Failed to obtain timestamp. errno = %i: %s\n", errno, strerror(errno));
+        microseconds = 0;
+    }
+    else
+    {
+        microseconds = SEC_TO_US((uint32_t)ts.tv_sec) + NS_TO_US((uint32_t)ts.tv_nsec);
+    }
+
+    return microseconds; // should this be uint64_t so we don't have to worry about overflow?
+#endif
+#else
     if (!mac_api) {
         return 0;
     }
@@ -796,4 +967,5 @@ uint32_t ns_sw_mac_read_current_timestamp(struct mac_api_s *mac_api)
     uint32_t time_stamp_buffer;
     mac_setup->dev_driver->phy_driver->extension(PHY_EXTENSION_GET_TIMESTAMP, (uint8_t *)&time_stamp_buffer);
     return time_stamp_buffer;
+#endif
 }

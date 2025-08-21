@@ -249,7 +249,7 @@ void wisun_rf_init()
 
     mac_description_storage_size_t storage_sizes;
     //storage_sizes.device_decription_table_size = 32;
-    storage_sizes.device_decription_table_size = 4;
+    storage_sizes.device_decription_table_size = NANOSTACK_DEVICE_TABLE_ENTRIES_BR;
     storage_sizes.key_description_table_size = 4;
     storage_sizes.key_lookup_size = 1;
     storage_sizes.key_usage_size = 1;
@@ -260,11 +260,15 @@ void wisun_rf_init()
     nanostack_lock();
 #endif
 
+#ifdef WISUN_RCP_ENABLE
+    rf_driver_id = NanostackTiRfPhy_rf_register();
+#else
 #ifndef FEATURE_TIMAC_SUPPORT
     NanostackTiRfPhy_init();
     rf_driver_id = NanostackTiRfPhy_rf_register();
 #else
     timacExtaddressRegister();
+#endif
 #endif
 
     if(rf_driver_id >= 0)
@@ -348,6 +352,10 @@ static int wisun_interface_up(void)
             tr_error("Regulatory domain configuration failed %"PRIi32"", ret);
             return -1;
         }
+    }
+    ret = ws_management_channel_mask_set(ws_br_handler.ws_interface_id, NULL);
+    if (ret != 0) {
+        return -1;
     }
 
 #ifdef MBED_CONF_APP_CERTIFICATE_HEADER

@@ -76,6 +76,12 @@ extern "C"
 /*! Event ID - Reading Timeout Event */
 #define SENSOR_READING_TIMEOUT_EVT 0x0002
 
+#ifdef FH_LOW_LATENCY_BROADCAST
+#define SENSOR_BROADCAST_CAMCMD_EVT     0x1000
+#define SENSOR_BROADCAST_HEARTBEAT_EVT  0x2000
+#define SENSOR_TIMEOUT_EVT              0x4000
+#endif // FH_LOW_LATENCY_BROADCAST
+
 #ifdef FEATURE_NATIVE_OAD
 /*! Event ID - OAD Timeout Event */
 #define SENSOR_OAD_TIMEOUT_EVT 0x0004

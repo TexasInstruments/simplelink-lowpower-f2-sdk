@@ -184,7 +184,7 @@ function is433MHzDevice(inst)
 function isHighPADevice()
 {
     const board = getLaunchPadFromDevice(boardName);
-    return(board.includes("CC1352P") || board.includes("CC1312P"));
+    return(board.includes("CC1352P") || board.includes("CC1312P") || board.includes("CC1354P"));
 }
 
 /*!

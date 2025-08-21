@@ -80,7 +80,7 @@ typedef struct etx_sample_storage_s {
  * \param attribute_index Neighbour attribute index
  * \param mac64_addr_ptr Neighbour MAC64
  */
-void etx_transm_attempts_update(int8_t interface_id, uint8_t attempts, bool success, uint8_t attribute_index, const uint8_t *mac64_addr_ptr);
+void etx_transm_attempts_update(int8_t interface_id, uint8_t attempts, bool success, uint16_t attribute_index, const uint8_t *mac64_addr_ptr);
 
 /**
  * \brief A function to update ETX value based on remote incoming IDR
@@ -93,7 +93,7 @@ void etx_transm_attempts_update(int8_t interface_id, uint8_t attempts, bool succ
  * \param attribute_index Neighbour attribute index
  * \param mac64_addr_ptr Neighbour MAC64
  */
-void etx_remote_incoming_idr_update(int8_t interface_id, uint8_t remote_incoming_idr, uint8_t attribute_index, const uint8_t *mac64_addr_ptr);
+void etx_remote_incoming_idr_update(int8_t interface_id, uint8_t remote_incoming_idr, uint16_t attribute_index, const uint8_t *mac64_addr_ptr);
 
 /**
  * \brief A function to read ETX value
@@ -121,7 +121,7 @@ uint16_t etx_read(int8_t interface_id, addrtype_t addr_type, const uint8_t *addr
  * \return 0x0100 to 0xFFFF incoming IDR value (8 bit fraction)
  * \return 0x0000 address unknown
  */
-uint16_t etx_local_incoming_idr_read(int8_t interface_id, uint8_t attribute_index);
+uint16_t etx_local_incoming_idr_read(int8_t interface_id, uint16_t attribute_index);
 
 /**
  * \brief A function to read local ETXvalue
@@ -133,7 +133,7 @@ uint16_t etx_local_incoming_idr_read(int8_t interface_id, uint8_t attribute_inde
  * \return 0x0100 to 0xFFFF ETX value (8 bit fraction)
  * \return 0x0000 address unknown
  */
-uint16_t etx_local_etx_read(int8_t interface_id, uint8_t attribute_index);
+uint16_t etx_local_etx_read(int8_t interface_id, uint16_t attribute_index);
 
 /**
  * \brief A function to update ETX value based on LQI and dBm
@@ -147,7 +147,7 @@ uint16_t etx_local_etx_read(int8_t interface_id, uint8_t attribute_index);
  *
  * \return 0x0100 to 0xFFFF local incoming IDR value (8 bit fraction)
  */
-uint16_t etx_lqi_dbm_update(int8_t interface_id, uint8_t lqi, int8_t dbm, uint8_t attribute_index, const uint8_t *mac64_addr_ptr);
+uint16_t etx_lqi_dbm_update(int8_t interface_id, uint8_t lqi, int8_t dbm, uint16_t attribute_index, const uint8_t *mac64_addr_ptr);
 
 /**
  * \brief A function callback that indicates ETX value change
@@ -162,7 +162,7 @@ uint16_t etx_lqi_dbm_update(int8_t interface_id, uint8_t lqi, int8_t dbm, uint8_
  * \param mac64_addr_ptr Pointer to MAC64 for given etx update
  *
  */
-typedef void (etx_value_change_handler_t)(int8_t nwk_id, uint16_t previous_etx, uint16_t current_etx, uint8_t attribute_index, const uint8_t *mac64_addr_ptr);
+typedef void (etx_value_change_handler_t)(int8_t nwk_id, uint16_t previous_etx, uint16_t current_etx, uint16_t attribute_index, const uint8_t *mac64_addr_ptr);
 
 /**
  * \brief A function callback that indicates the number of accumulated TX failures
@@ -174,7 +174,7 @@ typedef void (etx_value_change_handler_t)(int8_t nwk_id, uint16_t previous_etx, 
  * \param attribute_index Neighbour attribute index
  *
  */
-typedef void (etx_accum_failures_handler_t)(int8_t interface_id, uint8_t accumulated_failures, uint8_t attribute_index);
+typedef void (etx_accum_failures_handler_t)(int8_t interface_id, uint8_t accumulated_failures, uint16_t attribute_index);
 
 /**
  * \brief A function to register ETX value change callback
@@ -200,7 +200,7 @@ uint8_t etx_value_change_callback_register(nwk_interface_id nwk_id, int8_t inter
  * \return false Allocate fail
  * \return true Allocate OK
  */
-bool etx_storage_list_allocate(int8_t interface_id, uint8_t etx_storage_size);
+bool etx_storage_list_allocate(int8_t interface_id, uint16_t etx_storage_size);
 
 /**
  * \brief A function to read ETX storage for defined neighbour
@@ -211,7 +211,7 @@ bool etx_storage_list_allocate(int8_t interface_id, uint8_t etx_storage_size);
  * \return Pointer to ETX storage
  * \return NULL When unknow interface or attribute
  */
-etx_storage_t *etx_storage_entry_get(int8_t interface_id, uint8_t attribute_index);
+etx_storage_t *etx_storage_entry_get(int8_t interface_id, uint16_t attribute_index);
 
 
 /**
@@ -241,7 +241,7 @@ uint8_t etx_accum_failures_callback_register(nwk_interface_id nwk_id, int8_t int
  * \param mac64_addr_ptr Neighbour MAC64
  *
  */
-void etx_neighbor_remove(int8_t interface_id, uint8_t attribute_index, const uint8_t *mac64_addr_ptr);
+void etx_neighbor_remove(int8_t interface_id, uint16_t attribute_index, const uint8_t *mac64_addr_ptr);
 
 /**
  * \brief A function for update cached ETX calculation
@@ -300,4 +300,5 @@ bool etx_allow_drop_for_poor_measurements(uint8_t bad_link_level, uint8_t max_al
  */
 void etx_max_set(uint16_t etx_max);
 
+void ext_storage_clean_all_entry(void);
 #endif /* ETX_H_ */

@@ -58,68 +58,52 @@ uint16_t test_max_child_count_override = 0xffff;
 uint16_t test_max_child_count_override = 1000;
 #endif
 
-static int8_t ws_disable_channels_in_range(uint32_t *channel_mask, uint16_t number_of_channels, uint16_t range_start, uint16_t range_stop)
+static int8_t ws_disable_channels_in_range(uint8_t *channel_mask, uint16_t number_of_channels, uint16_t range_start, uint16_t range_stop)
 {
     for (uint16_t i = 0; i < number_of_channels; i++) {
         if (i >= range_start && i <= range_stop) {
-            channel_mask[0 + (i / 32)] &= ~(1 << (i % 32));
+            channel_mask[0 + (i / 8)] &= ~(1 << (i % 8));
         }
     }
     return 0;
 }
 
-int8_t ws_generate_channel_list(uint32_t *channel_mask, uint16_t number_of_channels, uint8_t regulatory_domain, uint8_t operating_class, uint8_t channel_plan_id)
+int8_t ws_generate_channel_list(uint8_t *channel_mask, uint16_t number_of_channels, uint8_t regulatory_domain, uint8_t operating_class, uint8_t channel_plan_id)
 {
     // Clear channel mask
-    for (uint8_t i = 0; i < 8; i++) {
+    for (uint8_t i = 0; i < NUM_BYTES_IN_CHAN_MASK; i++) {
         channel_mask[i] = 0;
     }
     // Enable all channels
     for (uint16_t i = 0; i < number_of_channels; i++) {
-        channel_mask[0 + (i / 32)] |= (1 << (i % 32));
+        channel_mask[0 + (i / 8)] |= (1 << (i % 8));
     }
     // Disable unsupported channels per regional frequency bands
     if (regulatory_domain == REG_DOMAIN_NA) {
-        if (channel_plan_id == 1) {
-            ws_disable_channels_in_range(channel_mask, number_of_channels, 1, 7);
-        } else if (channel_plan_id == 5) {
-            ws_disable_channels_in_range(channel_mask, number_of_channels, 5, 7);
-        }
+        //do nothing as there are no gaps in the regulatory channel mask
     }
     if (regulatory_domain == REG_DOMAIN_BZ) {
-        if (channel_plan_id == 255) {
-            if (operating_class == 1) {
-                ws_disable_channels_in_range(channel_mask, number_of_channels, 26, 64);
-            } else if (operating_class == 2) {
-                ws_disable_channels_in_range(channel_mask, number_of_channels, 12, 32);
-            } else if (operating_class == 3) {
-                ws_disable_channels_in_range(channel_mask, number_of_channels, 7, 21);
-            }
-        } else {
-            if (channel_plan_id == 1) {
-                ws_disable_channels_in_range(channel_mask, number_of_channels, 1, 7);
-                ws_disable_channels_in_range(channel_mask, number_of_channels, 64, 64);
-                ws_disable_channels_in_range(channel_mask, number_of_channels, 72, 103);
-                ws_disable_channels_in_range(channel_mask, number_of_channels, 106, 111);
-            } else if (channel_plan_id == 2) {
-                ws_disable_channels_in_range(channel_mask, number_of_channels, 24, 24);
-                ws_disable_channels_in_range(channel_mask, number_of_channels, 32, 47);
-                ws_disable_channels_in_range(channel_mask, number_of_channels, 52, 55);
-            } else if (channel_plan_id == 5) {
-                ws_disable_channels_in_range(channel_mask, number_of_channels, 5, 10);
-                ws_disable_channels_in_range(channel_mask, number_of_channels, 19, 23);
-            }
-        }
+        if ((operating_class == 1) || (channel_plan_id == 1)){
+            ws_disable_channels_in_range(channel_mask, number_of_channels, 26, 64);           
+        } else if ((operating_class == 2) || (channel_plan_id == 2)) {
+            ws_disable_channels_in_range(channel_mask, number_of_channels, 12, 31);
+        } else if ((operating_class == 3) || (channel_plan_id == 3)) {
+            ws_disable_channels_in_range(channel_mask, number_of_channels, 8, 21);
+        } else if (channel_plan_id == 4) {
+            ws_disable_channels_in_range(channel_mask, number_of_channels, 6, 15);
+        } else if (channel_plan_id == 5) {
+            ws_disable_channels_in_range(channel_mask, number_of_channels, 3, 10);
+        }  
     }
     return 0;
 }
 
-uint16_t ws_active_channel_count(uint32_t *channel_mask, uint16_t number_of_channels)
+uint16_t ws_active_channel_count(uint8_t *channel_mask, uint16_t number_of_channels)
 {
     uint16_t active_channels = 0;
     // Set channel maks outside excluded channels
     for (uint16_t i = 0; i < number_of_channels; i++) {
-        if (channel_mask[0 + (i / 32)] & (1 << (i % 32))) {
+        if (channel_mask[0 + (i / 8)] & (1 << (i % 8))) {
             active_channels++;
         }
     }
@@ -464,7 +448,7 @@ uint16_t ws_common_channel_number_calc(uint8_t regulatory_domain, uint8_t operat
     } else if (regulatory_domain == REG_DOMAIN_WW) {
         if (operating_class == 1) {
             // Not supported so use as test value
-            return 416;
+            return 250;
         } else if (operating_class == 2) {
             return 207;
         }
@@ -554,7 +538,7 @@ void ws_common_neighbor_remove(protocol_interface_info_entry_t *cur, const uint8
     ws_bootstrap_neighbor_remove(cur, ll_address);
 }
 
-uint8_t ws_common_temporary_entry_size(uint8_t mac_table_size)
+uint16_t ws_common_temporary_entry_size(uint16_t mac_table_size)
 {
     if (mac_table_size >= 128) {
         return (WS_RPL_CANDIDATE_PARENT_COUNT + WS_LARGE_TEMPORARY_NEIGHBOUR_ENTRIES);
@@ -591,8 +575,8 @@ static void ws_common_neighbour_address_reg_link_update(protocol_interface_info_
 
 uint8_t ws_common_allow_child_registration(protocol_interface_info_entry_t *interface, const uint8_t *eui64, uint16_t aro_timeout)
 {
-    uint8_t child_count = 0;
-    uint8_t max_child_count = mac_neighbor_info(interface)->list_total_size - ws_common_temporary_entry_size(mac_neighbor_info(interface)->list_total_size);
+    uint16_t child_count = 0;
+    uint16_t max_child_count = mac_neighbor_info(interface)->list_total_size - ws_common_temporary_entry_size(mac_neighbor_info(interface)->list_total_size);
 
     if (aro_timeout == 0) {
         //DeRegister Address Reg

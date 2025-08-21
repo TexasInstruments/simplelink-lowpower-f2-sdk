@@ -160,11 +160,11 @@ if(rfDesignSettings.rfDesign !== undefined)
 }
 
 TI154Stack.project = "borderrouter";
-TI154Stack.mode = "frequencyHopping";
 TI154Stack.lockProject = true;
 TI154Stack.rxOnIdle = true;
 TI154Stack.panID = 0xABCD;
 TI154Stack.secureLevel = "macSecure";
+TI154Stack.rapidJoin = false;
 
 /* ======== Device ======== */
 var device = scripting.addModule("ti/devices/CCFG");

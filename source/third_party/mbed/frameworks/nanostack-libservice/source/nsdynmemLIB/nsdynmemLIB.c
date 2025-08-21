@@ -20,9 +20,13 @@
 #include "platform/arm_hal_interrupt.h"
 #include <stdlib.h>
 #include "ns_list.h"
+#include "ns_trace.h"
 #ifdef DBG_WISUN
 #include "ns_types.h"
-#include "ns_trace.h"
+#endif
+#ifdef WISUN_RCP_SPINEL_DEBUG
+#include "application.h"
+extern rcp_debug_t rcp_debug;
 #endif
 
 #ifndef STANDARD_MALLOC
@@ -52,9 +56,9 @@ struct ns_mem_book {
     ns_mem_heap_size_t temporary_alloc_heap_limit;   /* Amount of reserved heap temporary alloc can't exceed */
 };
 
+#define TRACE_GROUP "dynAlloc"
 #ifdef DBG_WISUN
 extern struct wisun_debug wisunDbg;
-#define TRACE_GROUP "dynAlloc"
 #endif
 
 mem_stat_t default_stats;
@@ -327,6 +331,9 @@ static void dev_stat_update(mem_stat_t *mem_stat_info_ptr, mem_stat_update_t typ
             break;
         case DEV_HEAP_ALLOC_FAIL:
             mem_stat_info_ptr->heap_alloc_fail_cnt++;
+#ifdef WISUN_RCP_SPINEL_DEBUG
+            rcp_debug.heap_alloc_fail++;
+#endif
             break;
         case DEV_HEAP_FREE:
             mem_stat_info_ptr->heap_sector_alloc_cnt--;
@@ -339,10 +346,13 @@ static void dev_stat_update(mem_stat_t *mem_stat_info_ptr, mem_stat_update_t typ
 static ns_mem_word_size_t convert_allocation_size(ns_mem_book_t *book, ns_mem_block_size_t requested_bytes)
 {
     if (book->heap_main[0] == 0) {
+        tr_err("Mem alloc failure: Heap main not initialized");
         heap_failure(book, NS_DYN_MEM_HEAP_SECTOR_UNITIALIZED);
     } else if (requested_bytes < 1) {
+        tr_err("Mem alloc failure: NS_DYN_MEM_ALLOCATE_SIZE_NOT_VALID");
         heap_failure(book, NS_DYN_MEM_ALLOCATE_SIZE_NOT_VALID);
     } else if (requested_bytes > (book->heap_size - 2 * sizeof(ns_mem_word_size_t))) {
+        tr_err("Mem alloc failure: NS_DYN_MEM_ALLOCATE_SIZE_NOT_VALID");
         heap_failure(book, NS_DYN_MEM_ALLOCATE_SIZE_NOT_VALID);
     }
     return (requested_bytes + sizeof(ns_mem_word_size_t) - 1) / sizeof(ns_mem_word_size_t);
@@ -378,6 +388,7 @@ static void *ns_mem_internal_alloc(ns_mem_book_t *book, const ns_mem_block_size_
         if (book->mem_stat_info_ptr->heap_sector_allocated_bytes > book->temporary_alloc_heap_limit) {
             /* Not enough heap for temporary memory allocation */
             dev_stat_update(book->mem_stat_info_ptr, DEV_HEAP_ALLOC_FAIL, 0);
+            tr_err("Mem alloc failure: temporary_alloc_heap_limit reached");
 #ifdef DBG_WISUN
         wisunDbg.temp_mem_alloc_failures++;
 #endif
@@ -391,6 +402,7 @@ static void *ns_mem_internal_alloc(ns_mem_book_t *book, const ns_mem_block_size_
 
     ns_mem_word_size_t data_size = convert_allocation_size(book, alloc_size);
     if (!data_size) {
+        tr_err("Mem alloc failure: convert_allocation_size failure");
         goto done;
     }
 
@@ -404,6 +416,7 @@ static void *ns_mem_internal_alloc(ns_mem_book_t *book, const ns_mem_block_size_
         ns_mem_word_size_t *p = block_start_from_hole(cur_hole);
         if (ns_mem_block_validate(p) != 0 || *p >= 0) {
             //Validation failed, or this supposed hole has positive (allocated) size
+            tr_err("Mem alloc failure: NS_DYN_MEM_HEAP_SECTOR_CORRUPTED case 1");
             heap_failure(book, NS_DYN_MEM_HEAP_SECTOR_CORRUPTED);
             break;
         }
@@ -542,6 +555,7 @@ static void ns_mem_free_and_merge_with_adjacent_blocks(ns_mem_book_t *book, ns_m
         region_start = book->heap_main[region_index];
         region_end = book->heap_main_end[region_index];
     } else {
+        tr_err("Mem free failure: NS_DYN_MEM_HEAP_SECTOR_CORRUPTED case 2");
         heap_failure(book, NS_DYN_MEM_HEAP_SECTOR_CORRUPTED);
         // can't find region for the block, return
         return;
@@ -559,6 +573,7 @@ static void ns_mem_free_and_merge_with_adjacent_blocks(ns_mem_book_t *book, ns_m
             merged_data_size += block_size;
             start -= block_size;
             if (*start != *block_end) {
+                tr_err("Mem free failure: NS_DYN_MEM_HEAP_SECTOR_CORRUPTED case 3");
                 heap_failure(book, NS_DYN_MEM_HEAP_SECTOR_CORRUPTED);
             }
             if (block_size >= 1 + HOLE_T_SIZE + 1) {
@@ -574,6 +589,7 @@ static void ns_mem_free_and_merge_with_adjacent_blocks(ns_mem_book_t *book, ns_m
             merged_data_size += block_size;
             end += block_size;
             if (*end != *block_start) {
+                tr_err("Mem free failure: NS_DYN_MEM_HEAP_SECTOR_CORRUPTED case 4");
                 heap_failure(book, NS_DYN_MEM_HEAP_SECTOR_CORRUPTED);
             }
             if (block_size >= 1 + HOLE_T_SIZE + 1) {
@@ -649,11 +665,14 @@ void ns_mem_free(ns_mem_book_t *book, void *block)
     //Read Current Size
     size = *ptr;
     if (!pointer_address_validate(book, ptr, size)) {
+        tr_err("Mem free failure: NS_DYN_MEM_POINTER_NOT_VALID");
         heap_failure(book, NS_DYN_MEM_POINTER_NOT_VALID);
     } else if (size < 0) {
+        tr_err("Mem free failure: NS_DYN_MEM_DOUBLE_FREE");
         heap_failure(book, NS_DYN_MEM_DOUBLE_FREE);
     } else {
         if (ns_mem_block_validate(ptr) != 0) {
+            tr_err("Mem free failure: NS_DYN_MEM_HEAP_SECTOR_CORRUPTED case 5");
             heap_failure(book, NS_DYN_MEM_HEAP_SECTOR_CORRUPTED);
         } else {
             ns_mem_free_and_merge_with_adjacent_blocks(book, ptr, size);

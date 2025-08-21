@@ -44,6 +44,8 @@
 #include "Security/protocols/tls_sec_prot/tls_sec_prot_lib.h"
 #include "Service_Libs/hmac/hmac_md.h"
 
+#include "rcp_types.h"
+
 #ifdef HAVE_WS
 
 #define TRACE_GROUP "radp"
@@ -71,6 +73,7 @@ typedef enum {
 #define RADIUS_ACCESS_ACCEPT          2
 #define RADIUS_ACCESS_REJECT          3
 #define RADIUS_ACCESS_CHALLENGE       11
+#define RADIUS_INTERNAL_INVALID       0xFF // Internal code assigned to radius_code identifying message as non-radius
 
 #define MS_MPPE_RECV_KEY_SALT_LEN     2
 #define MS_MPPE_RECV_KEY_BLOCK_LEN    16
@@ -149,6 +152,86 @@ static void radius_client_sec_prot_timer_timeout(sec_prot_t *prot, uint16_t tick
 
 #define radius_client_sec_prot_get(prot) (radius_client_sec_prot_int_t *) &prot->data
 
+#define RADIUS_CLIENT_DEBUG
+
+#ifdef RADIUS_CLIENT_DEBUG
+typedef struct radius_client_debug_s {
+    uint16_t num_eap_type_identity;
+    uint16_t num_eap_type_identity_dup_free;
+    uint16_t num_eap_type_non_identity;
+    uint16_t num_eap_type_non_identity_no_length;
+
+    uint16_t num_rx_from_host_radius_server;
+    uint16_t num_rx_from_peer_eap_tls;
+    uint16_t radius_client_invalid_rx_in_send_access_req;
+    uint16_t radius_client_invalid_rx_in_access_accept_reject_challenge;
+    uint16_t radius_client_invalid_rx_md5_calc;
+    uint16_t radius_client_invalid_rx_resp_auth;
+    uint16_t rx_host_err_not_in_access_accept_reject_challenge;
+    uint16_t rx_peer_err_not_in_access_request;
+    uint16_t tx_time_out_to_host_in_access_request;
+    uint16_t tx_time_out_to_host_in_accept_reject_challenge;
+    uint16_t tx_to_host_err_init_access_request;
+    uint16_t tx_to_host_err_access_request;
+    uint16_t tx_to_host_retry_err;
+    uint16_t num_rx_len_err;
+    uint16_t radius_eap_tls_send_err;
+    uint8_t  radius_eap_tls_send_null;
+    uint8_t  radius_eap_tls_send_recv_eap_msg_null;
+    uint8_t  radius_eap_tls_send_eap_tls_prot_null;
+    uint16_t num_finish_state;
+    uint16_t num_finish_accept;
+    uint16_t num_finish_reject;
+} radius_client_debug_t;
+
+radius_client_debug_t radius_client_dbg;
+
+typedef struct radius_client_rx_current_s {
+    uint16_t num_init;
+    uint16_t num_response_id;
+    uint16_t num_create_resp;
+    uint16_t num_initial_access_req;
+    uint16_t num_accept_reject_challenge;
+    uint16_t num_access_request;
+    uint16_t num_finish;
+    uint16_t num_finished;
+} radius_client_rx_current_state_t;
+
+radius_client_rx_current_state_t radius_client_rx_Host_err_dbg;
+radius_client_rx_current_state_t radius_client_rx_Peer_err_dbg;
+
+void radius_client_record_cur_state(uint8_t state,radius_client_rx_current_state_t *pStatus)
+{
+    switch (state)
+        {
+            case RADIUS_STATE_INIT:
+                pStatus->num_init++;
+            break;
+            case RADIUS_STATE_STATE_RESPONSE_ID:
+                pStatus->num_response_id++;
+            break;
+            case RADIUS_STATE_CREATE_RESP:
+                pStatus->num_create_resp++;
+            break;
+            case RADIUS_STATE_SEND_INITIAL_ACCESS_REQUEST:
+                pStatus->num_initial_access_req++;
+            break;
+            case RADIUS_STATE_ACCESS_ACCEPT_REJECT_CHALLENGE:
+                pStatus->num_accept_reject_challenge++;
+            break;
+            case RADIUS_STATE_SEND_ACCESS_REQUEST:
+                pStatus->num_access_request++;
+            break;
+            case RADIUS_STATE_FINISH:
+                pStatus->num_finish++;
+            break;
+            case RADIUS_STATE_FINISHED:
+                pStatus->num_finished++;
+            break;
+        }
+
+}
+#endif
 // Data shared between radius client instances
 static radius_client_sec_prot_shared_t *shared_data = NULL;
 
@@ -272,15 +355,19 @@ static void radius_client_sec_prot_delete(sec_prot_t *prot)
 
     if (data->recv_eap_msg != NULL) {
         ns_dyn_mem_free(data->recv_eap_msg);
+        data->recv_eap_msg = NULL;
     }
     if (data->send_radius_msg != NULL) {
         ns_dyn_mem_free(data->send_radius_msg);
+        data->send_radius_msg = NULL;
     }
     if (data->identity != NULL) {
         ns_dyn_mem_free(data->identity);
+        data->identity = NULL;
     }
     if (data->state != NULL) {
         ns_dyn_mem_free(data->state);
+        data->state = NULL;
     }
 }
 
@@ -371,6 +458,20 @@ static int8_t radius_client_sec_prot_receive(sec_prot_t *prot, void *pdu, uint16
     (void) conn_number;
 
     radius_client_sec_prot_int_t *data = radius_client_sec_prot_get(prot);
+#ifdef RADIUS_CLIENT_DEBUG
+    radius_client_dbg.num_rx_from_host_radius_server++;
+#endif
+    /* check to make sure it is ACCEP/REJECT/Channlege state */
+    if (sec_prot_state_get(&data->common) != RADIUS_STATE_ACCESS_ACCEPT_REJECT_CHALLENGE)
+    {
+#ifdef RADIUS_CLIENT_DEBUG
+        radius_client_dbg.rx_host_err_not_in_access_accept_reject_challenge++;
+
+        // more debug counts for current state
+        radius_client_record_cur_state(sec_prot_state_get(&data->common),&radius_client_rx_Host_err_dbg);
+#endif
+        return -1;
+    }
 
     if (size < RADIUS_MSG_FIXED_LENGTH) {
         return -1;
@@ -406,12 +507,14 @@ static int8_t radius_client_sec_prot_receive(sec_prot_t *prot, void *pdu, uint16
     uint8_t calc_response_authenticator[16];
     if (radius_client_sec_prot_response_authenticator_calc(prot, length, pdu, calc_response_authenticator) < 0) {
         tr_error("Could not calculate response authenticator MD5 hash");
+        radius_client_dbg.radius_client_invalid_rx_md5_calc++;
         return -1;
     }
 
     // Verify that received and calculated response authenticator matches
     if (memcmp(recv_response_authenticator, calc_response_authenticator, 16) != 0) {
         tr_error("Invalid response authenticator recv: %s, calc: %s", tr_array(recv_response_authenticator, 16), tr_array(calc_response_authenticator, 16));
+        radius_client_dbg.radius_client_invalid_rx_resp_auth++;
         return -1;
     }
 
@@ -471,6 +574,10 @@ static int8_t radius_client_sec_prot_receive(sec_prot_t *prot, void *pdu, uint16
     uint16_t copy_eap_len = radius_client_sec_prot_eap_avps_handle(avp_length, radius_msg_ptr, data->recv_eap_msg + data->radius_eap_tls_header_size);
     if (copy_eap_len != data->recv_eap_msg_len) {
         ns_dyn_mem_free(data->recv_eap_msg);
+        data->recv_eap_msg = NULL;
+#ifdef RADIUS_CLIENT_DEBUG
+        radius_client_dbg.num_rx_len_err++;
+#endif
         return -1;
     }
 
@@ -527,9 +634,27 @@ static int8_t radius_client_sec_prot_radius_eap_receive(sec_prot_t *prot, void *
 {
     radius_client_sec_prot_int_t *data = radius_client_sec_prot_get(prot);
 
+    data->radius_code = RADIUS_INTERNAL_INVALID;
     data->recv_eap_msg_len = size;
     data->recv_eap_msg = pdu;
+#ifdef RADIUS_CLIENT_DEBUG
+    radius_client_dbg.num_rx_from_peer_eap_tls++;
+#endif
+    if ( (sec_prot_state_get(&data->common) != RADIUS_STATE_SEND_ACCESS_REQUEST) &&
+         (sec_prot_state_get(&data->common) != RADIUS_STATE_STATE_RESPONSE_ID) )
+    {
+#ifdef RADIUS_CLIENT_DEBUG
+        radius_client_dbg.rx_peer_err_not_in_access_request++;
 
+        // more debug counts for current state
+        radius_client_record_cur_state(sec_prot_state_get(&data->common),&radius_client_rx_Peer_err_dbg);
+
+#endif
+        data->radius_code = 0;
+        data->recv_eap_msg_len = 0;
+        data->recv_eap_msg = NULL;
+        return -1;
+    }
     prot->state_machine(prot);
 
     data->recv_eap_msg_len = 0;
@@ -616,12 +741,39 @@ static void radius_client_sec_prot_allocate_and_create_radius_message(sec_prot_t
         if (id_len > AVP_VALUE_MAX_LEN) {
             id_len = AVP_VALUE_MAX_LEN;
         }
+        if (data->identity != NULL) {
+            ns_dyn_mem_free(data->identity);
+            data->identity_len = 0;
+#ifdef RADIUS_CLIENT_DEBUG
+            radius_client_dbg.num_eap_type_identity_dup_free++;
+#endif
+        }
         data->identity = ns_dyn_mem_temporary_alloc(id_len);
         if (!data->identity) {
             return;
         }
+        memset(data->identity, 0, id_len);
         data->identity_len = id_len;
         memcpy(data->identity, eap_hdr->msg.eap.data_ptr, id_len);
+#ifdef RADIUS_CLIENT_DEBUG
+        radius_client_dbg.num_eap_type_identity++;
+#endif
+    }
+    else
+    {
+#ifdef RADIUS_CLIENT_DEBUG
+        radius_client_dbg.num_eap_type_non_identity++;
+        // check the EAP len
+        if (data->identity_len==0)
+        {
+            radius_client_dbg.num_eap_type_non_identity_no_length++;
+
+            //tr_error("EAP type %d without identity", eap_hdr->msg.eap.type);
+            //radius_client_dbg.radius_client_invalid_rx_in_send_access_req++;
+            //return;
+        }
+#endif
+
     }
 
     // Calculate eap fragments
@@ -660,6 +812,7 @@ static void radius_client_sec_prot_allocate_and_create_radius_message(sec_prot_t
         data->send_radius_msg_len = 0;
         return;
     }
+    memset(radius_msg_ptr, 0, radius_msg_length);
     uint8_t *radius_msg_start_ptr = radius_msg_ptr;
 
     *radius_msg_ptr++ = RADIUS_ACCESS_REQUEST;                                // code
@@ -1059,6 +1212,9 @@ static void radius_client_sec_prot_state_machine(sec_prot_t *prot)
             tr_info("Radius: send initial access request, eui-64: %s", trace_array(sec_prot_remote_eui_64_addr_get(prot), 8));
 
             if (radius_client_sec_prot_radius_msg_send(prot) < 0) {
+#ifdef RADIUS_CLIENT_DEBUG
+                radius_client_dbg.tx_to_host_err_init_access_request++;
+#endif
                 tr_error("Radius: msg send error");
             }
 
@@ -1069,13 +1225,26 @@ static void radius_client_sec_prot_state_machine(sec_prot_t *prot)
             break;
 
         case RADIUS_STATE_ACCESS_ACCEPT_REJECT_CHALLENGE:
-
             // On timeout
             if (sec_prot_result_timeout_check(&data->common)) {
+#ifdef RADIUS_CLIENT_DEBUG
+                radius_client_dbg.tx_time_out_to_host_in_accept_reject_challenge++;
+#endif
                 tr_info("Radius: retry access request, eui-64: %s", trace_array(sec_prot_remote_eui_64_addr_get(prot), 8));
                 if (radius_client_sec_prot_radius_msg_send(prot) < 0) {
+#ifdef RADIUS_CLIENT_DEBUG
+                    radius_client_dbg.tx_to_host_retry_err++;
+#endif
                     tr_error("Radius: retry msg send error");
                 }
+                return;
+            }
+
+            if (data->radius_code == RADIUS_INTERNAL_INVALID) {
+                tr_error("Radius: Invalid radius code for current state machine state RADIUS_STATE_ACCESS_ACCEPT_REJECT_CHALLENGE.");
+#ifdef RADIUS_CLIENT_DEBUG
+                radius_client_dbg.radius_client_invalid_rx_in_access_accept_reject_challenge++;
+#endif
                 return;
             }
 
@@ -1094,6 +1263,18 @@ static void radius_client_sec_prot_state_machine(sec_prot_t *prot)
             if (data->radius_eap_tls_send && data->radius_eap_tls_prot && data->recv_eap_msg && data->recv_eap_msg_len > 0) {
                 data->radius_eap_tls_send(data->radius_eap_tls_prot, (void *) data->recv_eap_msg, data->recv_eap_msg_len);
             } else {
+#ifdef RADIUS_CLIENT_DEBUG
+                radius_client_dbg.radius_eap_tls_send_err++;
+                if (data->radius_eap_tls_send == NULL)
+                    radius_client_dbg.radius_eap_tls_send_null++;
+
+                if (data->recv_eap_msg == NULL)
+                    radius_client_dbg.radius_eap_tls_send_recv_eap_msg_null++;
+
+                if (data->radius_eap_tls_prot == NULL)
+                    radius_client_dbg.radius_eap_tls_send_eap_tls_prot_null++;
+
+#endif
                 if (data->recv_eap_msg) {
                     ns_dyn_mem_free(data->recv_eap_msg);
                 }
@@ -1104,6 +1285,9 @@ static void radius_client_sec_prot_state_machine(sec_prot_t *prot)
             if (data->radius_code == RADIUS_ACCESS_REJECT) {
                 sec_prot_result_set(&data->common, SEC_RESULT_ERROR);
                 sec_prot_state_set(prot, &data->common, RADIUS_STATE_FINISH);
+#ifdef RADIUS_CLIENT_DEBUG
+                radius_client_dbg.num_finish_reject++;
+#endif
             } else if (data->radius_code == RADIUS_ACCESS_ACCEPT) {
                 if (data->new_pmk_set) {
                     sec_prot_result_set(&data->common, SEC_RESULT_OK);
@@ -1111,19 +1295,35 @@ static void radius_client_sec_prot_state_machine(sec_prot_t *prot)
                     sec_prot_result_set(&data->common, SEC_RESULT_ERROR);
                 }
                 sec_prot_state_set(prot, &data->common, RADIUS_STATE_FINISH);
+#ifdef RADIUS_CLIENT_DEBUG
+                radius_client_dbg.num_finish_accept++;
+#endif
             } else if (data->radius_code == RADIUS_ACCESS_CHALLENGE) {
                 sec_prot_state_set(prot, &data->common, RADIUS_STATE_SEND_ACCESS_REQUEST);
             }
             break;
 
         case RADIUS_STATE_SEND_ACCESS_REQUEST:
-
             // On timeout
             if (sec_prot_result_timeout_check(&data->common)) {
+#ifdef RADIUS_CLIENT_DEBUG
+                radius_client_dbg.tx_time_out_to_host_in_access_request++;
+#endif
                 tr_info("Radius: retry access request, eui-64: %s", trace_array(sec_prot_remote_eui_64_addr_get(prot), 8));
                 if (radius_client_sec_prot_radius_msg_send(prot) < 0) {
+#ifdef RADIUS_CLIENT_DEBUG
+                    radius_client_dbg.tx_to_host_retry_err++;
+#endif
                     tr_error("Radius: retry msg send error");
                 }
+                return;
+            }
+
+            if (data->radius_code != RADIUS_INTERNAL_INVALID) {
+                tr_error("Radius: Invalid radius code for current state machine state RADIUS_STATE_SEND_ACCESS_REQUEST.");
+#ifdef RADIUS_CLIENT_DEBUG
+                radius_client_dbg.radius_client_invalid_rx_in_send_access_req++;
+#endif
                 return;
             }
 
@@ -1132,6 +1332,9 @@ static void radius_client_sec_prot_state_machine(sec_prot_t *prot)
             radius_client_sec_prot_allocate_and_create_radius_message(prot);
 
             if (radius_client_sec_prot_radius_msg_send(prot) < 0) {
+#ifdef RADIUS_CLIENT_DEBUG
+                radius_client_dbg.tx_to_host_err_access_request++;
+#endif
                 tr_error("Radius: msg send error");
             }
 
@@ -1143,7 +1346,9 @@ static void radius_client_sec_prot_state_machine(sec_prot_t *prot)
 
         case RADIUS_STATE_FINISH:
             tr_info("Radius: finish, eui-64: %s", trace_array(sec_prot_remote_eui_64_addr_get(prot), 8));
-
+#ifdef RADIUS_CLIENT_DEBUG
+            radius_client_dbg.num_finish_state++;
+#endif
             if (sec_prot_result_ok_check(&data->common)) {
                 sec_prot_keys_pmk_write(prot->sec_keys, data->new_pmk, prot->sec_cfg->timer_cfg.pmk_lifetime);
                 // Supplicant PMK is now valid

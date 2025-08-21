@@ -273,6 +273,14 @@ STATIC ClockP_Struct ntwkDiscoverClkStruct;
 STATIC ClockP_Handle ntwkDiscoverClkHandle;
 #endif /* USE_DMM */
 
+#ifdef FH_LOW_LATENCY_BROADCAST
+#define LOW_LATENCY_BROADCAST_MAX_RETRIES 3
+static uint16_t destDevAddr;
+static uint16_t destDevAddr_copy;
+static uint8_t sendCamCmd = 0;
+static uint8_t broadcastQueue = 0;
+#endif // FH_LOW_LATENCY_BROADCAST
+
 /******************************************************************************
  Local function prototypes
  *****************************************************************************/
@@ -303,6 +311,7 @@ static bool sendMsg(Smsgs_cmdIds_t type, uint16_t dstShortAddr, bool rxOnIdle,
 static void generateConfigRequests(void);
 static void generateTrackingRequests(void);
 static void generateBroadcastCmd(void);
+static void sendBroadcastMsg(Smsgs_cmdIds_t type, uint16_t len, uint8_t *pData);
 #ifndef POWER_MEAS
 static void sendTrackingRequest(Cllc_associated_devices_t *pDev);
 #endif
@@ -611,6 +620,9 @@ void Collector_process(void)
         if(cllcState == Cllc_states_initWaiting)
         {
             processStartEvent();
+#ifdef FH_LOW_LATENCY_BROADCAST
+            Csf_setTrickleClock(10000, ApiMac_wisunAsyncFrame_config);
+#endif // FH_LOW_LATENCY_BROADCAST
         }
         /* Clear the event */
         Util_clearEvent(&Collector_events, COLLECTOR_START_EVT);
@@ -668,11 +680,64 @@ void Collector_process(void)
         Util_clearEvent(&Collector_events, COLLECTOR_BROADCAST_TIMEOUT_EVT);
         if(FH_BROADCAST_INTERVAL > 0 && (!CERTIFICATION_TEST_MODE))
         {
+#ifdef FH_LOW_LATENCY_BROADCAST
+            if(broadcastQueue < 1)
+            {
+                uint8_t buffer[SMSGS_BROADCAST_CMD_LENGTH];
+                uint8_t *pBuf = buffer;
+
+                /* Build the message */
+                if(sendCamCmd)
+                {
+                    *pBuf++ = (uint8_t)Smgs_cmdIds_broadcastCtrlMsg;
+                    *pBuf++ = Util_loUint16(destDevAddr);
+                    *pBuf++ = Util_hiUint16(destDevAddr);
+                    *pBuf = 0x1;
+                    sendCamCmd -= 1;
+                }
+                else
+                {
+                    *pBuf++ = (uint8_t)Smgs_cmdIds_broadcastCtrlMsg;
+                    *pBuf++ = 0xF;
+                    *pBuf++ = 0xF;
+                    *pBuf = 0xF;
+                }
+                broadcastQueue += 1;
+                sendBroadcastMsg(Smgs_cmdIds_broadcastCtrlMsg, SMSGS_BROADCAST_CMD_LENGTH,
+                                 buffer);
+            }
+            /* set clock for next broadcast command */
+            Csf_setBroadcastClock(FH_BROADCAST_INTERVAL / 2);
+#else  // FH_LOW_LATENCY_BROADCAST
             generateBroadcastCmd();
             /* set clock for next broadcast command */
             Csf_setBroadcastClock(FH_BROADCAST_INTERVAL);
+#endif // FH_LOW_LATENCY_BROADCAST
         }
     }
+
+#ifdef FH_LOW_LATENCY_BROADCAST
+    if(Collector_events & COLLECTOR_BROADCAST_CAMCMD_EVT)
+    {
+
+        destDevAddr = destDevAddr_copy;
+        sendCamCmd = LOW_LATENCY_BROADCAST_MAX_RETRIES;
+        Util_clearEvent(&Collector_events, COLLECTOR_BROADCAST_CAMCMD_EVT);
+    }
+
+    if(Collector_events & COLLECTOR_BROADCAST_SUCCESS_EVT)
+    {
+        broadcastQueue -= 1;
+        Util_clearEvent(&Collector_events, COLLECTOR_BROADCAST_SUCCESS_EVT);
+    }
+
+    if(Collector_events & COLLECTOR_BROADCAST_CAMCMDACK_EVT)
+    {
+        sendCamCmd = 0;
+        Util_clearEvent(&Collector_events, COLLECTOR_BROADCAST_CAMCMDACK_EVT);
+        GPIO_toggle(7); // toggle green led to indicate received command acknowledgment
+    }
+#endif // FH_LOW_LATENCY_BROADCAST
 
 #ifdef USE_DMM
     /* Is it provision start event? */
@@ -1099,6 +1164,10 @@ Collector_status_t Collector_sendToggleLedRequest(ApiMac_sAddr_t *pDstAddr)
         /* Is the device a known device? */
         if(Csf_getDevice(pDstAddr, &item))
         {
+#ifdef FH_LOW_LATENCY_BROADCAST
+            destDevAddr_copy = item.devInfo.shortAddress;
+            Util_setEvent(&Collector_events, COLLECTOR_BROADCAST_CAMCMD_EVT);
+#else // FH_LOW_LATENCY_BROADCAST
             uint8_t buffer[SMSGS_TOGGLE_LED_REQUEST_MSG_LEN];
 
             /* Build the message */
@@ -1108,7 +1177,7 @@ Collector_status_t Collector_sendToggleLedRequest(ApiMac_sAddr_t *pDstAddr)
                     item.capInfo.rxOnWhenIdle,
                     SMSGS_TOGGLE_LED_REQUEST_MSG_LEN,
                     buffer);
-
+#endif // FH_LOW_LATENCY_BROADCAST
             status = Collector_status_success;
         }
         else
@@ -1480,7 +1549,11 @@ static void dataCnfCB(ApiMac_mcpsDataCnf_t *pDataCnf)
         {
             if(pDataCnf->status == ApiMac_status_success)
             {
+#ifdef FH_LOW_LATENCY_BROADCAST
+                Util_setEvent(&Collector_events, COLLECTOR_BROADCAST_SUCCESS_EVT);
+#else  // FH_LOW_LATENCY_BROADCAST
                 Collector_statistics.broadcastMsgSentCnt++;
+#endif // FH_LOW_LATENCY_BROADCAST
             }
         }
         else
@@ -1626,7 +1699,14 @@ static void dataIndCB(ApiMac_mcpsDataInd_t *pDataInd)
                 break;
 
             case Smsgs_cmdIds_toggleLedRsp:
+#ifdef FH_LOW_LATENCY_BROADCAST
+                if(pDataInd->msdu.len == SMSGS_TOGGLE_LED_RESPONSE_MSG_LEN)
+                {
+                    Util_setEvent(&Collector_events, COLLECTOR_BROADCAST_CAMCMDACK_EVT);
+                }
+#else  // FH_LOW_LATENCY_BROADCAST
                 processToggleLedResponse(pDataInd);
+#endif // FH_LOW_LATENCY_BROADCAST
                 break;
 
             case Smsgs_cmdIds_sensorData:

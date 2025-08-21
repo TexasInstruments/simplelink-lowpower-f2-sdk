@@ -131,7 +131,9 @@ fragmenter_interface_t* global_adaptation_intf_ptr = NULL;
 #define LOWPAN_MEM_LIMIT_REMOVE_MAX 10000 // Remove when at memory limit
 #define LOWPAN_MEM_LIMIT_REMOVE_EF_MODE 20000 // Remove when out of memory and we are in EF mode
 
-
+#ifdef FEATURE_EDFE_TEST_MODE
+extern uint8_t switchToEDFE;
+#endif
 
 static NS_LIST_DEFINE(fragmenter_interface_list, fragmenter_interface_t, link);
 
@@ -218,7 +220,9 @@ static fragmenter_interface_t *lowpan_adaptation_interface_discover(int8_t inter
 
     ns_list_foreach(fragmenter_interface_t, interface_ptr, &fragmenter_interface_list) {
         if (interfaceId == interface_ptr->interface_id) {
+#ifdef FEATURE_TIMAC_SUPPORT
             global_adaptation_intf_ptr = interface_ptr;
+#endif
             return interface_ptr;
         }
     }
@@ -809,10 +813,12 @@ buffer_t *lowpan_adaptation_data_process_tx_preprocess(protocol_interface_info_e
 
             } else {
                 //tr_warn("Drop TX to unassociated %s", trace_sockaddr(&buf->dst_sa, true));
+                tr_error("device in neighbor entry is not connected");
                 goto tx_error_handler;
             }
         } else if (ws_info(cur) && !neigh_entry_ptr) {
             //Do not accept to send unknow device
+            tr_error("can not find the neighbor _entry");
             goto tx_error_handler;
         }
         buf->link_specific.ieee802_15_4.requestAck = true;
@@ -1136,11 +1142,17 @@ static void lowpan_data_request_to_mac(protocol_interface_info_entry_t *cur, buf
 
     if (interface_ptr->mpx_api) {
         dataReq.ExtendedFrameExchange = buf->options.edfe_mode;
+#if defined(FEATURE_EDFE_TEST_MODE) && defined(WISUN_RCP_ENABLE)
+        if (switchToEDFE == 1)
+        {
+            dataReq.ExtendedFrameExchange = true;
+        }
+#endif
         interface_ptr->mpx_api->mpx_data_request(interface_ptr->mpx_api, &dataReq, interface_ptr->mpx_user_id, data_priority);
     } else {
         mcps_data_req_ie_list_t ie_list;
         memset(&ie_list, 0, sizeof(mcps_data_req_ie_list_t));
-#ifdef FEATURE_TIMAC_SUPPORT
+#if defined(FEATURE_TIMAC_SUPPORT) && !defined(WISUN_RCP_ENABLE)
         uint8_t status;
         /* This code is not expected to be called as Wi-SUN FAN always requires MPX-IE */
         status = cur->mac_api->mcps_data_req_ext(cur->mac_api, (void *)&dataReq,
@@ -1152,7 +1164,14 @@ static void lowpan_data_request_to_mac(protocol_interface_info_entry_t *cur, buf
             lowpan_data_confirm_on_data_req_failure(cur, dataReq.msduHandle, status);
         }
 #else
-        cur->mac_api->mcps_data_req_ext(cur->mac_api, &dataReq, &ie_list, NULL, data_priority);
+        uint8_t status;
+        status = cur->mac_api->mcps_data_req_ext(cur->mac_api, &dataReq, &ie_list, NULL, data_priority);
+        if(status)
+        {
+            /* Non Zero Status implies packet was not accepted by RCP for transmission
+               Throw data confirm with error status */
+            lowpan_data_confirm_on_data_req_failure(cur, dataReq.msduHandle, status);
+        }
 #endif
     }
 }
@@ -1363,6 +1382,7 @@ int8_t lowpan_adaptation_interface_tx(protocol_interface_info_entry_t *cur, buff
             if (random_early_detection_congestion_check(cur->random_early_detection)) {
                 random_early_detetction_aq_calc(cur->random_early_detection, interface_ptr->directTxQueue_size);
                 protocol_stats_update(STATS_AL_TX_CONGESTION_DROP, 1);
+                tr_error ("drop packet due to congestion");
                 goto tx_error_handler;
             }
         }
@@ -1382,6 +1402,7 @@ int8_t lowpan_adaptation_interface_tx(protocol_interface_info_entry_t *cur, buff
 
     fragmenter_tx_entry_t *tx_ptr = lowpan_adaptation_tx_process_init(interface_ptr, indirect, fragmented_needed, is_unicast);
     if (!tx_ptr) {
+        tr_error("tx_process init fail");
         goto tx_error_handler;
     }
 

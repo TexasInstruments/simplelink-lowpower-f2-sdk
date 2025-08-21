@@ -372,7 +372,7 @@ function getDefaultMinTxOff(inst)
 function getDefaultDutyCycle(inst)
 {
     let dutyCycle = 0;
-    if(inst !== null && inst.mode === "frequencyHopping"
+    if(inst !== null && inst.mode.includes("frequencyHopping")
         && inst.fhChannels.length > 1)
     {
         dutyCycle = 20;
@@ -710,7 +710,8 @@ function getBeaconInterval(inst)
  */
 function getNetworkConfigHiddenState(inst, cfgName)
 {
-    const freqHoppingSelected = (inst.mode === "frequencyHopping");
+    const freqHoppingSelected = (inst.mode.includes("frequencyHopping"));
+    const fhLowLatency = (inst.mode === "frequencyHoppingLowLatency");
     const beaconModeSelected = (inst.mode === "beacon");
     const isCollectorProject = (inst.project.includes("collector"));
     const isSensorProject = (inst.project.includes("sensor"));
@@ -759,7 +760,7 @@ function getNetworkConfigHiddenState(inst, cfgName)
         }
         case "pollingInterval":
         {
-            isVisible = isVisible && !beaconModeSelected;
+            isVisible = isVisible && !beaconModeSelected && !fhLowLatency;
             break;
         }
         case "customMinTxOff":
@@ -786,6 +787,8 @@ function getNetworkConfigHiddenState(inst, cfgName)
             break;
         }
         case "reportingInterval":
+            isVisible = isVisible && !fhLowLatency;
+            break;
         case "panID":
         case "scanDuration":
         case "macBeaconOrder":
@@ -828,6 +831,46 @@ function setAllNetworkConfigsHiddenState(inst, ui)
 {
     Common.setAllConfigsHiddenState(inst, ui, config.config,
         getNetworkConfigHiddenState);
+}
+
+/*
+ * ======== setFHLowLatencyConfigs ========
+ * Modifies network configurations when switching to FH low latency mode
+ *
+ * @param inst    - module instance
+ * @param ui      - user interface object
+ */
+function setFHLowLatencyConfigs(inst, ui) {
+    if (inst.mode === "frequencyHoppingLowLatency")
+    {
+        // Set FH channel list to all channels except last channel.
+        // Set FH async channel list to only last channel.
+        const options = getChannelOptions(inst, false);
+        const lastChannel = options[options.length - 1].name;
+
+        inst.fhChannels = selectAllOptions(options).slice(0, -1);
+        inst.fhAsyncChannels = [lastChannel];
+
+        inst.reportingInterval = 0;
+        inst.pollingInterval = 0;
+        inst.trackingDelayTime = 3600000;
+        inst.fhBroadcastInterval = 2000;
+        inst.fhBroadcastDwellTime = 20;
+    }
+    else
+    {
+        setDefaultChannelMasks(inst);
+        inst.reportingInterval = Common.findConfig(
+            config.config, "reportingInterval").default;
+        inst.pollingInterval = Common.findConfig(
+            config.config, "pollingInterval").default;
+        inst.trackingDelayTime = Common.findConfig(
+            config.config, "trackingDelayTime").default;
+        inst.fhBroadcastInterval = Common.findConfig(
+            config.config, "fhBroadcastInterval").default;
+        inst.fhBroadcastDwellTime = Common.findConfig(
+            config.config, "fhBroadcastDwellTime").default;
+    }
 }
 
 /*
@@ -1183,5 +1226,6 @@ exports = {
     setDefaultMaxDevices: setDefaultMaxDevices,
     setBeaconSuperFrameOrders: setBeaconSuperFrameOrders,
     getChannelOptions: getChannelOptions,
-    setAdvancedMacConfigs: setAdvancedMacConfigs
+    setAdvancedMacConfigs: setAdvancedMacConfigs,
+    setFHLowLatencyConfigs: setFHLowLatencyConfigs,
 };

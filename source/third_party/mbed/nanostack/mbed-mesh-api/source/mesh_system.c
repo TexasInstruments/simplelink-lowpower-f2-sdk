@@ -53,6 +53,8 @@ MBED_CONF_MBED_MESH_API_HEAP_STAT_INFO_DEFINITION;
 static void mesh_system_heap_error_handler(heap_fail_t event)
 {
     MBED_ERROR1(MBED_MAKE_ERROR(MBED_MODULE_NETWORK_STACK, MBED_ERROR_CODE_OUT_OF_MEMORY), "Heap error, mesh_system_heap_error_handler()", event);
+    tr_error("Heap error: %d", event);
+    // MBED_ASSERT(false);
 }
 
 void mesh_system_init(void)
@@ -83,9 +85,11 @@ void mesh_system_send_connect_event(uint8_t receiver)
     eventOS_event_send(&event);
 }
 
-#ifndef NV_RESTORE
 int mesh_system_set_file_system_root_path(const char *root_path)
 {
+#if 0 // Disabled filesystem code
     return ns_file_system_set_root_path(root_path);
-}
+#else
+    return -1;
 #endif
+}

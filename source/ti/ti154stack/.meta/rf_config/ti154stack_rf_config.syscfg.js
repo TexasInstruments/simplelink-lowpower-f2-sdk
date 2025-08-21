@@ -565,7 +565,7 @@ function getRfDesignOptions()
     {
         newRfDesignOptions = [{name: "LP_CC2653P10"}];
     }
-    else if(deviceId === "CC1311R3RGZ")
+    else if(deviceId === "CC1311R3RGZ" || deviceId === "CC1311R3RKP")
     {
         newRfDesignOptions = [{name: "LP_CC1311R3"}];
     }

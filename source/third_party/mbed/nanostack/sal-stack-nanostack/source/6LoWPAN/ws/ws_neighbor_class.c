@@ -34,7 +34,7 @@
 #define TRACE_GROUP "wsne"
 
 
-bool ws_neighbor_class_alloc(ws_neighbor_class_t *class_data, uint8_t list_size)
+bool ws_neighbor_class_alloc(ws_neighbor_class_t *class_data, uint16_t list_size)
 {
 
     class_data->neigh_info_list = ns_dyn_mem_alloc(sizeof(ws_neighbor_class_entry_t) * list_size);
@@ -44,7 +44,7 @@ bool ws_neighbor_class_alloc(ws_neighbor_class_t *class_data, uint8_t list_size)
 
     class_data->list_size = list_size;
     ws_neighbor_class_entry_t *list_ptr = class_data->neigh_info_list;
-    for (uint8_t i = 0; i < list_size; i++) {
+    for (uint16_t i = 0; i < list_size; i++) {
         memset(list_ptr, 0, sizeof(ws_neighbor_class_entry_t));
         list_ptr->rsl_in = RSL_UNITITIALIZED;
         list_ptr->rsl_out = RSL_UNITITIALIZED;
@@ -61,7 +61,7 @@ void ws_neighbor_class_dealloc(ws_neighbor_class_t *class_data)
     class_data->list_size = 0;
 }
 
-ws_neighbor_class_entry_t *ws_neighbor_class_entry_get(ws_neighbor_class_t *class_data, uint8_t attribute_index)
+ws_neighbor_class_entry_t *ws_neighbor_class_entry_get(ws_neighbor_class_t *class_data, uint16_t attribute_index)
 {
     if (!class_data->neigh_info_list || attribute_index >= class_data->list_size) {
         return NULL;
@@ -71,7 +71,7 @@ ws_neighbor_class_entry_t *ws_neighbor_class_entry_get(ws_neighbor_class_t *clas
     return entry;
 }
 
-uint8_t ws_neighbor_class_entry_index_get(ws_neighbor_class_t *class_data, ws_neighbor_class_entry_t *entry)
+uint16_t ws_neighbor_class_entry_index_get(ws_neighbor_class_t *class_data, ws_neighbor_class_entry_t *entry)
 {
     if (!class_data->neigh_info_list) {
         return 0xff;
@@ -79,10 +79,28 @@ uint8_t ws_neighbor_class_entry_index_get(ws_neighbor_class_t *class_data, ws_ne
     return entry - class_data->neigh_info_list;
 }
 
-void ws_neighbor_class_entry_remove(ws_neighbor_class_t *class_data, uint8_t attribute_index)
+void ws_neighbor_class_entry_remove(ws_neighbor_class_t *class_data, uint16_t attribute_index)
 {
     ws_neighbor_class_entry_t *entry = ws_neighbor_class_entry_get(class_data, attribute_index);
     if (entry) {
+        memset(entry, 0, sizeof(ws_neighbor_class_entry_t));
+        entry->rsl_in = RSL_UNITITIALIZED;
+        entry->rsl_out = RSL_UNITITIALIZED;
+    }
+}
+
+void ws_neighbor_class_remove_all_entry(ws_neighbor_class_t *class_data)
+{
+    uint16_t table_size, i;
+    ws_neighbor_class_entry_t *entry;
+
+    if (!class_data->neigh_info_list) {
+        return ;
+    }
+    table_size = class_data->list_size;
+
+    for (i=0; i < table_size; i++) {
+        entry = class_data->neigh_info_list + i;
         memset(entry, 0, sizeof(ws_neighbor_class_entry_t));
         entry->rsl_in = RSL_UNITITIALIZED;
         entry->rsl_out = RSL_UNITITIALIZED;
@@ -156,7 +174,7 @@ static void ws_neighbour_excluded_mask_by_range(ws_channel_mask_t *channel_info,
 {
     uint16_t range_start, range_stop;
     uint8_t mask_index = 0;
-    uint32_t compare_mask_bit;
+    uint8_t compare_mask_bit;
     uint8_t *range_ptr = range_info->range_start;
     while (range_info->number_of_range) {
         range_start = common_read_16_bit_inverse(range_ptr);
@@ -168,11 +186,11 @@ static void ws_neighbour_excluded_mask_by_range(ws_channel_mask_t *channel_info,
 
             if (channel >= range_start && channel <= range_stop) {
                 //Cut channel
-                compare_mask_bit = 1 << (channel % 32);
-                mask_index = 0 + (channel / 32);
+                compare_mask_bit = 1 << (channel % 8);
+                mask_index = 0 + (channel / 8);
 
-                if (channel_info->channel_mask[mask_index] & compare_mask_bit) {
-                    channel_info->channel_mask[mask_index] ^= compare_mask_bit;
+                if (channel_info->channel_mask2[mask_index] & compare_mask_bit) {
+                    channel_info->channel_mask2[mask_index] ^= compare_mask_bit;
                     channel_info->channel_count--;
                 }
             } else if (channel > range_stop) {
@@ -201,40 +219,42 @@ static void ws_neighbour_excluded_mask_by_mask(ws_channel_mask_t *channel_info, 
 
     uint16_t channel_at_mask;
     uint8_t mask_index = 0;
-    uint32_t channel_compare_mask, compare_mask_bit;
+    uint8_t channel_compare_mask, compare_mask_bit;
     uint8_t *mask_ptr =  mask_info->channel_mask;
 
     channel_at_mask = mask_info->mask_len_inline * 8;
 
-    for (uint16_t channel = 0; channel < number_of_channels; channel += 32) {
+    for (uint16_t channel = 0; channel < number_of_channels; channel += 8) {
         if (channel) {
             mask_index++;
-            mask_ptr += 4;
+            mask_ptr += 1;
         }
 
-        //Read allaways 32-bit
-        if (channel_at_mask >= 32) {
-            channel_compare_mask = common_read_32_bit(mask_ptr);
-            channel_at_mask -= 32;
-        } else {
-            //Read Rest bytes seprately
-            channel_compare_mask = 0;
-            uint8_t move_mask = 0;
-            //Convert 8-24bit to 32-bit
-            while (channel_at_mask) {
-                channel_compare_mask |= (uint32_t)(*mask_ptr++ << (24 - move_mask));
-                channel_at_mask -= 8;
-                move_mask += 8;
-            }
-        }
+        // //Read allaways 38bit
+        // if (channel_at_mask >= 8) {
+        //     channel_compare_mask = *mask_ptr;
+        //     channel_at_mask -= 8;
+        // } else {
+        //     //Read Rest bytes seprately
+        //     channel_compare_mask = 0;
+        //     uint8_t move_mask = 0;
+        //     //Convert 8-24bit to 32-bit
+        //     while (channel_at_mask) {
+        //         channel_compare_mask |= (uint32_t)(*mask_ptr++ << (24 - move_mask));
+        //         channel_at_mask -= 8;
+        //         move_mask += 8;
+        //     }
+        // }
+        channel_compare_mask = *mask_ptr;
+        channel_at_mask -= 8;
         //Reserve bit order for compare
-        channel_compare_mask = ws_reserve_order_32_bit(channel_compare_mask);
+        // channel_compare_mask = ws_reserve_order_32_bit(channel_compare_mask);
         //Compare now 32-bit mask's bits one by one
-        for (uint8_t i = 0; i < 32; i++) {
+        for (uint8_t i = 0; i < 8; i++) {
             //Start from MSB
             compare_mask_bit = 1 << (i);
-            if ((channel_compare_mask & compare_mask_bit) && (channel_info->channel_mask[mask_index] & compare_mask_bit)) {
-                channel_info->channel_mask[mask_index] ^= compare_mask_bit;
+            if ((channel_compare_mask & compare_mask_bit) && (channel_info->channel_mask2[mask_index] & compare_mask_bit)) {
+                channel_info->channel_mask2[mask_index] ^= compare_mask_bit;
                 channel_info->channel_count--;
             }
         }
@@ -262,17 +282,17 @@ void ws_neighbor_class_neighbor_unicast_schedule_set(ws_neighbor_class_entry_t *
 
         //Handle excluded channel and generate activate channel list
         if (ws_us->excluded_channel_ctrl == WS_EXC_CHAN_CTRL_RANGE) {
-            ws_generate_channel_list(ws_neighbor->fhss_data.uc_channel_list.channel_mask, ws_neighbor->fhss_data.uc_timing_info.unicast_number_of_channels, own_shedule->regulatory_domain, own_shedule->operating_class, own_shedule->channel_plan_id);
-            ws_neighbor->fhss_data.uc_channel_list.channel_count = ws_active_channel_count(ws_neighbor->fhss_data.uc_channel_list.channel_mask, ws_neighbor->fhss_data.uc_timing_info.unicast_number_of_channels);
+            ws_generate_channel_list(ws_neighbor->fhss_data.uc_channel_list.channel_mask2, ws_neighbor->fhss_data.uc_timing_info.unicast_number_of_channels, own_shedule->regulatory_domain, own_shedule->operating_class, own_shedule->channel_plan_id);
+            ws_neighbor->fhss_data.uc_channel_list.channel_count = ws_active_channel_count(ws_neighbor->fhss_data.uc_channel_list.channel_mask2, ws_neighbor->fhss_data.uc_timing_info.unicast_number_of_channels);
             ws_neighbour_excluded_mask_by_range(&ws_neighbor->fhss_data.uc_channel_list, &ws_us->excluded_channels.range, ws_neighbor->fhss_data.uc_timing_info.unicast_number_of_channels);
         } else if (ws_us->excluded_channel_ctrl == WS_EXC_CHAN_CTRL_BITMASK) {
-            ws_generate_channel_list(ws_neighbor->fhss_data.uc_channel_list.channel_mask, ws_neighbor->fhss_data.uc_timing_info.unicast_number_of_channels, own_shedule->regulatory_domain, own_shedule->operating_class, own_shedule->channel_plan_id);
-            ws_neighbor->fhss_data.uc_channel_list.channel_count = ws_active_channel_count(ws_neighbor->fhss_data.uc_channel_list.channel_mask, ws_neighbor->fhss_data.uc_timing_info.unicast_number_of_channels);
+            ws_generate_channel_list(ws_neighbor->fhss_data.uc_channel_list.channel_mask2, ws_neighbor->fhss_data.uc_timing_info.unicast_number_of_channels, own_shedule->regulatory_domain, own_shedule->operating_class, own_shedule->channel_plan_id);
+            ws_neighbor->fhss_data.uc_channel_list.channel_count = ws_active_channel_count(ws_neighbor->fhss_data.uc_channel_list.channel_mask2, ws_neighbor->fhss_data.uc_timing_info.unicast_number_of_channels);
             ws_neighbour_excluded_mask_by_mask(&ws_neighbor->fhss_data.uc_channel_list, &ws_us->excluded_channels.mask, ws_neighbor->fhss_data.uc_timing_info.unicast_number_of_channels);
         } else if (ws_us->excluded_channel_ctrl == WS_EXC_CHAN_CTRL_NONE) {
             if (ws_neighbor->fhss_data.uc_timing_info.unicast_number_of_channels != ws_neighbor->fhss_data.uc_channel_list.channel_count) {
-                ws_generate_channel_list(ws_neighbor->fhss_data.uc_channel_list.channel_mask, ws_neighbor->fhss_data.uc_timing_info.unicast_number_of_channels, own_shedule->regulatory_domain, own_shedule->operating_class, own_shedule->channel_plan_id);
-                ws_neighbor->fhss_data.uc_channel_list.channel_count = ws_active_channel_count(ws_neighbor->fhss_data.uc_channel_list.channel_mask, ws_neighbor->fhss_data.uc_timing_info.unicast_number_of_channels);
+                ws_generate_channel_list(ws_neighbor->fhss_data.uc_channel_list.channel_mask2, ws_neighbor->fhss_data.uc_timing_info.unicast_number_of_channels, own_shedule->regulatory_domain, own_shedule->operating_class, own_shedule->channel_plan_id);
+                ws_neighbor->fhss_data.uc_channel_list.channel_count = ws_active_channel_count(ws_neighbor->fhss_data.uc_channel_list.channel_mask2, ws_neighbor->fhss_data.uc_timing_info.unicast_number_of_channels);
             }
         }
 
@@ -290,13 +310,43 @@ void ws_neighbor_class_neighbor_broadcast_time_info_update(ws_neighbor_class_ent
 }
 
 
-void ws_neighbor_class_neighbor_broadcast_schedule_set(ws_neighbor_class_entry_t *ws_neighbor, ws_bs_ie_t *ws_bs_ie)
+void ws_neighbor_class_neighbor_broadcast_schedule_set(ws_neighbor_class_entry_t *ws_neighbor, ws_bs_ie_t *ws_bs_ie,ws_hopping_schedule_t *own_shedule)
 {
     ws_neighbor->broadcast_shedule_info_stored = true;
     ws_neighbor->fhss_data.bc_timing_info.broadcast_channel_function = ws_bs_ie->channel_function;
     if (ws_bs_ie->channel_function == WS_FIXED_CHANNEL) {
         ws_neighbor->fhss_data.bc_timing_info.fixed_channel = ws_bs_ie->function.zero.fixed_channel;
+#if defined(WISUN_RCP_ENABLE)
+        ws_neighbor->fhss_data.bc_timing_info.broadcast_number_of_channels = 1;
+#endif
     }
+#if defined(WISUN_RCP_ENABLE)
+    else
+    {
+        if (ws_bs_ie->channel_plan == 0) {
+            ws_neighbor->fhss_data.bc_timing_info.broadcast_number_of_channels = ws_common_channel_number_calc(ws_bs_ie->plan.zero.regulator_domain, ws_bs_ie->plan.zero.operation_class, own_shedule->channel_plan_id);
+        } else if (ws_bs_ie->channel_plan == 1) {
+            ws_neighbor->fhss_data.bc_timing_info.broadcast_number_of_channels = ws_bs_ie->plan.one.number_of_channel;
+        }
+
+        //Handle excluded channel and generate activate channel list
+        if (ws_bs_ie->excluded_channel_ctrl == WS_EXC_CHAN_CTRL_RANGE) {
+            ws_generate_channel_list(ws_neighbor->fhss_data.bc_timing_info.bc_channel_list.channel_mask2, ws_neighbor->fhss_data.bc_timing_info.broadcast_number_of_channels, own_shedule->regulatory_domain, own_shedule->operating_class, own_shedule->channel_plan_id);
+            ws_neighbor->fhss_data.bc_timing_info.bc_channel_list.channel_count = ws_active_channel_count(ws_neighbor->fhss_data.bc_timing_info.bc_channel_list.channel_mask2, ws_neighbor->fhss_data.bc_timing_info.broadcast_number_of_channels);
+            ws_neighbour_excluded_mask_by_range(&ws_neighbor->fhss_data.bc_timing_info.bc_channel_list, &ws_bs_ie->excluded_channels.range, ws_neighbor->fhss_data.bc_timing_info.broadcast_number_of_channels);
+        } else if (ws_bs_ie->excluded_channel_ctrl == WS_EXC_CHAN_CTRL_BITMASK) {
+            ws_generate_channel_list(ws_neighbor->fhss_data.bc_timing_info.bc_channel_list.channel_mask2, ws_neighbor->fhss_data.bc_timing_info.broadcast_number_of_channels, own_shedule->regulatory_domain, own_shedule->operating_class, own_shedule->channel_plan_id);
+            ws_neighbor->fhss_data.bc_timing_info.bc_channel_list.channel_count = ws_active_channel_count(ws_neighbor->fhss_data.bc_timing_info.bc_channel_list.channel_mask2, ws_neighbor->fhss_data.bc_timing_info.broadcast_number_of_channels);
+            ws_neighbour_excluded_mask_by_mask(&ws_neighbor->fhss_data.bc_timing_info.bc_channel_list, &ws_bs_ie->excluded_channels.mask, ws_neighbor->fhss_data.bc_timing_info.broadcast_number_of_channels);
+        } else if (ws_bs_ie->excluded_channel_ctrl == WS_EXC_CHAN_CTRL_NONE) {
+            if (ws_neighbor->fhss_data.bc_timing_info.broadcast_number_of_channels != ws_neighbor->fhss_data.bc_timing_info.bc_channel_list.channel_count) {
+                ws_generate_channel_list(ws_neighbor->fhss_data.bc_timing_info.bc_channel_list.channel_mask2, ws_neighbor->fhss_data.bc_timing_info.broadcast_number_of_channels, own_shedule->regulatory_domain, own_shedule->operating_class, own_shedule->channel_plan_id);
+                ws_neighbor->fhss_data.bc_timing_info.bc_channel_list.channel_count = ws_active_channel_count(ws_neighbor->fhss_data.bc_timing_info.bc_channel_list.channel_mask2, ws_neighbor->fhss_data.bc_timing_info.broadcast_number_of_channels);
+            }
+        }
+
+    }
+#endif
     ws_neighbor->fhss_data.bc_timing_info.broadcast_dwell_interval = ws_bs_ie->dwell_interval;
     ws_neighbor->fhss_data.bc_timing_info.broadcast_interval = ws_bs_ie->broadcast_interval;
     ws_neighbor->fhss_data.bc_timing_info.broadcast_schedule_id = ws_bs_ie->broadcast_schedule_identifier;
@@ -393,4 +443,3 @@ bool ws_neighbor_class_neighbor_duplicate_packet_check(ws_neighbor_class_entry_t
 
 
 #endif /* HAVE_WS */
-

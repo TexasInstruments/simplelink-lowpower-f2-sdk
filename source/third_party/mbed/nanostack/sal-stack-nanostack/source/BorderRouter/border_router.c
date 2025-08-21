@@ -547,10 +547,11 @@ void border_router_start(protocol_interface_info_entry_t *cur, bool warm_link_re
 static int arm_mac_channel_list_analyze(protocol_interface_info_entry_t *cur)
 {
     int number_of_channels = 0;
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 4; j++) {
-            number_of_channels += common_count_bits((uint8_t)(cur->mac_parameters->mac_channel_list.channel_mask[i] >> (j * 8)));
-        }
+    for (int i = 0; i < 17; i++) {
+        // for (int j = 0; j < 4; j++) {
+        //     number_of_channels += common_count_bits((uint8_t)(cur->mac_parameters->mac_channel_list.channel_mask3[i] >> (j * 8)));
+        // }
+        number_of_channels += common_count_bits((uint8_t)(cur->mac_parameters->mac_channel_list.channel_mask3[i] ));
     }
     return number_of_channels;
 }
@@ -685,9 +686,10 @@ void arm_border_router_ready(protocol_interface_info_entry_t *cur)
             ipv6_prefix_on_link_update(nd_nwk->border_router);
 
         }
+#ifndef WISUN_RCP_ENABLE
         //Updates beacon contents
         beacon_join_priority_update(cur->id);
-
+#endif
         cur->bootsrap_state_machine_cnt = 0;
         cur->nwk_bootstrap_state = ER_BOOTSRAP_DONE;
         net_load_balance_internal_state_activate(cur, true);

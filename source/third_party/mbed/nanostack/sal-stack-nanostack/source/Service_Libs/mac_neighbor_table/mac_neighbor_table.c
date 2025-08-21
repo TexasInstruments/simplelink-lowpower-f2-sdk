@@ -26,7 +26,7 @@
 #include "Core/include/ns_address_internal.h"
 #include "platform/topo_trace.h"
 
-mac_neighbor_table_t *mac_neighbor_table_create(uint8_t table_size, neighbor_entry_remove_notify *remove_cb, neighbor_entry_nud_notify *nud_cb, void *user_indentifier)
+mac_neighbor_table_t *mac_neighbor_table_create(uint16_t table_size, neighbor_entry_remove_notify *remove_cb, neighbor_entry_nud_notify *nud_cb, void *user_indentifier)
 {
     mac_neighbor_table_t *table_class = ns_dyn_mem_alloc(sizeof(mac_neighbor_table_t) + sizeof(mac_neighbor_table_entry_t) * table_size);
     if (!table_class) {
@@ -41,7 +41,7 @@ mac_neighbor_table_t *mac_neighbor_table_create(uint8_t table_size, neighbor_ent
     table_class->user_remove_notify_cb = remove_cb;
     ns_list_init(&table_class->neighbour_list);
     ns_list_init(&table_class->free_list);
-    for (uint8_t i = 0; i < table_size; i++) {
+    for (uint16_t i = 0; i < table_size; i++) {
         memset(cur_ptr, 0, sizeof(mac_neighbor_table_entry_t));
         cur_ptr->index = i;
         //Add to list
@@ -73,8 +73,7 @@ static void neighbor_table_class_remove_entry(mac_neighbor_table_t *table_class,
     }
     topo_trace(TOPOLOGY_MLE, entry->mac64, TOPO_REMOVE);
 
-
-    uint8_t index = entry->index;
+    uint16_t index = entry->index;
     memset(entry, 0, sizeof(mac_neighbor_table_entry_t));
     entry->index = index;
     ns_list_add_to_end(&table_class->free_list, entry);
@@ -147,6 +146,7 @@ mac_neighbor_table_entry_t *mac_neighbor_table_entry_allocate(mac_neighbor_table
     entry->lifetime = NEIGHBOR_CLASS_LINK_DEFAULT_LIFETIME;
     entry->link_lifetime = NEIGHBOR_CLASS_LINK_DEFAULT_LIFETIME;
     entry->link_role = NORMAL_NEIGHBOUR;
+    memset(entry->frame_count, 0, sizeof(entry->frame_count));
     topo_trace(TOPOLOGY_MLE, mac64, TOPO_ADD);
     return entry;
 }
@@ -226,7 +226,7 @@ mac_neighbor_table_entry_t *mac_neighbor_table_address_discover(mac_neighbor_tab
     return NULL;
 }
 
-mac_neighbor_table_entry_t *mac_neighbor_table_attribute_discover(mac_neighbor_table_t *table_class, uint8_t index)
+mac_neighbor_table_entry_t *mac_neighbor_table_attribute_discover(mac_neighbor_table_t *table_class, uint16_t index)
 {
     ns_list_foreach(mac_neighbor_table_entry_t, cur, &table_class->neighbour_list) {
 
@@ -282,4 +282,11 @@ mac_neighbor_table_entry_t *mac_neighbor_entry_get_priority(mac_neighbor_table_t
         }
     }
     return NULL;
+}
+
+void mac_neighbor_table_reset_frame_count(mac_neighbor_table_t *table_class, uint8_t key_index)
+{
+    ns_list_foreach(mac_neighbor_table_entry_t, entry, &table_class->neighbour_list) {
+        entry->frame_count[key_index] = 0;
+    }
 }

@@ -89,8 +89,9 @@
 #define MAC_SRCMATCH_SHORT_ENTRY_SIZE        4
 #define MAC_SRCMATCH_EXT_ENTRY_SIZE          8
 
-#define MAC_SRCMATCH_SHORT_MAX_NUM_ENTRIES   5
-#define MAC_SRCMATCH_EXT_MAX_NUM_ENTRIES     5
+/* Source match table sizes. Cannot be greater than 32. */
+#define MAC_SRCMATCH_SHORT_MAX_NUM_ENTRIES   32
+#define MAC_SRCMATCH_EXT_MAX_NUM_ENTRIES     32
 
 
 /* ------------------------------------------------------------------------------------------------

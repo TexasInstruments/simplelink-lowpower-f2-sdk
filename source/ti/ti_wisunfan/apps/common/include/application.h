@@ -39,8 +39,10 @@
  *******************************************************************************/
 
 #include "mbed-mesh-api/mesh_interface_types.h"
+#ifdef WISUN_TEST_METRICS
 #include "saddr.h"
-#include "api_mac.h"
+#endif
+#include "NWK_INTERFACE/Include/protocol_abstract.h"
 #include "6LoWPAN/ws/ws_bootstrap.h"
 
 /* Network name; max 32 octets + terminating 0 */
@@ -61,14 +63,15 @@ typedef struct configurable_props_s {
     int8_t phyTxPower;
     uint8_t uc_channel_function;
     uint8_t uc_channel_list[CHANNEL_BITMAP_SIZE];
-    uint8_t uc_fixed_channel;
+    uint16_t uc_fixed_channel;
     uint8_t uc_dwell_interval;
     uint8_t bc_channel_function;
     uint8_t bc_channel_list[CHANNEL_BITMAP_SIZE];
-    uint8_t bc_fixed_channel;
+    uint16_t bc_fixed_channel;
     uint32_t bc_interval;
     uint8_t bc_dwell_interval;
     uint8_t async_channel_list[CHANNEL_BITMAP_SIZE];
+    uint8_t excluded_channels[CHANNEL_BITMAP_SIZE];
     uint16_t pan_id;
     char network_name[MAX_NETWORK_NAME_SIZE];
     mesh_device_type_t wisun_device_type;
@@ -78,12 +81,23 @@ typedef struct configurable_props_s {
     uint8_t config_reg_domain;
     uint8_t operating_class;
     uint8_t operating_mode;
+    uint8_t fan_support_version;
+    uint8_t usie_chan_plan_selection;
+    uint8_t bsie_chan_plan_selection;  
     uint8_t hwaddr[HWADDR_SIZE];
 
-}configurable_props_t;
+#ifdef WISUN_FAN_CORE_1_1
+    uint8_t mdr_enable;
+    uint8_t num_phy_mode;
+    uint8_t Phy_Mode_Id[15];
+#endif        
+    // Proprietary configurations
+    uint8_t channel_page;
+    bool rx_on_when_idle;
+} configurable_props_t;
 
 typedef struct nbr_node_metrics_s {
-    sAddrExt_t mac_eui;
+    uint8_t mac_eui[8];
     uint8_t rssi_in;
     uint8_t rssi_out;
     /* add whatever else is needed */
@@ -108,4 +122,12 @@ typedef struct test_metrics
     uint32_t udpPktCnt;
     uint16_t current_rank;
 } test_metrics_s;
+#endif
+
+#ifdef WISUN_RCP_SPINEL_DEBUG
+typedef struct {
+    uint8_t auth_parent_eui[8];
+    uint16_t heap_alloc_fail;
+    uint16_t auth_fail_type;
+} rcp_debug_t;
 #endif

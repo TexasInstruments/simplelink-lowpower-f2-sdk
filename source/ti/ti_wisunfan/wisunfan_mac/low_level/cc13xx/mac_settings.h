@@ -94,7 +94,7 @@
 /**
  * Channel page.
  */
-#define CONFIG_CHANNEL_PAGE APIMAC_CHANNEL_PAGE_9
+// #define CONFIG_CHANNEL_PAGE APIMAC_CHANNEL_PAGE_9
 
 /**
  * (IEEE 802.15.4-2006 7.4.1) MAC constants.

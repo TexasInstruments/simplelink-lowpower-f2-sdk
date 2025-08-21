@@ -93,7 +93,11 @@ void otMessageSetDirectTransmission(otMessage *aMessage, bool aEnabled)
 int8_t otMessageGetRss(const otMessage *aMessage)
 {
     const Message &message = *static_cast<const Message *>(aMessage);
+#ifdef LINUX_NANOSTACK
+    return 0;
+#else
     return message.GetAverageRss();
+#endif // LINUX_NANOSTACK
 }
 
 otError otMessageAppend(otMessage *aMessage, const void *aBuf, uint16_t aLength)

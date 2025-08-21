@@ -179,10 +179,18 @@ static uint32_t platform_fhss_timestamp_read(const fhss_api_t *api)
 }
 
 fhss_timer_t fhss_functions = {
+#ifdef WISUN_USE_NANOSTACK_FHSS_MAC_MODULE    
     .fhss_timer_start = platform_fhss_timer_start,
     .fhss_timer_stop = platform_fhss_timer_stop,
     .fhss_get_remaining_slots = platform_fhss_get_remaining_slots,
     .fhss_get_timestamp = platform_fhss_timestamp_read,
     .fhss_resolution_divider = 1
+#else
+    .fhss_timer_start = NULL,
+    .fhss_timer_stop = NULL,
+    .fhss_get_remaining_slots = NULL,
+    .fhss_get_timestamp = NULL,
+    .fhss_resolution_divider = 1
+#endif
 };
 

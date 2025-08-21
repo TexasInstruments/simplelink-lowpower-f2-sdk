@@ -46,7 +46,9 @@ Notifier::Callback::Callback(Instance &aInstance, Handler aHandler, void *aOwner
     , mNext(NULL)
 {
     OT_ASSERT(aHandler != NULL);
+#ifndef LINUX_NANOSTACK
     aInstance.Get<Notifier>().RegisterCallback(*this);
+#endif
 }
 
 Notifier::Notifier(Instance &aInstance)

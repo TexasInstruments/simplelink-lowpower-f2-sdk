@@ -204,7 +204,11 @@ typedef struct fh_hnd_s
 
   /* save the current TXEvent for VPIE */
   macEvent_t                *pTxEvent;           /* pointer to current TX event */
-
+#ifdef WISUN_RCP_ENABLE
+  uint32_t                  rcp_btie_ts;          /*<! RCP BTIE RX timestamp  */
+  int32_t                   rx_bfio_delta;        /*<! difference of BFIO (my local versun parent)*/
+  uint8_t                   btie_need_update;     /*<! needto update the local BTIE */
+#endif
 } FH_HND_s;
 
 /* FH module debug count */

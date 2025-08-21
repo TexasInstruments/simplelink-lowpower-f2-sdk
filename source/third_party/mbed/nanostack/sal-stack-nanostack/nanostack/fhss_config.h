@@ -127,10 +127,13 @@ typedef struct fhss_ws_configuration {
     uint8_t broadcast_fixed_channel;
 
     /** Channel mask. Wi-SUN will use this for broadcast */
-    uint32_t channel_mask[8];
+    uint8_t channel_mask1[NUM_BYTES_IN_CHAN_MASK];
 
     /** Wi-SUN specific unicast channel mask */
-    uint32_t unicast_channel_mask[8];
+    uint8_t unicast_channel_mask1[NUM_BYTES_IN_CHAN_MASK];
+
+    /** Wi-SUN specific broadcast channel mask */
+    uint8_t broadcast_channel_mask1[NUM_BYTES_IN_CHAN_MASK];
 
     /** Channel mask size */
     uint16_t channel_mask_size;

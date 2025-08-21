@@ -27,8 +27,10 @@
 #include <inttypes.h>
 #include "net_interface.h"
 #include "mac_common_defines.h"
+#ifndef WISUN_RCP_LMAC
 #include "6LoWPAN/MAC/mpx_api.h"
 #include "6LoWPAN/ws/ws_llc.h"
+#endif
 #include "mlme.h"
 #include "mac_mcps.h"
 
@@ -86,7 +88,7 @@ typedef enum {
  * \brief Container for MAC storage sizes.
  */
 typedef struct mac_description_storage_size_s {
-    uint8_t device_decription_table_size;   /**< MAC Device description list size */
+    uint16_t device_decription_table_size;   /**< MAC Device description list size */
     uint8_t key_description_table_size;     /**< MAC Key description list size */
     uint8_t key_lookup_size;                /**< Key description key lookup list size */
     uint8_t key_usage_size;                 /**< Key description key usage list size */
@@ -136,11 +138,7 @@ typedef void mcps_data_request(const mac_api_t *api, const mcps_data_req_t *data
  *
  * Asynch data request is mac standard extension. asynch_channel_list include channel mask which channel message is requested to send.
  */
-#ifndef FEATURE_TIMAC_SUPPORT
-typedef void mcps_data_request_ext(const mac_api_t *api, const mcps_data_req_t *data, const mcps_data_req_ie_list_t *ie_ext, const struct channel_list_s *asynch_channel_list, mac_data_priority_t priority);
-#else
-typedef uint8_t mcps_data_request_ext(const mac_api_t *api, void *data, ns_ie_iovec_t *iovec, wh_ie_sub_list_t *ie_header_mask, wp_nested_ie_sub_list_t *nested_wp_id, uint8_t *gtkhash);
-#endif
+typedef uint8_t mcps_data_request_ext(const mac_api_t *api, const mcps_data_req_t *data, const mcps_data_req_ie_list_t *ie_ext, const struct channel_list_s *asynch_channel_list, mac_data_priority_t priority);
 
 /**
  * @brief mcps_purge_request MCPS_PURGE request call

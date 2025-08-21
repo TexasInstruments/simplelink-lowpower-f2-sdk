@@ -51,7 +51,6 @@
 #include "nvocmp.h"
 #endif
 
-
 namespace ot {
 namespace Ncp {
 
@@ -265,7 +264,9 @@ NcpBase::NcpBase(Instance *aInstance)
 #endif // OPENTHREAD_MTD || OPENTHREAD_FTD
     mChangedPropsSet.AddLastStatus(SPINEL_STATUS_RESET_UNKNOWN);
     //mv mUpdateChangedPropsTask.Post();
+#ifndef LINUX_NANOSTACK // Don't signal on startup when using Linux port, as the socket won't be connected yet
     platformNcpSendAsyncRspSignal();
+#endif // !LINUX_NANOSTACK
 
 }
 

@@ -58,7 +58,6 @@
 #include "mac_mcps.h"
 #include "api_mac.h"
 #include "timac_api.h"
-#include "timac_api.h"
 
 #ifdef __cplusplus
 extern "C"

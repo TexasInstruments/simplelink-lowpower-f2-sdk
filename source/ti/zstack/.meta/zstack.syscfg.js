@@ -353,6 +353,13 @@ function modules(inst)
         moduleName: "/ti/devices/radioconfig/rfdesign"
     });
 
+    submodules.push({
+        name: "temperatureModule",
+        displayName: "Temperature",
+        moduleName: "/ti/drivers/Temperature"
+
+    });
+
     return submodules;
 }
 

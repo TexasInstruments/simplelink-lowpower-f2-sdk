@@ -38,8 +38,7 @@
  * DEVICE_ENTROPY_SOURCE is not defined in mbed OS.
  */
 #if !defined(MBEDTLS_ENTROPY_HARDWARE_ALT) && !defined(MBEDTLS_TEST_NULL_ENTROPY) && \
-    !defined(MBEDTLS_ENTROPY_NV_SEED) //no entropy source defined
-
+    !defined(MBEDTLS_ENTROPY_NV_SEED) && defined(MBEDTLS_NO_PLATFORM_ENTROPY) //no entropy source defined
 #include "mbedtls/config-no-entropy.h"
 
 #if defined(MBEDTLS_USER_CONFIG_FILE)
@@ -1211,7 +1210,9 @@
  *
  * Uncomment this macro to disable the built-in platform entropy functions.
  */
+#if !defined(LINUX_NANOSTACK)
 #define MBEDTLS_NO_PLATFORM_ENTROPY
+#endif
 
 /**
  * \def MBEDTLS_ENTROPY_FORCE_SHA256
@@ -3719,7 +3720,7 @@
 #endif
 
 #if defined(MBEDTLS_SSL_TLS_C) && !defined(MBEDTLS_TEST_NULL_ENTROPY) && \
-    !defined(MBEDTLS_ENTROPY_HARDWARE_ALT) && !defined(MBEDTLS_ENTROPY_NV_SEED)
+    !defined(MBEDTLS_ENTROPY_HARDWARE_ALT) && !defined(MBEDTLS_ENTROPY_NV_SEED) && defined(MBEDTLS_NO_PLATFORM_ENTROPY) 
 #error "No entropy source was found at build time, so TLS " \
     "functionality is not available"
 #endif

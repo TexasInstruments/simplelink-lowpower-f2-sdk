@@ -158,6 +158,15 @@ extern "C"
 {
 #endif
 
+#define FEATURE_MAC_SECURITY // Always defined
+% if(inst.project.includes("rcplmac")) {
+
+/*! Builds the image with the full function device */
+#define FEATURE_FULL_FUNCTION_DEVICE
+
+#define `getModeFeatureMacro(inst.mode)`
+%} else {
+
 #include <stdint.h>
 #include "6LoWPAN/ws/ws_config.h"
 
@@ -165,14 +174,12 @@ extern "C"
 #define NETWORK_AUTH_TYPE NO_AUTH
 %}
 %else if(inst.secureLevel === "macSecurePresharedKey") {
-#define FEATURE_MAC_SECURITY
 %   if(inst.euiJoin === false) {
 #define NETWORK_AUTH_TYPE PRESHARED_KEY_AUTH
 %   } else {
 #define NETWORK_AUTH_TYPE CUSTOM_EUI_AUTH
 %   }
 %} else {
-#define FEATURE_MAC_SECURITY
 #define NETWORK_AUTH_TYPE DEFAULT_MBEDTLS_AUTH
 %}
 
@@ -217,9 +224,11 @@ extern "C"
 % }
 % }
 
+
+%} // if(inst.project == "rcplmac")
+
 #ifdef __cplusplus
 }
-
 #endif
 
 #endif /* TI_154STACK_FEATURES_H */

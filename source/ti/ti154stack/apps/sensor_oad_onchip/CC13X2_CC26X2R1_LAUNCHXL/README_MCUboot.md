@@ -26,7 +26,7 @@ The difference between Off-Chip and On-Chip OAD is that in case of Off-Chip OAD,
 
 In case of On-Chip OAD for MCUboot, there is only one application image on the internal flash, the same as previous off-chip examples. After the OAD completes, if all checks including verification passes, the device overwrites the old image with the new updated image - otherwise, it stays on the previous application image.
 
-> Currently only Thor devices support using MCUboot.
+> Currently only CC13x4/CC26x4 devices support using MCUboot.
 
 ## <a name="PeripheralsExercised"></a>Peripherals Exercised
 
@@ -272,7 +272,7 @@ cmd: v
 
 ## <a name="GeneratingtheRequiredBinaryImages"></a>Generating the Required Binary Images
 
-For OAD projects on Thor boards, MCUboot is used as the bootloader. To build MCUboot to work with the Thor OAD examples out of the box, first import the project from `examples/nortos/[Desired Board]/mcuboot_app/mcuboot`. After importing the project, we need to make a few changes; by default, MCUboot uses up all the on-chip flash for both images. We need to leave 0x4000 bytes of on-chip flash open at 0xFC000 for persistent memory between OAD images to store network and OAD information. The basic sensor OAD application also takes up a lot less space than half of the device's flash, so to cut down on OAD time we allocate 0x26000 bytes to each slot.
+For OAD projects on CC13x4/CC26x4 boards, MCUboot is used as the bootloader. To build MCUboot to work with the CC13x4/CC26x4 OAD examples out of the box, first import the project from `examples/nortos/[Desired Board]/mcuboot_app/mcuboot`. After importing the project, we need to make a few changes; by default, MCUboot uses up all the on-chip flash for both images. We need to leave 0x4000 bytes of on-chip flash open at 0xFC000 for persistent memory between OAD images to store network and OAD information. The basic sensor OAD application also takes up a lot less space than half of the device's flash, so to cut down on OAD time we allocate 0x26000 bytes to each slot.
 
 To configure MCUboot with these settings, open the MCUboot sysconfig file in the MCUboot project and set the following configurables:
 * For the `Upgrade Mode` configurable, choose `Overwrite`. This enables overwrite mode, which is what our OAD process uses.

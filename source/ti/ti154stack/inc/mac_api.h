@@ -2166,6 +2166,23 @@ void MAC_MlmeSetActiveSecurityPib( void* pSecPib );
  */
 extern void MAC_SrcMatchEnable ( void );
 
+/*********************************************************************
+ * @fn         macSrcMatchCheckSrcAddr
+ *
+ * @brief      Check if a short or extended address is in the source address table.
+ *             This function shall not be called from ISR. It is not thread safe.
+ *
+ * @param      addr - a pointer to sAddr_t which contains addrMode
+ *                    and a union of a short 16-bit MAC address or an extended
+ *                    64-bit MAC address to be checked in the source address table.
+ * @param      panID - the device PAN ID. It is only used when the addr is
+ *                     using short address
+
+ * @return     uint8 - index of the entry in the table. Return
+ *                     MAC_SRCMATCH_INVALID_INDEX (0xFF) if address not found.
+ */
+extern uint8 macSrcMatchCheckSrcAddr ( sAddr_t *addr, uint16 panID);
+
 /**************************************************************************************************
  * @fn          MAC_SrcMatchAddEntry
  *
@@ -2224,6 +2241,15 @@ extern uint8 MAC_SrcMatchSetPend ( sAddr_t *addr, uint16 panID, uint8_t option )
  **************************************************************************************************
  */
 extern uint8 MAC_SrcMatchDeleteEntry ( sAddr_t *addr, uint16 panID  );
+
+/**************************************************************************************************
+ * @fn         MAC_SrcMatchClearTable
+ *
+ * @brief      Clear the source address table (both extended and short address tables).
+ *
+ **************************************************************************************************
+ */
+extern void MAC_SrcMatchClearTable();
 
 /**************************************************************************************************
  * @fn          MAC_SrcMatchAckAllPending

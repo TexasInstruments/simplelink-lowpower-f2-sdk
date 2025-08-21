@@ -76,13 +76,14 @@ int8_t arm_net_phy_register(phy_device_driver_s *phy_driver)
             return -1;
         }
     }
+#ifndef WISUN_RCP_ENABLE
     /* Validate That Channel page is defined for RF driver */
     if (phy_driver->link_type == PHY_LINK_15_4_2_4GHZ_TYPE || phy_driver->link_type == PHY_LINK_15_4_SUBGHZ_TYPE) {
         if (!phy_driver->phy_channel_pages || !phy_driver->phy_channel_pages->rf_channel_configuration) {
             return -1;
         }
     }
-
+#endif
 
     //Allocate new
     new = dev_driver_dynamically_allocate();
@@ -140,6 +141,7 @@ uint16_t arm_net_phy_mtu_size(int8_t id)
 
 void arm_net_phy_unregister(int8_t driver_id)
 {
+#ifndef WISUN_RCP_ENABLE
     ns_list_foreach_safe(arm_device_driver_list_s, cur, &arm_device_driver_list) {
         if (cur->id == driver_id) {
             ns_list_remove(&arm_device_driver_list, cur);
@@ -147,46 +149,56 @@ void arm_net_phy_unregister(int8_t driver_id)
             cur = NULL;
         }
     }
+#endif
 }
 
 int8_t arm_net_phy_init(phy_device_driver_s *phy_driver, arm_net_phy_rx_fn *rx_cb, arm_net_phy_tx_done_fn *done_cb)
 {
+#ifndef WISUN_RCP_ENABLE
     if (!phy_driver) {
         return -1;
     }
     phy_driver->phy_rx_cb = rx_cb;
     phy_driver->phy_tx_done_cb = done_cb;
+#endif
     return 0;
 }
 
 void arm_net_observer_cb_set(int8_t id, internal_mib_observer *observer_cb)
 {
+#ifndef WISUN_RCP_ENABLE
     arm_device_driver_list_s *driver = arm_net_phy_driver_pointer(id);
     if (!driver) {
         return;
     }
     driver->mlme_observer_cb = observer_cb;
+#endif
 }
 
 void arm_net_virtual_config_rx_cb_set(phy_device_driver_s *phy_driver, arm_net_virtual_config_rx_fn *virtual_config_rx)
 {
+#ifndef WISUN_RCP_ENABLE
     if (!phy_driver) {
         return;
     }
     phy_driver->virtual_config_rx_cb = virtual_config_rx;
+#endif
 }
 
 void arm_net_virtual_confirmation_rx_cb_set(phy_device_driver_s *phy_driver, arm_net_virtual_confirmation_rx_fn *virtual_confirmation_rx)
 {
+#ifndef WISUN_RCP_ENABLE
     if (!phy_driver) {
         return;
     }
     phy_driver->virtual_confirmation_rx_cb = virtual_confirmation_rx;
+#endif
 }
 
 uint32_t dev_get_phy_datarate(phy_device_driver_s *phy_driver, channel_page_e channel_page)
 {
     uint32_t retval = 0;
+#ifndef WISUN_RCP_ENABLE
     const phy_device_channel_page_s *phy_ch_pages = phy_driver->phy_channel_pages;
     while (1) {
         if (phy_ch_pages->rf_channel_configuration == NULL) {
@@ -199,5 +211,6 @@ uint32_t dev_get_phy_datarate(phy_device_driver_s *phy_driver, channel_page_e ch
         }
         phy_ch_pages++;
     }
+#endif
     return retval;
 }

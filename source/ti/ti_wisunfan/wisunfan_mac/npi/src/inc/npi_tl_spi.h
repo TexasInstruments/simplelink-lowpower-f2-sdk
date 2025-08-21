@@ -58,8 +58,8 @@ extern "C"
 // ****************************************************************************
 // defines
 // ****************************************************************************
-// SPI Slave baud rate
-#define SPI_SLAVE_BAUD_RATE 8000000
+// SPI Peripheral baud rate
+#define SPI_PERIHPERAL_BAUD_RATE 8000000
 #define NPI_SPI_HEADER_LEN 3
 
 
@@ -95,7 +95,7 @@ typedef void (*npiCB_t)(uint16 Rxlen, uint16 Txlen);
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
-void NPITLSPI_initializeTransport(Char *tRxBuf, Char *tTxBuf, npiCB_t npiCBack);
+void NPITLSPI_initializeTransport(uint8_t *tRxBuf, uint8_t *tTxBuf, npiCB_t npiCBack);
 
 // -----------------------------------------------------------------------------
 //! \brief      This routine reads data from the transport layer

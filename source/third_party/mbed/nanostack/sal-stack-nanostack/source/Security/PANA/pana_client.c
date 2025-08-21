@@ -367,8 +367,10 @@ static void pana_client_pna_handler(buffer_t *buf, pana_header_t *header, sec_su
         tr_debug("pana nvm ok");
         sec_lib_state_machine_trig(suite, PANA_RE_VALID);
     } else if (suite->state == PANA_KEY_PULL) {
+#ifndef WISUN_RCP_ENABLE                        
         mac_data_poll_protocol_poll_mode_disable(cur);
         sec_lib_state_machine_trig(suite, PANA_PULL_DONE);
+#endif        
     }
     pana_client_session_nvm_udate(suite);
 

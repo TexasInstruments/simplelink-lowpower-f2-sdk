@@ -164,6 +164,11 @@ function getSecurityConfigHiddenState(inst, cfgName)
 {
     let isVisible = true;
 
+    if (inst.project.includes("rcplmac"))
+    {
+        return true; // Hide all security configuration for RCP LMAC example
+    }
+    
     switch(cfgName)
     {
         case "euiJoin":

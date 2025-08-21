@@ -352,7 +352,7 @@ extern void Cllc_startNetwork(void);
  * @param       pDevList - list of devices
  */
 extern void Cllc_restoreNetwork(Llc_netInfo_t *pNetworkInfo, uint16_t numDevices,
-		Llc_deviceListItem_t *pDevList);
+        Llc_deviceListItem_t *pDevList);
 /*!
  * @brief       Remove device from the network.
  *              <BR>

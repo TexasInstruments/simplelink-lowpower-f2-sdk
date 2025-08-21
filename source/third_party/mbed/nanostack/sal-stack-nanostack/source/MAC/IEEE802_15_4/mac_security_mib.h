@@ -19,19 +19,22 @@
 #define MAC_SECURITY_MIB_H_
 
 #include "mlme.h"
+#include "rcp_mac_common.h"
 
 struct protocol_interface_rf_mac_setup;
 struct mac_description_storage_size_s;
 
 typedef struct mlme_key_descriptor_s {
     mlme_key_id_lookup_descriptor_t *KeyIdLookupList;
-    mlme_key_device_descriptor_t *KeyDeviceList;
     mlme_key_usage_descriptor_t *KeyUsageList;
-    uint32_t *KeyDeviceFrameCounterList;
     uint32_t KeyFrameCounter;
     uint8_t Key[16];
+#ifndef WISUN_RCP_ENABLE
+    uint32_t *KeyDeviceFrameCounterList;
+    mlme_key_device_descriptor_t *KeyDeviceList;
     uint8_t KeyDeviceListSize;
     uint8_t KeyDeviceListEntries;
+#endif
     uint8_t KeyIdLookupListEntries;
     uint8_t KeyUsageListEntries;
     uint8_t KeyUsageListSize;
@@ -39,37 +42,32 @@ typedef struct mlme_key_descriptor_s {
     bool KeyFrameCounterPerKey: 1;
 } mlme_key_descriptor_t;
 
+#ifndef WISUN_RCP_ENABLE
+int8_t mac_sec_mib_device_description_set(uint8_t atribute_index, mlme_device_descriptor_t *device_descriptor, struct protocol_interface_rf_mac_setup *rf_mac_setup);
+mlme_device_descriptor_t *mac_sec_mib_device_description_get_attribute_index(struct protocol_interface_rf_mac_setup *rf_mac_setup, uint8_t attribute_index);
+mlme_device_descriptor_t *mac_sec_mib_device_description_get(struct protocol_interface_rf_mac_setup *rf_mac_setup, const uint8_t *address, uint8_t type, uint16_t pan_id);
+uint8_t mac_mib_device_descption_attribute_get_by_descriptor(struct protocol_interface_rf_mac_setup *rf_mac_setup, mlme_device_descriptor_t *descriptor);
+mlme_key_device_descriptor_t *mac_sec_mib_key_device_description_list_update(mlme_key_descriptor_t *key_descpription_table);
+void mac_sec_mib_device_description_blacklist(struct protocol_interface_rf_mac_setup *rf_mac_setup, uint8_t device_handle);
+void mac_sec_mib_key_device_frame_counter_set(mlme_key_descriptor_t *key_descpription_table, mlme_device_descriptor_t *device_info, uint32_t frame_counter, uint8_t attribute_index);
+uint32_t mac_mib_key_device_frame_counter_get(mlme_key_descriptor_t *key_descpription_table, mlme_device_descriptor_t *device_info, uint8_t attribute_index);
+#endif
+
 int8_t mac_sec_mib_init(struct protocol_interface_rf_mac_setup *rf_mac_setup, struct mac_description_storage_size_s *storage_sizes);
 
 void mac_sec_mib_deinit(struct protocol_interface_rf_mac_setup *rf_mac_setup);
 
 int8_t mac_sec_mib_frame_counter_per_key_set(struct protocol_interface_rf_mac_setup *rf_mac_setup, bool enabled);
 
-int8_t mac_sec_mib_device_description_set(uint8_t atribute_index, mlme_device_descriptor_t *device_descriptor, struct protocol_interface_rf_mac_setup *rf_mac_setup);
-
 int8_t mac_sec_mib_key_description_set(uint8_t atribute_index, mlme_key_descriptor_entry_t *key_descriptor, struct protocol_interface_rf_mac_setup *rf_mac_setup);
 
-mlme_device_descriptor_t *mac_sec_mib_device_description_get_attribute_index(struct protocol_interface_rf_mac_setup *rf_mac_setup, uint8_t attribute_index);
-
-mlme_device_descriptor_t *mac_sec_mib_device_description_get(struct protocol_interface_rf_mac_setup *rf_mac_setup, const uint8_t *address, uint8_t type, uint16_t pan_id);
-
 void mac_sec_mib_device_description_pan_update(struct protocol_interface_rf_mac_setup *rf_mac_setup, uint16_t pan_id);
-
-uint8_t mac_mib_device_descption_attribute_get_by_descriptor(struct protocol_interface_rf_mac_setup *rf_mac_setup, mlme_device_descriptor_t *descriptor);
 
 mlme_key_descriptor_t *mac_sec_key_description_get(struct protocol_interface_rf_mac_setup *rf_mac_setup, mlme_security_t *key_source, uint8_t address_mode, uint8_t *address_ptr, uint16_t pan_id);
 
 mlme_key_descriptor_t *mac_sec_key_description_get_by_attribute(struct protocol_interface_rf_mac_setup *rf_mac_setup, uint8_t atribute_index);
 
-mlme_key_device_descriptor_t *mac_sec_mib_key_device_description_list_update(mlme_key_descriptor_t *key_descpription_table);
-
 mlme_key_device_descriptor_t *mac_sec_mib_key_device_description_discover_from_list(mlme_key_descriptor_t *key_descpription_table, uint8_t device_descriptor_handle);
-
-void mac_sec_mib_device_description_blacklist(struct protocol_interface_rf_mac_setup *rf_mac_setup, uint8_t device_handle);
-
-void mac_sec_mib_key_device_frame_counter_set(mlme_key_descriptor_t *key_descpription_table, mlme_device_descriptor_t *device_info, uint32_t frame_counter, uint8_t attribute_index);
-
-uint32_t mac_mib_key_device_frame_counter_get(mlme_key_descriptor_t *key_descpription_table, mlme_device_descriptor_t *device_info, uint8_t attribute_index);
 
 uint32_t mac_sec_mib_key_outgoing_frame_counter_get(struct protocol_interface_rf_mac_setup *rf_mac_setup, mlme_key_descriptor_t *key_descpription);
 

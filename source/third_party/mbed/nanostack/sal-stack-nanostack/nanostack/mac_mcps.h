@@ -46,6 +46,11 @@ typedef struct mcps_data_req_s {
     bool PanIdSuppressed: 1;        /**< True suppress PAN-id is done when possible from frame. This will be only checked when 2015 extension is enabled */
     bool ExtendedFrameExchange: 1;  /**< True for Extended Frame change. This will be only checked when 2015 extension and enhanced frame is enabled */
     mlme_security_t Key;            /**< Security key */
+#if defined(WISUN_RCP_ENABLE)    
+    uint8_t utie_time_offset;       /**< offset of UTIE time from start of HIE */
+    uint8_t btie_time_offset;       /**< offset of BTIE time from start of HIE */
+    uint16_t mpx_id;
+#endif    
 } mcps_data_req_t;
 
 /**
@@ -190,6 +195,10 @@ typedef struct mcps_edfe_response_s {
     bool PanIdSuppressed: 1;        /**< True suppress PAN-id is done when possible from frame.  */
     bool wait_response: 1;          /**< True enable response wait timer and re-send operation.  */
     bool use_message_handle_to_discover: 1; /**< EDFE Data request message ID is valid at message_handle.  */
+#if defined(WISUN_RCP_ENABLE)    
+    uint8_t utie_time_offset;       /**< offset of UTIE time from start of HIE */
+    uint8_t btie_time_offset;       /**< offset of BTIE time from start of HIE */
+#endif    
 } mcps_edfe_response_t;
 
 /**

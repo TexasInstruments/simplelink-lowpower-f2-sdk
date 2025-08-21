@@ -109,6 +109,11 @@
 #include "osal_port.h"
 #include "osal_port_timers.h"
 
+#ifdef WISUN_RCP_ENABLE
+#include "mac_assert.h"
+#include "rcp_lmac.h"
+#endif
+
 #ifdef FEATURE_FREQ_HOP_MODE
 #include "ti_wisunfan_config.h"
 extern FHIE_channelPlan_t FHIE_channelPlan[];
@@ -169,7 +174,11 @@ const uint8 msacbackSizeTable [] =
   sizeof(macMcpsPurgeCnf_t),           /* MAC_MCPS_PURGE_CNF */
   sizeof(macEventHdr_t),               /* MAC_PWR_ON_CNF */
   sizeof(macMlmePollInd_t),            /* MAC_MLME_POLL_IND */
+#if defined(WISUN_RCP_ENABLE)
+  sizeof(macMcpsDataCnfAck_t),         /* MAC_MCPS_DATA_CNF  */
+#else
   sizeof(macMlmeWSAsyncCnf_t),         /* MAC_MLME_WS_ASYNC_CNF */
+#endif
   sizeof(macMlmeWSAsyncInd_t)          /* MAC_MLME_WS_ASYNC_IND */
 };
 
@@ -214,7 +223,9 @@ extern TRNG_Handle TRNG_handle;
  *                                           Functions
  * ------------------------------------------------------------------------------------------------
  */
+//#ifndef WISUN_RCP_ENABLE
 static void macApp(macCmd_t *pMsg);
+//#endif
 static void macInit(macUserCfg_t *pUserCfg);
 static void *macTaskFxn(void *a0);
 extern uint8 MAC_MlmeGetReqSize( uint8 pibAttribute );
@@ -498,7 +509,7 @@ static void macInit(macUserCfg_t *pUserCfg)
 #endif /*!defined(DeviceFamily_CC13X2) && !defined(DeviceFamily_CC26X2) && !defined(DeviceFamily_CC13X2X7) && !defined(DeviceFamily_CC13X4)*/
 #endif /* FEATURE_MAC_SECURITY */
 
-#ifdef FEATURE_WISUN_SUPPORT
+#if defined(FEATURE_WISUN_SUPPORT) && !defined(WISUN_RCP_ENABLE)
   /*
    *  start timac tasklet
    */
@@ -652,19 +663,32 @@ static void *macTaskFxn(void *a0)
       /* handle events on osal msg queue */
       if (macEvents & OsalPort_SYS_EVENT_MSG)
       {
+        uint8_t tx_event;
         while ((pMsg = (macEvent_t *) OsalPort_msgReceive(_macTaskId)) != NULL)
         {
+//#ifndef WISUN_RCP_ENABLE
           if(pMsg->hdr.event >= 0xD0)
           {
             /* 0xE0 to 0xFF is reserved for App to send messages to TIMAC */
             macApp((macCmd_t *)pMsg);
           }
           else
+//#endif
           {
+            /* save the event */
+            tx_event = pMsg->hdr.event;
+
             macMain.pBuf = (uint8 *)pMsg;
             /* execute state machine */
             macExecute(pMsg);
-            mac_msg_deallocate(&macMain.pBuf);
+            if (tx_event == MAC_API_DATA_REQ_EVT)
+            { // don't free the memmory, the memory is freed in DataCnf message
+              macMain.pBuf = NULL;
+            }
+            else
+            {
+              mac_msg_deallocate(&macMain.pBuf);
+            }
           }
         }
       }
@@ -770,6 +794,7 @@ static void *macTaskFxn(void *a0)
  * @return      None.
  **************************************************************************************************
  */
+//#ifndef WISUN_RCP_ENABLE
 void macApp(macCmd_t *pMsg)
 {
   uint8 dealloc = TRUE;
@@ -802,6 +827,7 @@ void macApp(macCmd_t *pMsg)
     OsalPort_msgDeallocate((uint8 *)pMsg);
   }
 }
+//#endif
 
 /**************************************************************************************************
  *
@@ -821,8 +847,43 @@ void macApp(macCmd_t *pMsg)
  *
  **************************************************************************************************
 */
+#ifdef WISUN_RCP_ENABLE
+extern MAC_RCP_Tasklet_DBG_s MacRcpTaskletDbg;
+#endif
+
 void MAC_CbackEvent(macCbackEvent_t *pData)
 {
+
+#if defined(WISUN_RCP_ENABLE)
+  switch (pData->hdr.event)
+  {
+    case MAC_MCPS_DATA_IND:
+      MacRcpTaskletDbg.num_data_ind++;
+      rcp_lmac_data_ind_to_host(pData);
+      break;
+    case MAC_MCPS_DATA_CNF:
+      MacRcpTaskletDbg.num_data_cnf++;
+      rcp_lmac_data_cnf_to_host(pData);
+      break;
+    case MAC_MLME_START_CNF:
+      MacRcpTaskletDbg.num_start_cnf++;
+      break;
+    case MAC_MLME_WS_ASYNC_CNF:
+      MacRcpTaskletDbg.num_async_cnf++;
+      rcp_lmac_data_cnf_to_host(pData);
+      break;
+    case MAC_MLME_WS_ASYNC_IND:
+      MacRcpTaskletDbg.num_async_ind++;
+      break;
+    case MAC_MLME_COMM_STATUS_IND:
+      MacRcpTaskletDbg.num_comm_status++;
+      break;
+    case MAC_MCPS_PURGE_CNF:
+      MacRcpTaskletDbg.num_purge_cnf++;
+    default:
+      break;
+  }
+#else //Wi-SUN NCP case
   macCbackEvent_t *pMsg = NULL;
 
   uint8 len = msacbackSizeTable[pData->hdr.event];
@@ -867,6 +928,7 @@ void MAC_CbackEvent(macCbackEvent_t *pData)
     timacSignalEventLoop();
 #endif
   }
+#endif // WISUN_RCP_ENABLE
 }
 
 /**************************************************************************************************
@@ -933,6 +995,3 @@ uint8 MAC_CbackCheckPending(void)
 
   return pend;
 }
-
-
-

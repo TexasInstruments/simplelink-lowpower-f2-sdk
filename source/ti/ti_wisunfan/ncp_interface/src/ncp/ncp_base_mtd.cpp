@@ -71,16 +71,20 @@
 #include <cstring>
 
 #include "otstack.h"
+#ifndef LINUX_NANOSTACK
 #include <ti/drivers/GPIO.h>
 //#include <ti_wisunfan_config.h>
 #include "ti_drivers_config.h"
+#include <ioc.h>
+#include "ti_radio_config.h"
+#endif
 //Additional header files for integrating with nanostack
 #include "nsconfig.h"
 #include "Core/include/ns_buffer.h"
 #include "ns_trace.h"
 #include "nsdynmemLIB.h"
 #include <openthread/message.h>
-#include "ncp_interface/src/core/common/message.hpp"
+#include "common/message.hpp"
 #include "common/locator.hpp"
 #include "Common_Protocols/ipv6_constants.h"
 
@@ -98,16 +102,14 @@
 #include "platform/arm_hal_phy.h"
 
 #include "mbed-mesh-api/mesh_interface_types.h"
-//#include "api_mac.h"
 #include "mac_spec.h"
 #include "saddr.h"
+#include "ws_config.h"
 #include "application.h"
 #include "socket_api.h"
 #include "ip6string.h"
 #include "net_interface.h"
 #include "Core/include/ns_address_internal.h"
-#include <ioc.h>
-#include "ti_radio_config.h"
 #include "6LoWPAN/ws/ws_common_defines.h"
 
 #ifdef FEATURE_TEST_INVALID_FRAME
@@ -168,7 +170,7 @@ extern "C" void startUDPTraffic (uint32_t numPkts, uint8_t pktInterval, uint8_t 
 #endif
 
 extern "C" uint8_t get_current_net_state();
-extern "C" uint8_t get_network_panid();
+extern "C" uint16_t get_network_panid();
 
 /* Core properties */
 
@@ -213,12 +215,13 @@ template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_INTERFACE_TYPE>(void)
     return mEncoder.WriteUintPacked(INTERFACE_TYPE_WISUN);
 }
 
-extern "C" void ccfg_read_mac_addr(uint8_t *mac_addr);
+extern "C" uint8_t deviceExtAddr[8];
+extern "C" void read_mac_addr(uint8_t *mac_addr);
 template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_HWADDR>(void)
 {
 #ifndef WRITABLE_HWADDR
     uint8_t hwAddr[8] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-    ccfg_read_mac_addr(hwAddr);
+    read_mac_addr(hwAddr);
     return mEncoder.WriteEui64(hwAddr);
 #else
     otError error   = OT_ERROR_NONE;
@@ -228,7 +231,7 @@ template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_HWADDR>(void)
     unsigned char null_hw_addr[8] = {0};
     if ((std::memcmp(&cfg_props.hwaddr, null_hw_addr, 8) == 0))
     {
-        ccfg_read_mac_addr(&cfg_props.hwaddr[0]);
+        read_mac_addr(&cfg_props.hwaddr[0]);
     }
 
     SuccessOrExit(error = mEncoder.WriteEui64(cfg_props.hwaddr));
@@ -250,6 +253,7 @@ template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_HWADDR>(void)
     for(i = 0; i < HWADDR_SIZE; i++)
     {
         cfg_props.hwaddr[i] = hwAddr.bytes[i];
+        deviceExtAddr[i] = hwAddr.bytes[i];
     }
 
     exit:
@@ -790,17 +794,17 @@ exit:
 }
 
 #ifdef TI_WISUN_FAN_DEBUG
-extern "C" uint8_t filterMode;
+extern "C" uint8_t mac_filter_list_mode;
 template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_MAC_FILTER_MODE>(void)
 {
-    return mEncoder.WriteUint8(filterMode);
+    return mEncoder.WriteUint8(mac_filter_list_mode);
 }
 
 template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_MAC_FILTER_MODE>(void)
 {
     otError error   = OT_ERROR_NONE;
 
-    SuccessOrExit(error = mDecoder.ReadUint8(filterMode));
+    SuccessOrExit(error = mDecoder.ReadUint8(mac_filter_list_mode));
 
 exit:
     return error;
@@ -819,6 +823,9 @@ uint8_t testInvalidFrame = false;
 uint8_t prevKey[MAC_KEY_MAX_LEN] = {0};
 uint32_t prevFrameCount = 0;
 #endif
+#ifdef WISUN_RCP_SPINEL_DEBUG
+extern "C" rcp_debug_t rcp_debug;
+#endif
 
 template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_TEST_COMMAND>(void)
 {
@@ -834,7 +841,11 @@ template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_TEST_COMMAND>(void)
 #ifdef FEATURE_TEST_INVALID_FRAME
     value = testInvalidFrame;
 #endif
+#ifdef WISUN_RCP_SPINEL_DEBUG
+    SuccessOrExit(error = mEncoder.WriteDataWithLen((uint8_t *)&rcp_debug, sizeof(rcp_debug)));
+#else
     SuccessOrExit(error = mEncoder.WriteUint8(value));
+#endif
 exit:
     return error;
 }
@@ -1121,7 +1132,7 @@ template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_MAC_MAC_FILTER_LIST>(
     sAddrExt_t empty_addr = {0};
 
 #ifdef HAVE_RPL_ROOT
-    if (filterMode == 3)
+    if (mac_filter_list_mode == 3)
     {
         while (index < EAPOL_EUI_LIST_SIZE && print_index < SIZE_EUI_LIST_PRINT)
         {
@@ -1184,8 +1195,8 @@ exit:
     return error;
 }
 
-extern "C" bool macRx_insertAddrIntoList(uint8_t* euiAddress);
-extern "C" bool macRx_removeAddrFromList(uint8_t* euiAddress);
+extern "C" bool mac_filter_list_add_addr(uint8_t* euiAddress);
+extern "C" bool mac_filter_list_rm_addr(uint8_t* euiAddress);
 #ifdef HAVE_RPL_ROOT
 extern "C" bool insert_eapol_eui_allow_list(uint8_t* euiAddress);
 extern "C" bool remove_eapol_eui_allow_list(uint8_t* euiAddress);
@@ -1201,14 +1212,14 @@ template <> otError NcpBase::HandlePropertyInsert<SPINEL_PROP_MAC_MAC_FILTER_LIS
 
     // insert to address list
 #ifdef HAVE_RPL_ROOT
-    if (filterMode == 3)
+    if (mac_filter_list_mode == 3)
     {
         retVal = insert_eapol_eui_allow_list(&extAddress.bytes[0]);
     }
     else
 #endif
     {
-        retVal = macRx_insertAddrIntoList(&extAddress.bytes[0]);
+        retVal = mac_filter_list_add_addr(&extAddress.bytes[0]);
     }
     if(false == retVal)
     {
@@ -1230,14 +1241,14 @@ template <> otError NcpBase::HandlePropertyRemove<SPINEL_PROP_MAC_MAC_FILTER_LIS
 
     // remove from address list
 #ifdef HAVE_RPL_ROOT
-    if (filterMode == 3)
+    if (mac_filter_list_mode == 3)
     {
         retVal = remove_eapol_eui_allow_list(&extAddress.bytes[0]);
     }
     else
 #endif
     {
-        retVal = macRx_removeAddrFromList(&extAddress.bytes[0]);
+        retVal = mac_filter_list_rm_addr(&extAddress.bytes[0]);
     }
     if(false == retVal)
     {
@@ -1477,7 +1488,6 @@ template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_CONNECTED_DEVICES>(vo
         SuccessOrExit(error);
 
         num_dao_targets = 0; // Reuse for calculating actual number of dao targets stored
-        block_index = 0;
         platform_enter_critical();
         ns_list_foreach(rpl_dao_target_t, target, dao_targets) {
             if (target->root)
@@ -1516,11 +1526,11 @@ template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_CONNECTED_DEVICES>(vo
             // 1 for last block, 0 for blocks remaining
             if (num_dao_targets == 0)
             {
-                SuccessOrExit(error = mEncoder.WriteUint8((1<<7) + block_index));
+                SuccessOrExit(error = mEncoder.WriteUint8((1<<7)));
             }
             else
             {
-                SuccessOrExit(error = mEncoder.WriteUint8(block_index));
+                SuccessOrExit(error = mEncoder.WriteUint8(0));
             }
 
             // Write all IPv6 addresses in block
@@ -1529,7 +1539,6 @@ template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_CONNECTED_DEVICES>(vo
                 SuccessOrExit(error = mEncoder.WriteIp6Address(
                         &connected_device_ipv6_addrs[16 * (num_dao_targets + i)]));
             }
-            block_index++;
         }
         else
         {

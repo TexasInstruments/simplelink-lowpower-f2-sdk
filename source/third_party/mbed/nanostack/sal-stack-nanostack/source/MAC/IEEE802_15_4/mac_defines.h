@@ -173,13 +173,14 @@ typedef struct protocol_interface_rf_mac_setup {
     int8_t mac_interface_id;
     bool macUpState: 1;
     bool shortAdressValid: 1;   //Define Dynamic src address to mac16 when it is true
-    bool beaconSrcAddressModeLong: 1; //This force beacon src to mac64 otherwise shortAdressValid will define type
     bool secFrameCounterPerKey: 1;
     bool mac_extension_enabled: 1;
     bool mac_edfe_enabled: 1; // Indicate when EFDE exchange is possible
     bool mac_ack_tx_active: 1;
     bool mac_edfe_tx_active: 1;
     bool mac_edfe_response_tx_active: 1;
+#ifndef WISUN_RCP_ENABLE
+    bool beaconSrcAddressModeLong: 1; //This force beacon src to mac64 otherwise shortAdressValid will define type
     bool mac_frame_pending: 1;
     /* MAC Capability Information */
     bool macCapRxOnIdle: 1;
@@ -189,18 +190,21 @@ typedef struct protocol_interface_rf_mac_setup {
     bool macCapSecrutityCapability: 1;
     bool macProminousMode: 1;
     bool macGTSPermit: 1;
-    bool mac_security_enabled: 1;
     /* Let trough packet which is secured properly (MIC authenticated group key)  and src address is 64-bit*/
     bool mac_security_bypass_unknow_device: 1;
+#endif
+    bool mac_security_enabled: 1;
     /* Load balancing need this feature */
     bool macAcceptAnyBeacon: 1;
     /* TX process Flag */
     bool macTxProcessActive: 1;
     bool macTxRequestAck: 1;
+#ifndef WISUN_RCP_ENABLE
     /* Data Poll state's */
     bool macDataPollReq: 1;
     bool macWaitingData: 1;
     bool macRxDataAtPoll: 1;
+#endif
     /* Radio State flags */
     bool macRfRadioOn: 1;
     bool macRfRadioTxActive: 1;
@@ -213,14 +217,16 @@ typedef struct protocol_interface_rf_mac_setup {
     uint8_t mac64[8];
     uint16_t coord_short_address;
     uint8_t coord_long_address[8];
-
+#ifndef WISUN_RCP_ENABLE
     /* CSMA Params */
     unsigned macMinBE: 4;
     unsigned macMaxBE: 4;
     unsigned macCurrentBE: 4;
     uint8_t macMaxCSMABackoffs;
     uint8_t backoff_period_in_10us; // max 2550us - it's 320us for standard 250kbps
+#endif
     uint8_t mac_frame_filters;
+#ifndef WISUN_RCP_ENABLE
     /* MAC channel parameters */
     channel_list_s mac_channel_list;
     uint8_t scan_duration; //Needed???
@@ -229,14 +235,15 @@ typedef struct protocol_interface_rf_mac_setup {
     uint8_t mac_channel;
     uint8_t mac_tx_start_channel;
     //uint8_t cca_failure;
-
     /* MAC TX Queue */
     uint16_t direct_queue_bytes;
     uint16_t unicast_queue_size;
     uint16_t broadcast_queue_size;
+#endif
     struct mac_pre_build_frame *pd_data_request_queue_to_go;
     struct mac_pre_build_frame *pd_data_request_bc_queue_to_go;
     struct mac_pre_build_frame *active_pd_data_request;
+#ifndef WISUN_RCP_ENABLE
     struct mac_pre_parsed_frame_s *pd_rx_ack_buffer;
     /* MAC Beacon info */
     uint16_t allocated_ack_buffer_length;
@@ -244,7 +251,9 @@ typedef struct protocol_interface_rf_mac_setup {
     uint8_t *mac_beacon_payload;
     uint8_t mac_beacon_payload_size;
     uint8_t mac_bea_sequence;
+#endif
     uint8_t mac_sequence;
+#ifndef WISUN_RCP_ENABLE
     uint8_t mac_tx_retry;
     uint8_t mac_cca_retry;
     uint8_t cca_failure_restart_max;
@@ -256,20 +265,27 @@ typedef struct protocol_interface_rf_mac_setup {
     uint8_t aUnitBackoffPeriod;
     uint8_t number_of_csma_ca_periods;  /**< Number of CSMA-CA periods */
     uint16_t multi_cca_interval;        /**< Length of the additional CSMA-CA period(s) in microseconds */
+#endif
     uint16_t phy_mtu_size;
     phy_802_15_4_mode_t current_mac_mode;
     /* Indirect queue parameters */
     struct mac_pre_build_frame *indirect_pd_data_request_queue;
+#ifndef WISUN_RCP_ENABLE
     struct mac_pre_build_frame enhanced_ack_buffer;
     uint32_t enhanced_ack_handler_timestamp;
+#endif
     arm_event_t mac_mcps_timer_event;
+#ifndef WISUN_RCP_ENABLE
     arm_event_storage_t mac_ack_event;
     uint16_t indirect_pending_bytes;
+#endif
     arm_nwk_mlme_event_type_e mac_mlme_event;
     mac_event_t timer_mac_event;
     mac_event_t mac_tx_result;
     uint16_t active_mac_events;
     int8_t mac_tasklet_id;
+
+#ifndef WISUN_RCP_ENABLE
     int8_t mac_mcps_timer;
     int8_t mac_timer_id;
     int8_t ifs_timer_id;
@@ -282,18 +298,23 @@ typedef struct protocol_interface_rf_mac_setup {
     uint32_t datarate;
     uint8_t max_ED;
     uint16_t mlme_ED_counter;
+#endif
     mac_tx_status_t mac_tx_status;
     mac_mcps_data_conf_fail_t mac_mcps_data_conf_fail;
-    struct cca_structure_s *cca_structure;
+    //struct cca_structure_s *cca_structure;
     /* MAC Security components */
+#ifndef WISUN_RCP_ENABLE
     struct mlme_device_descriptor_s *device_description_table;
     uint8_t device_description_table_size;
+#endif
     struct mlme_key_descriptor_s *key_description_table;
+#ifndef WISUN_RCP_ENABLE
     void *key_device_frame_counter_list_buffer;
+    mlme_key_device_descriptor_t *key_device_desc_buffer;
+#endif
     uint8_t key_description_table_size;
     uint8_t key_lookup_list_size;
     uint8_t key_usage_list_size;
-    mlme_key_device_descriptor_t *key_device_desc_buffer;
     mlme_key_usage_descriptor_t *key_usage_list_buffer;
     mlme_key_id_lookup_descriptor_t *key_lookup_buffer;
     struct mlme_security_level_descriptor_s *security_level_descriptor_table;
@@ -305,11 +326,14 @@ typedef struct protocol_interface_rf_mac_setup {
     //Device driver and buffer
     struct arm_device_driver_list *dev_driver;
     dev_driver_tx_buffer_s dev_driver_tx_buffer;
+#ifndef WISUN_RCP_ENABLE
     struct arm_device_driver_list *tun_extension_rf_driver;
+
     /* End of API Control */
     struct mlme_scan_conf_s *mac_mlme_scan_resp;
     struct mac_cca_threshold *cca_threshold;
-    //beacon_join_priority_tx_cb *beacon_join_priority_tx_cb_ptr;
+    beacon_join_priority_tx_cb *beacon_join_priority_tx_cb_ptr;
+#endif
     struct mac_statistics_s *mac_statistics;
     mac_mcps_edfe_frame_info_t *mac_edfe_info;
     /* FHSS API*/

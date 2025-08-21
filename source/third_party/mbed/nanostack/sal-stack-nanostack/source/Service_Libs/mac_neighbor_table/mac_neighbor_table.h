@@ -20,6 +20,7 @@
 
 #include "ns_types.h"
 #include "ns_list.h"
+#include "MAC/IEEE802_15_4/mac_security_mib.h"
 
 #define NEIGHBOR_CLASS_LINK_DEFAULT_LIFETIME 240
 
@@ -33,7 +34,7 @@
  * Generic Neighbor table entry
  */
 typedef struct mac_neighbor_table_entry {
-    uint8_t         index;                  /*!< Unique Neighbour index */
+    uint16_t        index;                  /*!< Unique Neighbour index */
     uint8_t         mac64[8];               /*!< MAC64 */
     uint16_t        mac16;                  /*!< MAC16 address for neighbor 0xffff when no 16-bit address is unknown */
     uint32_t        lifetime;               /*!< Life time in seconds which goes down */
@@ -45,6 +46,7 @@ typedef struct mac_neighbor_table_entry {
     bool            trusted_device: 1;      /*!< True mean use normal group key, false for enable pairwise key */
     bool            nud_active: 1;          /*!< True Neighbor NUD process is active, false not active process */
     unsigned        link_role: 2;           /*!< Link role: NORMAL_NEIGHBOUR, PRIORITY_PARENT_NEIGHBOUR, SECONDARY_PARENT_NEIGHBOUR, CHILD_NEIGHBOUR */
+    uint32_t        frame_count[MAC_NUM_KEY_DESCRIPTORS];
     ns_list_link_t  link;
 } mac_neighbor_table_entry_t;
 
@@ -79,9 +81,9 @@ typedef struct mac_neighbor_table_class {
     mac_neighbor_table_list_t neighbour_list;               /*!< List of active neighbors */
     mac_neighbor_table_list_t free_list;                    /*!< List of free neighbors entries */
     uint32_t nud_threshold;                                 /*!< NUD threshold time which generates keep alive message */
-    uint8_t list_total_size;                                /*!< Total number allocated neighbor entries */
-    uint8_t active_nud_process;                             /*!< Indicate Active NUD Process */
-    uint8_t neighbour_list_size;                            /*!< Active Neighbor list size */
+    uint16_t list_total_size;                                /*!< Total number allocated neighbor entries */
+    uint16_t active_nud_process;                             /*!< Indicate Active NUD Process */
+    uint16_t neighbour_list_size;                            /*!< Active Neighbor list size */
     void *table_user_identifier;                            /*!< Table user identifier like interface pointer */
     neighbor_entry_remove_notify *user_remove_notify_cb;    /*!< Neighbor Remove Callback notify */
     neighbor_entry_nud_notify *user_nud_notify_cb;          /*!< Trig NUD process for neighbor */
@@ -103,7 +105,7 @@ typedef struct mac_neighbor_table_class {
  * \return NULL when memory allocation happen
  *
  */
-mac_neighbor_table_t *mac_neighbor_table_create(uint8_t table_size, neighbor_entry_remove_notify *remove_cb, neighbor_entry_nud_notify *nud_cb, void *user_indentifier);
+mac_neighbor_table_t *mac_neighbor_table_create(uint16_t table_size, neighbor_entry_remove_notify *remove_cb, neighbor_entry_nud_notify *nud_cb, void *user_indentifier);
 
 /**
  * mac_neighbor_table_delete Delete Neigbor table class
@@ -196,12 +198,21 @@ mac_neighbor_table_entry_t *mac_neighbor_table_address_discover(mac_neighbor_tab
  *
  *  \return pointer to discover neighbor entry if it exist
  */
-mac_neighbor_table_entry_t *mac_neighbor_table_attribute_discover(mac_neighbor_table_t *table_class, uint8_t index);
+mac_neighbor_table_entry_t *mac_neighbor_table_attribute_discover(mac_neighbor_table_t *table_class, uint16_t index);
 
 mac_neighbor_table_entry_t *mac_neighbor_entry_get_by_ll64(mac_neighbor_table_t *table_class, const uint8_t *ipv6Address, bool allocateNew, bool *new_entry_allocated);
 
 mac_neighbor_table_entry_t *mac_neighbor_entry_get_by_mac64(mac_neighbor_table_t *table_class, const uint8_t *mac64, bool allocateNew, bool *new_entry_allocated);
 
 mac_neighbor_table_entry_t *mac_neighbor_entry_get_priority(mac_neighbor_table_t *table_class);
+
+/**
+ * mac_neighbor_table_reset_frame_count Reset the frame count of all neighbor entries to 0 for a particular key index
+ *
+ *  \param table_class pointer to table class
+ *  \param key_index key index of the frame counts to reset
+ *
+ */
+void mac_neighbor_table_reset_frame_count(mac_neighbor_table_t *table_class, uint8_t key_index);
 
 #endif /* MAC_NEIGHBOR_TABLE_H_ */

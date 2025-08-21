@@ -56,6 +56,10 @@ typedef struct wp_nested_ie_sub_list_s {
     bool net_name_ie: 1;    /**< Network Name information */
     bool pan_version_ie: 1; /**< Pan configuration version */
     bool gtkhash_ie: 1;     /**< GTK Hash information */
+#ifdef WISUN_FAN_CORE_1_1
+    bool pom_ie: 1;         /**< PHY Operation Mode  */
+    bool jm_ie: 1;          /**< Join metrics  */
+#endif    
 } wp_nested_ie_sub_list_t;
 
 /**
@@ -192,6 +196,13 @@ void ws_llc_set_vendor_header_data(struct protocol_interface_info_entry *interfa
 void ws_llc_set_vendor_payload_data(struct protocol_interface_info_entry *interface, uint8_t *vendor_payload, uint8_t vendor_payload_length);
 
 /**
+ * @brief ws_llc_set_jm_info Configure WS JM IE
+ * @param interface Interface pointer
+ *
+ */
+void ws_llc_set_jm_info(struct protocol_interface_info_entry *interface);
+
+/**
  * @brief ws_llc_set_network_name Configure WS Network name (Data of WP_PAYLOAD_IE_NETNAME_TYPE IE element)
  * @param interface Interface pointer
  * @param name_length configured network name length
@@ -234,4 +245,5 @@ ws_neighbor_temp_class_t *ws_llc_get_multicast_temp_entry(struct protocol_interf
 
 void ws_llc_free_multicast_temp_entry(struct protocol_interface_info_entry *interface, ws_neighbor_temp_class_t *neighbor);
 
+void ws_llc_release_all_eapol_temp_entry(struct protocol_interface_info_entry *interface);
 #endif /* WS_LLC_H_ */

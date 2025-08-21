@@ -241,6 +241,8 @@ uint16_t ieeeCoexBitmap = 0;
 extern uint8_t GP_Offset;
 #endif
 
+extern bool mac_temp_monitor_enable;
+
 /******************************************************************************
  Local variables
  *****************************************************************************/
@@ -1070,10 +1072,25 @@ ApiMac_status_t ApiMac_mlmeSetReqArray(ApiMac_attribute_array_t pibAttribute,
             GP_Offset = *value;
         }
 #endif
+        else if (subAttribute == ApiMac_subAttribute_setMacTempMonitorEnable)
+        {
+            mac_temp_monitor_enable = *value;
+        }
+#ifdef MAC_RADIO_USE_CSF
+        else if (subAttribute == ApiMac_subAttribute_setMacStatistics)
+        {
+            memcpy(&macStatistics, value, sizeof(macStatisticsStruct_t));
+            
+            // Adding support to also change the thread statistics values
+            extern macStatisticsStruct_t threadMacStats;
+            memcpy(&threadMacStats, value, sizeof(macStatisticsStruct_t));
+        }
+#else
         else if (subAttribute == ApiMac_subAttribute_setMacStatistics)
         {
             memcpy(&macStatistics, value, sizeof(macStatisticsStruct_t));
         }
+#endif
         else
         {
             return ApiMac_status_unsupportedAttribute;

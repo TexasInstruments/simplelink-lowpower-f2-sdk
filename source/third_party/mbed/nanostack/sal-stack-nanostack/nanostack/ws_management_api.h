@@ -286,6 +286,26 @@ int ws_management_network_name_validate(
     int8_t interface_id,
     char *network_name_ptr);
 
+#ifdef WISUN_FAN_CORE_1_1
+/**
+ * Set the POM_IE info
+ *
+ * \param interface_id Network interface ID.
+ * \param mdr_enable MDR is enable.
+ * \param num_phy_mode number of PHY ID supported
+ * \param Phy_Mode_Id pointer to list of PHY ID
+ *
+ * \return 0, OK.
+ * \return <0 Fail.
+ */
+
+int ws_management_phy_operation_mode_set(
+    int8_t interface_id,
+    uint8_t mdr_enable,
+    uint8_t num_phy_mode,
+    uint8_t *Phy_Mode_Id);
+#endif
+
 /**
  * Set domain configuration of Wi-SUN stack.
  *
@@ -527,7 +547,7 @@ int ws_management_network_size_validate(
  */
 int ws_management_channel_mask_set(
     int8_t interface_id,
-    uint32_t channel_mask[8]);
+    uint8_t channel_mask[17]);
 
 /**
  * Get channel mask for FHSS operation.
@@ -540,7 +560,7 @@ int ws_management_channel_mask_set(
  */
 int ws_management_channel_mask_get(
     int8_t interface_id,
-    uint32_t *channel_mask);
+    uint8_t *channel_mask);
 
 /**
  * Validate channel mask for FHSS operation.
@@ -553,7 +573,7 @@ int ws_management_channel_mask_get(
  */
 int ws_management_channel_mask_validate(
     int8_t interface_id,
-    uint32_t channel_mask[8]);
+    uint8_t channel_mask[17]);
 
 /**
  * Configure Application defined channel plan.

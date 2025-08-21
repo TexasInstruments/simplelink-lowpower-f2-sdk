@@ -18,7 +18,7 @@
 
 #include "eventloop_config.h"
 
-#ifdef __cplusplus
+#if defined(__cplusplus) && !defined(LINUX_NANOSTACK) 
 extern "C" {
 #endif
 
@@ -88,7 +88,7 @@ extern int8_t platform_tick_timer_stop(void);
 
 #endif // NS_EVENTLOOP_USE_TICK_TIMER
 
-#ifdef __cplusplus
+#if defined(__cplusplus) && !defined(LINUX_NANOSTACK) 
 }
 #endif
 

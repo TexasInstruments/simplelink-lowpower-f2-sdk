@@ -64,15 +64,15 @@ extern "C"
 #define NPI_UART_INT_ENABLE TRUE
 
 #if !defined(NPI_UART_BR)
-#if defined( USE_FPGA ) && defined( HOST_CONFIG )
+#if defined( HOST_CONFIG )
 #define NPI_UART_BR 19200
-#else // !USE_FPGA | !HOST_CONFIG
-#define NPI_UART_BR 115200
-#endif // USE_FPGA & HOST_CONFIG
+#else // !HOST_CONFIG
+#define NPI_UART_BR 460800
+#endif // HOST_CONFIG
 #endif // !NPI_UART_BR
 
 // UART ISR Buffer define
-#define UART_ISR_BUF_SIZE 32
+#define UART_ISR_BUF_SIZE 256
 #define UART_ISR_BUF_CNT 2
 
 // ****************************************************************************
@@ -107,7 +107,7 @@ typedef void (*npiCB_t)(uint16 Rxlen, uint16 Txlen);
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
-void NPITLUART_initializeTransport(Char *tRxBuf, Char *tTxBuf, npiCB_t npiCBack);
+void NPITLUART_initializeTransport(uint8_t *tRxBuf, uint8_t *tTxBuf, npiCB_t npiCBack);
 
 // -----------------------------------------------------------------------------
 //! \brief      This routine reads data from the UART

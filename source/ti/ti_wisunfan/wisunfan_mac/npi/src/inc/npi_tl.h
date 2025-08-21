@@ -74,6 +74,10 @@ extern "C"
 #define transportWrite NPITLSPI_writeTransport
 #define transportStopTransfer NPITLSPI_stopTransfer
 #define transportMrdyEvent NPITLSPI_handleMrdyEvent
+#elif defined(NPI_USE_NLI)
+#define transportInit NPITLNLI_initializeTransport
+#define transportRead NPITLNLI_readTransport
+#define transportWrite NPITLNLI_writeTransport
 #endif
 
 // ****************************************************************************

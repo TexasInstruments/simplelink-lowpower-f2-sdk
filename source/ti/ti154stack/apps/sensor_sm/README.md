@@ -15,7 +15,7 @@ TI 15.4-Stack Sensor SM Example
   * [Disabling Common User Interface](#DisablingCommonUserInterface)
   * [Multi-Page NV Configuration](#MultiPageNVConfiguration)
   * [IAR Configuration](#IARConfiguration)
-  * [SBL Binary File Generation When Using Thor](#sbl-binary-file-generation-when-using-thor)
+  * [SBL Binary File Generation When Using CC13x4 or CC26x4](#sbl-binary-file-generation-when-using-CC13x4-or-CC26x4)
 
 ## <a name="ExampleSummary"></a>Example Summary
 
@@ -339,10 +339,10 @@ select the cJTAG interface.
 In order to build from flash, within the IAR Project options > Build Actions
 Update the "Pre-build command line" and change the "NO_ROM=0" to "NO_ROM=1".
 
-### <a name="ThorSBLConfiguration"></a>SBL Binary File Generation When Using Thor
+### <a name="CC13x4/CC26x4SBLConfiguration"></a>SBL Binary File Generation When Using CC13x4/CC26x4
 
-When generating a binary file for a Thor device take care not to generate a file containing
-both the code and the CCFG, as the CCFG is located at 0x5000000 in flash. This will result
+When generating a binary file for a CC13x4/CC26x4 device take care not to generate a file containing
+both the code and the CCFG, as the CCFG is located at 0x50000000 in flash. This will result
 in a massive binary file, as binary file will include padding for all the space between the 
 application code and the CCFG. Instead, you should generate two binary files - One containing
 the CCFG, the other containing all other code. To do this, add 

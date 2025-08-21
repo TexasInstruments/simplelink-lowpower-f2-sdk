@@ -2054,7 +2054,11 @@ static void processPollTimeoutCallback(uintptr_t a0)
 {
     (void)a0; /* Parameter is not used */
 
+#ifdef FH_LOW_LATENCY_BROADCAST
+    Util_setEvent(&Sensor_events, SENSOR_TIMEOUT_EVT);
+#else  // FH_LOW_LATENCY_BROADCAST
     Util_setEvent(&Jdllc_events, JDLLC_POLL_EVT);
+#endif // FH_LOW_LATENCY_BROADCAST
 
     /* Wake up the application thread when it waits for clock event */
     sem_post(sensorSem);
@@ -3208,7 +3212,9 @@ static void Ssf_blockModeTestOn(int32_t menuEntryIndex)
     UtilTimer_setTimeout(clkBlockModeTestHandle, SSF_BLOCK_MODE_ON_PERIOD);
     UtilTimer_start(&clkBlockModeTestStruct);
     DMMPolicy_setBlockModeOn(DMMPolicy_StackRole_154Sensor);
+#ifndef CUI_DISABLE 
     CUI_statusLinePrintf(ssfCuiHndl, ssfStatusLineBlockModeTestState, "Enabled");
+#endif /* CUI_DISABLE */
   }
 }
 
@@ -3226,7 +3232,9 @@ static void Ssf_blockModeTestOff(int32_t menuEntryIndex)
       UtilTimer_stop(&clkBlockModeTestStruct);
   }
   DMMPolicy_setBlockModeOff(DMMPolicy_StackRole_154Sensor);
+#ifndef CUI_DISABLE
   CUI_statusLinePrintf(ssfCuiHndl, ssfStatusLineBlockModeTestState, "Disabled");
+#endif /* CUI_DISABLE */
 }
 
 

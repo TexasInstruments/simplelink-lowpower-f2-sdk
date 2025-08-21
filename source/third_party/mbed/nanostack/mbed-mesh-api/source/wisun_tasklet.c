@@ -543,7 +543,11 @@ void wisun_tasklet_init(void)
 int8_t wisun_tasklet_network_init(int8_t device_id)
 {
     mac_description_storage_size_t storage_sizes;
-    storage_sizes.device_decription_table_size = MBED_CONF_MBED_MESH_API_MAC_NEIGH_TABLE_SIZE;
+    if (MBED_CONF_MBED_MESH_API_WISUN_DEVICE_TYPE == MESH_DEVICE_TYPE_WISUN_BORDER_ROUTER) {
+        storage_sizes.device_decription_table_size = NANOSTACK_DEVICE_TABLE_ENTRIES_BR;
+    } else {
+        storage_sizes.device_decription_table_size = NANOSTACK_DEVICE_TABLE_ENTRIES_RN;
+    }
     storage_sizes.key_description_table_size = 4;
     storage_sizes.key_lookup_size = 1;
     storage_sizes.key_usage_size = 3;

@@ -830,6 +830,7 @@ static void *macTaskFxn(void *a0)
       /* handle events on osal msg queue */
       if (macEvents & OsalPort_SYS_EVENT_MSG)
       {
+        uint8 tx_event;
         while ((pMsg = (macEvent_t *) OsalPort_msgReceive(_macTaskId)) != NULL)
         {
           if(pMsg->hdr.event >= 0xD0)
@@ -839,10 +840,20 @@ static void *macTaskFxn(void *a0)
           }
           else
           {
+            /* save the event */
+            tx_event = pMsg->hdr.event;
+
             macMain.pBuf = (uint8 *)pMsg;
             /* execute state machine */
             macExecute(pMsg);
-            mac_msg_deallocate(&macMain.pBuf);
+            if (tx_event == MAC_API_DATA_REQ_EVT)
+            { // don't free the memmory, the memory is freed in DataCnf message
+              macMain.pBuf = NULL;
+            }
+            else
+            {
+              mac_msg_deallocate(&macMain.pBuf);
+            }
           }
         }
       }
@@ -1179,6 +1190,3 @@ uint8 MAC_CbackCheckPending(void)
 
   return pend;
 }
-
-
-

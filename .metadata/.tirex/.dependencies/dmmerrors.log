@@ -5761,6 +5761,12 @@ In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zc_switch_remote_display_ap
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
 
@@ -6319,6 +6325,12 @@ In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zc_switch_remote_display_oa
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
 
@@ -6913,6 +6925,12 @@ In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zed_switch_remote_display_a
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
 
@@ -7457,6 +7475,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zst
 In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
+In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
 In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
@@ -8053,6 +8077,12 @@ In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zr_light_remote_display_app
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
 
@@ -8597,6 +8627,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zst
 In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
+In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
 In project: examples/rtos/CC1352P_2_LAUNCHXL/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_CC1352P_2_LAUNCHXL_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
@@ -12841,6 +12877,12 @@ In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zc_switch_remote_display_ap
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
 
@@ -13399,6 +13441,12 @@ In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zc_switch_remote_display_oa
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
 
@@ -13993,6 +14041,12 @@ In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zed_switch_remote_display_a
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
 
@@ -14537,6 +14591,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zst
 In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
+In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
 In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
@@ -15133,6 +15193,12 @@ In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zr_light_remote_display_app
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
 
@@ -15677,6 +15743,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zst
 In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
+In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
 In project: examples/rtos/CC1352P_4_LAUNCHXL/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_CC1352P_4_LAUNCHXL_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
@@ -19921,6 +19993,12 @@ In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zc_switch_remote_display_app
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
@@ -20479,6 +20557,12 @@ In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zc_switch_remote_display_oad
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
@@ -21073,6 +21157,12 @@ In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zed_switch_remote_display_ap
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
@@ -21617,6 +21707,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zst
 In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
+In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
 In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
@@ -22213,6 +22309,12 @@ In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zr_light_remote_display_app/
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
@@ -22757,6 +22859,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zst
 In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
+In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
 In project: examples/rtos/CC1352R1_LAUNCHXL/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
@@ -25174,6 +25282,12 @@ In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zc_switch_remote_display_app
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
@@ -25729,6 +25843,12 @@ In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zc_switch_remote_display_oad
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
@@ -26320,6 +26440,12 @@ In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zed_switch_remote_display_ap
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
@@ -26861,6 +26987,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zst
 In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
+In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
 In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
@@ -27454,6 +27586,12 @@ In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zr_light_remote_display_app/
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
@@ -27995,6 +28133,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zst
 In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
+In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
 In project: examples/rtos/CC26X2R1_LAUNCHXL/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_CC26X2R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
@@ -34063,6 +34207,12 @@ In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zc_switch_remote_display_app/tir
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
 
@@ -34621,6 +34771,12 @@ In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zc_switch_remote_display_oad_app
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
 
@@ -35215,6 +35371,12 @@ In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zed_switch_remote_display_app/ti
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
 
@@ -35761,6 +35923,12 @@ In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zed_switch_remote_display_oad_ap
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
 
@@ -36355,6 +36523,12 @@ In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zr_light_remote_display_app/tirt
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
 
@@ -36901,6 +37075,12 @@ In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zr_light_remote_display_oad_app/
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_CC1352P7_4/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_LP_CC1352P7_4_tirtos7_ticlang.projectspec
 
@@ -39316,6 +39496,12 @@ In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zc_switch_remote_display_app/tir
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
 
@@ -39871,6 +40057,12 @@ In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zc_switch_remote_display_oad_app
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
 
@@ -40462,6 +40654,12 @@ In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zed_switch_remote_display_app/ti
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
 
@@ -41003,6 +41201,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zst
 In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
+In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
 In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
@@ -41596,6 +41800,12 @@ In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zr_light_remote_display_app/tirt
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
 
@@ -42137,6 +42347,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zst
 In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
+In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
 In project: examples/rtos/LP_CC2652PSIP/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_LP_CC2652PSIP_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
@@ -44551,6 +44767,12 @@ In project: examples/rtos/LP_CC2652R7/dmm/dmm_zc_switch_remote_display_app/tirto
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_CC2652R7/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_CC2652R7_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652R7/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_CC2652R7_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_CC2652R7/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_CC2652R7_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_CC2652R7/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_CC2652R7_tirtos7_ticlang.projectspec
 
@@ -45104,6 +45326,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zst
 In project: examples/rtos/LP_CC2652R7/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_LP_CC2652R7_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
+In project: examples/rtos/LP_CC2652R7/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_LP_CC2652R7_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652R7/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_LP_CC2652R7_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
 In project: examples/rtos/LP_CC2652R7/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_LP_CC2652R7_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
@@ -45697,6 +45925,12 @@ In project: examples/rtos/LP_CC2652R7/dmm/dmm_zed_switch_remote_display_app/tirt
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_CC2652R7/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_CC2652R7_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652R7/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_CC2652R7_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_CC2652R7/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_CC2652R7_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_CC2652R7/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_CC2652R7_tirtos7_ticlang.projectspec
 
@@ -46238,6 +46472,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zst
 In project: examples/rtos/LP_CC2652R7/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_LP_CC2652R7_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
+In project: examples/rtos/LP_CC2652R7/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_LP_CC2652R7_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652R7/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_LP_CC2652R7_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
 In project: examples/rtos/LP_CC2652R7/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_LP_CC2652R7_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
@@ -46831,6 +47071,12 @@ In project: examples/rtos/LP_CC2652R7/dmm/dmm_zr_light_remote_display_app/tirtos
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_CC2652R7/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_CC2652R7_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652R7/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_CC2652R7_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_CC2652R7/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_CC2652R7_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_CC2652R7/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_CC2652R7_tirtos7_ticlang.projectspec
 
@@ -47372,6 +47618,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zst
 In project: examples/rtos/LP_CC2652R7/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_LP_CC2652R7_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
+In project: examples/rtos/LP_CC2652R7/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_LP_CC2652R7_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652R7/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_LP_CC2652R7_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
 In project: examples/rtos/LP_CC2652R7/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_LP_CC2652R7_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
@@ -49786,6 +50038,12 @@ In project: examples/rtos/LP_CC2652RB/dmm/dmm_zc_switch_remote_display_app/tirto
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_CC2652RB/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_CC2652RB_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652RB/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_CC2652RB_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_CC2652RB/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_CC2652RB_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_CC2652RB/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_CC2652RB_tirtos7_ticlang.projectspec
 
@@ -50341,6 +50599,12 @@ In project: examples/rtos/LP_CC2652RB/dmm/dmm_zc_switch_remote_display_oad_app/t
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_CC2652RB/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_LP_CC2652RB_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652RB/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_LP_CC2652RB_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_CC2652RB/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_LP_CC2652RB_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_CC2652RB/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_LP_CC2652RB_tirtos7_ticlang.projectspec
 
@@ -50932,6 +51196,12 @@ In project: examples/rtos/LP_CC2652RB/dmm/dmm_zed_switch_remote_display_app/tirt
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_CC2652RB/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_CC2652RB_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652RB/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_CC2652RB_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_CC2652RB/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_CC2652RB_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_CC2652RB/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_CC2652RB_tirtos7_ticlang.projectspec
 
@@ -51473,6 +51743,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zst
 In project: examples/rtos/LP_CC2652RB/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_LP_CC2652RB_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
+In project: examples/rtos/LP_CC2652RB/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_LP_CC2652RB_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652RB/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_LP_CC2652RB_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
 In project: examples/rtos/LP_CC2652RB/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_LP_CC2652RB_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
@@ -52066,6 +52342,12 @@ In project: examples/rtos/LP_CC2652RB/dmm/dmm_zr_light_remote_display_app/tirtos
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_CC2652RB/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_CC2652RB_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652RB/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_CC2652RB_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_CC2652RB/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_CC2652RB_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_CC2652RB/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_CC2652RB_tirtos7_ticlang.projectspec
 
@@ -52607,6 +52889,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zst
 In project: examples/rtos/LP_CC2652RB/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_LP_CC2652RB_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
+In project: examples/rtos/LP_CC2652RB/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_LP_CC2652RB_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652RB/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_LP_CC2652RB_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
 In project: examples/rtos/LP_CC2652RB/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_LP_CC2652RB_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
@@ -55021,6 +55309,12 @@ In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zc_switch_remote_display_app/tir
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
 
@@ -55576,6 +55870,12 @@ In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zc_switch_remote_display_oad_app
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zc_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zc_switch_remote_display_oad_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
 
@@ -56167,6 +56467,12 @@ In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zed_switch_remote_display_app/ti
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
 
@@ -56708,6 +57014,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zst
 In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
+In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
 In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zed_switch_remote_display_oad_app/tirtos7/ticlang/dmm_zed_switch_remote_display_oad_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
@@ -57301,6 +57613,12 @@ In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zr_light_remote_display_app/tirt
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
 
@@ -57842,6 +58160,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zst
 In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
+In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
 In project: examples/rtos/LP_CC2652RSIP/dmm/dmm_zr_light_remote_display_oad_app/tirtos7/ticlang/dmm_zr_light_remote_display_oad_app_LP_CC2652RSIP_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
@@ -60826,6 +61150,12 @@ In project: examples/rtos/LP_EM_CC1354P10_1/dmm/dmm_zc_switch_remote_display_app
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_EM_CC1354P10_1/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_EM_CC1354P10_1/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_EM_CC1354P10_1/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_EM_CC1354P10_1/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
 
@@ -61378,6 +61708,12 @@ In project: examples/rtos/LP_EM_CC1354P10_1/dmm/dmm_zed_switch_remote_display_ap
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_EM_CC1354P10_1/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_EM_CC1354P10_1/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_EM_CC1354P10_1/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_EM_CC1354P10_1/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
 
@@ -61928,6 +62264,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zst
 In project: examples/rtos/LP_EM_CC1354P10_1/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
+In project: examples/rtos/LP_EM_CC1354P10_1/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_EM_CC1354P10_1/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
 In project: examples/rtos/LP_EM_CC1354P10_1/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
@@ -64870,6 +65212,12 @@ In project: examples/rtos/LP_EM_CC1354P10_6/dmm/dmm_zc_switch_remote_display_app
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_EM_CC1354P10_6/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_EM_CC1354P10_6/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_EM_CC1354P10_6/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_EM_CC1354P10_6/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
 
@@ -65422,6 +65770,12 @@ In project: examples/rtos/LP_EM_CC1354P10_6/dmm/dmm_zed_switch_remote_display_ap
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_EM_CC1354P10_6/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_EM_CC1354P10_6/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_EM_CC1354P10_6/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_EM_CC1354P10_6/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
 
@@ -65972,6 +66326,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zst
 In project: examples/rtos/LP_EM_CC1354P10_6/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
+In project: examples/rtos/LP_EM_CC1354P10_6/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_EM_CC1354P10_6/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
 In project: examples/rtos/LP_EM_CC1354P10_6/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
@@ -67705,6 +68065,12 @@ In project: examples/rtos/LP_EM_CC2674P10/dmm/dmm_zc_switch_remote_display_app/t
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_EM_CC2674P10/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_EM_CC2674P10_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_EM_CC2674P10/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_EM_CC2674P10_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_EM_CC2674P10/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_EM_CC2674P10_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_EM_CC2674P10/dmm/dmm_zc_switch_remote_display_app/tirtos7/ticlang/dmm_zc_switch_remote_display_app_LP_EM_CC2674P10_tirtos7_ticlang.projectspec
 
@@ -68254,6 +68620,12 @@ In project: examples/rtos/LP_EM_CC2674P10/dmm/dmm_zed_switch_remote_display_app/
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
 In project: examples/rtos/LP_EM_CC2674P10/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_EM_CC2674P10_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_EM_CC2674P10/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_EM_CC2674P10_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
+In project: examples/rtos/LP_EM_CC2674P10/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_EM_CC2674P10_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c
 In project: examples/rtos/LP_EM_CC2674P10/dmm/dmm_zed_switch_remote_display_app/tirtos7/ticlang/dmm_zed_switch_remote_display_app_LP_EM_CC2674P10_tirtos7_ticlang.projectspec
 
@@ -68801,6 +69173,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zst
 In project: examples/rtos/LP_EM_CC2674P10/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_EM_CC2674P10_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c
+In project: examples/rtos/LP_EM_CC2674P10/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_EM_CC2674P10_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c
+In project: examples/rtos/LP_EM_CC2674P10/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_EM_CC2674P10_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/api_mac.h
 In project: examples/rtos/LP_EM_CC2674P10/dmm/dmm_zr_light_remote_display_app/tirtos7/ticlang/dmm_zr_light_remote_display_app_LP_EM_CC2674P10_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c

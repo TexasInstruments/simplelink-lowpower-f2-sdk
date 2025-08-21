@@ -41,7 +41,7 @@ typedef struct ws_neighbor_class_entry {
  */
 typedef struct ws_neighbor_class_s {
     ws_neighbor_class_entry_t *neigh_info_list;           /*!< Allocated hopping info array*/
-    uint8_t list_size;                                    /*!< List size*/
+    uint16_t list_size;                                    /*!< List size*/
 } ws_neighbor_class_t;
 
 
@@ -55,7 +55,7 @@ typedef struct ws_neighbor_class_s {
  * \return false Allocate Fail
  *
  */
-bool ws_neighbor_class_alloc(ws_neighbor_class_t *class_data, uint8_t list_size);
+bool ws_neighbor_class_alloc(ws_neighbor_class_t *class_data, uint16_t list_size);
 
 /**
  * ws_neighbor_class_dealloc a function for free allocated neighbor hopping info
@@ -75,7 +75,7 @@ void ws_neighbor_class_dealloc(ws_neighbor_class_t *class_data);
  * \return Pointer to neighbor hopping info
  *
  */
-ws_neighbor_class_entry_t *ws_neighbor_class_entry_get(ws_neighbor_class_t *class_data, uint8_t attribute_index);
+ws_neighbor_class_entry_t *ws_neighbor_class_entry_get(ws_neighbor_class_t *class_data, uint16_t attribute_index);
 
 /**
  * ws_neighbor_class_entry_t a function for search hopping info for giving neighbor attribute index
@@ -86,7 +86,7 @@ ws_neighbor_class_entry_t *ws_neighbor_class_entry_get(ws_neighbor_class_t *clas
  * \return Attribute index of entry
  *
  */
-uint8_t ws_neighbor_class_entry_index_get(ws_neighbor_class_t *class_data, ws_neighbor_class_entry_t *entry);
+uint16_t ws_neighbor_class_entry_index_get(ws_neighbor_class_t *class_data, ws_neighbor_class_entry_t *entry);
 
 /**
  * ws_neighbor_class_entry_remove a function for clean information should be call when neighbor is removed
@@ -95,7 +95,7 @@ uint8_t ws_neighbor_class_entry_index_get(ws_neighbor_class_t *class_data, ws_ne
  * \param attribute_index define pointer to storage info
  *
  */
-void ws_neighbor_class_entry_remove(ws_neighbor_class_t *class_data, uint8_t attribute_index);
+void ws_neighbor_class_entry_remove(ws_neighbor_class_t *class_data, uint16_t attribute_index);
 
 /**
  * ws_neighbor_class_neighbor_unicast_time_info_update a function for update neighbor unicast time information
@@ -134,7 +134,7 @@ void ws_neighbor_class_neighbor_broadcast_time_info_update(ws_neighbor_class_ent
  * \param ws_bs_ie Broadcast schedule IE data
  *
  */
-void ws_neighbor_class_neighbor_broadcast_schedule_set(ws_neighbor_class_entry_t *ws_neighbor, ws_bs_ie_t *ws_bs_ie);
+void ws_neighbor_class_neighbor_broadcast_schedule_set(ws_neighbor_class_entry_t *ws_neighbor, ws_bs_ie_t *ws_bs_ie,ws_hopping_schedule_t *own_shedule);
 
 /**
  * ws_neighbor_class_rf_sensitivity_calculate
@@ -182,5 +182,7 @@ void ws_neighbor_class_rsl_in_calculate(ws_neighbor_class_entry_t *ws_neighbor, 
 void ws_neighbor_class_rsl_out_calculate(ws_neighbor_class_entry_t *ws_neighbor, uint8_t rsl_reported);
 
 bool ws_neighbor_class_neighbor_duplicate_packet_check(ws_neighbor_class_entry_t *ws_neighbor, uint8_t mac_dsn, uint32_t rx_timestamp);
+
+void ws_neighbor_class_remove_all_entry(ws_neighbor_class_t *class_data);
 
 #endif /* WS_NEIGHBOR_CLASS_H_ */

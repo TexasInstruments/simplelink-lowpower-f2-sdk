@@ -49,6 +49,7 @@ function getModeFeatureMacro(mode) {
         case "nonBeacon":
             return "FEATURE_NON_BEACON_MODE";
         case "frequencyHopping":
+        case "frequencyHoppingLowLatency":
             return "FEATURE_FREQ_HOP_MODE";
         default:
             throw new Error("Unhanded mode: " + mode);

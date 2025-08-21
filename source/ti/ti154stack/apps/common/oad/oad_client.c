@@ -381,8 +381,10 @@ void OADClient_processEvent(uint16_t *pEvent)
 #endif
 
                 if (status != OADProtocol_Status_Success){
+#ifndef CUI_DISABLE
                     // Let the user know there was an error and retry on next round
                     displayOadStatusUpdate(OADStorage_txError);
+#endif
                 }
 
                 /*
@@ -1070,7 +1072,9 @@ static void oadResetReqCb(void* pSrcAddr)
 #endif
 
 #ifdef OAD_IMG_B //u-app only
+#ifndef CUI_DISABLE
     CUI_statusLinePrintf(*(oadClientParams.pOadCuiHndl), oadStatusLine, "Resetting the device to boot to Persistent App");
+#endif
 
     //write to NV memory the server address
     oadServerAddr.addrMode = ((ApiMac_sAddr_t*)pSrcAddr)->addrMode;

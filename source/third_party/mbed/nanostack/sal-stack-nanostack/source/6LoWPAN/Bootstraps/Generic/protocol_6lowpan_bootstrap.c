@@ -257,9 +257,11 @@ static bool protocol_6lowpan_host_challenge(protocol_interface_info_entry_t *cur
     if (security_level) {
         ptr = mle_general_write_link_layer_framecounter(ptr, cur);
     }
+#ifndef WISUN_RCP_ENABLE
     if (cur->lowpan_info & INTERFACE_NWK_CONF_MAC_RX_OFF_IDLE) {
         ptr = mle_general_write_timeout(ptr, cur);
     }
+#endif
 
     memcpy(ll64, ADDR_LINK_LOCAL_PREFIX, 8);
     memcpy(&ll64[8], mac64, 8);
@@ -632,9 +634,11 @@ static uint16_t mle_router_synch(protocol_interface_info_entry_t *cur, const uin
     if (security_level) {
         ptr = mle_general_write_link_layer_framecounter(ptr, cur);
     }
+#ifndef WISUN_RCP_ENABLE
     if (cur->lowpan_info & INTERFACE_NWK_CONF_MAC_RX_OFF_IDLE) {
         ptr = mle_general_write_timeout(ptr, cur);
     }
+#endif
 
     if (destAddress && incoming_idr != 0) {
         uint8_t mac64[8];
@@ -818,7 +822,9 @@ static bool mle_parent_link_req_cb(int8_t interface_id, uint16_t msgId, bool use
         }
 #endif
         else if (cur->nwk_bootstrap_state == ER_MLE_LINK_ADDRESS_SYNCH) {
+#ifndef WISUN_RCP_ENABLE
             mac_data_poll_protocol_poll_mode_disable(cur);
+#endif            
             bootsrap_next_state_kick(ER_BOOTSRAP_DONE, cur);
 
         } else if (cur->nwk_bootstrap_state == ER_MLE_LINK_SHORT_SYNCH) {
@@ -1577,7 +1583,9 @@ int8_t arm_network_processor_up(protocol_interface_info_entry_t *cur)
 
         } else if (cur->bootsrap_mode == ARM_NWK_BOOTSRAP_MODE_6LoWPAN_RF_ACCESPOINT) {
             // Updates beacon
+#ifndef WISUN_RCP_ENABLE            
             beacon_join_priority_update(cur->id);
+#endif            
             mac_helper_pib_boolean_set(cur, macAssociationPermit, true);
             net_load_balance_internal_state_activate(cur, true);
         }
@@ -1613,7 +1621,9 @@ static void lowpan_neighbor_entry_remove_notify(mac_neighbor_table_entry_t *entr
     lowpan_adaptation_neigh_remove_free_tx_tables(cur_interface, entry_ptr);
     // Sleepy host
     if (cur_interface->lowpan_info & INTERFACE_NWK_CONF_MAC_RX_OFF_IDLE) {
+#ifndef WISUN_RCP_ENABLE        
         mac_data_poll_protocol_poll_mode_decrement(cur_interface);
+#endif        
     }
 
     protocol_6lowpan_priority_neighbor_remove(cur_interface, entry_ptr);
@@ -1622,7 +1632,9 @@ static void lowpan_neighbor_entry_remove_notify(mac_neighbor_table_entry_t *entr
         protocol_6lowpan_release_short_link_address_from_neighcache(cur_interface, entry_ptr->mac16);
         protocol_6lowpan_release_long_link_address_from_neighcache(cur_interface, entry_ptr->mac64);
     }
+#ifndef WISUN_RCP_ENABLE
     mac_helper_devicetable_remove(cur_interface->mac_api, entry_ptr->index, entry_ptr->mac64);
+#endif
     //Removes ETX neighbor
     etx_neighbor_remove(cur_interface->id, entry_ptr->index, entry_ptr->mac64);
     //Remove MLE frame counter info
@@ -1896,7 +1908,9 @@ void nwk_6lowpan_bootstrap_ready(protocol_interface_info_entry_t *cur)
         if (bootsrap_ready) {
             if (cur->lowpan_info & INTERFACE_NWK_ROUTER_DEVICE) {
                 // Updates beacon
+#ifndef WISUN_RCP_ENABLE                
                 beacon_join_priority_update(cur->id);
+#endif                
                 lowpan_bootstrap_pan_control(cur, true);
             }
             nwk_bootsrap_state_update(ARM_NWK_BOOTSTRAP_READY, cur);
@@ -1976,7 +1990,9 @@ static void protocol_6lowpan_nd_ready(protocol_interface_info_entry_t *cur)
     } else {
         tr_debug("RE ND ready");
         clear_power_state(ICMP_ACTIVE);
+#ifndef WISUN_RCP_ENABLE        
         mac_data_poll_protocol_poll_mode_disable(cur);
+#endif        
         //TRIG MLE Challenge for Normal Host
         if ((cur->lowpan_info & (INTERFACE_NWK_ROUTER_DEVICE | INTERFACE_NWK_CONF_MAC_RX_OFF_IDLE | INTERFACE_NWK_BOOTSRAP_MLE)) == INTERFACE_NWK_BOOTSRAP_MLE) {
             //TRIG Only Normal Host
@@ -2021,7 +2037,9 @@ static void protocol_6lowpan_address_reg_ready(protocol_interface_info_entry_t *
         mle_timer = 300;
     } else {
         if (cur_interface->lowpan_info & INTERFACE_NWK_CONF_MAC_RX_OFF_IDLE) {
+#ifndef WISUN_RCP_ENABLE            
             mac_data_poll_protocol_poll_mode_decrement(cur_interface);
+#endif            
             mle_timer = 20;
         } else {
             mle_timer = 155;
@@ -2075,7 +2093,9 @@ static void protocol_6lowpan_bootstrap_rpl_callback(rpl_event_t event, void *han
                 // Updates beacon
                 cur->bootsrap_state_machine_cnt = 0;
                 cur->nwk_bootstrap_state = ER_BOOTSRAP_DONE;
+#ifndef WISUN_RCP_ENABLE                
                 beacon_join_priority_update(cur->id);
+#endif                
                 lowpan_bootstrap_pan_control(cur, true);
             }
             break;
@@ -2213,8 +2233,10 @@ void nwk_6lowpan_nd_address_registartion_ready(protocol_interface_info_entry_t *
                 cur->lowpan_info |= INTERFACE_NWK_CONF_MAC_RX_OFF_IDLE;
                 tr_debug("Enable Poll state");
                 mac_helper_pib_boolean_set(cur, macRxOnWhenIdle, false);
+#ifndef WISUN_RCP_ENABLE                
                 mac_data_poll_init(cur);
                 mac_data_poll_init_protocol_poll(cur);
+#endif                
             }
             if (protocol_6lowpan_parent_address_synch(cur, false) != 0) {
                 nwk_bootsrap_state_update(ARM_NWK_NWK_CONNECTION_DOWN, cur);
@@ -2430,7 +2452,9 @@ static void nwk_6lowpan_network_authentication_done(protocol_interface_info_entr
         nwk_6lowpan_router_scan_state(cur);
 #endif
     } else {
+#ifndef WISUN_RCP_ENABLE        
         mac_data_poll_protocol_poll_mode_disable(cur);
+#endif        
         if ((cur->lowpan_info & INTERFACE_NWK_ROUTER_DEVICE) == 0) {
             tr_debug("PULL kEY Done by Host");
             cur->nwk_bootstrap_state = ER_BOOTSRAP_DONE;
@@ -2496,7 +2520,9 @@ bool protocol_6lowpan_bootsrap_start(protocol_interface_info_entry_t *interface)
     mac_helper_pib_boolean_set(interface, macRxOnWhenIdle, true);
     interface->lowpan_info &=  ~INTERFACE_NWK_CONF_MAC_RX_OFF_IDLE;
 
+#ifndef WISUN_RCP_ENABLE
     mac_data_poll_init(interface);
+#endif
     mac_helper_mac16_address_set(interface, 0xffff);
     tr_debug("Mac Ready");
     interface->nwk_nd_re_scan_count = 2;

@@ -89,31 +89,31 @@ int8_t eventOS_event_handler_create(void (*handler_func_ptr)(arm_event_s *), uin
     }
 
     //Allocate new
-    arm_core_tasklet_t *new = tasklet_dynamically_allocate();
-    if (!new) {
+    arm_core_tasklet_t *new_tasklet = tasklet_dynamically_allocate();
+    if (!new_tasklet) {
         return -2;
     }
 
     event_tmp = event_core_get();
     if (!event_tmp) {
-        ns_dyn_mem_free(new);
+        ns_dyn_mem_free(new_tasklet);
         return -2;
     }
 
     //Fill in tasklet; add to list
-    new->id = tasklet_get_free_id();
-    new->func_ptr = handler_func_ptr;
-    ns_list_add_to_end(&arm_core_tasklet_list, new);
+    new_tasklet->id = tasklet_get_free_id();
+    new_tasklet->func_ptr = handler_func_ptr;
+    ns_list_add_to_end(&arm_core_tasklet_list, new_tasklet);
 
     //Queue "init" event for the new task
-    event_tmp->data.receiver = new->id;
+    event_tmp->data.receiver = new_tasklet->id;
     event_tmp->data.sender = 0;
     event_tmp->data.event_type = init_event_type;
     event_tmp->data.event_id = 0;
     event_tmp->data.event_data = 0;
     event_core_write(event_tmp);
 
-    return new->id;
+    return new_tasklet->id;
 }
 
 int8_t eventOS_event_send(const arm_event_t *event)
@@ -148,7 +148,7 @@ void eventOS_event_cancel_critical(arm_event_storage_t *event)
 
 static arm_event_storage_t *event_dynamically_allocate(void)
 {
-    arm_event_storage_t *event = ns_dyn_mem_temporary_alloc(sizeof(arm_event_storage_t));
+    arm_event_storage_t *event = (arm_event_storage_t *) ns_dyn_mem_temporary_alloc(sizeof(arm_event_storage_t));
     if (event) {
         event->allocator = ARM_LIB_EVENT_DYNAMIC;
     }
@@ -157,7 +157,7 @@ static arm_event_storage_t *event_dynamically_allocate(void)
 
 static arm_core_tasklet_t *tasklet_dynamically_allocate(void)
 {
-    return ns_dyn_mem_alloc(sizeof(arm_core_tasklet_t));
+    return (arm_core_tasklet_t *) ns_dyn_mem_alloc(sizeof(arm_core_tasklet_t));
 }
 
 arm_event_storage_t *event_core_get(void)

@@ -159,6 +159,11 @@ uint8_t appDbg_sidx = 0;
 /******************************************************************************
  Local variables
  *****************************************************************************/
+#ifdef FH_LOW_LATENCY_BROADCAST
+/* channel map to save the previous channel map status */
+uint8_t channelMaskBackup[APIMAC_154G_CHANNEL_BITMAP_SIZ] = {0};
+#define LOW_LATENCY_BROADCAST_START_TIMEOUT_DETECTION 120000
+#endif
 /* structure containing device and its parents information*/
 STATIC devInformation_t devInfoBlock =
                 {
@@ -786,7 +791,7 @@ void Jdllc_join(void)
     {
         /* if non beacon network perform an active scan or
          * if beacon enabled network perform a passive scan
-	 */
+     */
         if(CONFIG_MAC_BEACON_ORDER == JDLLC_BEACON_ORDER_NON_BEACON)
         {
             /* non beacon network */
@@ -856,10 +861,27 @@ void Jdllc_rejoin(ApiMac_deviceDescriptor_t *pDevInfo,
     else
     {
         parentFound = false;
+#ifdef FH_LOW_LATENCY_BROADCAST
+        /* Fast join */
+        /* save fh channel map and fh sleep node channel*/
+        memcpy(channelMaskBackup, fhChannelMask, APIMAC_154G_CHANNEL_BITMAP_SIZ);
+
+        /* change fh channel map to async channel map */
+        uint8_t channelMask[APIMAC_154G_CHANNEL_BITMAP_SIZ] = FH_ASYNC_CHANNEL_MASK; // {0}; // 90
+        memcpy(fhChannelMask, channelMask, APIMAC_154G_CHANNEL_BITMAP_SIZ);
+
+        /* set fixed channel in FH PIB */
+        ApiMac_mlmeSetFhReqUint16(ApiMac_FHAttribute_unicastFixedChannel,
+            (uint16_t) getFHSleepNodeHopChannel());
+
+        ApiMac_startFH();
+        ApiMac_mlmeSetReqBool(ApiMac_attribute_RxOnWhenIdle, true);
+#else  // FH_LOW_LATENCY_BROADCAST
         ApiMac_mlmeSetReqBool(ApiMac_attribute_RxOnWhenIdle, true);
         /* start trickle timer for PCS */
         Ssf_setTrickleClock(fhPanConfigInterval,
                             ApiMac_wisunAsyncFrame_configSolicit);
+#endif
 
     }
 
@@ -1549,9 +1571,13 @@ static void assocCnfCb(ApiMac_mlmeAssociateCnf_t *pData)
         }
         if(CONFIG_FH_ENABLE)
         {
+#ifdef FH_LOW_LATENCY_BROADCAST
+            if(devInfoBlock.currentJdllcState == Jdllc_states_initRestoring)
+#else  // FH_LOW_LATENCY_BROADCAST
             if((devInfoBlock.currentJdllcState == Jdllc_states_initRestoring)||
                (devInfoBlock.currentJdllcState == Jdllc_states_orphan &&
                 devInfoBlock.prevJdllcState == Jdllc_states_rejoined))
+#endif // FH_LOW_LATENCY_BROADCAST
             {
                 updateState(Jdllc_states_rejoined);
             }
@@ -1574,10 +1600,12 @@ static void assocCnfCb(ApiMac_mlmeAssociateCnf_t *pData)
                 /* start poll timer  */
                 if(CONFIG_FH_ENABLE)
                 {
+#ifndef FH_LOW_LATENCY_BROADCAST
                     randomNum = ((ApiMac_randomByte() << 8) +
                                     ApiMac_randomByte());
                     Ssf_setPollClock(((uint32_t)randomNum %
                                       CONFIG_FH_START_POLL_DATA_RAND_WINDOW));
+#endif  // FH_LOW_LATENCY_BROADCAST
                 }
                 else
                 {
@@ -1915,16 +1943,44 @@ static void wsAsyncIndCb(ApiMac_mlmeWsAsyncInd_t *pData)
 
         if(parentFound == false)
         {
+#ifdef FH_LOW_LATENCY_BROADCAST
+            /* Stop PAS Timer */
+            Ssf_setTrickleClock(0, ApiMac_wisunAsyncFrame_advertisementSolicit);
+
+            /* Fast join */
+            /* save fh channel map and fh sleep node channel*/
+            memcpy(channelMaskBackup, fhChannelMask, APIMAC_154G_CHANNEL_BITMAP_SIZ);
+
+            /* change fh channel map to async channel map */
+            uint8_t channelMask[APIMAC_154G_CHANNEL_BITMAP_SIZ] = FH_ASYNC_CHANNEL_MASK;
+            memcpy(fhChannelMask, channelMask, APIMAC_154G_CHANNEL_BITMAP_SIZ);
+
+            /* set fixed channel in FH PIB */
+            ApiMac_mlmeSetFhReqUint16(ApiMac_FHAttribute_unicastFixedChannel,
+                (uint16_t) getFHSleepNodeHopChannel());
+
+            ApiMac_startFH();
+
+            ApiMac_mlmeSetReqBool(ApiMac_attribute_RxOnWhenIdle, true);
+#else  // FH_LOW_LATENCY_BROADCAST
             /* Stop PAS Timer */
             Ssf_setTrickleClock(0, ApiMac_wisunAsyncFrame_advertisementSolicit);
             /* set trickle timer for PCS */
             Ssf_setTrickleClock(fhPanConfigInterval,
                                 ApiMac_wisunAsyncFrame_configSolicit);
+#endif // FH_LOW_LATENCY_BROADCAST
         }
 
     }
     else if(pData->fhFrameType == ApiMac_fhFrameType_config)
     {
+#ifdef FH_LOW_LATENCY_BROADCAST
+        /* Fast join */
+        /* Change back to fh channel map */
+        ApiMac_mlmeSetReqBool(ApiMac_attribute_RxOnWhenIdle, false);
+        memcpy(fhChannelMask, channelMaskBackup, APIMAC_154G_CHANNEL_BITMAP_SIZ);
+
+#endif // FH_LOW_LATENCY_BROADCAST
         if(wisunPiePresent & WISUN_PANVER_IE_PRESENT)
         {
             ApiMac_mlmeSetFhReqUint16(
@@ -1965,6 +2021,9 @@ static void wsAsyncIndCb(ApiMac_mlmeWsAsyncInd_t *pData)
             /* Send association request if not associated previously */
             /* Increase delay for the first association attempt */
             Ssf_setFHAssocClock(FH_ASSOC_DELAY + FH_ASSOC_DELAY);
+#ifdef FH_LOW_LATENCY_BROADCAST
+            Ssf_setPollClock(LOW_LATENCY_BROADCAST_START_TIMEOUT_DETECTION);
+#endif // FH_LOW_LATENCY_BROADCAST
         }
     }
 
@@ -2511,6 +2570,23 @@ static void sendAsyncReq(ApiMac_wisunAsyncFrame_t frameType)
     ApiMac_mlmeWSAsyncReq_t asyncReq;
     uint8_t sizeOfChannelMask;
 
+#ifdef FH_LOW_LATENCY_BROADCAST
+    /*
+        To reach the collector the async request needs to be sent on
+        all channels of the regular fh map.
+        Config Solicit frames are not sent anymore by the application.
+    */
+    /* set of Exclude Channels */
+    sizeOfChannelMask = sizeof(fhChannelMask)/sizeof(uint8_t);
+    if(sizeOfChannelMask > APIMAC_154G_CHANNEL_BITMAP_SIZ)
+    {
+        sizeOfChannelMask = APIMAC_154G_CHANNEL_BITMAP_SIZ;
+    }
+    memset(asyncReq.channels, 0, (APIMAC_154G_CHANNEL_BITMAP_SIZ));
+    asyncReq.operation = ApiMac_wisunAsycnOperation_start;
+    memcpy(asyncReq.channels, fhChannelMask, sizeOfChannelMask);
+    memset(asyncReq.sec.keySource, 0, APIMAC_KEY_SOURCE_MAX_LEN);
+#else  // FH_LOW_LATENCY_BROADCAST
     /* set of Exclude Channels */
     sizeOfChannelMask = sizeof(asyncChannelMask)/sizeof(uint8_t);
     if(sizeOfChannelMask > APIMAC_154G_CHANNEL_BITMAP_SIZ)
@@ -2521,6 +2597,7 @@ static void sendAsyncReq(ApiMac_wisunAsyncFrame_t frameType)
     asyncReq.operation = ApiMac_wisunAsycnOperation_start;
     memcpy(asyncReq.channels, asyncChannelMask, sizeOfChannelMask);
     memset(asyncReq.sec.keySource, 0, APIMAC_KEY_SOURCE_MAX_LEN);
+#endif // FH_LOW_LATENCY_BROADCAST
 
     /* send PAS or PCS according to frame type */
     if(frameType == ApiMac_wisunAsyncFrame_advertisementSolicit)
@@ -2614,6 +2691,12 @@ static void populateInfo(ApiMac_deviceDescriptor_t *pDevInfo,
  */
 static void handleMaxDataFail(void)
 {
+#ifdef FH_LOW_LATENCY_BROADCAST
+    if(CONFIG_FH_ENABLE)
+    {
+        Util_setEvent(&Sensor_events, SENSOR_START_EVT); // trigger re-join
+    }
+#else  // FH_LOW_LATENCY_BROADCAST
     if(!CONFIG_RX_ON_IDLE)
     {
         /* stop polling */
@@ -2635,6 +2718,7 @@ static void handleMaxDataFail(void)
         Ssf_setTrickleClock(fhPanConfigInterval,
                             ApiMac_wisunAsyncFrame_configSolicit);
     }
+#endif // FH_LOW_LATENCY_BROADCAST
     else
     {
 #if (defined(IEEE_COEX_TEST) && defined(EN_ORPHANSCAN)) || !defined(IEEE_COEX_TEST)

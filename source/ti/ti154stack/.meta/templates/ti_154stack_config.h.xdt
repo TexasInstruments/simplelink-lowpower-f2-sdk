@@ -274,7 +274,7 @@ validate user input during runtime channel mask configuration.
 #define CONFIG_TRANSMIT_POWER           `curTxPowerCfg`
 
 /* Setting to enable frequency hopping mode */
-#define CONFIG_FH_ENABLE                `inst.mode === "frequencyHopping"`
+#define CONFIG_FH_ENABLE                `inst.mode.includes("frequencyHopping")`
 
 % if (!powerScript.getPowerConfigHiddenState(inst, "rxOnIdle")) {
 /* Setting to enable RX on when idle. False for sleepy device */

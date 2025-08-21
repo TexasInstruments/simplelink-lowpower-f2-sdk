@@ -44,13 +44,13 @@
  
  
  *****************************************************************************/
-#ifndef TIMER_H
-#define TIMER_H
+#ifndef UtilTimer_H
+#define UtilTimer_H
 
 /******************************************************************************
  Includes
  *****************************************************************************/
-#include <ti/sysbios/knl/Clock.h>
+#include <ti/drivers/dpl/ClockP.h>
 #include <stdbool.h>
 
 #ifdef __cplusplus
@@ -91,19 +91,26 @@ extern "C"
  *
  * @return  Clock_Handle  - a handle to the clock instance.
  */
-extern Clock_Handle Timer_construct(Clock_Struct *pClock,
-                                        Clock_FuncPtr clockCB,
+extern ClockP_Handle UtilTimer_construct(ClockP_Struct *pClock,
+                                         ClockP_Fxn clockCB,
                                         uint32_t clockDuration,
                                         uint32_t clockPeriod,
                                         uint8_t startFlag,
-                                        UArg arg);
+                                        uintptr_t arg);
+
+/*!
+ * @brief   Destruct the clock
+ *
+ * @param   pClock - clock struct
+ */
+extern void UtilTimer_destruct(ClockP_Struct *pClock);
 
 /*!
  * @brief   Start a Timer/Clock.
  *
  * @param   pClock - pointer to clock struct
  */
-extern void Timer_start(Clock_Struct *pClock);
+extern void UtilTimer_start(ClockP_Struct *pClock);
 
 /*!
  * @brief   Determine if a clock is currently active.
@@ -112,21 +119,21 @@ extern void Timer_start(Clock_Struct *pClock);
  *
  * @return  TRUE or FALSE
  */
-extern bool Timer_isActive(Clock_Struct *pClock);
+extern bool UtilTimer_isActive(ClockP_Struct *pClock);
 
 /*!
  * @brief   Stop a Timer/Clock.
  *
  * @param   pClock - pointer to clock struct
  */
-extern void Timer_stop(Clock_Struct *pClock);
+extern void UtilTimer_stop(ClockP_Struct *pClock);
 
 /*!
  * @brief   Set a Timer/Clock timeout.
  *
  * @param   timeOut - Timeout value in milliseconds
  */
-extern void Timer_setTimeout(Clock_Handle handle, uint32_t timeout);
+extern void UtilTimer_setTimeout(ClockP_Handle handle, uint32_t timeout);
 
 /*!
  * @brief   Get a Timer/Clock timeout.
@@ -135,7 +142,7 @@ extern void Timer_setTimeout(Clock_Handle handle, uint32_t timeout);
  *
  * @return   timeOut - Timeout value in milliseconds
  */
-extern uint32_t Timer_getTimeout(Clock_Handle handle);
+extern uint32_t UtilTimer_getTimeout(ClockP_Handle handle);
 
 /*!
  * @brief   Set a Timer/Clock callback function and argument.
@@ -145,7 +152,7 @@ extern uint32_t Timer_getTimeout(Clock_Handle handle);
  * @param   arg - clock callback function argument
  *
  */
-extern void Timer_setFunc(Clock_Handle handle, Clock_FuncPtr fxn, UArg arg);
+extern void UtilTimer_setFunc(ClockP_Handle handle, ClockP_Fxn fxn, uintptr_t arg);
 
 /*! @} end group TimerClock */
 
@@ -153,4 +160,4 @@ extern void Timer_setFunc(Clock_Handle handle, Clock_FuncPtr fxn, UArg arg);
 }
 #endif
 
-#endif /* TIMER_H */
+#endif /* UtilTimer_H */

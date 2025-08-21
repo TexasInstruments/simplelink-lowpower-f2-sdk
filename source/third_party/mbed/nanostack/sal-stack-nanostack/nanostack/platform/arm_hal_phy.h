@@ -321,8 +321,8 @@ typedef struct phy_device_driver_s {
     int8_t (*tx)(uint8_t *, uint16_t, uint8_t, data_protocol_e);    /**< Function pointer for PHY driver write operation. */
     int8_t (*address_write)(phy_address_type_e, uint8_t *);         /**< Function pointer for PHY driver address write. */
     int8_t (*extension)(phy_extension_type_e, uint8_t *);           /**< Function pointer for PHY driver extension control. */
+#ifndef WISUN_RCP_ENABLE
     const phy_device_channel_page_s *phy_channel_pages;             /**< Pointer to channel page list */
-
     //Upper layer callbacks, set with arm_net_phy_register();
     arm_net_phy_rx_fn *phy_rx_cb;                                   /**< PHY RX callback. Initialized by \ref arm_net_phy_register(). */
     arm_net_phy_tx_done_fn *phy_tx_done_cb;                         /**< Transmission done callback. Initialized by \ref arm_net_phy_register(). */
@@ -334,6 +334,7 @@ typedef struct phy_device_driver_s {
     arm_net_virtual_confirmation_rx_fn *virtual_confirmation_rx_cb; /**< Virtual confirmation receive callback. Initialized by \ref arm_net_phy_register(). */
     uint16_t tunnel_type; /**< Tun driver type. */
     phy_rf_statistics_s *phy_rf_statistics;                         /**< PHY statistics. */
+#endif
 } phy_device_driver_s;
 
 

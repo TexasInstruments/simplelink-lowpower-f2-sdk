@@ -37,6 +37,12 @@
 
 #ifdef HAVE_WS
 
+#if defined(__GNUC__) && defined LINUX_NANOSTACK
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-overread"
+#pragma GCC diagnostic ignored "-Wstringop-overflow"
+#endif
+
 #define TRACE_GROUP "wsnv"
 
 #define PAE_NVM_FIELD_NOT_SET            0   // Field is not present
@@ -416,5 +422,9 @@ int8_t ws_pae_nvm_store_key_storage_tlv_read(nvm_tlv_t *tlv_entry, uint16_t leng
     return 0;
 }
 
-#endif /* HAVE_WS */
+#if defined(__GNUC__) && defined LINUX_NANOSTACK
+#pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
+#endif
 
+#endif /* HAVE_WS */

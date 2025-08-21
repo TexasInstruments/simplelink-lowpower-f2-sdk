@@ -37,6 +37,10 @@ struct ws_pan_information_s;
 struct ws_neighbor_class_s;
 struct ws_excluded_channel_data_s;
 struct ws_cfg_s;
+#ifdef WISUN_FAN_CORE_1_1
+struct ws_pom_ie_s;
+struct ws_jm_ie_s;
+#endif
 
 typedef struct parent_info_s {
     uint16_t             pan_id;             /**< PAN ID */
@@ -49,7 +53,7 @@ typedef struct parent_info_s {
     ws_us_ie_t           ws_us;
     uint32_t             timestamp;          /**< Timestamp when packet was received */
     uint32_t             age;          /**< Age of entry in 100ms ticks */
-    uint8_t              excluded_channel_data[32]; //Channel mask Max length and it accept 8 different range
+    uint8_t              excluded_channel_data[17]; //Channel mask Max length and it accept 8 different range
     ns_list_link_t       link;
 } parent_info_t;
 
@@ -88,7 +92,7 @@ typedef struct ws_info_s {
     trickle_params_t trickle_params_pan_discovery;
     uint8_t rpl_state; // state from rpl_event_t
     uint8_t pas_requests; // Amount of PAN solicits sent
-    uint8_t eapol_tx_index;
+    uint16_t eapol_tx_index;
     uint8_t device_min_sens; // Device min sensitivity set by the application
     int8_t weakest_received_rssi; // Weakest received signal (dBm)
     parent_info_t parent_info[WS_PARENT_LIST_SIZE];
@@ -125,9 +129,9 @@ typedef struct ws_info_s {
 
 #ifdef HAVE_WS
 
-int8_t ws_generate_channel_list(uint32_t *channel_mask, uint16_t number_of_channels, uint8_t regulatory_domain, uint8_t operating_class, uint8_t channel_plan_id);
+int8_t ws_generate_channel_list(uint8_t *channel_mask, uint16_t number_of_channels, uint8_t regulatory_domain, uint8_t operating_class, uint8_t channel_plan_id);
 
-uint16_t ws_active_channel_count(uint32_t *channel_mask, uint16_t number_of_channels);
+uint16_t ws_active_channel_count(uint8_t *channel_mask, uint16_t number_of_channels);
 
 uint32_t ws_decode_channel_spacing(uint8_t channel_spacing);
 
@@ -183,7 +187,7 @@ void ws_common_primary_parent_update(protocol_interface_info_entry_t *interface,
 
 void ws_common_secondary_parent_update(protocol_interface_info_entry_t *interface);
 
-uint8_t ws_common_temporary_entry_size(uint8_t mac_table_size);
+uint16_t ws_common_temporary_entry_size(uint16_t mac_table_size);
 void ws_common_border_router_alive_update(protocol_interface_info_entry_t *interface);
 
 #define ws_info(cur) ((cur)->ws_info)

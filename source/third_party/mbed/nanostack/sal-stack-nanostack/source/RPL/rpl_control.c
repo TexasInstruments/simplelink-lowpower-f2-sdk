@@ -428,7 +428,7 @@ static void rpl_control_addr_notifier(struct protocol_interface_info_entry *inte
 #define MAX_BETTER_PARENT_CHECK 5
 uint8_t rpl_better_parent_count = 0;
 #endif
-static void rpl_control_etx_change_callback(int8_t  nwk_id, uint16_t previous_etx, uint16_t current_etx, uint8_t attribute_index, const uint8_t *mac64)
+static void rpl_control_etx_change_callback(int8_t  nwk_id, uint16_t previous_etx, uint16_t current_etx, uint16_t attribute_index, const uint8_t *mac64)
 {
 
     protocol_interface_info_entry_t *cur = protocol_stack_interface_info_get_by_id(nwk_id);

@@ -56,10 +56,12 @@
 #include <pthread.h>
 #include <semaphore.h>
 
+#include "rcp_types.h"
+
 #ifndef LIBRARY
 #include "ti_wisunfan_features.h"
 #endif
-#include "6LoWPAN/ws/ws_common_defines.h"
+// #include "6LoWPAN/ws/ws_common_defines.h"
 
 /*!
  @mainpage TI-15.4 Stack API
@@ -1676,6 +1678,10 @@ typedef struct _apimac_txoptions
      Use option Green Power
      */
     bool useGreenPower;
+    /*!
+     Use Absolute Time option for Green Power
+     */
+    bool useAbsoluteTime;
 } ApiMac_txOptions_t;
 
 /*! MCPS data request type */
@@ -2542,6 +2548,42 @@ typedef void (*ApiMac_wsAsyncIndFp_t)(ApiMac_mlmeWsAsyncInd_t *pWsAsyncInd);
  */
 typedef void (*ApiMac_wsAsyncCnfFp_t)(ApiMac_mlmeWsAsyncCnf_t *pWsAsyncCnf);
 
+
+
+
+
+
+
+/*!
+ Data Indication Callback function pointer prototype
+ for the [callback table](@ref ApiMac_callbacks_t)
+ */
+typedef void (*RcpMac_dataIndFp_t)(rcp_data_ind_t *pDataInd);
+
+/*!
+ Data Cnf Callback function pointer prototype
+ for the [callback table](@ref ApiMac_callbacks_t)
+ */
+typedef void (*RcpMac_dataCnfFp_t)(rcp_data_cnf_t *pDataCnf);
+
+/*!
+ RCP Init Cnf Callback function pointer prototype
+ for the [callback table](@ref ApiMac_callbacks_t)
+ */
+typedef void (*RcpMac_rcpInitCnfFp_t)(rcp_init_cnf_t *pRcpInitCnf);
+
+/*!
+ RCP MAC CFG GET Cnf Callback function pointer prototype
+ for the [callback table](@ref ApiMac_callbacks_t)
+ */
+typedef void (*RcpMac_rcpMacCfgGetCnfFp_t)(rcp_mac_config_get_cnf_t *pRcpMacCfgGetCnf);
+
+/*!
+ RCP MAC CFG SET Cnf Callback function pointer prototype
+ for the [callback table](@ref ApiMac_callbacks_t)
+ */
+typedef void (*RcpMac_rcpMacCfgSetCnfFp_t)(rcp_mac_config_set_cnf_t *pRcpMacCfgSetCnf, uint8_t mt_cmd1);
+
 /*!
  Unprocessed Message Callback function pointer prototype
  for the [callback table](@ref ApiMac_callbacks_t).  This function will
@@ -2559,41 +2601,22 @@ typedef void (*ApiMac_unprocessedFp_t)(uint16_t param1, uint16_t param2,
  */
 typedef struct _apimac_callbacks
 {
-    /*! Associate Indicated callback */
-    ApiMac_associateIndFp_t pAssocIndCb;
-    /*! Associate Confirmation callback */
-    ApiMac_associateCnfFp_t pAssocCnfCb;
-    /*! Disassociate Indication callback */
-    ApiMac_disassociateIndFp_t pDisassociateIndCb;
-    /*! Disassociate Confirmation callback */
-    ApiMac_disassociateCnfFp_t pDisassociateCnfCb;
-    /*! Beacon Notify Indication callback */
-    ApiMac_beaconNotifyIndFp_t pBeaconNotifyIndCb;
-    /*! Orphan Indication callback */
-    ApiMac_orphanIndFp_t pOrphanIndCb;
-    /*! Scan Confirmation callback */
-    ApiMac_scanCnfFp_t pScanCnfCb;
-    /*! Start Confirmation callback */
-    ApiMac_startCnfFp_t pStartCnfCb;
-    /*! Sync Loss Indication callback */
-    ApiMac_syncLossIndFp_t pSyncLossIndCb;
-    /*! Poll Confirm callback */
-    ApiMac_pollCnfFp_t pPollCnfCb;
-    /*! Comm Status Indication callback */
-    ApiMac_commStatusIndFp_t pCommStatusCb;
-    /*! Poll Indication Callback */
-    ApiMac_pollIndFp_t pPollIndCb;
-    /*! Data Confirmation callback */
-    ApiMac_dataCnfFp_t pDataCnfCb;
     /*! Data Indication callback */
-    ApiMac_dataIndFp_t pDataIndCb;
-    /*! Purge Confirm callback */
-    ApiMac_purgeCnfFp_t pPurgeCnfCb;
-    /*! WiSUN Async Indication callback */
-    ApiMac_wsAsyncIndFp_t pWsAsyncIndCb;
-    /*! WiSUN Async Confirmation callback */
-    ApiMac_wsAsyncCnfFp_t pWsAsyncCnfCb;
-    /*! Unprocessed message callback */
+    RcpMac_dataIndFp_t pDataIndCb;
+
+    /*! Data Confirmation callback */
+    RcpMac_dataCnfFp_t pDataCnfCb;
+
+    /*! RCP Init Confirmation callback */
+    RcpMac_rcpInitCnfFp_t pRcpInitCnfCb;
+
+    /*! RCP MAC CFG GET Confirmation callback */
+    RcpMac_rcpMacCfgGetCnfFp_t pRcpMacCfgGetCnfCb;
+
+    /*! RCP MAC CFG SET Confirmation callback */
+    RcpMac_rcpMacCfgSetCnfFp_t pRcpMacCfgSetCnfCb;
+
+    /*! Unprocessed message callback: currently used to process msgs from NPI */
     ApiMac_unprocessedFp_t pUnprocessedCb;
 } ApiMac_callbacks_t;
 
@@ -2748,6 +2771,13 @@ typedef void timac_rx_MPL_Data_Callback(uint8_t *pData,uint8_t len, MAC_MPL_Head
  * @return      pointer to a wakeup variable (semaphore in some systems)
  */
 extern void *ApiMac_init(uint8_t macTaskId, bool enableFH);
+
+/*!
+ * @brief       Register for MAC callbacks.
+ *
+ * @param       pCallbacks - pointer to callback structure
+ */
+extern void ApiMac_registerCallbacks(ApiMac_callbacks_t *pCallbacks);
 
 /*!
  * @brief       Process incoming messages from the MAC stack.
@@ -3677,6 +3707,7 @@ extern ApiMac_status_t ApiMac_secGetDefaultSourceKey(uint8_t keyId,
 extern ApiMac_status_t ApiMac_secAddKeyInitFrameCounter(
                 ApiMac_secAddKeyInitFrameCounter_t *pInfo);
 
+#ifndef WISUN_RCP_ENABLE
 /*!
  * @brief       This direct function stores all the PAN Info
  *              based on higher layer info
@@ -3684,6 +3715,7 @@ extern ApiMac_status_t ApiMac_secAddKeyInitFrameCounter(
  *              as defined in nanostack
   */
 extern void timacStorePanInformation(ws_pan_information_t *panInfo);
+#endif
 
 /*!
  * @brief       This direct function sets MAC PANId
@@ -3704,7 +3736,6 @@ extern void timacSetTrackParent(uint8_t* eui64);
 extern void timacStorePanVersionInformation(uint16_t panVersion);
 
 extern void timac_tasklet_init(void);
-extern void timacSignalEventLoop(void);
 
 /*!
  * @brief       This direct function sets TX VP IE connect

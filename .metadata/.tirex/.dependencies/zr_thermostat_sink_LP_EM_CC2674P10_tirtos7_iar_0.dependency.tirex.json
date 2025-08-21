@@ -153,6 +153,8 @@
             "+../../../../../../../source/ti/zstack/stack/nwk/rtg.h -> rtg.h",
             "+../../../../../../../source/ti/zstack/stack/nwk/stub_aps.c -> stub_aps.c",
             "+../../../../../../../source/ti/zstack/stack/nwk/stub_aps.h -> stub_aps.h",
+            "+../../../../../../../source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c -> api_mac.c",
+            "+../../../../../../../source/ti/ti154stack/common/osal_port/api_mac.h -> api_mac.h",
             "+../../../../../../../source/ti/zstack/osal/osal_nv.c -> osal_nv.c",
             "+../../../../../../../source/ti/zstack/osal/osal_nv.h -> osal_nv.h",
             "+../../../../../../../source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c -> osal_port.c",

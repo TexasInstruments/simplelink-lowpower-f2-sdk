@@ -79,7 +79,7 @@ int8_t eventOS_callback_timer_register(void (*timer_interrupt_handler)(int8_t, u
         return -1;
     }
 
-    ns_timer_struct *new_timer = ns_dyn_mem_alloc(sizeof(ns_timer_struct));
+    ns_timer_struct *new_timer = (ns_timer_struct *) ns_dyn_mem_alloc(sizeof(ns_timer_struct));
     if (!new_timer) {
         return -1;
     }

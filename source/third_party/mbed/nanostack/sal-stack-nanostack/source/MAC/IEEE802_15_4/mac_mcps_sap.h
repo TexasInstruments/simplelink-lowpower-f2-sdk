@@ -29,6 +29,10 @@
 #include "mac_common_defines.h"
 #include "mac_data_buffer.h"
 
+#ifdef WISUN_RCP_ENABLE
+#include "rcp_host.h"
+#endif
+
 struct protocol_interface_rf_mac_setup;
 struct mcps_data_req_s;
 struct arm_phy_sap_msg_s;
@@ -61,6 +65,14 @@ typedef enum {
 #define MAC_SAP_TRIG_TX                 7
 #define MCPS_SAP_DATA_ACK_CNF_EVENT     8
 #define MAC_CCA_THR_UPDATE              9
+#define MCPS_SAP_RCP_DATA_IND_EVENT     10
+#define MCPS_SAP_RCP_DATA_CNF_EVENT     11
+// #define MCPS_SAP_RCP_INIT_CNF           12  Unused due to tasklet not enabled when RCP init CNF is RX'ed
+#define MCPS_SAP_RCP_MAC_INIT_CNF       13
+#define MCPS_SAP_RCP_FH_INIT_CNF        14
+#define MCPS_SAP_RCP_MAC_RESET_CNF      15
+#define MCPS_SAP_RCP_MAC_CONFIG_GET_CNF 16
+#define MCPS_SAP_RCP_MAC_CONFIG_SET_CNF 17
 
 // Default number of CSMA-CA periods
 #define MAC_DEFAULT_NUMBER_OF_CSMA_PERIODS  1
@@ -115,6 +127,13 @@ int8_t mcps_sap_pd_ind(mac_pre_parsed_frame_t *buffer);
  */
 int8_t mcps_sap_pd_confirm(void *mac_ptr);
 
+#ifdef WISUN_RCP_ENABLE
+int8_t mcps_sap_rcp_data_ind(rcp_data_ind_t *data_ind);
+int8_t mcps_sap_rcp_data_cnf(rcp_data_cnf_t *data_cnf);
+int8_t mcps_sap_rcp_set_cnf(uint8_t event_type, rcp_mac_config_set_cnf_t *set_cnf);
+
+#endif
+
 int8_t mcps_sap_pd_confirm_failure(void *mac_ptr);
 
 int8_t mcps_sap_pd_ack(struct protocol_interface_rf_mac_setup *rf_ptr, struct mac_pre_parsed_frame_s *buffer);
@@ -122,6 +141,8 @@ int8_t mcps_sap_pd_ack(struct protocol_interface_rf_mac_setup *rf_ptr, struct ma
 int8_t mac_virtual_sap_data_cb(void *identifier, struct arm_phy_sap_msg_s *message);
 
 void mcps_sap_data_req_handler(struct protocol_interface_rf_mac_setup *rf_mac_setup, const struct mcps_data_req_s *data_req);
+
+void rcp_sap_data_req_handler_ext(struct protocol_interface_rf_mac_setup *rf_mac_setup, const struct mcps_data_req_s *data_req, const struct mcps_data_req_ie_list *ie_list, const channel_list_s *asynch_channel_list, mac_data_priority_t priority);
 
 void mcps_sap_data_req_handler_ext(struct protocol_interface_rf_mac_setup *rf_mac_setup, const struct mcps_data_req_s *data_req, const struct mcps_data_req_ie_list *ie_list, const channel_list_s *asynch_channel_list, mac_data_priority_t priority);
 

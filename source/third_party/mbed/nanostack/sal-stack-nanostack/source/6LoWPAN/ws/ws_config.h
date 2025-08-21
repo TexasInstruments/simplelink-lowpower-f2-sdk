@@ -447,8 +447,8 @@ extern uint8_t DEVICE_MIN_SENS;
 /*
  *  RADIUS client retry timer defaults
  */
-#define RADIUS_CLIENT_RETRY_IMIN           20       // First retry minimum 1 seconds
-#define RADIUS_CLIENT_RETRY_IMAX           30       // First retry maximum 3 seconds
+#define RADIUS_CLIENT_RETRY_IMIN           60       // First retry minimum 1 seconds
+#define RADIUS_CLIENT_RETRY_IMAX           120      // First retry maximum 3 seconds
 #define RADIUS_CLIENT_TIMER_EXPIRATIONS    3        // Number of retries is three
 
 /*

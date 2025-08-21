@@ -739,6 +739,7 @@ typedef enum
     ApiMac_subAttribute_setGpOffset = 0x07, // Only used for Coprocesscor
     ApiMac_subAttribute_srcMatchSetManualAddressTracking = 0x08,
     ApiMac_subAttribute_getVersions = 0x09, // Only supports get operation
+    ApiMac_subAttribute_setMacTempMonitorEnable = 0x0A,
     ApiMac_subAttribute_setMacStatistics = 0xF0, // Used to manually set macStatistics
     ApiMac_subAttribute_getMacStatistics = 0xFA, // Only supports get operation
     ApiMac_subAttribute_setReadId = 0xFF,

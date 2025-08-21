@@ -55,11 +55,26 @@ typedef enum arm_library_event_type_e {
     ARM_LIB_SYSTEM_TIMER_EVENT, /*!*< System timer event. */
     APPLICATION_EVENT, /**< Application-specific event. */
     NCP_AUTO_START_EVENT, /**< NCP AUTO START event. */
+#ifdef LINUX_NANOSTACK
+    NCP_SOCKET_EVENT, /**< for NCP model, host sent a command over TCP Socket */
+#else
     NCP_UART_EVENT, /**< for NCP model, host sent a command on uart */
+#endif
     NCP_SEND_RESPONSE_EVENT, /**< event prompting to send reponse to host over uart */
     NCP_SEND_ASYNC_RSPONSE_EVENT, /**< event prompting to send async reponse to host over uart */
+#ifdef WISUN_RCP_ENABLE
+    RCP_RX_ARESP_FROM_MAC_EVENT, /**< event prompting host to process response RCP sent over uart */
+    RCP_SEND_REQ_TO_MAC_EVENT, /**< event prompting host to send req to RCP over uart */
+#endif
 } arm_library_event_type_e;
 
+#ifdef LINUX_NANOSTACK
+/** Struct containing TCP Socket event data length and a pointer to the data */
+typedef struct tcp_socket_event_data {
+    uint16_t length;
+    uint8_t *buf;
+} tcp_socket_event_data_s;
+#endif
 
 /*
  *  Socket event description:
@@ -282,7 +297,7 @@ typedef struct channel_list_s {
 } channel_list_s;
 #else
 typedef struct channel_list_s {
-    uint32_t channel_mask[8];       /**< Channel mask. Each bit defining one channel */
+    uint8_t channel_mask3[17];       /**< Channel mask. Each bit defining one channel */
     channel_page_e channel_page;    /**< Channel page */
 } channel_list_s;
 #endif
@@ -1239,4 +1254,3 @@ extern const cca_threshold_table_s *arm_nwk_get_cca_threshold_table(int8_t inter
 }
 #endif
 #endif /* NET_INTERFACE_H_ */
-

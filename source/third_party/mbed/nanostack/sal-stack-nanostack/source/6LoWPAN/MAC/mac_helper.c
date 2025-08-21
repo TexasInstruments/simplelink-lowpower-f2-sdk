@@ -26,7 +26,6 @@
 #include "ns_trace.h"
 #include "common_functions.h"
 #include "mac_api.h"
-#include "6LoWPAN/ws/ws_config.h"
 
 #define TRACE_GROUP "MACh"
 
@@ -418,31 +417,22 @@ int8_t mac_helper_security_key_descriptor_clear(protocol_interface_info_entry_t 
     mlme_device_frame_count_t device_frame_count;
     memset(&key_description, 0, sizeof(mlme_key_descriptor_entry_t));
 
-    if (interface->bootsrap_mode != ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER &&
-        ((ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH && ti_wisun_config.use_fixed_gtk_keys == true) ||
-        ti_wisun_config.auth_type == PRESHARED_KEY_AUTH || ti_wisun_config.auth_type == CUSTOM_EUI_AUTH)) {
-        // For this configuration (fixed keys or preshared keys on RTs), only clear frame counter, not keys
-        uint32_t frame_counter = 0;
-        set_req.attr = macFrameCounter;
-        set_req.attr_index = descriptor;
-        set_req.value_pointer = &frame_counter;
-        set_req.value_size = 4;
-        interface->mac_api->mlme_req(interface->mac_api, MLME_SET, &set_req);
-    } else {
-        // Otherwise, clear the entire key table
-        set_req.attr = macKeyTable;
-        set_req.value_pointer = &key_description;
-        set_req.value_size = sizeof(mlme_key_descriptor_entry_t);
-        set_req.attr_index = descriptor;
-        interface->mac_api->mlme_req(interface->mac_api, MLME_SET, &set_req);
-    }
+    set_req.attr = macKeyTable;
+    set_req.value_pointer = &key_description;
+    set_req.value_size = sizeof(mlme_key_descriptor_entry_t);
+    set_req.attr_index = descriptor;
+    interface->mac_api->mlme_req(interface->mac_api, MLME_SET, &set_req);
 
+#ifdef WISUN_RCP_ENABLE
+    mac_neighbor_table_reset_frame_count(mac_neighbor_info(interface), descriptor);
+#else
     device_frame_count.frameCount = 0;
     device_frame_count.frameCountIndex = descriptor;
     set_req.attr = macDeviceTableFrameCount;
     set_req.value_pointer = &device_frame_count;
     set_req.value_size = sizeof(mlme_device_frame_count_t);
     interface->mac_api->mlme_req(interface->mac_api, MLME_SET, &set_req);
+#endif
 
     return 0;
 }
@@ -493,6 +483,11 @@ void mac_helper_security_key_clean(protocol_interface_info_entry_t *interface)
         set_req.attr_index = interface->mac_parameters->mac_next_key_attribute_id;
         interface->mac_api->mlme_req(interface->mac_api, MLME_SET, &set_req);
 
+#ifdef WISUN_RCP_ENABLE
+        mac_neighbor_table_reset_frame_count(mac_neighbor_info(interface), interface->mac_parameters->mac_prev_key_attribute_id);
+        mac_neighbor_table_reset_frame_count(mac_neighbor_info(interface), interface->mac_parameters->mac_default_key_attribute_id);
+        mac_neighbor_table_reset_frame_count(mac_neighbor_info(interface), interface->mac_parameters->mac_next_key_attribute_id);
+#else
         device_frame_count.frameCount = 0;
         set_req.attr = macDeviceTableFrameCount;
         set_req.value_pointer = &device_frame_count;
@@ -503,6 +498,7 @@ void mac_helper_security_key_clean(protocol_interface_info_entry_t *interface)
         interface->mac_api->mlme_req(interface->mac_api, MLME_SET, &set_req);
         device_frame_count.frameCountIndex = interface->mac_parameters->mac_next_key_attribute_id;
         interface->mac_api->mlme_req(interface->mac_api, MLME_SET, &set_req);
+#endif
 
     }
     interface->mac_parameters->mac_prev_key_index = 0;
@@ -936,13 +932,7 @@ int8_t mac_helper_key_link_frame_counter_read(int8_t interface_id, uint32_t *seq
     mlme_get_t get_req;
     get_req.attr = macFrameCounter;
     get_req.attr_index = descriptor;
-    get_req.value_pointer = (void *) &cur->mac_parameters->security_frame_counter;
-    get_req.value_size = sizeof(uint32_t);
     cur->mac_api->mlme_req(cur->mac_api, MLME_GET, &get_req);
-    if (get_req.status != 0)
-    {
-        return -1;
-    }
     *seq_ptr = cur->mac_parameters->security_frame_counter;
 
     return 0;
@@ -965,6 +955,7 @@ int8_t mac_helper_key_link_frame_counter_set(int8_t interface_id, uint32_t seq_p
     return 0;
 }
 
+#ifndef WISUN_RCP_ENABLE
 void mac_helper_devicetable_remove(mac_api_t *mac_api, uint8_t attribute_index, uint8_t *mac64)
 {
     (void) mac64;
@@ -1004,6 +995,7 @@ void mac_helper_devicetable_set(const mlme_device_descriptor_t *device_desc, pro
 
     tr_debug("Register Device %u, mac16 %x mac64: %s, %"PRIu32, attribute_index, device_desc->ShortAddress, trace_array(device_desc->ExtAddress, 8), device_desc->FrameCounter);
     mac_helper_devicetable_direct_set(cur->mac_api, device_desc, attribute_index);
+    
 }
 
 void mac_helper_devicetable_direct_set(struct mac_api_s *mac_api, const mlme_device_descriptor_t *device_desc, uint8_t attribute_index)
@@ -1019,6 +1011,7 @@ void mac_helper_devicetable_direct_set(struct mac_api_s *mac_api, const mlme_dev
     set_req.value_size = sizeof(mlme_device_descriptor_t);
     mac_api->mlme_req(mac_api, MLME_SET, &set_req);
 }
+#endif
 
 int8_t mac_helper_mac_mlme_max_retry_set(int8_t interface_id, uint8_t mac_retry_set)
 {
@@ -1094,6 +1087,7 @@ int8_t mac_helper_mac_mlme_data_request_restart_set(int8_t interface_id, mlme_re
     return 0;
 }
 
+#ifndef WISUN_RCP_ENABLE
 int8_t mac_helper_mac_device_description_pan_id_update(int8_t interface_id, uint16_t pan_id)
 {
     protocol_interface_info_entry_t *cur;
@@ -1109,6 +1103,7 @@ int8_t mac_helper_mac_device_description_pan_id_update(int8_t interface_id, uint
     cur->mac_api->mlme_req(cur->mac_api, MLME_SET, &set_req);
     return 0;
 }
+#endif
 
 int8_t mac_helper_start_auto_cca_threshold(int8_t interface_id, uint8_t number_of_channels, int8_t default_dbm, int8_t high_limit, int8_t low_limit)
 {
@@ -1117,10 +1112,15 @@ int8_t mac_helper_start_auto_cca_threshold(int8_t interface_id, uint8_t number_o
     if (!cur || !cur->mac_api) {
         return -1;
     }
+    uint8_t start_cca_thr[4] = {number_of_channels, default_dbm, high_limit, low_limit};
     mlme_set_t set_req;
     set_req.attr = macCCAThresholdStart;
-    set_req.value_pointer = &default_dbm;
-    set_req.value_size = sizeof(default_dbm);
+    set_req.value_pointer = &start_cca_thr;
+    set_req.value_size = sizeof(start_cca_thr);
     cur->mac_api->mlme_req(cur->mac_api, MLME_SET, &set_req);
+    /* Get CCA threshold table. Table is stored to interface structure */
+    mlme_get_t get_req;
+    get_req.attr = macCCAThreshold;
+    cur->mac_api->mlme_req(cur->mac_api, MLME_GET, &get_req);
     return 0;
 }

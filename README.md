@@ -12,10 +12,10 @@ that enable engineers to develop applications on the Texas Instruments
 SimpleLink CC13xx and CC26xx family of wireless microcontrollers (MCUs). This
 software toolkit provides a cohesive and consistent software experience for all
 SimpleLink CC13xx and CC26xx wireless MCU users by packaging essential software
-components, such as a Bluetooth® Low Energy (BLE) protocol stack supporting
+components, such as a Bluetooth® Low Energy (LE) protocol stack supporting
 Bluetooth 5.2, Zigbee 3.0 compliant protocol suite, RF-Proprietary examples,
-TI's 15.4 Stack, TI Wi-SUN FAN Stack, Amazon Sidewalk examples, as well as the
-TI-RTOS7 and FreeRTOS™ kernels and TI Drivers in one easy-to-use software
+TI 15.4 Stack, TI Wi-SUN FAN Stack, Amazon Sidewalk examples, as well as the
+TI-RTOS7 and FreeRTOS kernels and TI Drivers in one easy-to-use software
 package along with example applications and documentation. In addition, the
 Dynamic Multi-Protocol Manager (DMM) software component enables multiprotocol
 development on a single SimpleLink wireless MCU.
@@ -30,25 +30,17 @@ their respective repositories for resources and more information.
 
 ## What's New
 
-* Example projects and RF settings for the upcoming CC2674P10 LaunchPad™
-  development kit for SimpleLink multi-standard wireless MCU.
-* CCS Theia, now supports all SimpleLink F2 devices. Please use version 1.5.0 or
-  newer. For more information, see Upcoming Features.
-* The new TI Log driver simplifies adding log statements to your application
-  without compromising on memory or processing power. The following SW modules
-  are instrumented: Power driver, UART2 driver, TI 15.4-Stack.
-* The Wi-SUN gateway example for Linux, wfantund, now supports using external
-  authentication server and/or external DHCP server. It also supports Router
-  Node configuration for the first time.
-* The TI Wi-SUN Stack has three new Network Profiles which simplify network
-  configuration.
-* MCUboot is updated to version 2.0 and now supports using an encrypted image.
-  You can now configure MCUboot in SysConfig.
-* DMM now supports closing a handle, opening the possibility of using more than
-  two handles in one application.
+This version only contains updates for TI Wi-SUN Stack and TI 15.4-Stack. Other
+components remain the same as in SIMPLELINK-LOWPOWER-F2-SDK version 8.30.01.01.
+
+* The new RCP mode in ti-wisunfantund moves the majority of the Wi-SUN stack to
+  the host device. This means 1000+ nodes can be connected, depending on
+  available memory on the host device.
+* Achieve low latency and low power consumption while frequency hopping with the
+  new Low Latency Frequency Hopping Broadcast mode in TI 15.4-Stack
 
 More details, including supported devices, IDEs, and toolchains are provided in
-the [LPF2 8.30.01.01 SDK release notes][sdk release notes].
+the [LPF2 8.31.0.11 SDK release notes][sdk release notes].
 
 ## About this Repository
 
@@ -140,8 +132,8 @@ Dependency download locations:
 
 Please consider creating a post on [TI's E2E forum](https://e2e.ti.com).
 
-[sdk release notes]: https://dev.ti.com/tirex/explore/node?node=A__ADMjnimJ4C5BfFnmM3X-jg__com.ti.SIMPLELINK_CC13XX_CC26XX_SDK__BSEc4rl__8.30.01.01
-[sdk docs]: https://dev.ti.com/tirex/explore/node?node=A__AHaph7YfvcrVy2cDlmb4sQ__com.ti.SIMPLELINK_CC13XX_CC26XX_SDK__BSEc4rl__8.30.01.01
+[sdk release notes]: https://dev.ti.com/tirex/explore/node?node=A__ADMjnimJ4C5BfFnmM3X-jg__com.ti.SIMPLELINK_CC13XX_CC26XX_SDK__BSEc4rl__8.31.00.11
+[sdk docs]: https://dev.ti.com/tirex/explore/node?node=A__AHaph7YfvcrVy2cDlmb4sQ__com.ti.SIMPLELINK_CC13XX_CC26XX_SDK__BSEc4rl__8.31.00.11
 [sysconfig download]: https://www.ti.com/tool/SYSCONFIG
 [ticlang download]: https://www.ti.com/tool/download/ARM-CGT-CLANG
 [gcc download]: https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads

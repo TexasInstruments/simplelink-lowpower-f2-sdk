@@ -28,6 +28,10 @@
 #include "MAC/IEEE802_15_4/mac_header_helper_functions.h"
 #include "MAC/rf_driver_storage.h"
 
+#ifdef WISUN_RCP_ENABLE
+#include "rcp_host.h"
+#endif
+
 static uint8_t *mcps_mac_security_aux_header_start_pointer_get(const mac_pre_parsed_frame_t *buffer);
 static uint8_t *mac_header_information_elements_write(const mac_pre_build_frame_t *buffer, uint8_t *ptr);
 
@@ -541,7 +545,7 @@ static uint8_t *mac_security_interface_aux_security_header_write(uint8_t *ptr, c
     return ptr;
 }
 
-uint8_t *mac_generic_packet_write(struct protocol_interface_rf_mac_setup *rf_ptr, uint8_t *ptr, const mac_pre_build_frame_t *buffer)
+uint8_t *mac_generic_packet_write(struct protocol_interface_rf_mac_setup *rf_ptr, uint8_t *ptr, const mac_pre_build_frame_t *buffer, uint8_t **aux_security_header_ptr)
 {
     ptr = mac_header_write_fcf_dsn(&buffer->fcf_dsn, ptr);
 
@@ -561,10 +565,18 @@ uint8_t *mac_generic_packet_write(struct protocol_interface_rf_mac_setup *rf_ptr
     if (buffer->fcf_dsn.SrcAddrMode) {
         ptr = mcps_mac_frame_address_write(ptr, buffer->fcf_dsn.SrcAddrMode, buffer->SrcAddr);
     }
-
     if (buffer->fcf_dsn.securityEnabled) {
+        if (aux_security_header_ptr != NULL) {
+            *aux_security_header_ptr = ptr;
+        }
         ptr = mac_security_interface_aux_security_header_write(ptr, &buffer->aux_header);
     }
+    else {
+        if (aux_security_header_ptr != NULL) {
+            *aux_security_header_ptr = NULL;
+        }
+    }
+
     uint8_t *ie_start = ptr;
     //Copy Payload and set IE Elemets
     ptr = mac_header_information_elements_write(buffer, ptr);
@@ -572,6 +584,7 @@ uint8_t *mac_generic_packet_write(struct protocol_interface_rf_mac_setup *rf_ptr
         memcpy(ptr, buffer->mac_payload, buffer->mac_payload_length);
         ptr += buffer->mac_payload_length;
     }
+#ifndef WISUN_RCP_ENABLE    
     if (rf_ptr->fhss_api) {
         if (buffer->fcf_dsn.frametype == FC_BEACON_FRAME) {
             dev_driver_tx_buffer_s *tx_buf = &rf_ptr->dev_driver_tx_buffer;
@@ -581,6 +594,7 @@ uint8_t *mac_generic_packet_write(struct protocol_interface_rf_mac_setup *rf_ptr
             rf_ptr->fhss_api->write_synch_info(rf_ptr->fhss_api, ie_start, buffer->headerIeLength, FHSS_DATA_FRAME, buffer->tx_time);
         }
     }
+#endif    
     return ptr;
 }
 
@@ -616,6 +630,74 @@ static bool mac_parse_payload_ie(mac_payload_IE_t *payload_element, uint8_t *ptr
     payload_element->id = ((ie_dummy & 0x7800) >> 11);
     payload_element->content_ptr = ptr + 2;
     return true;
+}
+
+
+
+int8_t mac_parse_length_fields(mac_pre_parsed_frame_t *buffer, uint8_t *data_ptr, uint16_t data_len, const uint8_t *parse_ptr)
+{
+    if (buffer->fcf_dsn.frametype > FC_CMD_FRAME) {
+        return -1;
+    }
+
+    buffer->mac_header_length = parse_ptr - data_ptr;
+    int16_t length = data_len;
+    buffer->mac_header_length += mac_header_address_length(&buffer->fcf_dsn);
+    length -= buffer->mac_header_length;
+    if (length < 0) {
+        return -1;
+    }
+
+    buffer->mac_payload_length = (buffer->frameLength - buffer->mac_header_length);
+
+    if (buffer->fcf_dsn.securityEnabled) {
+        //Read KEYID Mode
+        uint8_t key_id_mode, security_level, mic_len;
+        uint8_t *security_ptr = &buffer->buf[buffer->mac_header_length];
+        uint8_t auxBaseHeader = *security_ptr;
+        key_id_mode = (auxBaseHeader >> 3) & 3;
+        security_level = auxBaseHeader & 7;
+
+        switch (key_id_mode) {
+            case MAC_KEY_ID_MODE_IMPLICIT:
+                if (security_level) {
+                    buffer->security_aux_header_length = 5;
+                } else {
+                    buffer->security_aux_header_length = 1;
+                }
+                break;
+            case MAC_KEY_ID_MODE_IDX:
+                buffer->security_aux_header_length = 6;
+                break;
+            case MAC_KEY_ID_MODE_SRC4_IDX:
+                buffer->security_aux_header_length = 10;
+                break;
+            default:
+                buffer->security_aux_header_length = 14;
+                break;
+        }
+
+        length -= buffer->security_aux_header_length;
+
+#ifndef WISUN_RCP_ENABLE
+        mic_len = mac_security_mic_length_get(security_level);
+        length -= mic_len;
+#else
+        mic_len = 0;
+#endif
+
+        //Verify that data length is not negative
+        if (length < 0) {
+            return -1;
+        }
+
+        buffer->mac_payload_length -= (buffer->security_aux_header_length + mic_len);
+    }
+    //Do not accept command frame with length 0
+    if (buffer->fcf_dsn.frametype == FC_CMD_FRAME && length == 0) {
+        return -1;
+    }
+    return 0;
 }
 
 

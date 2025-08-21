@@ -94,7 +94,7 @@
 
 
 //#define FHNT_MAX_DEVICE_TABLE_ENTRIES           (100)
-#define FHNT_WISUN_JOIN_TABLE_SIZE                 30
+#define FHNT_WISUN_JOIN_TABLE_SIZE                 0
 #define FHNT_TABLE_TYPE_FIXED                   (0)
 #define FHNT_TABLE_TYPE_HOPPING                 (1)
 #define FHNT_TABLE_TYPE_JOIN                    (2)

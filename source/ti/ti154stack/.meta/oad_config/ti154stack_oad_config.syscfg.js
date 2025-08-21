@@ -101,7 +101,7 @@ function getDefaultOadBlockSize(subGSelected)
  */
 function getDefaultOadBlockReqRate(mode, phyType)
 {
-    return mode === "frequencyHopping" && phyType === "phy5kbps" ? 400 : 200;
+    return mode.includes("frequencyHopping") && phyType === "phy5kbps" ? 400 : 200;
 }
 
 /*
@@ -113,7 +113,7 @@ function getDefaultOadBlockReqRate(mode, phyType)
  */
 function getDefaultOadBlockReqPollDelay(mode, phyType)
 {
-    return mode === "frequencyHopping" && phyType === "phy5kbps" ? 100 : 50;
+    return mode.includes("frequencyHopping") && phyType === "phy5kbps" ? 100 : 50;
 }
 
 /*

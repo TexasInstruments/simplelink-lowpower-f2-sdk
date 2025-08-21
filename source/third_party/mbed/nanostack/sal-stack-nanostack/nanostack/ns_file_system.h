@@ -18,7 +18,7 @@
 #ifndef _NS_FILE_SYSTEM_H_
 #define _NS_FILE_SYSTEM_H_
 
-#ifndef NV_RESTORE
+#if 0
 
 #ifdef __cplusplus
 extern "C" {

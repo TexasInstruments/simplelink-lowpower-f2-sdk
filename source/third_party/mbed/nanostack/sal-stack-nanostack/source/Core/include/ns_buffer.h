@@ -230,6 +230,7 @@ typedef struct buffer {
     buffer_priority_t   priority;
     buffer_link_info_t  link_specific;
     uint16_t            mpl_option_data_offset;
+    bool                from_host;              /*!< Buffer content originated from host application */
     uint8_t             trickle_data_len;
     uint8_t             trickle_data_field[4];
     buffer_options_t    options;                /*!< Additional signal info etc */

@@ -90,6 +90,10 @@
 #include "mac_api.h"
 #include "ethernet_mac_api.h"
 
+#ifdef WISUN_RCP_ENABLE
+#include "rcp_queue.h"
+#endif
+
 #define TRACE_GROUP_CORE "core"
 
 #define TRACE_GROUP "core"
@@ -266,7 +270,9 @@ void core_timer_event_handle(uint16_t ticksUpdate)
                     if (ws_info(cur)) {
                         ws_common_seconds_timer(cur, seconds);
                     } else if (cur->lowpan_info & INTERFACE_NWK_ROUTER_DEVICE) {
+#ifndef WISUN_RCP_ENABLE
                         beacon_join_priority_update(cur->id);
+#endif                        
                     }
 #endif
                     if (cur->mac_parameters) {
@@ -319,6 +325,9 @@ void core_timer_event_handle(uint16_t ticksUpdate)
         ipv6_frag_timer(seconds);
         cipv6_frag_timer(seconds);
         net_dns_timer_seconds(seconds);
+#ifdef WISUN_RCP_ENABLE
+        rcp_queue_slow_timer(seconds);
+#endif
 
 #ifdef HAVE_WS
 #if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
@@ -639,9 +648,9 @@ static protocol_interface_info_entry_t *protocol_core_interface_6lowpan_entry_ge
     entry->mac_parameters->mac_default_key_attribute_id = 1;
     entry->mac_parameters->mac_next_key_attribute_id = 2;
     entry->mac_parameters->mac_default_key_index = 0;
-
+#ifndef WISUN_RCP_ENABLE                        
     entry->beacon_cb = beacon_received;
-
+#endif
     entry->mac_api = api;
     int8_t err = entry->mac_api->mac_initialize(entry->mac_api, &mcps_data_confirm_handler, &mcps_data_indication_handler,
                                                 &mcps_purge_confirm_handler, &mlme_confirm_handler, &mlme_indication_handler,
@@ -1166,7 +1175,9 @@ void nwk_bootsrap_state_update(arm_nwk_interface_status_type_e posted_event, pro
                 break;
 
             default:
+#ifndef WISUN_RCP_ENABLE             
                 mac_data_poll_protocol_poll_mode_disable(cur);
+#endif                
                 if (!cur->rpl_domain) {
                     tr_info("NON RPL Ready");
                     //nwk_protocol_poll_mode_disable(cur->nwk_id, 0);
@@ -1204,7 +1215,9 @@ void net_bootsrap_cb_run(uint8_t event)
             if (ws_info(cur)) {
                 ws_bootstrap_state_machine(cur);
             } else {
+#ifndef WISUN_RCP_ENABLE // Optimization
                 protocol_6lowpan_bootstrap(cur);
+#endif
             }
 #endif
         } else if (cur->nwk_id == IF_IPV6) {

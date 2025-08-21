@@ -99,7 +99,7 @@ static int arm_channel_list_validation(const channel_list_s *scan_list)
             i = 8;
         }
         while (i--)
-            if (scan_list->channel_mask[i]) {
+            if (scan_list->channel_mask3[i]) {
                 return 0;
             }
     }
@@ -777,24 +777,24 @@ int8_t arm_nwk_interface_lowpan_init(mac_api_t *api, char *interface_name_ptr)
     return cur->id;
 }
 
-static int arm_net_channel_bit_mask_to_number(const uint32_t *channel_mask)
+static int arm_net_channel_bit_mask_to_number(const uint8_t *channel_mask)
 {
     int i, j;
 
-    for (j = 0; j < 8; j++) {
-        for (i = 0; i < 32; i++) {
-            if (channel_mask[j] & ((uint32_t)1 << i)) {
+    for (j = 0; j < 17; j++) {
+        for (i = 0; i < 8; i++) {
+            if (channel_mask[j] & ((uint8_t)1 << i)) {
                 break;
             }
         }
-        if (i < 32) {
+        if (i < 8) {
             break;
         }
     }
-    if (j > 7) {
+    if (j > 17) {
         return -1;
     }
-    return i + (j * 32);
+    return i + (j * 8);
 }
 
 /**
@@ -864,7 +864,7 @@ int8_t arm_nwk_interface_network_driver_set(int8_t interface_id, const channel_l
             mac_helper_panid_set(cur, link_setup->mac_panid);
             mac_helper_mac16_address_set(cur, link_setup->mac_short_adr);
 
-            int channel_number = arm_net_channel_bit_mask_to_number(nwk_channel_list->channel_mask);
+            int channel_number = arm_net_channel_bit_mask_to_number(nwk_channel_list->channel_mask3);
 
             if (channel_number >= 0) {
                 // copy the channel list information, which is needed by FHSS
@@ -1289,7 +1289,9 @@ int8_t arm_nwk_interface_configure_6lowpan_bootstrap_set(int8_t interface_id, ne
         if (net_6lowpan_mode_extension == NET_6LOWPAN_WS) {
             ret_val = ws_bootstrap_init(interface_id, bootstrap_mode);
         } else {
+#ifndef WISUN_RCP_ENABLE
             ret_val = arm_6lowpan_bootstarp_bootstrap_set(interface_id, bootstrap_mode, net_6lowpan_mode_extension);
+#endif
         }
 #endif
 
@@ -1322,7 +1324,7 @@ int8_t arm_nwk_set_channel_list(int8_t interface_id, const channel_list_s *nwk_c
             return -2;
         }
 
-        const int channel_number = arm_net_channel_bit_mask_to_number(nwk_channel_list->channel_mask);
+        const int channel_number = arm_net_channel_bit_mask_to_number(nwk_channel_list->channel_mask3);
         if (channel_number < 0) {
             return -3;
         }

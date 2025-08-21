@@ -386,7 +386,9 @@ void protocol_6lowpan_host_init(protocol_interface_info_entry_t *cur, bool sleep
     //Clear always INTERFACE_NWK_ROUTER_DEVICE, INTERFACE_NWK_CONF_MAC_RX_OFF_IDLE
     cur->lowpan_info &= ~(INTERFACE_NWK_ROUTER_DEVICE | INTERFACE_NWK_CONF_MAC_RX_OFF_IDLE);
     mac_helper_pib_boolean_set(cur, macRxOnWhenIdle, true);
+#ifndef WISUN_RCP_ENABLE
     mac_data_poll_init(cur);
+#endif
     arm_nwk_6lowpan_borderrouter_data_free(cur);
 }
 
@@ -395,7 +397,9 @@ void protocol_6lowpan_router_init(protocol_interface_info_entry_t *cur)
     cur->bootsrap_mode = ARM_NWK_BOOTSRAP_MODE_6LoWPAN_ROUTER;
     cur->lowpan_info |= INTERFACE_NWK_ROUTER_DEVICE;
     cur->lowpan_info &= ~INTERFACE_NWK_CONF_MAC_RX_OFF_IDLE;
+#ifndef WISUN_RCP_ENABLE
     mac_data_poll_init(cur);
+#endif
     arm_nwk_6lowpan_borderrouter_data_free(cur);
 }
 

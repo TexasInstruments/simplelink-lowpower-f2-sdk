@@ -98,9 +98,16 @@ extern "C"
 #  define SRDY_DISABLE()
 #endif // NPI_FLOW_CTRL = 1
 
+#ifndef MT_PROTOCOL_LEN_FIELD_2BYTES
 #ifndef NPI_TL_BUF_SIZE
 #define NPI_TL_BUF_SIZE         270
 #endif
+#else //MT_PROTOCOL_LEN_FIELD_2BYTES
+#ifndef NPI_TL_BUF_SIZE
+#define NPI_TL_BUF_SIZE         4096 // Enough space for max size UC + BC frames (1.5k each) + async frame (<500B)
+#endif    
+#endif //MT_PROTOCOL_LEN_FIELD_2BYTES
+
 
 #define NPI_SPI_PAYLOAD_SIZE    255
 #define NPI_SPI_HDR_LEN         4
@@ -112,6 +119,8 @@ extern "C"
 #    define NPI_MAX_FRAG_SIZE       NPI_SPI_PAYLOAD_SIZE
 #  endif
 #elif NPI_USE_UART
+#  define NPI_MAX_FRAG_SIZE       NPI_TL_BUF_SIZE //MT_PROTOCOL_LEN_FIELD_2BYTES: should this be modified?
+#elif NPI_USE_NLI
 #  define NPI_MAX_FRAG_SIZE       NPI_TL_BUF_SIZE
 #else
 #  error "NPI ERROR: NPI_USE_UART or NPI_USE_SPI must be defined."

@@ -41,8 +41,10 @@
 
 namespace ot {
 
+// #ifndef LINUX_NANOSTACK
 const TimerScheduler::AlarmApi TimerMilliScheduler::sAlarmMilliApi = {&otPlatAlarmMilliStartAt, &otPlatAlarmMilliStop,
                                                                       &otPlatAlarmMilliGetNow};
+// #endif
 
 bool Timer::DoesFireBefore(const Timer &aSecondTimer, Time aNow)
 {
@@ -189,7 +191,9 @@ extern "C" void otPlatAlarmMilliFired(otInstance *aInstance)
     Instance *instance = static_cast<Instance *>(aInstance);
 
     VerifyOrExit(otInstanceIsInitialized(aInstance), OT_NOOP);
+#ifndef LINUX_NANOSTACK
     instance->Get<TimerMilliScheduler>().ProcessTimers();
+#endif
 
 exit:
     return;

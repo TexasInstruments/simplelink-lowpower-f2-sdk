@@ -49,7 +49,7 @@
 <li><a href="#DisablingCommonUserInterface">Disabling Common User Interface</a></li>
 <li><a href="#MultiPageNVConfiguration">Multi-Page NV Configuration</a></li>
 <li><a href="#IARConfiguration">IAR Configuration</a></li>
-<li><a href="#sbl-binary-file-generation-when-using-thor">SBL Binary File Generation When Using Thor</a></li>
+<li><a href="#sbl-binary-file-generation-when-using-CC13x4-or-CC26x4">SBL Binary File Generation When Using CC13x4 or CC26x4</a></li>
 </ul>
 <h2 id="example-summary"><a name="ExampleSummary"></a>Example Summary</h2>
 <p>The sensor example application demonstrates how to implement a sensor network device using TI 15.4-Stack. TI 15.4-Stack based star network consists of two types of logical devices: the PAN-Coordinator and the network devices, e.g. the Collector and Sensor applications, respectively.</p>
@@ -280,8 +280,8 @@ The common user interface (CUI) is a UART based interface that allows users to c
 <h3 id="iar-configuration"><a name="IARConfiguration"></a>IAR Configuration</h3>
 <p>When using the CC13x2 SDK, the TI XDS110v3 USB Emulator must be selected. For the CC13x2_LAUNCHXL, select TI XDS110 Emulator. In both cases, select the cJTAG interface.</p>
 <p>In order to build from flash, within the IAR Project options &gt; Build Actions Update the “Pre-build command line” and change the “NO_ROM=0” to “NO_ROM=1”.</p>
-<h3 id="sbl-binary-file-generation-when-using-thor"><a name="ThorSBLConfiguration"></a>SBL Binary File Generation When Using Thor</h3>
-<p>When generating a binary file for a Thor device take care not to generate a file containing both the code and the CCFG, as the CCFG is located at 0x5000000 in flash. This will result in a massive binary file, as binary file will include padding for all the space between the application code and the CCFG. Instead, you should generate two binary files - One containing the CCFG, the other containing all other code. To do this, add <code>${CG_TOOL_ROOT}/bin/tiarmobjcopy ${ProjName}.out --output-target binary ${ProjName}-code.bin --remove-section=.ccfg</code> and <code>${CG_TOOL_ROOT}/bin/tiarmobjcopy ${ProjName}.out --output-target binary ${ProjName}-ccfg.bin --only-section=.ccfg</code> to your post build steps to generate two separate binary files. When using the SBL tool, flash the binary file containing the code first, then flash the CCFG. If you flash the CCFG beforehand, you may disable the Serial BootLoader.</p>
+<h3 id="sbl-binary-file-generation-when-using-cc13x4cc26x4"><a name="CC13x4/CC26x4SBLConfiguration"></a>SBL Binary File Generation When Using CC13x4/CC26x4</h3>
+<p>When generating a binary file for a CC13x4/CC26x4 device take care not to generate a file containing both the code and the CCFG, as the CCFG is located at 0x50000000 in flash. This will result in a massive binary file, as binary file will include padding for all the space between the application code and the CCFG. Instead, you should generate two binary files - One containing the CCFG, the other containing all other code. To do this, add <code>${CG_TOOL_ROOT}/bin/tiarmobjcopy ${ProjName}.out --output-target binary ${ProjName}-code.bin --remove-section=.ccfg</code> and <code>${CG_TOOL_ROOT}/bin/tiarmobjcopy ${ProjName}.out --output-target binary ${ProjName}-ccfg.bin --only-section=.ccfg</code> to your post build steps to generate two separate binary files. When using the SBL tool, flash the binary file containing the code first, then flash the CCFG. If you flash the CCFG beforehand, you may disable the Serial BootLoader.</p>
 <p>You can also flash using a hex file, if you don’t want to deal with split binary files.</p>
 <!-- Close div from before_body_template.html -->
 </div>

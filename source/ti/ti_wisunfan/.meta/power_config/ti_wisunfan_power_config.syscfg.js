@@ -215,14 +215,14 @@ function getTxPowerRFConfig(inst, phyType, phyGroup)
     // Get drop down options of RF tx power config
     // All boards support default PA
     // High PA not supported for 1312R1, 1352R1, 1352P2 (Sub-1), 26X2R1, 2652RB
+    // and CC1354P10-6
     const txPowerOptions = RfDesign.getTxPowerOptions(freq, false);
     let txPowerHiOptions = {options: []};
 
     if(board.includes("CC1352P1") || board.includes("CC1312PSIP")
         || board.includes("CC1352P-4") || board.includes("CC1352P_4")
         || board.includes("CC1352P7-1") || board.includes("CC1352P7_1")
-        || board.includes("CC1354P10-1") || board.includes("CC1354P10_1")
-        || board.includes("CC1354P10-6") || board.includes("CC1354P10_6"))
+        || board.includes("CC1354P10-1") || board.includes("CC1354P10_1"))
     {
         // 1352P1 and 1352P4 have high PA in Sub-1 GHz
         txPowerHiOptions = RfDesign.getTxPowerOptions(freq, true);
@@ -423,6 +423,12 @@ function validate(inst, validation)
 function getPowerConfigHiddenState(inst, cfgName)
 {
     let isVisible = true;
+
+    if (inst.project.includes("rcplmac"))
+    {
+        return true; // Hide all security configuration for RCP LMAC example
+    }
+
     switch(cfgName)
     {
         case "transmitPowerSubG":

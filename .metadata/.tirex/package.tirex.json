@@ -3,7 +3,7 @@
         "metadataVersion": "3.1.0",
         "id": "com.ti.SIMPLELINK_CC13XX_CC26XX_SDK",
         "name": "SimpleLink CC13xx CC26xx SDK",
-        "version": "8.30.01.01",
+        "version": "8.31.00.11",
         "type": "software",
         "devices": [
             "CC13x1",

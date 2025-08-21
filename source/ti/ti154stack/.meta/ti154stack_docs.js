@@ -102,6 +102,13 @@ Frequency Hopping | Frequency hopping mode of network operation where network \
 devices hop on different frequencies. For more information, refer to the \
 [Frequency Hopping Mode](/ti154stack/html/ti154stack/\
 frequency-hopping-mode.html) section of the TI15.4-Stack User's Guide.
+Frequency Hopping Low Latency Broadcast | Frequency Hopping mode of network \
+operation where specific application configurations are made to enable low \
+latency broadcasts. Noe that frequency hopping configuration, application \
+poll behavior, and application message formats will be modified upon
+selection of this mode. For more information, refer to the \
+[Frequency Hopping Mode](/ti154stack/html/ti154stack/\
+frequency-hopping-low-latency-broadcast-mode.html) section of the TI15.4-Stack User's Guide.
 `
 };
 

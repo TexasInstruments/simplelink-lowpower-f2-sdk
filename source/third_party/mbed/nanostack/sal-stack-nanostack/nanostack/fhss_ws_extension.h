@@ -30,12 +30,13 @@
 extern "C" {
 #endif
 
+#define NUM_BYTES_IN_CHAN_MASK              (17)
 /**
  * @brief ws_channel_mask_t WS neighbour supported channel mask
  */
 typedef struct ws_channel_mask {
     uint16_t channel_count;                     /**<active channels at mask */
-    uint32_t channel_mask[8];                   /**< Supported channels */
+    uint8_t channel_mask2[NUM_BYTES_IN_CHAN_MASK];                   /**< Supported channels */
 } ws_channel_mask_t;
 
 /**
@@ -58,10 +59,15 @@ typedef struct broadcast_timing_info {
     uint8_t broadcast_dwell_interval;           /**< Broadcast dwell interval */
     uint16_t fixed_channel;                     /**< Broadcast fixed channel*/
     uint16_t broadcast_slot;                    /**< Broadcast slot number */
+
     uint16_t broadcast_schedule_id;             /**< Broadcast schedule identifier */
     uint_fast24_t broadcast_interval_offset;    /**< Broadcast interval offset */
     uint32_t broadcast_interval;                /**< Broadcast interval */
     uint32_t bt_rx_timestamp;                   /**< BT-IE reception timestamp */
+#if defined(WISUN_RCP_ENABLE)
+    uint16_t broadcast_number_of_channels;      /**< broadcast number of channels */
+    ws_channel_mask_t bc_channel_list;          /**< Neighbor broadcast channel list */
+#endif
 } broadcast_timing_info_t;
 
 /**
@@ -73,7 +79,6 @@ typedef struct fhss_ws_neighbor_timing_info {
     unicast_timing_info_t uc_timing_info;       /**< Neighbor unicast timing info */
     broadcast_timing_info_t bc_timing_info;     /**< Neighbor broadcast timing info */
     ws_channel_mask_t uc_channel_list;          /**< Neighbor Unicast channel list */
-    uint32_t *excluded_channels;                /**< Neighbor excluded channels (bit mask) */
 } fhss_ws_neighbor_timing_info_t;
 
 /**
@@ -92,7 +97,7 @@ typedef fhss_ws_neighbor_timing_info_t *fhss_get_neighbor_info(const fhss_api_t 
  * @param force_synch If false, synchronization is done only if minimum (internal) synchronization interval is exceed.
  * @return 0 on success, -1 on fail.
  */
-extern int ns_fhss_ws_set_parent(const fhss_api_t *fhss_api, const uint8_t eui64[8], const broadcast_timing_info_t *bc_timing_info, const bool force_synch);
+extern int ns_fhss_ws_set_parent(const fhss_api_t *fhss_api, const uint8_t eui64[8], broadcast_timing_info_t *bc_timing_info, const bool force_synch);
 
 /**
  * @brief Remove parent which was set by ns_fhss_ws_set_parent function.

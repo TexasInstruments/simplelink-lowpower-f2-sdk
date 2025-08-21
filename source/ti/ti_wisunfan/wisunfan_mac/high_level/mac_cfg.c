@@ -182,7 +182,7 @@ const macPib_t macPibDefaults =
   FALSE,                                      /* assocciatedPanCoord */
   MAC_DEFAULT_MAX_BE,                         /* maxBe */
   MAC_DEFAULT_FRAME_WAIT_TIME,                /* maxFrameTotalWaitTime */
-  3,                                          /* maxFrameRetries */
+  6,                                          /* maxFrameRetries */
   MAC_2P4G_RESPONSE_WAIT_TIME,                /* responseWaitTime */
   0,                                          /* syncSymbolOffset */
   TRUE,                                       /* timeStampSupported */

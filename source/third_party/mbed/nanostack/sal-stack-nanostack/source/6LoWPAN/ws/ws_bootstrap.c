@@ -82,7 +82,7 @@
 #include "libNET/src/net_dns_internal.h"
 #include "Service_Libs/random_early_detection/random_early_detection_api.h"
 #include "application.h"
-#ifdef FEATURE_TIMAC_SUPPORT
+#if defined(FEATURE_TIMAC_SUPPORT) && !defined(LINUX_NANOSTACK)
 #include "timac_ns_interface.h"
 #endif
 
@@ -94,7 +94,9 @@ volatile uint8_t disable_pa_pc_after_join = 1;
 volatile uint8_t disable_pa_pc_after_join = 0;
 #endif
 
+#ifdef FEATURE_FHNT_CONTROL
 #include "fh_nt.h"
+#endif
 
 #define TRACE_GROUP "wsbs"
 
@@ -126,6 +128,10 @@ uint8_t test_eapol_active_max = 3;
 uint16_t num_eapol_active_max_rejections = 0;
 #endif
 
+#ifdef WISUN_RCP_SPINEL_DEBUG
+rcp_debug_t rcp_debug = {0};
+#endif
+
 void ws_bootstrap_set_MAC_panid(protocol_interface_info_entry_t *cur);
 
 //The pan id filtering changes are being done in the ws_bootstrap.c file, which
@@ -142,7 +148,7 @@ uint16_t panid_list_clear_timeout_counter = 0;
 extern configurable_props_t cfg_props;
 extern uint8_t enableVPIE;
 extern uint8_t detectVPIE;  /* for Router node */
-uint16 panID_in_VPIE;
+uint16_t panID_in_VPIE;
 
 static void ws_bootstrap_event_handler(arm_event_s *event);
 static void ws_bootstrap_state_change(protocol_interface_info_entry_t *cur, icmp_state_t nwk_bootstrap_state);
@@ -184,7 +190,7 @@ static void ws_bootstrap_asynch_trickle_stop(protocol_interface_info_entry_t *cu
 static void ws_bootstrap_advertise_start(protocol_interface_info_entry_t *cur);
 static void ws_bootstrap_rpl_scan_start(protocol_interface_info_entry_t *cur);
 
-static uint16_t ws_randomize_fixed_channel(uint16_t configured_fixed_channel, uint8_t number_of_channels, uint32_t *channel_mask);
+static uint16_t ws_randomize_fixed_channel(uint16_t configured_fixed_channel, uint8_t number_of_channels, uint8_t *channel_mask);
 static void ws_bootstrap_panid_filter_lists_init();
 static bool ws_bootstrap_panid_filter_list_is_empty(panid_list_type_e panid_list_type);
 
@@ -210,12 +216,14 @@ static mac_neighbor_table_entry_t *ws_bootstrap_mac_neighbor_allocate(struct pro
     if (!neighbor) {
         return NULL;
     }
-    mlme_device_descriptor_t device_desc;
     neighbor->lifetime = ws_cfg_neighbour_temporary_lifetime_get();
     neighbor->link_lifetime = ws_cfg_neighbour_temporary_lifetime_get();
+
+#ifndef WISUN_RCP_ENABLE
+    mlme_device_descriptor_t device_desc;
     mac_helper_device_description_write(interface, &device_desc, neighbor->mac64, neighbor->mac16, 0, false);
     mac_helper_devicetable_set(&device_desc, interface, neighbor->index, interface->mac_parameters->mac_default_key_index, true);
-
+#endif
     return neighbor;
 }
 
@@ -255,7 +263,9 @@ void ws_bootstrap_mac_neighbor_short_time_set(struct protocol_interface_info_ent
 
 static void ws_bootstrap_neighbor_delete(struct protocol_interface_info_entry *interface, mac_neighbor_table_entry_t *entry_ptr)
 {
+#ifndef WISUN_RCP_ENABLE
     mac_helper_devicetable_remove(interface->mac_api, entry_ptr->index, entry_ptr->mac64);
+#endif
     etx_neighbor_remove(interface->id, entry_ptr->index, entry_ptr->mac64);
     ws_neighbor_class_entry_remove(&interface->ws_info->neighbor_storage, entry_ptr->index);
 }
@@ -289,8 +299,10 @@ ws_neighbor_class_entry_t *ws_bootstrap_eapol_tx_temporary_set(struct protocol_i
     }
 
     memcpy(mac_entry->mac64, src64, 8);
+#ifndef WISUN_RCP_ENABLE
     mac_helper_device_description_write(interface, &device_desc, src64, 0xffff, 0, false);
     mac_helper_devicetable_direct_set(interface->mac_api, &device_desc, interface->ws_info->eapol_tx_index);
+#endif
     return ws_neighbor_class_entry_get(&interface->ws_info->neighbor_storage, mac_entry->index);
 }
 
@@ -302,7 +314,9 @@ void ws_bootstrap_eapol_tx_temporary_clear(struct protocol_interface_info_entry 
     }
 
     memset(mac_entry->mac64, 0xff, 8);
+#ifndef WISUN_RCP_ENABLE
     mac_helper_devicetable_remove(interface->mac_api, interface->ws_info->eapol_tx_index, NULL);
+#endif
 }
 
 static void ws_bootstrap_neighbor_list_clean(struct protocol_interface_info_entry *interface)
@@ -656,7 +670,7 @@ static void ws_bootstrap_llc_hopping_update(struct protocol_interface_info_entry
     cur->ws_info->hopping_schdule.fhss_bsi = fhss_configuration->bsi;
 }
 
-static uint8_t ws_generate_exluded_channel_list_from_active_channels(ws_excluded_channel_data_t *excluded_data, const uint32_t *selected_channel_mask, const uint32_t *global_channel_mask, uint16_t number_of_channels)
+static uint8_t ws_generate_exluded_channel_list_from_active_channels(ws_excluded_channel_data_t *excluded_data, const uint8_t *selected_channel_mask, const uint8_t *global_channel_mask, uint16_t number_of_channels)
 {
     bool active_range = false;
 
@@ -664,7 +678,7 @@ static uint8_t ws_generate_exluded_channel_list_from_active_channels(ws_excluded
     memset(excluded_data, 0, sizeof(ws_excluded_channel_data_t));
 
     for (uint8_t i = 0; i < number_of_channels; i++) {
-        if (!(global_channel_mask[0 + (i / 32)] & (1 << (i % 32)))) {
+        if (!(global_channel_mask[0 + (i / 8)] & (1 << (i % 8)))) {
             //Global exluded channel
             if (active_range) {
                 //Mark range stop here
@@ -673,27 +687,38 @@ static uint8_t ws_generate_exluded_channel_list_from_active_channels(ws_excluded
             continue;
         }
 
-        if (selected_channel_mask[0 + (i / 32)] & (1 << (i % 32))) {
+        if (selected_channel_mask[0 + (i / 8)] & (1 << (i % 8))) {
             if (active_range) {
                 //Mark range stop here
                 active_range = false;
+                if (excluded_data->excluded_range_length <= WS_EXCLUDED_MAX_RANGE_TO_SEND)
+                {
+                    // update save the range_end if range_length <= WS_EXCLUDED_MAX_RANGE_TO_SEND
+                    excluded_data->exluded_range[excluded_data->excluded_range_length - 1].range_end = i-1;
+                }
             }
         } else {
             //Mark excluded channel
             //Swap Order already here
-            excluded_data->channel_mask[0 + (i / 32)] |= 1 << (31 - (i % 32));
+            excluded_data->channel_mask4[0 + (i / 8)] |= 1 << ( (i % 8));
             excluded_data->excluded_channel_count++;
 
-            if (excluded_data->excluded_range_length < WS_EXCLUDED_MAX_RANGE_TO_SEND) {
-                if (!active_range) {
-                    excluded_data->excluded_range_length++;
-                    active_range = true;
+            if (!active_range) {
+                excluded_data->excluded_range_length++;
+                active_range = true;
+                if (excluded_data->excluded_range_length <= WS_EXCLUDED_MAX_RANGE_TO_SEND)
+                {   // update save the range start if range_length <= WS_EXCLUDED_MAX_RANGE_TO_SEND
                     //Set start channel
                     excluded_data->exluded_range[excluded_data->excluded_range_length - 1].range_start = i;
-                } else {
+                }
+            } else {
+                // continue in active range
+                if (excluded_data->excluded_range_length <= WS_EXCLUDED_MAX_RANGE_TO_SEND)
+                {
                     excluded_data->exluded_range[excluded_data->excluded_range_length - 1].range_end = i;
                 }
             }
+
         }
     }
 
@@ -722,14 +747,73 @@ static uint8_t ws_generate_exluded_channel_list_from_active_channels(ws_excluded
 static void ws_fhss_configure_channel_masks(protocol_interface_info_entry_t *cur, fhss_ws_configuration_t *fhss_configuration)
 {
     fhss_configuration->channel_mask_size = cur->ws_info->hopping_schdule.number_of_channels;
-    ws_generate_channel_list(fhss_configuration->channel_mask, cur->ws_info->hopping_schdule.number_of_channels, cur->ws_info->hopping_schdule.regulatory_domain, cur->ws_info->hopping_schdule.operating_class, cur->ws_info->hopping_schdule.channel_plan_id);
-    ws_generate_channel_list(fhss_configuration->unicast_channel_mask, cur->ws_info->hopping_schdule.number_of_channels, cur->ws_info->hopping_schdule.regulatory_domain, cur->ws_info->hopping_schdule.operating_class, cur->ws_info->hopping_schdule.channel_plan_id);
+    ws_generate_channel_list(fhss_configuration->channel_mask1, cur->ws_info->hopping_schdule.number_of_channels, cur->ws_info->hopping_schdule.regulatory_domain, cur->ws_info->hopping_schdule.operating_class, cur->ws_info->hopping_schdule.channel_plan_id);
+    ws_generate_channel_list(fhss_configuration->unicast_channel_mask1, cur->ws_info->hopping_schdule.number_of_channels, cur->ws_info->hopping_schdule.regulatory_domain, cur->ws_info->hopping_schdule.operating_class, cur->ws_info->hopping_schdule.channel_plan_id);
     // using bitwise AND operation for user set channel mask to remove channels not allowed in this device
-    for (uint8_t n = 0; n < 8; n++) {
-        fhss_configuration->unicast_channel_mask[n] &= cur->ws_info->cfg->fhss.fhss_channel_mask[n];
+    for (uint8_t n = 0; n < NUM_BYTES_IN_CHAN_MASK; n++) {
+        fhss_configuration->unicast_channel_mask1[n] &= cur->ws_info->cfg->fhss.fhss_uc_channel_mask5[n];
     }
     //Update Exluded channels
-    cur->ws_info->hopping_schdule.channel_plan = ws_generate_exluded_channel_list_from_active_channels(&cur->ws_info->hopping_schdule.excluded_channels, fhss_configuration->unicast_channel_mask, fhss_configuration->channel_mask, cur->ws_info->hopping_schdule.number_of_channels);
+    cur->ws_info->hopping_schdule.channel_plan = ws_generate_exluded_channel_list_from_active_channels(&cur->ws_info->hopping_schdule.excluded_channels, fhss_configuration->unicast_channel_mask1, fhss_configuration->channel_mask1, cur->ws_info->hopping_schdule.number_of_channels);
+
+    /* for fixed channel, override the channel exclusion*/
+    if (cur->ws_info->hopping_schdule.uc_channel_function == 0)
+    {
+        // if fixed channel is used, then we don't need to exclude any channels
+        cur->ws_info->hopping_schdule.excluded_channels.excuded_channel_ctrl = WS_EXC_CHAN_CTRL_NONE;
+    }
+
+#ifdef WISUN_RCP_ENABLE
+    // generate the broadcast schedule only for BR
+    if (cur->bootsrap_mode == ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER)
+    {
+        ws_generate_channel_list(fhss_configuration->broadcast_channel_mask1, cur->ws_info->hopping_schdule.number_of_channels, cur->ws_info->hopping_schdule.regulatory_domain, cur->ws_info->hopping_schdule.operating_class, cur->ws_info->hopping_schdule.channel_plan_id);
+        // using bitwise AND operation for user set channel mask to remove channels not allowed in this device
+        for (uint8_t n = 0; n < NUM_BYTES_IN_CHAN_MASK; n++) {
+            fhss_configuration->broadcast_channel_mask1[n] &= cur->ws_info->cfg->fhss.fhss_bc_channel_mask5[n];
+        }
+        //Update Exluded broadcast channels
+        cur->ws_info->hopping_schdule.channel_plan = ws_generate_exluded_channel_list_from_active_channels(&cur->ws_info->hopping_schdule.bc_excluded_channels, fhss_configuration->broadcast_channel_mask1, fhss_configuration->channel_mask1, cur->ws_info->hopping_schdule.number_of_channels);
+
+        /* for fixed channel, override the channel exclusion*/
+        if (cur->ws_info->hopping_schdule.bc_channel_function == 0)
+        {
+            // if fixed channel is used, then we don't need to exclude any channels
+            cur->ws_info->hopping_schdule.bc_excluded_channels.excuded_channel_ctrl = WS_EXC_CHAN_CTRL_NONE;
+        }
+    }
+#endif
+}
+
+void ws_bootstrap_router_broadcast_excluded_mask_set(protocol_interface_info_entry_t *cur,ws_neighbor_class_entry_t *ws_neighbor)
+{
+    uint8_t *neighbor_bc_ch_mask;      //from neighbor table entry
+    uint8_t bc_ch_mask[NUM_BYTES_IN_CHAN_MASK],chan_mask[NUM_BYTES_IN_CHAN_MASK];
+    ws_hopping_schedule_t *hop_schedule;
+
+    /* get the neighbor table entry broadcast channel mask */
+    neighbor_bc_ch_mask =   ws_neighbor->fhss_data.bc_timing_info.bc_channel_list.channel_mask2;
+
+    hop_schedule = &(cur->ws_info->hopping_schdule);
+
+    /*  generate the channel mask based on our own channel plan
+        we assume our chan plan and received channel plan should be the same
+    */
+    ws_generate_channel_list(bc_ch_mask, hop_schedule->number_of_channels, hop_schedule->regulatory_domain, hop_schedule->operating_class, hop_schedule->channel_plan_id);
+
+    // using bitwise AND operation for user set channel mask to remove channels not allowed in this device
+    for (uint8_t n = 0; n < NUM_BYTES_IN_CHAN_MASK; n++) {
+        chan_mask [n] = bc_ch_mask[n];
+        /* save info into cfg */
+        cur->ws_info->cfg->fhss.fhss_bc_channel_mask5[n] = neighbor_bc_ch_mask[n];
+
+        bc_ch_mask[n] &= neighbor_bc_ch_mask[n];  // received the BC channel mask
+    }
+
+    //Update Exluded broadcast channels
+    cur->ws_info->hopping_schdule.channel_plan =
+    ws_generate_exluded_channel_list_from_active_channels(&hop_schedule->bc_excluded_channels, bc_ch_mask, chan_mask, hop_schedule->number_of_channels);
+
 }
 
 static int8_t ws_fhss_initialize(protocol_interface_info_entry_t *cur)
@@ -746,6 +830,12 @@ static int8_t ws_fhss_initialize(protocol_interface_info_entry_t *cur)
         fhss_configuration.ws_bc_channel_function = (fhss_ws_channel_functions)cur->ws_info->cfg->fhss.fhss_bc_channel_function;
         fhss_configuration.fhss_bc_dwell_interval = cur->ws_info->cfg->fhss.fhss_bc_dwell_interval;
         fhss_configuration.fhss_broadcast_interval = cur->ws_info->cfg->fhss.fhss_bc_interval;
+#if defined(WISUN_RCP_ENABLE)
+        // retrieve the fhss fixed channel info from ws_info->cfg
+        fhss_configuration.unicast_fixed_channel   = cur->ws_info->cfg->fhss.fhss_uc_fixed_channel;
+        fhss_configuration.broadcast_fixed_channel = cur->ws_info->cfg->fhss.fhss_bc_fixed_channel;
+#endif
+
         fhss_api = ns_fhss_ws_create(&fhss_configuration, cur->ws_info->fhss_timer_ptr);
 
         if (!fhss_api) {
@@ -763,9 +853,9 @@ static int8_t ws_fhss_initialize(protocol_interface_info_entry_t *cur)
         }
         fhss_configuration = *fhss_configuration_copy;
         //Overwrite domain channel setup this will over write a default 35 channel
-        int num_of_channels = channel_list_count_channels(fhss_configuration_copy->unicast_channel_mask);
+        int num_of_channels = channel_list_count_channels(fhss_configuration_copy->unicast_channel_mask1);
         cur->ws_info->hopping_schdule.number_of_channels = (uint8_t) num_of_channels;
-        memcpy(cur->ws_info->cfg->fhss.fhss_channel_mask, fhss_configuration_copy->unicast_channel_mask, sizeof(uint32_t) * 8);
+        memcpy(cur->ws_info->cfg->fhss.fhss_uc_channel_mask5, fhss_configuration_copy->unicast_channel_mask1, sizeof(fhss_configuration_copy->unicast_channel_mask1) );
         cur->ws_info->cfg->fhss.fhss_uc_channel_function = fhss_configuration_copy->ws_uc_channel_function;
         cur->ws_info->cfg->fhss.fhss_bc_channel_function = fhss_configuration_copy->ws_bc_channel_function;
         cur->ws_info->cfg->fhss.fhss_bc_dwell_interval = fhss_configuration_copy->fhss_bc_dwell_interval;
@@ -807,8 +897,8 @@ static int8_t ws_fhss_border_router_configure(protocol_interface_info_entry_t *c
     fhss_configuration.bsi = ws_bbr_bsi_generate(cur);
     ws_fhss_configure_channel_masks(cur, &fhss_configuration);
     // Randomize fixed channels. Only used if channel plan is fixed.
-    cur->ws_info->cfg->fhss.fhss_uc_fixed_channel = ws_randomize_fixed_channel(cur->ws_info->cfg->fhss.fhss_uc_fixed_channel, cur->ws_info->hopping_schdule.number_of_channels, fhss_configuration.channel_mask);
-    cur->ws_info->cfg->fhss.fhss_bc_fixed_channel = ws_randomize_fixed_channel(cur->ws_info->cfg->fhss.fhss_bc_fixed_channel, cur->ws_info->hopping_schdule.number_of_channels, fhss_configuration.channel_mask);
+    cur->ws_info->cfg->fhss.fhss_uc_fixed_channel = ws_randomize_fixed_channel(cur->ws_info->cfg->fhss.fhss_uc_fixed_channel, cur->ws_info->hopping_schdule.number_of_channels, fhss_configuration.channel_mask1);
+    cur->ws_info->cfg->fhss.fhss_bc_fixed_channel = ws_randomize_fixed_channel(cur->ws_info->cfg->fhss.fhss_bc_fixed_channel, cur->ws_info->hopping_schdule.number_of_channels, fhss_configuration.channel_mask1);
     ws_fhss_set_defaults(cur, &fhss_configuration);
     ns_fhss_ws_configuration_set(cur->ws_info->fhss_api, &fhss_configuration);
     ws_bootstrap_llc_hopping_update(cur, &fhss_configuration);
@@ -816,15 +906,15 @@ static int8_t ws_fhss_border_router_configure(protocol_interface_info_entry_t *c
     return 0;
 }
 
-static bool ws_channel_allowed(uint8_t channel, uint32_t *channel_mask)
+static bool ws_channel_allowed(uint8_t channel, uint8_t *channel_mask)
 {
-    if ((1 << (channel % 32)) & (channel_mask[channel / 32])) {
+    if ((1 << (channel % 8)) & (channel_mask[channel / 8])) {
         return true;
     }
     return false;
 }
 
-static uint16_t ws_randomize_fixed_channel(uint16_t configured_fixed_channel, uint8_t number_of_channels, uint32_t *channel_mask)
+static uint16_t ws_randomize_fixed_channel(uint16_t configured_fixed_channel, uint8_t number_of_channels, uint8_t *channel_mask)
 {
     if (configured_fixed_channel == 0xFFFF) {
         uint16_t random_channel = randLIB_get_random_in_range(0, number_of_channels - 1);
@@ -856,8 +946,8 @@ static int8_t ws_fhss_configure(protocol_interface_info_entry_t *cur, bool disco
     }
     fhss_configuration.ws_bc_channel_function = WS_FIXED_CHANNEL;
     fhss_configuration.fhss_broadcast_interval = 0;
-    uint8_t tmp_uc_fixed_channel = ws_randomize_fixed_channel(cur->ws_info->cfg->fhss.fhss_uc_fixed_channel, cur->ws_info->hopping_schdule.number_of_channels, fhss_configuration.channel_mask);
-    uint8_t tmp_bc_fixed_channel = ws_randomize_fixed_channel(cur->ws_info->cfg->fhss.fhss_bc_fixed_channel, cur->ws_info->hopping_schdule.number_of_channels, fhss_configuration.channel_mask);
+    uint8_t tmp_uc_fixed_channel = ws_randomize_fixed_channel(cur->ws_info->cfg->fhss.fhss_uc_fixed_channel, cur->ws_info->hopping_schdule.number_of_channels, fhss_configuration.channel_mask1);
+    uint8_t tmp_bc_fixed_channel = ws_randomize_fixed_channel(cur->ws_info->cfg->fhss.fhss_bc_fixed_channel, cur->ws_info->hopping_schdule.number_of_channels, fhss_configuration.channel_mask1);
     fhss_configuration.unicast_fixed_channel = tmp_uc_fixed_channel;
     fhss_configuration.broadcast_fixed_channel = tmp_bc_fixed_channel;
     ns_fhss_ws_configuration_set(cur->ws_info->fhss_api, &fhss_configuration);
@@ -883,13 +973,13 @@ static int8_t ws_fhss_enable(protocol_interface_info_entry_t *cur)
     }
     if (cur->bootsrap_mode == ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER) {
         ns_fhss_ws_set_hop_count(cur->ws_info->fhss_api, 0);
-#ifdef FEATURE_TIMAC_SUPPORT
+#if defined(FEATURE_TIMAC_SUPPORT) && !defined(WISUN_RCP_ENABLE)
         timac_BootstrapCallbackMode(1);
 #endif
     }
     else
     {
-#ifdef FEATURE_TIMAC_SUPPORT
+#if defined(FEATURE_TIMAC_SUPPORT) && !defined(WISUN_RCP_ENABLE)
         timac_BootstrapCallbackMode(0);
 #endif
     }
@@ -925,6 +1015,9 @@ static void ws_bootstrap_primary_parent_set(struct protocol_interface_info_entry
         fhss_configuration.fhss_broadcast_interval = neighbor_info->ws_neighbor->fhss_data.bc_timing_info.broadcast_interval;
         fhss_configuration.broadcast_fixed_channel = cur->ws_info->cfg->fhss.fhss_bc_fixed_channel;
         neighbor_info->ws_neighbor->synch_done = true;
+
+        /* need to update the BC excluded channel mask */
+        ws_bootstrap_router_broadcast_excluded_mask_set(cur,neighbor_info->ws_neighbor);
     }
 
     ns_fhss_ws_configuration_set(cur->ws_info->fhss_api, &fhss_configuration);
@@ -999,7 +1092,7 @@ uint16_t ws_etx_read(protocol_interface_info_entry_t *interface, addrtype_t addr
         return 0;
     }
 
-    uint8_t attribute_index;
+    uint16_t attribute_index;
 
     mac_neighbor_table_entry_t *mac_neighbor = mac_neighbor_table_address_discover(mac_neighbor_info(interface), addr_ptr + PAN_ID_LEN, addr_type);
     if (!mac_neighbor) {
@@ -1168,6 +1261,10 @@ static int8_t ws_bootstrap_up(protocol_interface_info_entry_t *cur)
         tr_error("Interface not yet fully configured");
         return -2;
     }
+#if defined(WISUN_RCP_ENABLE)
+    // save the ws_cfg to interface so the timac fshh module can have WS configuration
+    ws_cfg_fhss_save(cur);
+#endif
     if (ws_fhss_initialize(cur) != 0) {
         tr_error("fhss initialization failed");
         return -3;
@@ -1433,7 +1530,7 @@ static void ws_bootstrap_decode_exclude_range_to_mask_by_range(void *mask_buffer
     uint8_t mask_index = 0;
     //uint8_t channel_index = 0;
     uint8_t *range_ptr = range_info->range_start;
-    uint32_t *mask_ptr = mask_buffer;
+    uint8_t *mask_ptr = mask_buffer;
     while (range_info->number_of_range) {
         range_start = common_read_16_bit_inverse(range_ptr);
         range_ptr += 2;
@@ -1441,14 +1538,8 @@ static void ws_bootstrap_decode_exclude_range_to_mask_by_range(void *mask_buffer
         range_ptr += 2;
         range_info->number_of_range--;
         for (uint16_t channel = 0; channel < number_of_channels; channel++) {
-
-            if (channel && (channel % 32 == 0)) {
-                mask_index++;
-                //channel_index = 0;
-            }
             if (channel >= range_start && channel <= range_stop) {
-                //mask_ptr[mask_index] |= 1 << (31 - channel_index);
-                mask_ptr[0 + (channel / 32)] |= 1 << (31 - (channel % 32));
+                mask_ptr[0 + (channel / 8)] |= 1 << (7 - (channel % 8));
             } else if (channel > range_stop) {
                 break;
             }
@@ -1464,11 +1555,11 @@ static void ws_bootstrap_candidate_parent_store(parent_info_t *parent, const str
 
     //copy excluded channel here if it is inline
     if (ws_us->excluded_channel_ctrl == WS_EXC_CHAN_CTRL_RANGE) {
-        memset(parent->excluded_channel_data, 0, 32);
+        memset(parent->excluded_channel_data, 0, 17);
         //Decode Range to mask here
-        ws_bootstrap_decode_exclude_range_to_mask_by_range(parent->excluded_channel_data, &parent->ws_us.excluded_channels.range, 256);
+        ws_bootstrap_decode_exclude_range_to_mask_by_range(parent->excluded_channel_data, &parent->ws_us.excluded_channels.range, 129);
         parent->ws_us.excluded_channels.mask.channel_mask = parent->excluded_channel_data;
-        parent->ws_us.excluded_channels.mask.mask_len_inline = 32;
+        parent->ws_us.excluded_channels.mask.mask_len_inline = 17;
         parent->ws_us.excluded_channel_ctrl = WS_EXC_CHAN_CTRL_BITMASK;
     } else if (ws_us->excluded_channel_ctrl == WS_EXC_CHAN_CTRL_BITMASK) {
         parent->ws_us.excluded_channels.mask.channel_mask = parent->excluded_channel_data;
@@ -1482,6 +1573,10 @@ static void ws_bootstrap_candidate_parent_store(parent_info_t *parent, const str
     parent->pan_information.rpl_routing_method = pan_information->rpl_routing_method;
     parent->pan_information.version = pan_information->version;
 
+#ifdef WISUN_FAN_CORE_1_1
+    parent->pan_information.jm_version = pan_information->jm_version;
+    parent->pan_information.jm_plf = pan_information->jm_plf;
+#endif
     // Saved from message
     parent->timestamp = data->timestamp;
     parent->pan_id = data->SrcPANId;
@@ -1598,11 +1693,13 @@ static bool ws_bootstrap_candidate_parent_compare(parent_info_t *p1, parent_info
 static void ws_bootstrap_candidate_list_clean(struct protocol_interface_info_entry *cur, uint8_t pan_max, uint32_t current_time, uint16_t pan_id)
 {
     int pan_count = 0;
+#ifdef FEATURE_FHNT_CONTROL
     FHAPI_status status;
+#endif
 
     ns_list_foreach_safe(parent_info_t, entry, &cur->ws_info->parent_list_reserved) {
         if ((current_time - entry->age) > WS_PARENT_LIST_MAX_AGE) {
-#ifdef FEATURE_FHNT_CONTROL
+#if defined(FEATURE_FHNT_CONTROL) && !defined(WISUN_RCP_ENABLE)
             if (cur->nwk_bootstrap_state == ER_ACTIVE_SCAN || cur->nwk_bootstrap_state == ER_PANA_AUTH) {
                 status = FHNT_deleteTableEntry(FHNT_TABLE_TYPE_JOIN, (uint8_t *) entry->addr);
                 tr_warn("FHNT ns: ws_bs_pa clean delete join b/c of age: %s | status: %d", trace_array(entry->addr, 8), status);
@@ -1616,7 +1713,7 @@ static void ws_bootstrap_candidate_list_clean(struct protocol_interface_info_ent
             // Same panid if there is more than limited amount free those
             pan_count++;
             if (pan_count > pan_max) {
-#ifdef FEATURE_FHNT_CONTROL
+#if defined(FEATURE_FHNT_CONTROL) && !defined(WISUN_RCP_ENABLE)
                 if (cur->nwk_bootstrap_state == ER_ACTIVE_SCAN) {
                     parent_info_t *selected_parent_ptr = ws_bootstrap_candidate_parent_get_best(cur);
                     if (!(selected_parent_ptr && (memcmp(selected_parent_ptr->addr, entry->addr, 8) == 0))) {
@@ -1680,7 +1777,7 @@ static void ws_bootstrap_pan_information_store(struct protocol_interface_info_en
     ws_bootstrap_candidate_parent_store(new_entry, data, ws_utt, ws_us, pan_information);
     // set to the correct place in list
     ws_bootstrap_candidate_parent_sort(cur, new_entry);
-#ifdef FEATURE_FHNT_CONTROL
+#if defined(FEATURE_FHNT_CONTROL) && !defined(WISUN_RCP_ENABLE)
     if (cur->nwk_bootstrap_state == ER_ACTIVE_SCAN || cur->nwk_bootstrap_state == ER_PANA_AUTH) {
         FHAPI_status status = FHNT_createTableEntry(FHNT_TABLE_TYPE_JOIN, (uint8_t *) data->SrcAddr);
         tr_warn("FHNT ns: ws_bs_pa store add join: %s | status: %d", trace_array(data->SrcAddr, 8), status);
@@ -1700,6 +1797,23 @@ static void ws_bootstrap_pan_advertisement_analyse(struct protocol_interface_inf
         fhnt_delete = true;
     }
 
+#ifdef WISUN_FAN_CORE_1_1
+    /* read the JM-IE */
+    struct ws_jm_ie_s jm_ie;
+    if (! ws_wp_nested_jm_read(ie_ext->payloadIeList, ie_ext->payloadIeListLength, &jm_ie))
+    {
+        tr_error("No JM information");
+        jm_ie.version = 0;
+        jm_ie.plf = 0;
+    }
+
+    if (cur->bootsrap_mode != ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER)
+    {
+        pan_information.jm_version = jm_ie.version;
+        pan_information.jm_plf = jm_ie.plf;
+    }
+
+#endif
     if (ws_us->excluded_channel_ctrl) {
         //Validate that we can storage data
         if (ws_us->excluded_channel_ctrl == WS_EXC_CHAN_CTRL_BITMASK && ws_us->excluded_channels.mask.mask_len_inline > 32) {
@@ -1722,7 +1836,7 @@ static void ws_bootstrap_pan_advertisement_analyse(struct protocol_interface_inf
 
     if (fhnt_delete)
     {
-#ifdef FEATURE_FHNT_CONTROL
+#if defined(FEATURE_FHNT_CONTROL) && !defined(WISUN_RCP_ENABLE)
         FHAPI_status status = FHNT_deleteEntry((sAddrExt_t *) data->SrcAddr);
         tr_warn("FHNT ns: ws_bs_pa delete: %s | status: %d", trace_array(data->SrcAddr, 8), status);
 #endif
@@ -1768,6 +1882,11 @@ static void ws_bootstrap_pan_advertisement_analyse(struct protocol_interface_inf
             cur->ws_info->pan_information.rpl_routing_method = pan_information.rpl_routing_method;
             cur->ws_info->pan_information.use_parent_bs = pan_information.use_parent_bs;
             cur->ws_info->pan_information.version = pan_information.version;
+#ifdef WISUN_FAN_CORE_1_1
+            cur->ws_info->pan_information.jm_version = pan_information.jm_version;
+            cur->ws_info->pan_information.jm_plf = pan_information.jm_plf;
+#endif
+
         }
     }
 }
@@ -1891,7 +2010,7 @@ static void ws_bootstrap_pan_config_analyse(struct protocol_interface_info_entry
     }
 
     if (fhnt_delete) {
-#ifdef FEATURE_FHNT_CONTROL
+#if defined(FEATURE_FHNT_CONTROL) && !defined(WISUN_RCP_ENABLE)
         FHAPI_status status = FHNT_deleteEntry((sAddrExt_t *) data->SrcAddr);
         tr_warn("FHNT ns: ws_bs_pc delete: %s | status: %d", trace_array(data->SrcAddr, 8), status);
 #endif
@@ -1910,7 +2029,7 @@ static void ws_bootstrap_pan_config_analyse(struct protocol_interface_info_entry
             return;
         }
 
-#ifndef FEATURE_TIMAC_SUPPORT
+#if !defined(FEATURE_TIMAC_SUPPORT) || defined(WISUN_RCP_ENABLE)
         //When Config is learned and USE Parent BS is enabled compare is this new BSI
         if (cur->ws_info->configuration_learned && cur->ws_info->pan_information.use_parent_bs && ws_bs_ie.broadcast_schedule_identifier != cur->ws_info->hopping_schdule.fhss_bsi) {
             //Accept only next possible BSI number
@@ -1945,7 +2064,7 @@ static void ws_bootstrap_pan_config_analyse(struct protocol_interface_info_entry
         ws_neighbor_class_neighbor_unicast_time_info_update(neighbor_info.ws_neighbor, ws_utt, data->timestamp, (uint8_t *) data->SrcAddr);
         ws_neighbor_class_neighbor_unicast_schedule_set(neighbor_info.ws_neighbor, ws_us, &cur->ws_info->hopping_schdule);
         ws_neighbor_class_neighbor_broadcast_time_info_update(neighbor_info.ws_neighbor, &ws_bt_ie, data->timestamp);
-        ws_neighbor_class_neighbor_broadcast_schedule_set(neighbor_info.ws_neighbor, &ws_bs_ie);
+        ws_neighbor_class_neighbor_broadcast_schedule_set(neighbor_info.ws_neighbor, &ws_bs_ie,&cur->ws_info->hopping_schdule);
     }
 
     if (cur->ws_info->configuration_learned) {
@@ -2022,7 +2141,7 @@ static void ws_bootstrap_pan_config_analyse(struct protocol_interface_info_entry
 static void ws_bootstrap_pan_config_solicit_analyse(struct protocol_interface_info_entry *cur, const struct mcps_data_ind_s *data, ws_utt_ie_t *ws_utt, ws_us_ie_t *ws_us)
 {
     if (data->SrcPANId != cur->ws_info->network_pan_id) {
-#ifdef FEATURE_FHNT_CONTROL
+#if defined(FEATURE_FHNT_CONTROL) && !defined(WISUN_RCP_ENABLE)
         FHAPI_status status = FHNT_deleteEntry((sAddrExt_t *) data->SrcAddr);
         tr_warn("FHNT ns: ws_bs_pcs delete: %s | status: %d", trace_array(data->SrcAddr, 8), status);
 #endif
@@ -2072,7 +2191,7 @@ static void ws_bootstrap_pan_config_solicit_analyse(struct protocol_interface_in
 
 static bool ws_channel_plan_zero_compare(ws_channel_plan_zero_t *rx_plan, ws_hopping_schedule_t *hopping_schdule)
 {
-#ifndef FEATURE_TIMAC_SUPPORT
+#if !defined(FEATURE_TIMAC_SUPPORT) || defined(WISUN_RCP_ENABLE)
     if (rx_plan->operation_class != hopping_schdule->operating_class) {
         return false;
     } else if (rx_plan->regulator_domain != hopping_schdule->regulatory_domain) {
@@ -2086,7 +2205,7 @@ static bool ws_channel_plan_zero_compare(ws_channel_plan_zero_t *rx_plan, ws_hop
 
 static bool ws_channel_plan_one_compare(ws_channel_plan_one_t *rx_plan, ws_hopping_schedule_t *hopping_schdule)
 {
-#ifndef FEATURE_TIMAC_SUPPORT
+#if !defined(FEATURE_TIMAC_SUPPORT) || defined(WISUN_RCP_ENABLE)
     uint16_t num_of_channel = hopping_schdule->number_of_channels;
     if (rx_plan->ch0 != hopping_schdule->ch0_freq) {
         return false;
@@ -2095,6 +2214,7 @@ static bool ws_channel_plan_one_compare(ws_channel_plan_one_t *rx_plan, ws_hoppi
     } else if (rx_plan->number_of_channel != num_of_channel) {
         return false;
     }
+    return true;
 #else
     return true;
 #endif
@@ -2102,7 +2222,7 @@ static bool ws_channel_plan_one_compare(ws_channel_plan_one_t *rx_plan, ws_hoppi
 
 bool ws_bootstrap_validate_channel_plan(ws_us_ie_t *ws_us, struct protocol_interface_info_entry *cur)
 {
-#ifndef FEATURE_TIMAC_SUPPORT
+#if !defined(FEATURE_TIMAC_SUPPORT) || defined(WISUN_RCP_ENABLE)
     if (ws_us->channel_plan == 0) {
         if (!ws_channel_plan_zero_compare(&ws_us->plan.zero, &cur->ws_info->hopping_schdule)) {
             return false;
@@ -2122,7 +2242,7 @@ bool ws_bootstrap_validate_channel_plan(ws_us_ie_t *ws_us, struct protocol_inter
 
 bool ws_bootstrap_validate_channel_function(ws_us_ie_t *ws_us, ws_bs_ie_t *ws_bs)
 {
-#ifndef FEATURE_TIMAC_SUPPORT
+#if !defined(FEATURE_TIMAC_SUPPORT) || defined(WISUN_RCP_ENABLE)
     if (ws_us) {
         if (ws_us->channel_function != WS_FIXED_CHANNEL &&
                 ws_us->channel_function != WS_TR51CF &&
@@ -2216,7 +2336,7 @@ static void ws_bootstrap_asynch_ind(struct protocol_interface_info_entry *cur, c
             return;
     }
     if (fhnt_delete) {
-#ifdef FEATURE_FHNT_CONTROL
+#if defined(FEATURE_FHNT_CONTROL) && !defined(WISUN_RCP_ENABLE)
         FHAPI_status status = FHNT_deleteEntry((sAddrExt_t *) data->SrcAddr);
         tr_warn("FHNT ns: async_ind delete: %s | status: %d", trace_array(data->SrcAddr, 8), status);
 #endif
@@ -2287,7 +2407,13 @@ uint32_t ws_time_from_last_unicast_traffic(uint32_t current_time_stamp, ws_neigh
 
     //Time from last RX unicast in us
     time_from_last_unicast_shedule -= ws_neighbor->fhss_data.uc_timing_info.utt_rx_timestamp;
+#ifdef WISUN_RCP_ENABLE
+    // in RCP build, we use the system tick as time unit. one tick is 10 us
+    //  one second should be 100,000 ticks
+    time_from_last_unicast_shedule /= 100000; //Convert to seconds
+#else
     time_from_last_unicast_shedule /= 1000000; //Convert to seconds
+#endif
     return time_from_last_unicast_shedule;
 }
 
@@ -2415,11 +2541,12 @@ static void ws_neighbor_entry_remove_notify(mac_neighbor_table_entry_t *entry_pt
 
     protocol_interface_info_entry_t *cur = user_data;
     lowpan_adaptation_neigh_remove_free_tx_tables(cur, entry_ptr);
+#ifndef WISUN_RCP_ENABLE
     // Sleepy host
     if (cur->lowpan_info & INTERFACE_NWK_CONF_MAC_RX_OFF_IDLE) {
         mac_data_poll_protocol_poll_mode_decrement(cur);
     }
-
+#endif
     if (ipv6_neighbour_has_registered_by_eui64(&cur->ipv6_neighbour_cache, entry_ptr->mac64)) {
         // Child entry deleted
         ws_stats_update(cur, STATS_WS_CHILD_REMOVE, 1);
@@ -3623,7 +3750,7 @@ static void ws_bootstrap_authentication_completed(protocol_interface_info_entry_
         if (target_eui_64) {
             // Authentication was made contacting the authenticator
             cur->ws_info->authentication_time = cur->ws_info->uptime;
-#ifdef FEATURE_FHNT_CONTROL
+#if defined(FEATURE_FHNT_CONTROL) && !defined(WISUN_RCP_ENABLE)
             FHAPI_status status = FHNT_restoreTableEntry(FHNT_TABLE_TYPE_JOIN, target_eui_64);
             tr_warn("FHNT ns: auth_complete restore target: %s | status: %d", trace_array(target_eui_64, 8), status);
             ns_list_foreach_safe(parent_info_t, entry, &cur->ws_info->parent_list_reserved) {
@@ -3635,6 +3762,10 @@ static void ws_bootstrap_authentication_completed(protocol_interface_info_entry_
 #endif
         }
         ws_bootstrap_event_configuration_start(cur);
+#ifdef WISUN_RCP_SPINEL_DEBUG
+        memcpy(rcp_debug.auth_parent_eui, target_eui_64, sizeof(uint8_t) * 8);
+        rcp_debug.auth_fail_type = 0;
+#endif
         return;
     } else if (result == AUTH_RESULT_ERR_TX_ERR) {
         // eapol parent selected is not working
@@ -3658,9 +3789,24 @@ static void ws_bootstrap_authentication_completed(protocol_interface_info_entry_
         trickle_inconsistent_heard(&cur->ws_info->trickle_pan_advertisement_solicit, &cur->ws_info->trickle_params_pan_discovery);
         ws_bootstrap_event_discovery_start(cur);
     }
-#ifdef FEATURE_FHNT_CONTROL
+#if defined(FEATURE_FHNT_CONTROL) && !defined(WISUN_RCP_ENABLE)
     FHAPI_status status = FHNT_deleteTableEntry(FHNT_TABLE_TYPE_JOIN, target_eui_64);
     tr_warn("FHNT ns: auth_complete delete: %s | status: %d", trace_array(target_eui_64, 8), status);
+#endif
+#ifdef WISUN_RCP_SPINEL_DEBUG
+    memcpy(rcp_debug.auth_parent_eui, target_eui_64, sizeof(uint8_t) * 8);
+    if (result == AUTH_RESULT_OK) {
+        rcp_debug.auth_fail_type = 0;
+    }
+    else if (result == AUTH_RESULT_ERR_NO_MEM) {
+        rcp_debug.auth_fail_type = 1;
+    }
+    else if (result == AUTH_RESULT_ERR_TX_ERR) {
+        rcp_debug.auth_fail_type = 2;
+    }
+    else {
+        rcp_debug.auth_fail_type = 3;
+    }
 #endif
 }
 
@@ -3774,7 +3920,7 @@ static bool ws_bootstrap_eapol_congestion_get(protocol_interface_info_entry_t *c
     }
 
     // Always allow at least five negotiations (if memory does not limit)
-    if (active_supp < 5) {
+    if (active_supp < 50) {
         goto congestion_get_end;
     }
 
@@ -3882,11 +4028,12 @@ static void ws_set_asynch_channel_list(protocol_interface_info_entry_t *cur, asy
 
     sizeOfChannelMask = sizeof(cfg_props.async_channel_list)/sizeof(uint8_t);
 
-    memset(async_req->channel_list.channel_mask, 0, 32);
+    memset(async_req->channel_list.channel_mask3, 0, sizeof(async_req->channel_list.channel_mask3));
     for(idx = 0; idx < sizeOfChannelMask; idx++)
     {
-        resIdx = idx/4;
-        async_req->channel_list.channel_mask[resIdx] = async_req->channel_list.channel_mask[resIdx] | (cfg_props.async_channel_list[idx] << ((idx - resIdx*4)*8));
+        // resIdx = idx/4;
+        // async_req->channel_list.channel_mask[resIdx] = async_req->channel_list.channel_mask[resIdx] | (cfg_props.async_channel_list[idx] << ((idx - resIdx*4)*8));
+        async_req->channel_list.channel_mask3[idx] = cfg_props.async_channel_list[idx] ;
     }
 
     async_req->channel_list.channel_page = CHANNEL_PAGE_10;
@@ -3901,7 +4048,11 @@ static void ws_bootstrap_pan_advert_solicit(protocol_interface_info_entry_t *cur
     async_req.wh_requested_ie_list.utt_ie = true;
     async_req.wp_requested_nested_ie_list.us_ie = true;
     async_req.wp_requested_nested_ie_list.net_name_ie = true;
-
+#ifdef WISUN_FAN_CORE_1_1
+    // Wi-SUN FAN 1.1v09-d10 6.3.2.3.5.1
+    // PAS MAY include POM-IE
+    async_req.wp_requested_nested_ie_list.pom_ie = true;
+#endif
     ws_set_asynch_channel_list(cur, &async_req);
 
 
@@ -3967,6 +4118,76 @@ static uint16_t ws_bootstrap_routing_cost_calculate(protocol_interface_info_entr
     return ws_neighbor->routing_cost + etx;
 }
 
+uint8_t jm_version  = 12;
+uint8_t jm_prev_plf = 0;
+#ifdef WISUN_FAN_CORE_1_1
+/* this value should be in prog_cfg */
+#define WS_BBR_MAX_PAN_SIZE (100)
+uint16_t ws_bootstrap_pan_maximum_size(protocol_interface_info_entry_t *cur)
+{
+    uint16_t result = 0;
+
+    if (!cur ) {
+        return 0;
+    }
+
+    return WS_BBR_MAX_PAN_SIZE;
+}
+
+static uint8_t ws_bootstrap_update_jm_info(protocol_interface_info_entry_t *cur)
+{
+    uint8_t cur_jm_plf;
+    uint16_t max_pan_size, pan_size;
+
+    if (!cur)
+    {
+        return 0;
+    }
+
+    if (cur->bootsrap_mode != ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER)
+    {   /* for Router node, just use we received the JM_IE from parent (BR)*/
+        return 1;
+    }
+    else
+    {   /* for Border Router, we need to calculate the JM_IE */
+        /* calculate the current PAN Load Factor */
+        cur_jm_plf = 0;
+        pan_size = cur->ws_info->pan_information.pan_size = ws_bbr_pan_size(cur);
+        max_pan_size = cur->ws_info->pan_information.max_pan_size = ws_bootstrap_pan_maximum_size(cur);
+        if (max_pan_size == 0)
+        {
+            return 0;
+        }
+        cur_jm_plf = (pan_size * 100) / max_pan_size;
+
+        /* 6.3.2.3.2.12.1 PAN Load Factor Join Metric
+        * A change in PAN Load Factor of +/- 10% SHOULD trigger an increment of the JM-IE Content Version at the Border Router.
+        */
+        if (cur_jm_plf > jm_prev_plf)
+        {
+            if (cur_jm_plf - jm_prev_plf >= 10)
+            {
+                jm_version++;
+                jm_prev_plf = cur_jm_plf;
+            }
+        }
+        else
+        {
+            if (jm_prev_plf - cur_jm_plf >= 10)
+            {
+                jm_version++;
+                jm_prev_plf = cur_jm_plf;
+            }
+        }
+    }
+
+    cur->ws_info->pan_information.jm_version = jm_version;
+    cur->ws_info->pan_information.jm_plf = cur_jm_plf;
+
+    return 1;
+}
+#endif
+
 static uint16_t ws_bootstrap_rank_get(protocol_interface_info_entry_t *cur)
 {
     struct rpl_instance *rpl_instance = ws_get_rpl_instance(cur);
@@ -4000,7 +4221,30 @@ static void ws_bootstrap_pan_advert(protocol_interface_info_entry_t *cur)
     async_req.wp_requested_nested_ie_list.us_ie = true;
     async_req.wp_requested_nested_ie_list.pan_ie = true;
     async_req.wp_requested_nested_ie_list.net_name_ie = true;
+#ifdef WISUN_FAN_CORE_1_1
+    // Wi-SUN FAN 1.1v09-d10 6.3.2.3.5.1
+    // PA MAY include POM-IE
+    async_req.wp_requested_nested_ie_list.pom_ie = false;
+    /* 20210201-FANWG-FANTPS-1.1v09-d10
+     * 6.3.2.3.2.12.1 PAN Load Factor Join Metric
+    */
+    async_req.wp_requested_nested_ie_list.jm_ie = true;
 
+    /* The Metric Data field MUST be set to a value in the range of 0 to 100 (inclusive)
+        indicating percent PAN loading calculated as:
+        (current PAN load /  maximum PAN capacity) *100.
+        A change in PAN Load Factor of +/- 10% SHOULD trigger an increment of the
+        JM-IE Content Version at the Border Router.
+    */
+
+    if (async_req.wp_requested_nested_ie_list.jm_ie)
+    {   // only BR will update the JM_IE
+        ws_bootstrap_update_jm_info(cur);
+        // set the JM IE in LLC
+        ws_llc_set_jm_info(cur);
+    }
+
+#endif
     ws_set_asynch_channel_list(cur, &async_req);
     async_req.security.SecurityLevel = 0;
 
@@ -4050,8 +4294,10 @@ static void ws_bootstrap_pan_config(protocol_interface_info_entry_t *cur)
         async_req.wp_requested_nested_ie_list.gtkhash_ie = true;
     }
 #endif
-    async_req.wp_requested_nested_ie_list.vp_ie = true;
 
+#if !defined(WISUN_RCP_ENABLE)
+    async_req.wp_requested_nested_ie_list.vp_ie = true;
+#endif
     ws_set_asynch_channel_list(cur, &async_req);
 
     async_req.security.SecurityLevel = mac_helper_default_security_level_get(cur);
@@ -4235,7 +4481,7 @@ static void ws_bootstrap_event_handler(arm_event_s *event)
                 ws_bootstrap_configure_csma_ca_backoffs(cur, WS_MAX_CSMA_BACKOFFS, WS_MAC_MIN_BE, WS_MAC_MAX_BE);
 
                 ws_bootstrap_event_operation_start(cur);
-#ifdef FEATURE_TIMAC_SUPPORT
+#if defined(FEATURE_TIMAC_SUPPORT) && !defined(WISUN_RCP_ENABLE)
                 // notify the MAC, joined network yet
                 timac_BootstrapCallback(5);
                 // start the MAC MPL test packet
@@ -4270,13 +4516,19 @@ static void ws_bootstrap_event_handler(arm_event_s *event)
             ws_bootstrap_configure_data_request_restart(cur, WS_CCA_REQUEST_RESTART_MAX, WS_TX_REQUEST_RESTART_MAX_BOOTSTRAP, WS_REQUEST_RESTART_BLACKLIST_MIN, WS_REQUEST_RESTART_BLACKLIST_MAX);
             // Set CSMA-CA backoff configuration
             ws_bootstrap_configure_csma_ca_backoffs(cur, WS_MAX_CSMA_BACKOFFS, WS_MAC_MIN_BE, WS_MAC_MAX_BE);
+            /* additional table clean up*/
+            ws_neighbor_class_remove_all_entry(&cur->ws_info->neighbor_storage);
+            ws_llc_release_all_eapol_temp_entry(cur);
+            ext_storage_clean_all_entry();
             // Start network scan
             ws_bootstrap_start_discovery(cur);
             break;
 
         case WS_CONFIGURATION_START:
             tr_info("Configuration start");
+#if defined(FEATURE_TIMAC_SUPPORT) && !defined(WISUN_RCP_ENABLE)
             timac_BootstrapCallback(3);
+#endif
             // Old configuration is considered invalid stopping all
             ws_bootstrap_asynch_trickle_stop(cur);
 
@@ -4404,7 +4656,6 @@ select_best_candidate:
         return;
     }
     tr_info("selected parent:%s panid %u", trace_array(selected_parent_ptr->addr, 8), selected_parent_ptr->pan_id);
-
     if (ws_bootstrap_neighbor_set(cur, selected_parent_ptr, false) < 0) {
         goto select_best_candidate;
     }
@@ -4435,7 +4686,7 @@ select_best_candidate:
         }
 #endif
         ws_bootstrap_event_authentication_start(cur);
-#ifdef FEATURE_FHNT_CONTROL
+#if defined(FEATURE_FHNT_CONTROL) && !defined(WISUN_RCP_ENABLE)
         FHAPI_status status = FHNT_createTableEntry(FHNT_TABLE_TYPE_JOIN, selected_parent_ptr->addr);
         tr_warn("FHNT ns: auth_start create: %s | status: %d", trace_array(selected_parent_ptr->addr, 8), status);
 #endif
@@ -4540,7 +4791,7 @@ void ws_bootstrap_state_machine(protocol_interface_info_entry_t *cur)
         case ER_ACTIVE_SCAN:
             tr_debug("WS SM:Active Scan");
 
-#ifdef FEATURE_TIMAC_SUPPORT
+#if defined(FEATURE_TIMAC_SUPPORT) && !defined(WISUN_RCP_ENABLE)
             // notify the MAC, not joined network yet
             timac_BootstrapCallback(1);
 #endif
@@ -4557,7 +4808,7 @@ void ws_bootstrap_state_machine(protocol_interface_info_entry_t *cur)
             ws_bootstrap_network_scan_process(cur);
             break;
         case ER_SCAN:
-#ifdef FEATURE_TIMAC_SUPPORT
+#if defined(FEATURE_TIMAC_SUPPORT) && !defined(WISUN_RCP_ENABLE)
             // notify the MAC, not joined network yet
             timac_BootstrapCallback(3);
 #endif
@@ -4565,7 +4816,7 @@ void ws_bootstrap_state_machine(protocol_interface_info_entry_t *cur)
             ws_bootstrap_configure_process(cur);
             break;
         case ER_PANA_AUTH:
-#ifdef FEATURE_TIMAC_SUPPORT
+#if defined(FEATURE_TIMAC_SUPPORT) && !defined(WISUN_RCP_ENABLE)
             // notify the MAC, not joined network yet
             timac_BootstrapCallback(2);
 #endif
@@ -4581,7 +4832,7 @@ void ws_bootstrap_state_machine(protocol_interface_info_entry_t *cur)
             ws_bootstrap_start_authentication(cur);
             break;
         case ER_RPL_SCAN:
-#ifdef FEATURE_TIMAC_SUPPORT
+#if defined(FEATURE_TIMAC_SUPPORT) && !defined(WISUN_RCP_ENABLE)
             // notify the MAC, not joined network yet
             timac_BootstrapCallback(4);
 #endif
@@ -4591,7 +4842,7 @@ void ws_bootstrap_state_machine(protocol_interface_info_entry_t *cur)
         case ER_BOOTSRAP_DONE:
             tr_debug("WS SM:Bootstrap Done");
 
-#ifdef FEATURE_TIMAC_SUPPORT
+#if defined(FEATURE_TIMAC_SUPPORT) && !defined(WISUN_RCP_ENABLE)
             // notify the MAC, joined network yet
             timac_BootstrapCallback(5);
 #endif
@@ -5353,10 +5604,14 @@ bool __attribute__((weak)) customAuthCheckAllowedJoin(uint8_t *eui)
 #endif
 }
 
+extern void timacSetPanId(uint16_t panId);
+
 void ws_bootstrap_set_MAC_panid(protocol_interface_info_entry_t *cur)
 {
     // set both Nanostack MAC and 15.4 MAC panID (using cur->ws_info->network_pan_id)
+#ifdef FEATURE_TIMAC_SUPPORT
     timacSetPanId(cur->ws_info->network_pan_id);
+#endif
     cur->mac_parameters->pan_id  = cur->ws_info->network_pan_id;
 
 }

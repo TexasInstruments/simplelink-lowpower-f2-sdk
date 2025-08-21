@@ -237,12 +237,13 @@ function setDefaultAdvancedSettings(inst)
  */
 function setAdvancedSettingsHiddenState(inst, ui)
 {
-    if (inst != null && inst.project.includes("solar"))
+    if (inst != null && (inst.project.includes("solar") || inst.project.includes("rcplmac")))
     {
         ui["rapidJoin"].hidden = true;
         ui["mplLowLatency"].hidden = true;
         ui["rapidDisconnectDetectBr"].hidden = true;
         ui["rapidDisconnectDetectRn"].hidden = true;
+        ui["networkProfile"].hidden = true;
     }
     else
     {
@@ -250,6 +251,7 @@ function setAdvancedSettingsHiddenState(inst, ui)
         ui["mplLowLatency"].hidden = false;
         ui["rapidDisconnectDetectBr"].hidden = false;
         ui["rapidDisconnectDetectRn"].hidden = false;
+        ui["networkProfile"].hidden = false;
     }
     setDefaultAdvancedSettings(inst);
 }

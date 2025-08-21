@@ -15,7 +15,7 @@ TI 15.4-Stack Collector Example
 * [Project Configuration](#ProjectConfiguration)
   * [Disabling Common User Interface](#DisablingCommonUserInterface)
   * [Multi-Page NV Configuration](#MultiPageNVConfiguration)
-  * [SBL Binary File Generation When Using Thor](#sbl-binary-file-generation-when-using-thor)
+  * [SBL Binary File Generation When Using CC13x4 or CC26x4](#sbl-binary-file-generation-when-using-CC13x4-or-CC26x4)
 
 ## <a name="TFMSpecifics"></a>TFM Specifics
 
@@ -350,10 +350,10 @@ By default, this project is configured to use four pages of NV. A maximum of fiv
 A detailed description of the application architecture can be found in your installation within the
 TI-15.4 Stack Getting Started Guide's Application Overview section: `<SDK_INSTALL_DIR>/docs/ti154stack/ti154stack-getting-started-guide.html`.
 
-### <a name="ThorSBLConfiguration"></a>SBL Binary File Generation When Using Thor
+### <a name="CC13x4/CC26x4SBLConfiguration"></a>SBL Binary File Generation When Using CC13x4/CC26x4
 
-When generating a binary file for a Thor device take care not to generate a file containing
-both the code and the CCFG, as the CCFG is located at 0x5000000 in flash. This will result
+When generating a binary file for a CC13x4/CC26x4 device take care not to generate a file containing
+both the code and the CCFG, as the CCFG is located at 0x50000000 in flash. This will result
 in a massive binary file, as binary file will include padding for all the space between the 
 application code and the CCFG. Instead, you should generate two binary files - One containing
 the CCFG, the other containing all other code. To do this, add 

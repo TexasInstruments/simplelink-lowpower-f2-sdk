@@ -306,6 +306,8 @@ rpl_dao_target_t *rpl_create_dao_target(rpl_instance_t *instance, const uint8_t 
 #ifdef DBG_WISUN
     wisunDbg.dao_create_cnt++;
     wisunDbg.dao_list_size = ns_list_count(&instance->dao_targets);
+    tr_info("DAO target created. List count: %d, Created count: %d",
+        wisunDbg.dao_list_size, wisunDbg.dao_create_cnt);
 #endif
     return target;
 }
@@ -318,6 +320,8 @@ void rpl_delete_dao_target(rpl_instance_t *instance, rpl_dao_target_t *target)
 #ifdef DBG_WISUN
     wisunDbg.dao_deleted_cnt++;
     wisunDbg.dao_list_size = ns_list_count(&instance->dao_targets);
+    tr_info("DAO target deleted. List count: %d, Deleted count: %d",
+        wisunDbg.dao_list_size, wisunDbg.dao_deleted_cnt);
 #endif
 
 #ifdef HAVE_RPL_ROOT

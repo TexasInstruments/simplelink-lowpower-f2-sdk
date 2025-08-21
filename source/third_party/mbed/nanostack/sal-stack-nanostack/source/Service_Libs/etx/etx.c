@@ -37,15 +37,15 @@
 #define TRACE_GROUP "etx"
 
 typedef struct {
-    uint8_t attribute_index;
+    uint16_t attribute_index;
     const uint8_t *mac64;
 } ext_neigh_info_t;
 
 static uint16_t etx_current_calc(uint16_t etx, uint8_t accumulated_failures);
 static uint16_t etx_dbm_lqi_calc(uint8_t lqi, int8_t dbm);
 static void etx_value_change_callback_needed_check(uint16_t etx, uint16_t *stored_diff_etx, uint8_t accumulated_failures, ext_neigh_info_t *etx_neigh_info);
-static void etx_accum_failures_callback_needed_check(etx_storage_t *entry, uint8_t attribute_index);
-static void etx_cache_entry_init(uint8_t attribute_index);
+static void etx_accum_failures_callback_needed_check(etx_storage_t *entry, uint16_t attribute_index);
+static void etx_cache_entry_init(uint16_t attribute_index);
 
 #if ETX_ACCELERATED_SAMPLE_COUNT == 0 || ETX_ACCELERATED_SAMPLE_COUNT > 6
 #error "ETX_ACCELERATED_SAMPLE_COUNT accepted values 1-6"
@@ -71,7 +71,7 @@ typedef struct {
     uint16_t init_etx_sample_count;
     uint8_t accum_threshold;
     uint8_t etx_min_sampling_time;
-    uint8_t ext_storage_list_size;
+    uint16_t ext_storage_list_size;
     uint8_t min_attempts_count;
     uint8_t drop_bad_max;
     uint8_t bad_link_level;
@@ -146,7 +146,7 @@ static void etx_calculation(etx_storage_t *entry, uint16_t attempts, uint8_t ack
     }
 }
 
-static void etx_cache_entry_init(uint8_t attribute_index)
+static void etx_cache_entry_init(uint16_t attribute_index)
 {
     if (!etx_info.cache_sample_requested) {
         return;
@@ -191,7 +191,7 @@ static bool etx_update_possible(etx_sample_storage_t *storage, etx_storage_t *en
 }
 
 
-static etx_sample_storage_t *etx_cache_sample_update(uint8_t attribute_index, uint8_t attempts, bool ack_rx)
+static etx_sample_storage_t *etx_cache_sample_update(uint16_t attribute_index, uint8_t attempts, bool ack_rx)
 {
     etx_sample_storage_t *storage = etx_info.etx_cache_storage_list + attribute_index;
     storage->attempts_count += attempts;
@@ -236,7 +236,7 @@ static bool etx_drop_bad_sample(etx_storage_t *entry, uint8_t attempts, bool suc
  * \param addr_type address type, ADDR_802_15_4_SHORT or ADDR_802_15_4_LONG
  * \param addr_ptr PAN ID with 802.15.4 address
  */
-void etx_transm_attempts_update(int8_t interface_id, uint8_t attempts, bool success, uint8_t attribute_index, const uint8_t *mac64_addr_ptr)
+void etx_transm_attempts_update(int8_t interface_id, uint8_t attempts, bool success, uint16_t attribute_index, const uint8_t *mac64_addr_ptr)
 {
     uint8_t accumulated_failures;
     // Gets table entry
@@ -306,7 +306,7 @@ void etx_transm_attempts_update(int8_t interface_id, uint8_t attempts, bool succ
  * \param remote_incoming_idr Remote incoming IDR
  * \param mac64_addr_ptr long MAC address
  */
-void etx_remote_incoming_idr_update(int8_t interface_id, uint8_t remote_incoming_idr, uint8_t attribute_index, const uint8_t *mac64_addr_ptr)
+void etx_remote_incoming_idr_update(int8_t interface_id, uint8_t remote_incoming_idr, uint16_t attribute_index, const uint8_t *mac64_addr_ptr)
 {
     etx_storage_t *entry = etx_storage_entry_get(interface_id, attribute_index);
     if (!entry) {
@@ -371,7 +371,7 @@ uint16_t etx_read(int8_t interface_id, addrtype_t addr_type, const uint8_t *addr
         return interface->etx_read_override(interface, addr_type, addr_ptr);
     }
 
-    uint8_t attribute_index;
+    uint16_t attribute_index;
     if (interface->nwk_id == IF_IPV6) {
         return 1;
     }
@@ -405,7 +405,7 @@ uint16_t etx_read(int8_t interface_id, addrtype_t addr_type, const uint8_t *addr
  * \return 0x0100 to 0xFFFF incoming IDR value (8 bit fraction)
  * \return 0x0000 address unknown
  */
-uint16_t etx_local_incoming_idr_read(int8_t interface_id, uint8_t attribute_index)
+uint16_t etx_local_incoming_idr_read(int8_t interface_id, uint16_t attribute_index)
 {
     uint32_t local_incoming_idr = 0;
     etx_storage_t *entry = etx_storage_entry_get(interface_id, attribute_index);
@@ -430,7 +430,7 @@ uint16_t etx_local_incoming_idr_read(int8_t interface_id, uint8_t attribute_inde
  * \return 0x0100 to 0xFFFF incoming IDR value (8 bit fraction)
  * \return 0x0000 address unknown
  */
-uint16_t etx_local_etx_read(int8_t interface_id, uint8_t attribute_index)
+uint16_t etx_local_etx_read(int8_t interface_id, uint16_t attribute_index)
 {
     etx_storage_t *entry = etx_storage_entry_get(interface_id, attribute_index);
     if (!entry) {
@@ -491,7 +491,7 @@ static uint16_t etx_current_calc(uint16_t etx, uint8_t accumulated_failures)
  *
  * \return 0x0100 to 0xFFFF local incoming IDR value (8 bit fraction)
  */
-uint16_t etx_lqi_dbm_update(int8_t interface_id, uint8_t lqi, int8_t dbm, uint8_t attribute_index, const uint8_t *mac64_addr_ptr)
+uint16_t etx_lqi_dbm_update(int8_t interface_id, uint8_t lqi, int8_t dbm, uint16_t attribute_index, const uint8_t *mac64_addr_ptr)
 {
     uint32_t local_incoming_idr = 0;
     uint32_t etx = 0;
@@ -618,7 +618,7 @@ uint8_t etx_value_change_callback_register(nwk_interface_id nwk_id, int8_t inter
     }
 }
 
-bool etx_storage_list_allocate(int8_t interface_id, uint8_t etx_storage_size)
+bool etx_storage_list_allocate(int8_t interface_id, uint16_t etx_storage_size)
 {
     if (!etx_storage_size) {
         ns_dyn_mem_free(etx_info.etx_storage_list);
@@ -650,13 +650,42 @@ bool etx_storage_list_allocate(int8_t interface_id, uint8_t etx_storage_size)
     etx_info.ext_storage_list_size = etx_storage_size;
     etx_info.interface_id = interface_id;
     etx_storage_t *list_ptr = etx_info.etx_storage_list;
-    for (uint8_t i = 0; i < etx_storage_size; i++) {
+    for (uint16_t i = 0; i < etx_storage_size; i++) {
         memset(list_ptr, 0, sizeof(etx_storage_t));
 
         list_ptr++;
     }
     return true;
 
+}
+
+void ext_storage_clean_all_entry(void)
+{
+    uint16_t i,etx_storage_size;
+    etx_storage_t *list_ptr;
+
+    if (!etx_info.etx_storage_list) {
+        return;
+    }
+
+    etx_storage_size = etx_info.ext_storage_list_size ;
+    list_ptr = etx_info.etx_storage_list;
+
+    for (i = 0; i < etx_storage_size; i++) {
+        memset(list_ptr, 0, sizeof(etx_storage_t));
+
+        list_ptr++;
+    }
+
+    if (!etx_info.etx_cache_storage_list) {
+        return;
+    }
+
+    etx_sample_storage_t *sample_list = etx_info.etx_cache_storage_list;
+    for ( i = 0; i < etx_info.ext_storage_list_size; i++) {
+        memset(sample_list, 0, sizeof(etx_sample_storage_t));
+        sample_list++;
+    }
 }
 
 bool etx_cached_etx_parameter_set(uint8_t min_wait_time, uint8_t etx_min_attempts_count, uint8_t init_etx_sample_count)
@@ -680,7 +709,7 @@ bool etx_cached_etx_parameter_set(uint8_t min_wait_time, uint8_t etx_min_attempt
             }
             etx_info.cache_sample_requested = true;
             etx_sample_storage_t *sample_list = etx_info.etx_cache_storage_list;
-            for (uint8_t i = 0; i < etx_info.ext_storage_list_size; i++) {
+            for (uint16_t i = 0; i < etx_info.ext_storage_list_size; i++) {
                 memset(sample_list, 0, sizeof(etx_sample_storage_t));
                 sample_list++;
             }
@@ -750,7 +779,7 @@ void etx_max_set(uint16_t etx_max)
     }
 }
 
-etx_storage_t *etx_storage_entry_get(int8_t interface_id, uint8_t attribute_index)
+etx_storage_t *etx_storage_entry_get(int8_t interface_id, uint16_t attribute_index)
 {
     if (etx_info.interface_id != interface_id || !etx_info.etx_storage_list || attribute_index >= etx_info.ext_storage_list_size) {
         return NULL;
@@ -842,7 +871,7 @@ static void etx_value_change_callback_needed_check(uint16_t etx, uint16_t *store
  *
  * \param neigh_table_ptr the neighbor node in question
  */
-static void etx_accum_failures_callback_needed_check(etx_storage_t *entry, uint8_t attribute_index)
+static void etx_accum_failures_callback_needed_check(etx_storage_t *entry, uint16_t attribute_index)
 {
     if (!etx_info.accum_threshold) {
         return;
@@ -864,7 +893,7 @@ static void etx_accum_failures_callback_needed_check(etx_storage_t *entry, uint8
  * \param mac64_addr_ptr long MAC address
  *
  */
-void etx_neighbor_remove(int8_t interface_id, uint8_t attribute_index, const uint8_t *mac64_addr_ptr)
+void etx_neighbor_remove(int8_t interface_id, uint16_t attribute_index, const uint8_t *mac64_addr_ptr)
 {
 
     //tr_debug("Remove attribute %u", attribute_index);

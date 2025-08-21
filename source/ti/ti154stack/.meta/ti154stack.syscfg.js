@@ -160,6 +160,10 @@ const moduleStatic = {
                 {
                     name: "frequencyHopping",
                     displayName: "Frequency Hopping"
+                },
+                {
+                    name: "frequencyHoppingLowLatency",
+                    displayName: "Frequency Hopping Low Latency Broadcast"
                 }
             ],
             description: docs.mode.description,
@@ -254,6 +258,10 @@ function onModeChange(inst, ui)
 
     // Polling interval not used in beacon mode
     networkScript.setNetworkConfigHiddenState(inst, ui, "pollingInterval");
+    networkScript.setNetworkConfigHiddenState(inst, ui, "reportingInterval");
+
+    // FH Low Latency changes
+    networkScript.setFHLowLatencyConfigs(inst, ui);
 }
 
 /*
@@ -340,6 +348,10 @@ function getDisabledModeOptions()
                 name: "frequencyHopping",
                 reason: "Frequency hopping is not supported on 2.4 GHz band"
             });
+            disabledOptions.push({
+                name: "frequencyHoppingLowLatency",
+                reason: "Frequency hopping is not supported on 2.4 GHz band"
+            });
         }
         return(disabledOptions);
     };
@@ -354,7 +366,7 @@ function getDisabledModeOptions()
  */
 function validateModeOptions(inst, vo)
 {
-    if((inst.freqBand === "freqBand24") && (inst.mode === "frequencyHopping"))
+    if((inst.freqBand === "freqBand24") && (inst.mode.includes("frequencyHopping")))
     {
         vo.logError("Frequency hopping not available on 2.4GHz band", inst,
             "mode");
@@ -557,6 +569,9 @@ function getOpts(mod) {
     if (!(toad_mod===undefined) && toad_mod.$instances[0].enabled) {
         result.push("-DFEATURE_TOAD")
     }
+    if (tmp_mod.$static.mode === "frequencyHoppingLowLatency") {
+        result.push("-DFH_LOW_LATENCY_BROADCAST")
+    }
 
     // This is always defined in .opt, but I don't think it's actually used by us
     result.push("-DTI154STACK")
@@ -706,6 +721,14 @@ function modules(inst)
         name: "powerModule",
         displayName: "Power",
         moduleName: "/ti/drivers/Power",
+        hidden: true
+
+    });
+
+    dependencyModule.push({
+        name: "temperatureModule",
+        displayName: "Temperature",
+        moduleName: "/ti/drivers/Temperature",
         hidden: true
 
     });

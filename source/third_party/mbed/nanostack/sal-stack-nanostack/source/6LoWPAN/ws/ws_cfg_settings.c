@@ -1143,6 +1143,54 @@ int8_t ws_cfg_mpl_set(protocol_interface_info_entry_t *cur, ws_mpl_cfg_t *cfg, w
 
 int8_t ws_cfg_fhss_default_set(ws_fhss_cfg_t *cfg)
 {
+#if defined(WISUN_RCP_ENABLE)
+    uint8_t num_max_chan_byte = 0;
+    // for WiSUN RCP, copy cfg_props to default values
+    cfg->fhss_uc_fixed_channel = cfg_props.uc_fixed_channel;
+    cfg->fhss_bc_fixed_channel = cfg_props.bc_fixed_channel;
+    cfg->fhss_uc_dwell_interval = cfg_props.uc_dwell_interval;
+    cfg->fhss_bc_interval = cfg_props.bc_interval;
+    cfg->fhss_bc_dwell_interval = cfg_props.bc_dwell_interval;
+    cfg->fhss_uc_channel_function = cfg_props.uc_channel_function;
+    cfg->fhss_bc_channel_function = cfg_props.bc_channel_function;
+
+    /* save USIE channel plan selection,
+            BSIE channel plan selection,
+            FAN support version
+    */
+    cfg->fan_support_version = cfg_props.fan_support_version;
+    cfg->usie_chan_plan_selection = cfg_props.usie_chan_plan_selection;
+    cfg->bsie_chan_plan_selection = cfg_props.bsie_chan_plan_selection;
+
+    /* save both UC and BC channel mask from cfg_props
+       cfg_props: using uint8[index] ===> total 17 bytes.
+    */
+    memset(cfg->fhss_uc_channel_mask5,0x00,sizeof(cfg->fhss_uc_channel_mask5));
+    memset(cfg->fhss_bc_channel_mask5,0x00,sizeof(cfg->fhss_bc_channel_mask5));
+    num_max_chan_byte = (129 + 7 )/8;   /* round up */
+
+    for (uint8_t n = 0; n < num_max_chan_byte; n++) {
+        cfg->fhss_uc_channel_mask5[ n] |= cfg_props.uc_channel_list[n];
+        cfg->fhss_bc_channel_mask5[ n] |= cfg_props.bc_channel_list[n];
+    }
+#if 0
+    /* testing UC channel mask
+       3 ranges: [1] = 0xFFFFFFEA
+       1 ranges: [1] = 0xFFFFFFFE
+       4:ranges: [1] = 0x0FFFFFEA
+
+       5:ranges : [0] = 0xFFFFFFFE
+                  [1] = 0x0FFFFFEA
+    */
+
+    cfg->fhss_channel_mask[ 0 ]  = 0x0FFFFFFE;
+    cfg->fhss_channel_mask[ 1 ]  = 0x0FFFFFEA;
+
+    /* testing BC channel mask */
+    cfg->fhss_bc_channel_mask[ 2 ]  = 0x0;
+#endif
+
+#else
     // Set defaults for the device. user can modify these.
     cfg->fhss_uc_fixed_channel = 0xffff;
     cfg->fhss_bc_fixed_channel = 0xffff;
@@ -1155,7 +1203,7 @@ int8_t ws_cfg_fhss_default_set(ws_fhss_cfg_t *cfg)
     for (uint8_t n = 0; n < 8; n++) {
         cfg->fhss_channel_mask[n] = 0xffffffff;
     }
-
+#endif
     return CFG_SETTINGS_OK;
 }
 
@@ -1172,7 +1220,7 @@ int8_t ws_cfg_fhss_validate(ws_fhss_cfg_t *cfg, ws_fhss_cfg_t *new_cfg)
 {
     ws_cfg_to_get((ws_cfgs_t **) &cfg, (ws_cfgs_t *) new_cfg, NULL, (ws_cfgs_t *) &ws_cfg.fhss, 0, 0);
 
-    if (memcmp(cfg->fhss_channel_mask, new_cfg->fhss_channel_mask, sizeof(uint32_t) * 8) != 0 ||
+    if (memcmp(cfg->fhss_uc_channel_mask5, new_cfg->fhss_uc_channel_mask5, sizeof(new_cfg->fhss_uc_channel_mask5) ) != 0 ||
             cfg->fhss_uc_dwell_interval != new_cfg->fhss_uc_dwell_interval ||
             cfg->fhss_bc_dwell_interval != new_cfg->fhss_bc_dwell_interval ||
             cfg->fhss_bc_interval != new_cfg->fhss_bc_interval ||
@@ -1181,13 +1229,13 @@ int8_t ws_cfg_fhss_validate(ws_fhss_cfg_t *cfg, ws_fhss_cfg_t *new_cfg)
             cfg->fhss_uc_fixed_channel != new_cfg->fhss_uc_fixed_channel ||
             cfg->fhss_bc_fixed_channel != new_cfg->fhss_bc_fixed_channel) {
 
-        if (new_cfg->fhss_uc_dwell_interval < 15) {
-            return CFG_SETTINGS_ERROR_FHSS_CONF;
-        }
+//        if (new_cfg->fhss_uc_dwell_interval < 15) {
+//            return CFG_SETTINGS_ERROR_FHSS_CONF;
+//        }
 
-        if (new_cfg->fhss_bc_dwell_interval < 100) {
-            return CFG_SETTINGS_ERROR_FHSS_CONF;
-        }
+//        if (new_cfg->fhss_bc_dwell_interval < 100) {
+//            return CFG_SETTINGS_ERROR_FHSS_CONF;
+//        }
 
         if (cfg->fhss_uc_channel_function != WS_FIXED_CHANNEL &&
                 cfg->fhss_uc_channel_function != WS_VENDOR_DEF_CF &&
@@ -1241,6 +1289,31 @@ int8_t ws_cfg_fhss_set(protocol_interface_info_entry_t *cur, ws_fhss_cfg_t *cfg,
     if (cur && !(cfg_flags & CFG_FLAGS_BOOTSTRAP_RESTART_DISABLE)) {
         ws_bootstrap_restart_delayed(cur->id);
     }
+
+    return CFG_SETTINGS_OK;
+}
+
+int8_t ws_cfg_fhss_save(protocol_interface_info_entry_t *cur)
+{
+    ws_fhss_cfg_t *cfg;
+
+    if (!cur)
+        return -1;
+
+    cfg = &ws_cfg.fhss;
+    // save the fhss cfg to ws_info
+    cur->ws_info->hopping_schdule.uc_channel_function = cfg->fhss_uc_channel_function;
+    cur->ws_info->hopping_schdule.bc_channel_function = cfg->fhss_bc_channel_function;
+    cur->ws_info->hopping_schdule.uc_fixed_channel = cfg->fhss_uc_fixed_channel;
+    cur->ws_info->hopping_schdule.bc_fixed_channel = cfg->fhss_bc_fixed_channel;
+
+    cur->ws_info->hopping_schdule.fhss_uc_dwell_interval = cfg->fhss_uc_dwell_interval;
+    cur->ws_info->hopping_schdule.fhss_bc_dwell_interval = cfg->fhss_bc_dwell_interval;
+    cur->ws_info->hopping_schdule.fhss_broadcast_interval = cfg->fhss_bc_interval;
+
+    cur->ws_info->hopping_schdule.fan_support_version = cfg->fan_support_version;
+    cur->ws_info->hopping_schdule.usie_chan_plan_selection = cfg->usie_chan_plan_selection;
+    cur->ws_info->hopping_schdule.bsie_chan_plan_selection = cfg->bsie_chan_plan_selection;
 
     return CFG_SETTINGS_OK;
 }

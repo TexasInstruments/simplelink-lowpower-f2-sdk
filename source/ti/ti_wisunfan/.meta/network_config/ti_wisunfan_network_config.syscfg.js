@@ -512,6 +512,12 @@ function getNetworkConfigHiddenState(inst, cfgName)
     const isCollectorProject = (inst.project.includes("borderrouter"));
     const isSensorProject = (inst.project.includes("routernode") || inst.project.includes("coapnode"));
     let isVisible = true;
+
+    if (inst.project.includes("rcplmac"))
+    {
+        return true; // Hide all network configuration for RCP LMAC example
+    }
+
     switch(cfgName)
     {
         case "channelMask":

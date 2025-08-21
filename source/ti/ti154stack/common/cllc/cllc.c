@@ -241,7 +241,12 @@ STATIC CONST uint8_t fhGtkHash2[] = CLLC_FH_GTK2HASH;
 STATIC CONST uint8_t fhGtkHash3[] = CLLC_FH_GTK3HASH;
 #ifndef __unix__
 STATIC uint32_t fhPAtrickleTime = CLLC_FH_MIN_TRICKLE;
+#ifdef FH_LOW_LATENCY_BROADCAST
+STATIC uint32_t fhPCtrickleTime = 1; // disable trickle timer
+#define LOW_LATENCY_BROADCAST_PC_INTERVAL 3500
+#else  // FH_LOW_LATENCY_BROADCAST
 STATIC uint32_t fhPCtrickleTime = CLLC_FH_MIN_TRICKLE;
+#endif // FH_LOW_LATENCY_BROADCAST
 #else
 STATIC uint32_t fhPAtrickleTime;
 STATIC uint32_t fhPCtrickleTime;
@@ -539,6 +544,9 @@ void Cllc_process(void)
 
         /* Clear the event */
         Util_clearEvent(&Cllc_events, CLLC_PC_EVT);
+#ifdef FH_LOW_LATENCY_BROADCAST
+        Csf_setTrickleClock(LOW_LATENCY_BROADCAST_PC_INTERVAL, ApiMac_wisunAsyncFrame_config); // send continously PC frames to allow for a quick re-join
+#endif // FH_LOW_LATENCY_BROADCAST
     }
 
     /* Process state change event */

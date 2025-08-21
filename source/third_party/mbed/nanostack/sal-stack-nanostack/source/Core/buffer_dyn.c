@@ -119,6 +119,7 @@ buffer_t *buffer_get_specific(uint16_t headroom, uint16_t size, uint16_t minspac
         buf->options.ipv6_use_min_mtu = -1;
 #endif
         buf->size = total_size;
+        buf->from_host = false;
     } else {
         tr_error("buffer_get failed: alloc(%"PRIu32")", (uint32_t)(sizeof(buffer_t) + total_size));
     }

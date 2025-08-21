@@ -47,7 +47,6 @@
 /******************************************************************************
  Includes
  *****************************************************************************/
-#include "mbed_config_app.h"
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -56,34 +55,23 @@
 #include <inc/hw_memmap.h>
 #include <inc/hw_fcfg1.h>
 #include <inc/hw_types.h>
-#include "advanced_config.h"
-#include "nsconfig.h"
+
+
 #include "net_interface.h"
 #include "mac_hl_patch.h"
 #include "ns_types.h"
 #include "mac_common_defines.h"
 
-#include "6LoWPAN/MAC/mpx_api.h"
-#include "6LoWPAN/ws/ws_llc.h"
-#include "6LoWPAN/ws/ws_ie_lib.h"
-#include "NWK_INTERFACE/Include/protocol_timer.h"
-#include "NWK_INTERFACE/Include/protocol.h"
-#include "MAC/rf_driver_storage.h"
 
 #include "mac_assert.h"
 #include "osal_port.h"
-#include "timac_ns_interface.h"
 #include "api_mac.h"
 #include "macTask.h"
 #include "timac_api.h"
 #include "macs.h"
 #include "macwrapper.h"
-#include "nsdynmemLIB.h"
-#include "application.h"
 #include "mac_settings.h"
 #define TRACE_GROUP "MRsH"
-#include "ns_trace.h"
-#include "eventOS_event.h"
 
 #ifndef FREERTOS_SUPPORT
 #include <ti/sysbios/knl/Task.h>
@@ -104,32 +92,8 @@
 #include <ti/drivers/GPIO.h>
 #include <driverlib/ioc.h>
 
-/* Using NanoStack VPIE parsing function */
-#include "6LoWPAN/MAC/mac_ie_lib.h"
-#include "6LoWPAN/ws/ws_common_defines.h"
-#include "6LoWPAN/ws/ws_ie_lib.h"
-
-//#define TIMAC_MPL_RETRY_BASEON_RX_DOWNSTREAM
-//#define MAC_MPL_BACKTOBACK_TX
-//#define ENABLE_GPIO_MPL
-
-/*
- * for CC1312R7 use the following GPIO
- */
-#define FH_UNICAST_GPIO             IOID_18
-#define HOST_RX_GPIO                IOID_19
-#define MAC_BROADCAST_GPIO          IOID_20
-#define FH_BROADCAST_GPIO           IOID_21
-
-#define RF_RX_GPIO                  IOID_23
-#define RF_TX_GPIO                  IOID_24
-
-void timac_setup_Test_GPIO(void);
-void timac_Set_MAC_BROADCAST_GPIO(uint8_t st);
-
-#ifdef MAC_DUTY_CYCLE_CHECKING
-#include "mac_duty_cycle/mac_duty_cycle.h"
-#endif
+#include "rcp_types.h"
+#include "mt.h"
 
 /*!
  This module is the ICall interface for the application and all ICall
@@ -143,75 +107,6 @@ void timac_Set_MAC_BROADCAST_GPIO(uint8_t st);
 extern struct osal_debug osalDbg;
 #endif
 
-/*! Capability Information - Device is capable of becoming a PAN coordinator */
-#define CAPABLE_PAN_COORD       0x01
-/*! Capability Information - Device is an FFD  */
-#define CAPABLE_FFD             0x02
-/*!
- Capability Information - Device is mains powered rather than battery powered
- */
-#define CAPABLE_MAINS_POWER     0x04
-/*! Capability Information - Device has its receiver on when idle  */
-#define CAPABLE_RX_ON_IDLE      0x08
-/*!
- Capability Information - Device is capable of sending
- and receiving secured frames
- */
-#define CAPABLE_SECURITY        0x40
-/*!
- Capability Information - Request allocation of a short address in the
- associate procedure
- */
-#define CAPABLE_ALLOC_ADDR      0x80
-
-#define MAC_ADDR_LEN        8
-
-#define MAC_UNDEFINED_TASKID    0xFF
-
-#define IE_HDR_LEN          2
-/******************************************************************************
- Structures
- *****************************************************************************/
-typedef struct mac_internal_s {
-    mac_api_t *mac_api;
-    arm_device_driver_list_s *dev_driver;
-    arm_device_driver_list_s *virtual_driver;
-    //Move define inside MAC (now in protocol_abstract.h)
-    struct protocol_interface_rf_mac_setup *setup;
-    uint8_t device_table_size;
-    uint8_t key_description_size;
-    //linked list link
-} mac_internal_t;
-/******************************************************************************
- Global variables
- *****************************************************************************/
-
-uint8_t enableVPIE = 0;
-uint8_t detectVPIE = 0;
-bool disableBCRequeue = false;
-#ifdef FEATURE_DISABLE_FRAME_COUNT
-bool disableFrameCountChecking = true;
-#else
-bool disableFrameCountChecking = false;
-#endif
-
-volatile MAC_VPIE_STATUS_t vpieStatus;
-timac_rx_MPL_Data_Callback *pRxMPLCallback=NULL;
-MAC_MPL_Handler_t macMplHnd;
-
-/*!
- The ApiMac_extAddr is the MAC's IEEE address, setup with the Chip's
- IEEE addresses in main.c
- */
-ApiMac_sAddrExt_t ApiMac_extAddr;
-extern uint8_t timacTaskId;
-extern sem_t event_thread_sem_handle;
-
-extern configurable_props_t cfg_props;
-extern int8_t eventOS_event_timer_request(uint8_t event_id, uint8_t event_type, int8_t tasklet_id, uint32_t time);
-
-//fake pib variable to hold reg domain info
-extern uint8_t regDomain;
 /******************************************************************************
  Local variables
  *****************************************************************************/
@@ -221,49 +116,16 @@ static sem_t appSemHandle;
 /*! Storage for Events flags */
 static uint32_t appEvents = 0;
 static uint8_t stackTaskId;
-static uint8_t appTaskId = MAC_UNDEFINED_TASKID;
-static struct mac_api_s *mbed_mac_api = NULL;
-static fhss_api_t *fhss_api = NULL;
-static uint8_t deviceExtAddr[8];
 
-#ifdef DBG_APP
-uint16_t appDbg_event[20];
-uint8_t appDbg_eidx = 0;
-struct {
-    uint16_t asynchReq[4];
-    uint16_t asynchInd[4];
-    uint32_t data[6];
-} mcpsDbg;
-#endif
+/*! MAC callback table, initialized to no callback table */
+static ApiMac_callbacks_t *pMacCallbacks = (ApiMac_callbacks_t *) NULL;
 
-#ifdef WISUN_TEST_METRICS
-MAC_Perf_Data MacPerfData;
-#endif
+uint8_t appTaskId;
 
-/*****************************************************************************
- Local Function Prototypes
- *****************************************************************************/
-static ApiMac_status_t mlmeGetFhReq(uint16_t pibAttribute, void *pValue, uint16_t *pLen);
-static ApiMac_status_t mlmeSetFhReq(uint16_t pibAttribute, void *pValue);
+
 static uint16_t processIncomingICallMsg(macCbackEvent_t *pMsg);
-
-static int8_t ns_sw_mac_initialize(mac_api_t *api, mcps_data_confirm *mcps_data_conf_cb,
-                                   mcps_data_indication *mcps_data_ind_cb, mcps_purge_confirm *purge_conf_cb,
-                                   mlme_confirm *mlme_conf_callback, mlme_indication *mlme_ind_callback, int8_t parent_id);
-static int8_t ns_sw_mac_api_enable_mcps_ext(mac_api_t *api, mcps_data_indication_ext *data_ind_cb,
-                                            mcps_data_confirm_ext *data_cnf_cb, mcps_ack_data_req_ext *ack_data_req_cb);
-static int8_t ns_sw_mac_api_enable_edfe_ext(mac_api_t *api, mcps_edfe_handler *edfe_ind_cb);
-static void mlme_req(const mac_api_t *api, mlme_primitive id, void *data);
-static void mcps_req(const mac_api_t *api, const mcps_data_req_t *data);
-static uint8_t mcps_req_ext(const mac_api_t *api, void *data, ns_ie_iovec_t *iovec, wh_ie_sub_list_t *ie_header_mask, wp_nested_ie_sub_list_t *nested_wp_id, uint8_t *gtkhash);
-static uint8_t purge_req(const mac_api_t *api, const mcps_purge_t *data);
-static int8_t macext_mac64_address_set(const mac_api_t *api, const uint8_t *mac64);
-static int8_t macext_mac64_address_get(const mac_api_t *api, mac_extended_address_type type, uint8_t *mac64_buf);
-
-static int8_t sw_mac_storage_decription_sizes_get(const mac_api_t *api, mac_description_storage_size_t *buffer);
-static void setGtkhash(uint8_t *gtkhash);
-
-
+static void copyMacAddrToApiMacAddr(ApiMac_sAddr_t *pDst, sAddr_t *pSrc);
+static void copyDataInd(ApiMac_mcpsDataInd_t *pDst, macMcpsDataInd_t *pSrc);
 /******************************************************************************
  Public Functions
  *****************************************************************************/
@@ -309,22 +171,22 @@ void *ApiMac_init(uint8_t macTaskIdParam, bool enableFH)
     Task_sleep(10);
 #endif
 
-    /* Enable frequency hopping? */
-    if(enableFH)
-    {
-        ApiMac_enableFH();
-    }
-
-    /* Reset the MAC */
-    ApiMac_mlmeResetReq(true);
-
-    timac_setup_Test_GPIO();
-
     return (&appSemHandle);
 }
 
 /*!
  Register for MAC callbacks.
+
+ Public function defined in api_mac.h
+ */
+void ApiMac_registerCallbacks(ApiMac_callbacks_t *pCallbacks)
+{
+    /* Save the application's callback table */
+    pMacCallbacks = pCallbacks;
+}
+
+/*!
+ Process incoming messages from the MAC
 
  Public function defined in api_mac.h
  */
@@ -350,6 +212,172 @@ void ApiMac_processIncoming(void)
 }
 
 /*!
+ * @brief       This is a helper function to invoke correct callbacks based on the callback from lmac
+ *
+ * @param       pMsg - pointer to the incoming message
+ */
+static void handle_rcp_to_host_cbmsg(macRcpMsg_t *pMsg)
+{
+    switch(pMsg->rcp_cmd_type)
+    {
+        case RCP_DATA_IND:
+            if(pMacCallbacks->pDataIndCb)
+            {
+                pMacCallbacks->pDataIndCb((rcp_data_ind_t*)pMsg->rcp_data);
+            }
+            break;
+
+        case RCP_DATA_CNF:
+            if(pMacCallbacks->pDataCnfCb)
+            {
+                pMacCallbacks->pDataCnfCb((rcp_data_cnf_t*)pMsg->rcp_data);
+            }
+            break;
+
+        case RCP_INIT_CNF:
+            if(pMacCallbacks->pRcpInitCnfCb)
+            {
+                pMacCallbacks->pRcpInitCnfCb((rcp_init_cnf_t*)pMsg->rcp_data);
+            }
+            break;
+
+        case RCP_MAC_INIT_CNF:
+            if(pMacCallbacks->pRcpMacCfgSetCnfCb)
+            {
+                pMacCallbacks->pRcpMacCfgSetCnfCb((rcp_mac_config_set_cnf_t*)pMsg->rcp_data, MT_RCP_LMAC_MAC_INIT_CNF);
+            }
+            break;
+
+        case RCP_FH_INIT_CNF:
+            if(pMacCallbacks->pRcpMacCfgSetCnfCb)
+            {
+                pMacCallbacks->pRcpMacCfgSetCnfCb((rcp_mac_config_set_cnf_t*)pMsg->rcp_data, MT_RCP_LMAC_FH_INIT_CNF);
+            }
+            break;
+
+        case RCP_MAC_RESET_CNF:
+            if(pMacCallbacks->pRcpMacCfgSetCnfCb)
+            {
+                pMacCallbacks->pRcpMacCfgSetCnfCb((rcp_mac_config_set_cnf_t*)pMsg->rcp_data, MT_RCP_LMAC_MAC_RESET_CNF);
+            }
+            break;
+
+        case RCP_MAC_CONFIG_GET_CNF:
+            if(pMacCallbacks->pRcpMacCfgGetCnfCb)
+            {
+                pMacCallbacks->pRcpMacCfgGetCnfCb((rcp_mac_config_get_cnf_t*)pMsg->rcp_data);
+            }
+            break;
+
+        case RCP_MAC_CONFIG_SET_CNF:
+            if(pMacCallbacks->pRcpMacCfgSetCnfCb)
+            {
+                pMacCallbacks->pRcpMacCfgSetCnfCb((rcp_mac_config_set_cnf_t*)pMsg->rcp_data, MT_RCP_LMAC_MAC_CFG_SET_CNF);
+            }
+            break;
+
+        default:
+            break;
+    }
+}
+
+/*!
+ * @brief       This function process incoming ICall callback messages.
+ *
+ * @param       pMsg - pointer to the incoming message
+ */
+static uint16_t processIncomingICallMsg(macCbackEvent_t *pMsg)
+{
+    
+    if(pMacCallbacks != NULL)
+    {
+        /* Determine the callback type */
+        switch(pMsg->hdr.event)
+        {
+            case MAC_RCP_TO_HOST_MSG:
+
+                handle_rcp_to_host_cbmsg((macRcpMsg_t*)pMsg);
+                break;            
+
+            case MAC_NCP_MT_MSG:
+                if(pMacCallbacks->pUnprocessedCb)
+                {
+                    /* NPI MT MSG */
+                    uint8_t *pNpiMtMsg;
+
+                    pNpiMtMsg = (uint8_t *)pMsg + sizeof(macNpiMtMsg_t);
+
+                    pMacCallbacks->pUnprocessedCb(0, 0,(void *)pNpiMtMsg);
+
+                }
+                break;
+        
+            default:
+                break;
+
+        }
+    }
+    return (0);
+}
+
+/*!
+ * @brief       Copy the common address type from Mac Stack type to App type.
+ *
+ * @param       pDst - pointer to the application type
+ * @param       pSrc - pointer to the mac stack type
+ */
+static void copyMacAddrToApiMacAddr(ApiMac_sAddr_t *pDst, sAddr_t *pSrc)
+{
+    /* Copy each element of the structure */
+    pDst->addrMode = (ApiMac_addrType_t)pSrc->addrMode;
+    if(pDst->addrMode == ApiMac_addrType_short)
+    {
+        pDst->addr.shortAddr = pSrc->addr.shortAddr;
+    }
+    else
+    {
+        memcpy(pDst->addr.extAddr, pSrc->addr.extAddr,
+               sizeof(ApiMac_sAddrExt_t));
+    }
+}
+
+/*!
+ * @brief       Copy the MAC data indication to the API MAC data indication
+ *
+ * @param       pDst - pointer to the API MAC data indication
+ * @param       pSrc - pointer to the MAC data indication
+ */
+static void copyDataInd(ApiMac_mcpsDataInd_t *pDst, macMcpsDataInd_t *pSrc)
+{
+    /* Initialize the structure */
+    memset(pDst, 0, sizeof(ApiMac_mcpsDataInd_t));
+
+    /* copy the message to the indication structure */
+    copyMacAddrToApiMacAddr(&(pDst->srcAddr), &(pSrc->mac.srcAddr));
+    copyMacAddrToApiMacAddr(&(pDst->dstAddr), &(pSrc->mac.dstAddr));
+    pDst->timestamp = pSrc->mac.timestamp;
+    pDst->timestamp2 = pSrc->mac.timestamp2;
+    pDst->srcPanId = pSrc->mac.srcPanId;
+    pDst->dstPanId = pSrc->mac.dstPanId;
+    pDst->mpduLinkQuality = pSrc->mac.mpduLinkQuality;
+    pDst->correlation = pSrc->mac.correlation;
+    pDst->rssi = pSrc->mac.rssi;
+    pDst->dsn = pSrc->mac.dsn;
+    pDst->payloadIeLen = pSrc->mac.payloadIeLen;
+    pDst->pPayloadIE = pSrc->mac.pPayloadIE;
+    pDst->fhFrameType = (ApiMac_fhFrameType_t)pSrc->internal.fhFrameType;
+    pDst->fhProtoDispatch = (ApiMac_fhDispatchType_t)pSrc->mac.fhProtoDispatch;
+    pDst->frameCntr = (uint32_t)pSrc->mac.frameCntr;
+    memcpy(&(pDst->sec), &(pSrc->sec), sizeof(ApiMac_sec_t));
+
+    /* Copy the payload information */
+    pDst->msdu.len = pSrc->msdu.len;
+    pDst->msdu.p = pSrc->msdu.p;
+}
+
+
+
+/*!
  This function sends application data to the MAC for
  transmission in a MAC data frame.
 
@@ -359,6 +387,8 @@ ApiMac_status_t ApiMac_mcpsDataReq(ApiMac_mcpsDataReq_t *pData)
 {
     return (ApiMac_status_t) MAC_McpsDataReq(pData);
 }
+
+#if 0
 
 /*!
  This function purges and discards a data request from the MAC
@@ -1551,8 +1581,11 @@ static int8_t sw_mac_storage_decription_sizes_get(const mac_api_t *api, mac_desc
     if (!api || !buffer) {
         return -1;
     }
-
-    buffer->device_decription_table_size = NANOSTACK_DEVICE_TABLE_ENTRIES;
+    if (MBED_CONF_MBED_MESH_API_WISUN_DEVICE_TYPE == MESH_DEVICE_TYPE_WISUN_BORDER_ROUTER) {
+        buffer->device_decription_table_size = NANOSTACK_DEVICE_TABLE_ENTRIES_BR;
+    } else {
+        buffer->device_decription_table_size = NANOSTACK_DEVICE_TABLE_ENTRIES_RN;
+    }
     buffer->key_description_table_size = 4;
     buffer->key_lookup_size = 1;
     buffer->key_usage_size = 3;
@@ -2532,7 +2565,7 @@ void timac_tasklet_init(void)
  */
 void timacSignalEventLoop(void)
 {
-    uint8_t status;
+    uint8_t status
     //post an event to timac tasklet with ARM_LIB_LOW_PRIORITY_EVENT
     arm_event_s event = {
            .sender = 0,
@@ -3413,3 +3446,4 @@ void startRfCbThread(void)
 }
 
 #endif //FREERTOS_SUPPORT
+#endif //#if 0

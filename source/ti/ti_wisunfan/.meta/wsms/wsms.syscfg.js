@@ -119,6 +119,10 @@ const wsmsStatic = {
                 {
                     name: "solarcoapnode",
                     displayName: "Solar Node (Router Node)"
+                },
+                {
+                    name: "rcplmac",
+                    displayName: "RCP LMAC"
                 }
             ],
             description: solarDocs.project.description,

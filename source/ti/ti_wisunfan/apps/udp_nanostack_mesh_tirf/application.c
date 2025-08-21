@@ -76,6 +76,7 @@
 #include "NWK_INTERFACE/Include/protocol_abstract.h"
 #include "NWK_INTERFACE/Include/protocol.h"
 #include "6LoWPAN/ws/ws_bootstrap.h"
+#include "NanostackTiRfPhy.h"
 
 #include "nsdynmemLIB.h"
 
@@ -260,28 +261,38 @@ ti_wisun_config_t ti_wisun_config =
 // Unused by non-border routers
 ti_br_config_t ti_br_config = {};
 
-configurable_props_t cfg_props = { .phyTxPower = CONFIG_TRANSMIT_POWER, \
-                                   .ccaDefaultdBm = CONFIG_CCA_THRESHOLD, \
-                                   .uc_channel_function = CONFIG_CHANNEL_FUNCTION, \
-                                   .uc_fixed_channel = CONFIG_UNICAST_FIXED_CHANNEL_NUM, \
-                                   .uc_dwell_interval = CONFIG_UNICAST_DWELL_TIME,\
-                                   .bc_channel_function = 0, \
-                                   .bc_fixed_channel = 0, \
-                                   .bc_interval = 0,\
-                                   .bc_dwell_interval = 0, \
-                                   .pan_id = CONFIG_PAN_ID, \
-                                   .network_name = CONFIG_NETNAME, \
-                                   .bc_channel_list = CONFIG_BROADCAST_CHANNEL_MASK, \
-                                   .uc_channel_list = CONFIG_UNICAST_CHANNEL_MASK, \
-                                   .async_channel_list = CONFIG_ASYNC_CHANNEL_MASK, \
-                                   .wisun_device_type = CONFIG_WISUN_DEVICE_TYPE, \
-                                   .ch0_center_frequency = CONFIG_CENTER_FREQ * 1000, \
-                                   .config_channel_spacing = CONFIG_CHANNEL_SPACING, \
-                                   .config_phy_id = CONFIG_PHY_ID, \
-                                   .config_reg_domain = CONFIG_REG_DOMAIN, \
-                                   .operating_class = CONFIG_OP_MODE_CLASS, \
-                                   .operating_mode = CONFIG_OP_MODE_ID, \
-                                   .hwaddr = CONFIG_INVALID_HWADDR};
+configurable_props_t cfg_props =
+{
+    .phyTxPower = CONFIG_TRANSMIT_POWER,
+    .ccaDefaultdBm = CONFIG_CCA_THRESHOLD,
+    .uc_channel_function = CONFIG_CHANNEL_FUNCTION,
+    .uc_fixed_channel = CONFIG_UNICAST_FIXED_CHANNEL_NUM,
+    .uc_dwell_interval = CONFIG_UNICAST_DWELL_TIME,
+    .bc_channel_function = 0,
+    .bc_fixed_channel = 0,
+    .bc_interval = 0,
+    .bc_dwell_interval = 0,
+    .pan_id = CONFIG_PAN_ID,
+    .network_name = CONFIG_NETNAME,
+    .bc_channel_list = CONFIG_BROADCAST_CHANNEL_MASK,
+    .uc_channel_list = CONFIG_UNICAST_CHANNEL_MASK,
+    .async_channel_list = CONFIG_ASYNC_CHANNEL_MASK,
+    .wisun_device_type = CONFIG_WISUN_DEVICE_TYPE,
+    .ch0_center_frequency = CONFIG_CENTER_FREQ * 1000,
+    .config_channel_spacing = CONFIG_CHANNEL_SPACING,
+    .config_phy_id = CONFIG_PHY_ID,
+    .config_reg_domain = CONFIG_REG_DOMAIN,
+    .operating_class = CONFIG_OP_MODE_CLASS,
+    .operating_mode = CONFIG_OP_MODE_ID,
+    .hwaddr = CONFIG_INVALID_HWADDR,
+#ifdef WISUN_FAN_CORE_1_1
+    .mdr_enable = 0 , 
+    .num_phy_mode = 1,
+    .Phy_Mode_Id = {CONFIG_PHY_ID}, 
+#endif    
+    .channel_page = CONFIG_CHANNEL_PAGE,
+    .rx_on_when_idle = true, // LFN not currently supported
+};
 
 
 /******************************************************************************
@@ -556,6 +567,11 @@ mesh_error_t nanostack_wisunInterface_configure(void)
         return MESH_ERROR_PARAM;
     }
 
+    ret = ws_management_channel_mask_set(interface_id, NULL);
+    if (ret < 0) {
+        return MESH_ERROR_PARAM;
+    }
+
     ret = ws_management_network_size_set(interface_id, MBED_CONF_MBED_MESH_APP_WISUN_NETWORK_SIZE);
     if (ret < 0) {
         return MESH_ERROR_PARAM;
@@ -575,11 +591,15 @@ mesh_error_t nanostack_wisunInterface_bringup()
 {
     int8_t device_id = 0;
 
+#ifdef WISUN_RCP_ENABLE
+    device_id = NanostackTiRfPhy_rf_register();
+#else
 #ifndef FEATURE_TIMAC_SUPPORT
     NanostackTiRfPhy_init();
     device_id = NanostackTiRfPhy_rf_register();
 #else
     timacExtaddressRegister();
+#endif
 #endif
     // After the RF is up, we can seed the random from it.
     randLIB_seed_random();
@@ -776,7 +796,7 @@ static void pan_rediscover_update(uint8_t event_type)
     eventOS_event_send(&event);
 }
 
-extern void ccfg_read_mac_addr(uint8_t *mac_addr);
+extern void read_mac_addr(uint8_t *mac_addr);
 static void pan_rediscover_tasklet(arm_event_s *event)
 {
     pan_rediscover_evt_t event_type;
@@ -821,7 +841,7 @@ static void pan_rediscover_tasklet(arm_event_s *event)
             break;
         case PAN_REDISCOVER_JOIN_EVT:
             // Get current HW address and add to payload
-            ccfg_read_mac_addr(hwAddr);
+            read_mac_addr(hwAddr);
             // CoAP message to indicate to BR that new device has joined
             coap_service_request_send(service_id, 0, cur->border_router_setup->border_router_gp_adr,
                                       COAP_PORT, COAP_MSG_TYPE_NON_CONFIRMABLE, COAP_MSG_CODE_REQUEST_POST,

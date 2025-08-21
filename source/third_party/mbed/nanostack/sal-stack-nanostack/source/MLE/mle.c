@@ -140,9 +140,11 @@ bool mle_neigh_entry_frame_counter_update(struct mac_neighbor_table_entry *entry
     } else {
         frame_counter = common_read_32_bit(mle_tlv_info.dataPtr);
     }
+#ifndef WISUN_RCP_ENABLE
     mlme_device_descriptor_t device_desc;
     mac_helper_device_description_write(cur, &device_desc, entry_temp->mac64, entry_temp->mac16, frame_counter, false);
     mac_helper_devicetable_set(&device_desc, cur, entry_temp->index, key_id, false);
+#endif
     return true;
 }
 

@@ -15,7 +15,7 @@
  */
 #ifndef EVENTOS_EVENT_H_
 #define EVENTOS_EVENT_H_
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -238,19 +238,23 @@ partition "system_timer.c" {
 @enduml
 
  */
-typedef struct arm_event_storage {
-    arm_event_s data;
-    enum {
-        ARM_LIB_EVENT_STARTUP_POOL,
-        ARM_LIB_EVENT_DYNAMIC,
-        ARM_LIB_EVENT_USER,
-        ARM_LIB_EVENT_TIMER,
-    } allocator;
-    enum {
-        ARM_LIB_EVENT_UNQUEUED,
+typedef enum arm_allocator_e {
+    ARM_LIB_EVENT_STARTUP_POOL,
+    ARM_LIB_EVENT_DYNAMIC,
+    ARM_LIB_EVENT_USER,
+    ARM_LIB_EVENT_TIMER,
+} arm_allocator_e;
+
+typedef enum arm_state_e {
+    ARM_LIB_EVENT_UNQUEUED,
         ARM_LIB_EVENT_QUEUED,
         ARM_LIB_EVENT_RUNNING,
-    } state;
+} arm_state_e;
+
+typedef struct arm_event_storage {
+    arm_event_s data;
+    arm_allocator_e allocator;
+    arm_state_e state;
     ns_list_link_t link;
 } arm_event_storage_t;
 
@@ -333,7 +337,7 @@ extern int8_t eventOS_event_handler_create(void (*handler_func_ptr)(arm_event_t 
  */
 extern void eventOS_cancel(arm_event_storage_t *event);
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 #endif /* EVENTOS_EVENT_H_ */
