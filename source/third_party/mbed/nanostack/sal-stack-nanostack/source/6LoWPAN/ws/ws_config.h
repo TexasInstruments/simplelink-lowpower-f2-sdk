@@ -45,12 +45,14 @@ typedef struct ti_wisun_config {
 
 extern ti_wisun_config_t ti_wisun_config;
 
+#define EXTERNAL_RADIUS_SERVER_MAX_SHARED_SECRET_LENGTH 32
+
 typedef struct ti_br_config {
     uint8_t use_external_dhcp_server;
     uint8_t external_dhcp_server_addr[16];
     uint8_t use_external_radius_server;
     uint8_t external_radius_server_addr[16];
-    uint8_t external_radius_server_shared_secret[32];
+    uint8_t external_radius_server_shared_secret[EXTERNAL_RADIUS_SERVER_MAX_SHARED_SECRET_LENGTH];
     uint8_t external_radius_server_shared_secret_length;
 } ti_br_config_t;
 
@@ -138,7 +140,11 @@ extern ti_br_config_t ti_br_config;
 
 /* If PAN version lifetime would be 10 minutes, 1000 increments is about 7 days i.e. storage must
    be written at least once a week */
+#ifdef WISUN_CERT_CONFIG
+#define PAN_VERSION_STORAGE_READ_INCREMENT    2
+#else
 #define PAN_VERSION_STORAGE_READ_INCREMENT    1000
+#endif
 
 // RPL version number update intervall
 // after restart version numbers are increased faster and then slowed down when network is stable
@@ -329,6 +335,13 @@ extern uint8_t DEVICE_MIN_SENS;
 #define WS_CONGESTION_BR_MAX_QUEUE_SIZE 600000 / WS_CONGESTION_PACKET_SIZE
 #define WS_CONGESTION_NODE_MIN_QUEUE_SIZE 10000 / WS_CONGESTION_PACKET_SIZE
 #define WS_CONGESTION_NODE_MAX_QUEUE_SIZE 85000 / WS_CONGESTION_PACKET_SIZE
+
+/*
+ * Registration refresh request parameters
+ */
+#define NCR_RESP_WINDOW_SEC 10 // Neighbor cache refresh window for the registration refresh response
+#define NCR_REQ_RETRIES     3  // Neighbor cache refresh retries for registration refresh request
+
 /*
  * Modifications for base specification.
  *
@@ -393,6 +406,18 @@ extern uint8_t DEVICE_MIN_SENS;
 #define DEFAULT_GTK_REQUEST_IMAX                1                       // 64 minutes
 #define DEFAULT_GTK_MAX_MISMATCH                1                       // 64 minutes
 #define DEFAULT_GTK_NEW_INSTALL_REQUIRED        20                       // 80 percent of GTK lifetime --> 24 days
+
+#elif defined(GTK_CERT_BR_POWER_CYCLE)
+#define MINUTES_IN_DAY   24 * 60
+#define DEFAULT_GTK_EXPIRE_OFFSET               10
+#define DEFAULT_PMK_LIFETIME                    80
+#define DEFAULT_PTK_LIFETIME                    40
+#define DEFAULT_GTK_NEW_ACTIVATION_TIME         5
+#define DEFAULT_REVOCATION_LIFETIME_REDUCTION   30
+#define DEFAULT_GTK_REQUEST_IMIN                1
+#define DEFAULT_GTK_REQUEST_IMAX                1
+#define DEFAULT_GTK_MAX_MISMATCH                1
+#define DEFAULT_GTK_NEW_INSTALL_REQUIRED        60
 
 #else
 

@@ -161,9 +161,6 @@ extern "C"
 #define FEATURE_MAC_SECURITY // Always defined
 % if(inst.project.includes("rcplmac")) {
 
-/*! Builds the image with the full function device */
-#define FEATURE_FULL_FUNCTION_DEVICE
-
 #define `getModeFeatureMacro(inst.mode)`
 %} else {
 
@@ -193,7 +190,7 @@ extern "C"
 /* Builds the image with `inst.mode` mode of operation */
 #define `getModeFeatureMacro(inst.mode)`
 
-% if(inst.project.includes("borderrouter")) {
+% if((!inst.project.includes("rcplmac")) && inst.project.includes("borderrouter")) {
 /*! Builds the image with the full function device */
 #define FEATURE_FULL_FUNCTION_DEVICE
 % }

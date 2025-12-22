@@ -52,6 +52,8 @@
 #include "RPL/rpl_protocol.h"
 #include "RPL/rpl_policy.h"
 #include "RPL/rpl_control.h"
+#include "RPL/rpl_nvm_store.h"
+#include "RPL/rpl_nvm_data.h"
 #include "RPL/rpl_objective.h"
 #include "RPL/rpl_upward.h"
 #include "RPL/rpl_downward.h"
@@ -77,6 +79,16 @@ static void rpl_instance_remove_system_routes_through_parent(rpl_instance_t *ins
 static void rpl_dodag_update_system_route(rpl_dodag_t *dodag, rpl_dio_route_t *route);
 static rpl_neighbour_t *rpl_instance_choose_worst_neighbour(const rpl_instance_t *instance);
 static uint32_t rpl_dio_imax_time_calculate(uint16_t Imax, uint16_t fixed_point);
+
+#ifdef HAVE_RPL_ROOT
+static void write_rpl_info_to_nv(uint8_t dodag_version_number, uint8_t dtsn)
+{
+#ifdef NV_RESTORE
+    nw_info_nvm_tlv_t *tlv_entry = (nw_info_nvm_tlv_t *) rpl_get_nvm_tlv();
+    rpl_nvm_store_info_tlv_create(tlv_entry, dodag_version_number, dtsn);
+#endif
+}
+#endif
 
 /* Rank comparison, and DAGRank(rank) */
 uint16_t nrpl_dag_rank(const rpl_dodag_t *dodag, uint16_t rank)
@@ -210,6 +222,11 @@ rpl_cmp_t rpl_seq_compare(uint8_t a, uint8_t b)
     }
 }
 
+void rpl_instance_set_dtsn(rpl_instance_t *instance, uint8_t dtsn)
+{  
+    instance->dtsn = dtsn;
+}
+
 void rpl_instance_set_dodag_version(rpl_instance_t *instance, rpl_dodag_version_t *version, uint16_t rank)
 {
     if (!version || rpl_dodag_am_leaf(version->dodag)) {
@@ -241,6 +258,11 @@ void rpl_instance_set_dodag_version(rpl_instance_t *instance, rpl_dodag_version_
             trickle_start(&instance->dio_timer, &version->dodag->dio_timer_params);
         }
     }
+
+#ifdef HAVE_RPL_ROOT
+    // Store dodag version to NV for Border Routers
+    write_rpl_info_to_nv(instance->current_dodag_version->number, instance->dtsn);
+#endif
 
     /* Then changing dodag version is an inconsistency. We may be changing from non-NULL to NULL, in which case we use old parameters to do poison */
     trickle_inconsistent_heard(&instance->dio_timer, version ? &version->dodag->dio_timer_params : &old_version->dodag->dio_timer_params);
@@ -340,6 +362,10 @@ void rpl_instance_increment_dtsn(rpl_instance_t *instance)
     instance->srh_error_count = 0;
     /* Should a DTSN increment trigger DIOs, thus? */
     rpl_instance_inconsistency(instance);
+#ifdef HAVE_RPL_ROOT
+    // Store to NV after update
+    write_rpl_info_to_nv(instance->current_dodag_version->number, instance->dtsn);
+#endif
 }
 
 void rpl_instance_poison(rpl_instance_t *instance, uint8_t count)
@@ -416,6 +442,16 @@ rpl_neighbour_t *rpl_lookup_neighbour_by_ll_address(const rpl_instance_t *instan
 {
     ns_list_foreach(rpl_neighbour_t, neighbour, &instance->candidate_neighbours) {
         if (neighbour->interface_id == if_id && addr_ipv6_equal(neighbour->ll_address, addr)) {
+            return neighbour;
+        }
+    }
+    return NULL;
+}
+
+rpl_neighbour_t *rpl_lookup_neighbour_by_global_address(const rpl_instance_t *instance, const uint8_t *addr, int8_t if_id)
+{
+    ns_list_foreach(rpl_neighbour_t, neighbour, &instance->candidate_neighbours) {
+        if (neighbour->interface_id == if_id && addr_ipv6_equal(neighbour->global_address, addr)) {
             return neighbour;
         }
     }
@@ -590,8 +626,8 @@ rpl_dodag_version_t *rpl_create_dodag_version(rpl_dodag_t *dodag, uint8_t versio
         }
     }
 
-
-
+    /* Trigger parent selection to update dodag version */
+    rpl_instance_trigger_parent_selection(dodag->instance, 5, NULL);
     return version;
 }
 
@@ -886,6 +922,10 @@ void rpl_dodag_set_version_number_as_root(rpl_dodag_t *dodag, uint8_t number)
      */
     rpl_dodag_version_t *version = dodag->instance->current_dodag_version;
     version->number = number;
+#ifdef HAVE_RPL_ROOT
+    //store to NV
+    write_rpl_info_to_nv(version->number, dodag->instance->dtsn);
+#endif
     rpl_dodag_inconsistency(dodag);
 #if defined FEA_TRACE_SUPPORT && defined EXTRA_CONSISTENCY_CHECKS
     /* Sanity check that the above assertion is true - as root we shouldn't have

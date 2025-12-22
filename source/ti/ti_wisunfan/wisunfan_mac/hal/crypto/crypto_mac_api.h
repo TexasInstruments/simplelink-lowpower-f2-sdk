@@ -55,7 +55,7 @@ extern "C"
 /*******************************************************************************
  * INCLUDES
  */
-#if !defined(DeviceFamily_CC13X2) && !defined(DeviceFamily_CC26X2) && !defined(DeviceFamily_CC13X2X7) && !defined(DeviceFamily_CC13X4)
+#ifdef CC13X0_SUPPORT
 #include <ti/drivers/crypto/CryptoCC26XX.h>
 #else
 #include <ti/drivers/AESCCM.h>
@@ -74,7 +74,7 @@ extern uint32_t *macCryptoDrvTblPtr;
  * CONSTANTS
  */
 
-#if !defined(DeviceFamily_CC13X2) && !defined(DeviceFamily_CC26X2) && !defined(DeviceFamily_CC13X2X7) && !defined(DeviceFamily_CC13X4)
+#ifdef CC13X0_SUPPORT
 // Crypto proxy index for crypto driver API
 #define CRYPTOCC26XX_CLOSE              0
 #define CRYPTOCC26XX_INIT               1

@@ -35,9 +35,6 @@
 
 #define SECONDS_IN_MINUTE                       60
 
-#define DEFAULT_GTK_REQUEST_IMIN                4                       // 4 minutes
-#define DEFAULT_GTK_REQUEST_IMAX                64                      // 64 minutes
-
 static void ws_pae_timers_calculate(sec_timer_cfg_t *timer_settings);
 
 void ws_pae_timers_settings_init(sec_timer_cfg_t *timer_settings, ws_sec_timer_cfg_t *new_timer_settings)

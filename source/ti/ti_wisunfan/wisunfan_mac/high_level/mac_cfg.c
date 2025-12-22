@@ -278,7 +278,7 @@ const macPibTbl_t macPibTbl[] =
   {offsetof(macPib_t, maxBe), sizeof(uint8), 0, 8},                                  /* MAC_MAX_BE */
   {offsetof(macPib_t, maxFrameTotalWaitTime), sizeof(uint16), 0x00, 0xFF},           /* MAC_MAX_FRAME_RESPONSE_TIME */
 
-  {offsetof(macPib_t, maxFrameRetries), sizeof(uint8), 0, 7},                        /* MAC_MAX_FRAME_RETRIES */
+  {offsetof(macPib_t, maxFrameRetries), sizeof(uint8), 0, 20},                       /* MAC_MAX_FRAME_RETRIES */
   {offsetof(macPib_t, responseWaitTime), sizeof(uint8), 2, 255},                     /* MAC_RESPONSE_WAIT_TIME */
   {offsetof(macPib_t, syncSymbolOffset), sizeof(uint8), 0, 0},                       /* MAC_SYNC_SYMBOL_OFFSET */
   {offsetof(macPib_t, timeStampSupported), sizeof(bool), FALSE, TRUE},               /* MAC_TIMESTAMP_SUPPORTED */
@@ -679,6 +679,7 @@ const FH_PibTbl_t FH_PibTbl_new[] =
 #if defined(COMBO_MAC) || !defined(FREQ_2_4G)
 
 /* Wisun Updated Standard PHY Descriptor Table */
+#ifndef WISUN_RCP_ENABLE // Remove PHY Table in RCP. Moved to host
 CODE const macMRFSKPHYDesc_t macMRFSKStdPhyTable[MAC_STANDARD_PHY_DESCRIPTOR_ENTRIES] =
 {
   { CONFIG_CENTER_FREQ*1000, CONFIG_CHANNEL_SPACING,
@@ -751,5 +752,6 @@ macMRFSKPHYDesc_t macMRFSKGenPhyTable[MAC_GENERIC_PHY_DESCRIPTOR_ENTRIES] =
    MAC_MODULATION_INDEX_2FSK_200K_1,
    MAC_CCA_TYPE_LBT },
 };
+#endif // WISUN_RCP_ENABLE
 
 #endif

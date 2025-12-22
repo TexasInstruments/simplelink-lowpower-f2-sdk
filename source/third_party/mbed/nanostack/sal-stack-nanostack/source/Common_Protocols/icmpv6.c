@@ -50,6 +50,10 @@
 
 #define TRACE_GROUP "icmp"
 
+#ifdef TI_WISUN_FAN_DEBUG
+extern bool disable_ns_messages;
+#endif
+
 static buffer_t *icmpv6_echo_request_handler(struct buffer *buf);
 
 #ifdef WISUN_NCP_ENABLE
@@ -358,21 +362,22 @@ static buffer_t *icmpv6_echo_request_handler(buffer_t *buf)
 
 #if defined(TI_WISUN_FAN_OPT_ICMPV6) || defined(HAVE_IPV6_ND)
 
-static void icmpv6_na_wisun_aro_handler(protocol_interface_info_entry_t *cur_interface, const uint8_t *dptr, const uint8_t *src_addr)
+static void icmpv6_na_wisun_aro_handler(protocol_interface_info_entry_t *cur_interface, const uint8_t *dptr, const address_t src_addr)
 {
-    (void) src_addr;
     dptr += 2;
     uint16_t life_time;
     uint8_t nd_status  = *dptr;
     dptr += 4;
     life_time = common_read_16_bit(dptr);
     dptr += 2;
-    if (memcmp(dptr, cur_interface->mac, 8) != 0) {
+    if (nd_status != EARO_REGISTRATION_REFRESH_REQUEST && memcmp(dptr, cur_interface->mac, 8) != 0) {
         return;
     }
 
     (void)life_time;
-    if (nd_status != ARO_SUCCESS) {
+    if (nd_status == EARO_REGISTRATION_REFRESH_REQUEST) {
+        rpl_control_registration_refresh_handler(cur_interface, src_addr);
+    } else if (nd_status != ARO_SUCCESS) {
         ws_common_black_list_neighbour(src_addr, nd_status);
         ws_common_aro_failure(cur_interface, src_addr);
     }
@@ -1514,6 +1519,13 @@ static void icmpv6_aro_cb(buffer_t *buf, uint8_t status)
 
 buffer_t *icmpv6_build_ns(protocol_interface_info_entry_t *cur, const uint8_t target_addr[16], const uint8_t *prompting_src_addr, bool unicast, bool unspecified_source, const aro_t *aro)
 {
+#ifdef TI_WISUN_FAN_DEBUG
+    // Skip NS if disabled
+    if (disable_ns_messages) {
+        tr_warn("Skipping building NS message!");
+        return NULL;
+    }
+#endif
 
     if (!cur || addr_is_ipv6_multicast(target_addr)) {
         return NULL;
@@ -1759,7 +1771,11 @@ buffer_t *icmpv6_build_na(protocol_interface_info_entry_t *cur, bool solicited, 
     // (RFC 4861 makes host trigger action when they see the IsRouter flag
     // go from true to false - RAs from us imply "IsRouter", apparently even if
     // Router Lifetime is 0. So keep R set as long as we're sending RAs)
-    flags = icmpv6_radv_is_enabled(cur) ? NA_R : 0;
+    if (aro->is_earo) {
+        flags = NA_R; // Add Router flag for EARO (used for registration refresh request)
+    } else {
+        flags = icmpv6_radv_is_enabled(cur) ? NA_R : 0;
+    }
 
     if (override) {
         flags |= NA_O;
@@ -1813,17 +1829,34 @@ buffer_t *icmpv6_build_na(protocol_interface_info_entry_t *cur, bool solicited, 
     // Set the target Link-Layer address
     ptr = icmpv6_write_icmp_lla(cur, ptr, ICMPV6_OPT_TGT_LL_ADDR, tllao_required, target);
 
+    /*
+     * EARO frame format:
+     *   0                   1                   2                   3
+     *   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     *   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     *   |     Type      |     Length    |    Status     |    Opaque     |
+     *   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     *   |  Rsvd | I |R|T|     TID       |     Registration Lifetime     |
+     *   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    */
     if (aro) {
         *ptr++ = ICMPV6_OPT_ADDR_REGISTRATION;
         *ptr++ = 2;
         *ptr++ = aro->status;
-        *ptr++ = 0;
-        ptr = common_write_16_bit(0, ptr);
+        if (aro->is_earo) {
+            *ptr++ = aro->opaque;
+            *ptr++ = (aro->I << 2) + (aro->R << 1) + aro->T;
+            *ptr++ = aro->TID;
+        } else {
+            *ptr++ = 0;
+            ptr = common_write_16_bit(0, ptr);
+        }
         ptr = common_write_16_bit(aro->lifetime, ptr);
         memcpy(ptr, aro->eui64, 8);
         ptr += 8;
     }
-    if (ws_info(cur) && aro && (aro->status != ARO_SUCCESS && aro->status != ARO_TOPOLOGICALLY_INCORRECT)) {
+    if (ws_info(cur) && aro && (aro->status != ARO_SUCCESS && aro->status != ARO_TOPOLOGICALLY_INCORRECT) &&
+        aro->status != EARO_REGISTRATION_REFRESH_REQUEST) {
         /*If Aro failed we will kill the neigbour after we have succeeded in sending message*/
         if (!ws_common_negative_aro_mark(cur, aro->eui64)) {
             tr_debug("Neighbour removed for negative response send");

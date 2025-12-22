@@ -25,6 +25,13 @@
 #include "6LoWPAN/MAC/mac_ie_lib.h"
 #include "6LoWPAN/ws/ws_common_defines.h"
 #include "6LoWPAN/ws/ws_ie_lib.h"
+#include "nsdynmemLIB.h"
+
+#define TRACE_GROUP "wsie"
+
+#ifdef WISUN_FAN_CORE_1_1
+extern uint32_t g_num_jm_metrics_len ;
+#endif //WISUN_FAN_CORE_1_1
 
 static uint8_t *ws_wh_header_base_write(uint8_t *ptr, uint16_t length, uint8_t type)
 {
@@ -40,9 +47,14 @@ static uint16_t ws_channel_plan_length(uint8_t channel_plan)
             //Regulator domain and operationg class inline
             return 2;
         case 1:
-            //CHo, Channel spasing and number of channel's inline
+            //CH0, Channel spacing and number of channel's inline
+            //CH0 (24 bit) + channel spacing (4 bit) + number of channels (16 bit)
             return 6;
-
+#ifdef WISUN_RCP_ENABLE//WISUN_FAN_CORE_1_1
+        case 2:
+            // Regulatory Domain and CHannel plan ID
+            return 2;
+#endif //WISUN_FAN_CORE_1_1
         default:
             return 0;
     }
@@ -195,14 +207,24 @@ uint8_t *ws_wp_nested_hopping_schedule_write(uint8_t *ptr, struct ws_hopping_sch
             *ptr++ = hopping_schedule->operating_class;
             break;
         case 1:
-            //CHo, Channel spasing and number of channel's inline
-            ptr = common_write_24_bit_inverse(hopping_schedule->ch0_freq * 100, ptr);
+            //CH0, Channel spasing and number of channel's inline
+            //CH0: th eunit is Khz (from sysconfig and in cfg_prop.)
+            ptr = common_write_24_bit_inverse(hopping_schedule->ch0_freq , ptr);
             *ptr++ = hopping_schedule->channel_spacing;
             ptr = common_write_16_bit_inverse(hopping_schedule->number_of_channels, ptr);
             break;
+
+#ifdef WISUN_RCP_ENABLE //WISUN_FAN_CORE_1_1
+        case 2:
+             *ptr++ = hopping_schedule->regulatory_domain;
+             *ptr++ = hopping_schedule->channel_plan_id;
+              break;
+#endif //WISUN_FAN_CORE_1_1
+
         default:
             break;
     }
+
     uint8_t cf = hopping_schedule->uc_channel_function;
     uint16_t fixed_channel = hopping_schedule->uc_fixed_channel;
     if (!unicast_schedule) {
@@ -233,6 +255,7 @@ uint8_t *ws_wp_nested_hopping_schedule_write(uint8_t *ptr, struct ws_hopping_sch
 #ifdef WISUN_RCP_ENABLE
     // need to support both UC and BC exclude channel list
     ws_excluded_channel_data_t *p_excluded_channels;
+    uint8_t *p_excluded_channels_start;
 
     if (unicast_schedule)
     {   // UNICAST case
@@ -257,8 +280,16 @@ uint8_t *ws_wp_nested_hopping_schedule_write(uint8_t *ptr, struct ws_hopping_sch
             //Set Mask
             uint16_t channel_mask_length = p_excluded_channels->channel_mask_bytes_inline * 8;
 
-            for (uint8_t i = 0; i < NUM_BYTES_IN_CHAN_MASK; i++) {
+            for (uint8_t i = 0; i < p_excluded_channels->channel_mask_bytes_inline; i++) {
                 uint8_t mask_value =p_excluded_channels->channel_mask4[i];
+                /* if channel is not defined in channel plan, we need to use the zero bit */
+                mask_value &= hopping_schedule->regulation_channel_mask[i];
+
+                /* make our range channels to set 0x01*/
+                // disable this featire for Certification test
+#ifndef WISUN_CERT_CONFIG
+                mask_value |= hopping_schedule->out_range_channel_mask[i];
+#endif
                 *ptr++ = mask_value;
                 channel_mask_length -= 8;
                 if (channel_mask_length == 0) {
@@ -330,7 +361,15 @@ uint8_t *ws_wp_nested_pan_info_write(uint8_t *ptr, struct ws_pan_information_s *
     uint8_t temp8 = 0;
     temp8 |= (pan_configuration->use_parent_bs << 0);
     temp8 |= (pan_configuration->rpl_routing_method << 1);
-    temp8 |= pan_configuration->version << 5;
+    /* 20210201-FANWG-FANTPS-1.1v10-d3 : PAN Information Element (PAN-IE)
+     * FAN 1.0 certified nodes MUST set FAN TPS Version field to 1.
+     * FAN 1.1 certified nodes MUST set FAN TPS Version field to 2
+    */
+#ifdef WISUN_FAN_CORE_1_1
+    temp8 |= (WS_FAN_VERSION_1_1) << 5;
+#else
+    temp8 |= (WS_FAN_VERSION_1_0) << 5;
+#endif
     *ptr++ = temp8;
     return ptr;
 }
@@ -366,6 +405,36 @@ uint8_t *ws_wp_nested_gtkhash_write(uint8_t *ptr, uint8_t *gtkhash, uint8_t gtkh
 }
 
 #ifdef WISUN_FAN_CORE_1_1
+uint8_t *ws_res_wh_pan_wide_write(uint8_t *ptr, struct ws_pan_information_s *pan_cfg)
+{
+    uint8_t idx = 0, len = 0;
+    uint8_t num_res_ies = pan_cfg->num_res_wh_pan_wide_ies;
+
+    for(idx = 0; idx < num_res_ies; idx++ )
+    {
+        ptr = ws_wh_header_base_write(ptr, pan_cfg->res_wh_pan_wide_ie_lens[idx], pan_cfg->res_wh_pan_wide_ie_ids[idx]);
+        memcpy(ptr, pan_cfg->res_wh_pan_wide_ies[idx].val, pan_cfg->res_wh_pan_wide_ies[idx].len);
+        ptr += pan_cfg->res_wh_pan_wide_ies[idx].len;
+    }
+
+    return ptr;
+}
+
+uint8_t *ws_res_wh_ffn_wide_write(uint8_t *ptr, struct ws_pan_information_s *pan_cfg)
+{
+    uint8_t idx = 0, len = 0;
+    uint8_t num_res_ies = pan_cfg->num_res_wh_ffn_wide_ies;
+
+    for(idx = 0; idx < num_res_ies; idx++)
+    {
+        ptr = ws_wh_header_base_write(ptr, pan_cfg->res_wh_ffn_wide_ies[idx].len, pan_cfg->res_wh_ffn_wide_ie_ids[idx]);
+        memcpy(ptr, pan_cfg->res_wh_ffn_wide_ies[idx].val, pan_cfg->res_wh_ffn_wide_ies[idx].len);
+        ptr += pan_cfg->res_wh_ffn_wide_ies[idx].len;
+    }
+
+    return ptr;
+}
+
 uint8_t *ws_wp_nested_pom_write(uint8_t *ptr, struct ws_pom_ie_s *ptr_pom_ie)
 {
     uint8_t len, i;
@@ -392,36 +461,131 @@ uint8_t *ws_wp_nested_pom_write(uint8_t *ptr, struct ws_pom_ie_s *ptr_pom_ie)
 
 uint8_t *ws_wp_nested_jm_write(uint8_t *ptr, struct ws_pan_information_s *pan_congiguration)
 {
-    uint8_t temp, len;
+
+    uint8_t temp, totallen, numMetrics = 0, metricLen, metricLenBits, i, j;
     if (pan_congiguration == NULL)
     {
         return ptr;
     }
-    len = WS_WPIE_JM_IE_PLF_LENGTH;
-    ptr = mac_ie_nested_ie_short_base_write(ptr, WP_PAYLOAD_IE_JM, len);
 
-    /* version : Figure 68B JM-IE
-     * The Content Version field is a relative version number which MUST be incremented when any of the metric
-     * data within the List of Metrics has changed (where change is defined in the metrics definitions).
-    */
+    //code for writing JM-IE
+    //write sub-IE length| ID| type
+    //len = 1 + 1 + 4; //<content version> | <metric ID, length> | <data>
+    //calc total len
+    totallen = 1; //<content version>
+    for(i = 0; i < WS_WPIE_JM_IE_MAX_NUM_METRICS; i++)
+    {
+        if(pan_congiguration->jm_metric_ids[i] !=0)
+        {
+            numMetrics++;
+            totallen = totallen + 1 + pan_congiguration->jm_metric_lens[i]; //<metric ID, length> | <data
+        }
+    }
+
+    //write 1 byte:  sub-IE length| ID| type
+    ptr = mac_ie_nested_ie_short_base_write(ptr, WP_PAYLOAD_IE_JM, totallen);
+
+    //write JM-IE content
+
+    //1 byte: content version
     *ptr++ = pan_congiguration->jm_version;
 
-    /* JM-IE Metric : Figure 68c
-     * Metric ID: PAN Load Factor Join Metric
-     * Metric Length: 1
-     * Metric Value: PAN Load Factor
-    */
-    temp = (WS_JM_PLF << WS_WPIE_JM_METRIC_ID_SHIFT);
-    temp = temp | (1 & WS_WPIE_JM_METRIC_LEN_MASK);
-    *ptr++ = temp;
+    //write JM-IE metrics
+    for(i = 0; i < WS_WPIE_JM_IE_MAX_NUM_METRICS; i++)
+    {
+        if(pan_congiguration->jm_metric_ids[i] !=0)
+        {
+            //1 byte: metric id+ metric length
+            // 6.3.2.3.2.12Join Metrics Information Element (JM-IE)
+            // mertric ID (6 bits) in LSB, length in MSB
+            temp = (pan_congiguration->jm_metric_ids[i] << WS_WPIE_JM_METRIC_ID_SHIFT);
 
-    // write the PAN Load Factor
-    *ptr++ = pan_congiguration->jm_plf;
+            metricLen = pan_congiguration->jm_metric_lens[i];
+            //len field encode
+            // 0 indicates the Metric Data field is 0 octets in length
+            // 1 indicates the Metric Data field is 1 octets in length
+            // 2 indicates the Metric Data field is 2 octets in length
+            // 3 indicates the Metric Data field is 4 octets in length (special handling)
+            metricLen == WS_WPIE_JM_IE_METRIC_LEN_MAX ? (metricLenBits = 0x3):(metricLenBits = metricLen);
+            // LEN is in MSB
+            temp = temp | ( (metricLenBits  << WS_WPIE_JM_METRIC_LEN_SHIFT ) & WS_WPIE_JM_METRIC_LEN_MASK);
+
+            *ptr++ = temp;
+
+            //4 bytes: actual content of metric 1
+            for (j = 0; j < metricLen; j++)
+            {
+                *ptr++ = pan_congiguration->jm_metric_values[i][j];
+            }
+
+        }
+    }
 
     return ptr;
 }
-#endif
+uint8_t *ws_res_wp_short_pan_wide_write(uint8_t *ptr, struct ws_pan_information_s *pan_cfg)
+{
+    uint8_t idx = 0, len = 0;
+    uint8_t num_res_ies = pan_cfg->num_res_wp_short_pan_wide_ies;
 
+    for(idx = 0; idx < num_res_ies; idx++ )
+    {
+        //write 2 bytes:  sub-IE length| ID| type
+        ptr = mac_ie_nested_ie_short_base_write(ptr, pan_cfg->res_wp_short_pan_wide_ie_ids[idx], pan_cfg->res_wp_short_pan_wide_ie_lens[idx]);
+        memcpy(ptr, pan_cfg->res_wp_short_pan_wide_ies[idx].val, pan_cfg->res_wp_short_pan_wide_ies[idx].len);
+        ptr += pan_cfg->res_wp_short_pan_wide_ies[idx].len;
+    }
+
+    return ptr;
+}
+uint8_t *ws_res_wp_short_ffn_wide_write(uint8_t *ptr, struct ws_pan_information_s *pan_cfg)
+{
+    uint8_t idx = 0, len = 0;
+    uint8_t num_res_ies = pan_cfg->num_res_wp_short_ffn_wide_ies;
+
+    for(idx = 0; idx < num_res_ies; idx++ )
+    {
+        //write 2 bytes:  sub-IE length| ID| type
+        ptr = mac_ie_nested_ie_short_base_write(ptr, pan_cfg->res_wp_short_ffn_wide_ie_ids[idx], pan_cfg->res_wp_short_ffn_wide_ie_lens[idx]);
+        memcpy(ptr, pan_cfg->res_wp_short_ffn_wide_ies[idx].val, pan_cfg->res_wp_short_ffn_wide_ies[idx].len);
+        ptr += pan_cfg->res_wp_short_ffn_wide_ies[idx].len;
+    }
+
+    return ptr;
+}
+
+uint8_t *ws_res_wp_long_pan_wide_write(uint8_t *ptr, struct ws_pan_information_s *pan_cfg)
+{
+    uint8_t idx = 0, len = 0;
+    uint8_t num_res_ies = pan_cfg->num_res_wp_long_pan_wide_ies;
+
+    for(idx = 0; idx < num_res_ies; idx++ )
+    {
+        //write 2 bytes:  sub-IE length| ID| type
+        ptr = mac_ie_nested_ie_long_base_write(ptr, pan_cfg->res_wp_long_pan_wide_ie_ids[idx], pan_cfg->res_wp_long_pan_wide_ie_lens[idx]);
+        memcpy(ptr, pan_cfg->res_wp_long_pan_wide_ies[idx].val, pan_cfg->res_wp_long_pan_wide_ies[idx].len);
+        ptr += pan_cfg->res_wp_long_pan_wide_ies[idx].len;
+    }
+
+    return ptr;
+}
+uint8_t *ws_res_wp_long_ffn_wide_write(uint8_t *ptr, struct ws_pan_information_s *pan_cfg)
+{
+    uint8_t idx = 0, len = 0;
+    uint8_t num_res_ies = pan_cfg->num_res_wp_long_ffn_wide_ies;
+
+    for(idx = 0; idx < num_res_ies; idx++ )
+    {
+        //write 2 bytes:  sub-IE length| ID| type
+        ptr = mac_ie_nested_ie_long_base_write(ptr, pan_cfg->res_wp_long_ffn_wide_ie_ids[idx], pan_cfg->res_wp_long_ffn_wide_ie_lens[idx]);
+        memcpy(ptr, pan_cfg->res_wp_long_ffn_wide_ies[idx].val, pan_cfg->res_wp_long_ffn_wide_ies[idx].len);
+        ptr += pan_cfg->res_wp_long_ffn_wide_ies[idx].len;
+    }
+
+    return ptr;
+}
+
+#endif //WISUN_FAN_CORE_1_1
 bool ws_wh_utt_read(uint8_t *data, uint16_t length, struct ws_utt_ie *utt_ie)
 {
     mac_header_IE_t utt_ie_data;
@@ -486,6 +650,328 @@ bool ws_wh_ea_read(uint8_t *data, uint16_t length, uint8_t *eui64)
     return true;
 }
 
+#ifdef WISUN_FAN_CORE_1_1
+//function to populate the number of res WH IEs and their IDs and lengths in the cur->ws_info->pan_information data base
+bool ws_res_wh_sub_ids_discover(struct ws_pan_information_s* ws_pan_info, uint8_t *header_ptr, uint16_t length)
+{
+    mac_header_IE_t ie_element;
+    uint8_t sub_id, ie_len;
+    uint8_t *val_ptr;
+
+    uint8_t pan_wide_idx = 0, ffn_wide_idx = 0;
+
+    while (length > WISUN_MIN_IE_LENGTH) { //IE should be atleast 2 bytes to be able to interpret the header of the IE
+
+        //fetch the IE
+        mac_ie_header_parse(&ie_element, header_ptr);
+        //point to the sub iD
+        sub_id = *ie_element.content_ptr++; //intentinally incrementing
+        ie_len = (ie_element.length -1);
+
+        if (ie_element.length && MAC_HEADER_ASSIGNED_EXTERNAL_ORG_IE_ID == ie_element.id)
+        {
+            if(sub_id >= WH_PAN_WIDE_RES_IE_SUBID_MIN && sub_id <= WH_PAN_WIDE_RES_IE_SUBID_MAX)
+            {
+                //found pan wide WH IE
+                ws_pan_info->num_res_wh_pan_wide_ies++;
+                ws_pan_info->res_wh_pan_wide_ie_ids[pan_wide_idx] = sub_id;
+                ws_pan_info->res_wh_pan_wide_ie_lens[pan_wide_idx] = ie_len;
+
+                // copy the iE content
+                ws_pan_info->res_wh_pan_wide_ies[pan_wide_idx].len = ie_len;
+
+                val_ptr = ns_dyn_mem_alloc(ie_len);
+                if(val_ptr != NULL)
+                {
+                    ws_pan_info->res_wh_pan_wide_ies[pan_wide_idx].val = val_ptr;
+                    memcpy(ws_pan_info->res_wh_pan_wide_ies[pan_wide_idx].val, ie_element.content_ptr, ie_len);
+                    pan_wide_idx++;
+                }
+                else
+                {
+                    //intentionally setting to zero to make sure stale or half read values are not used
+                    ws_pan_info->num_res_wh_pan_wide_ies = 0;
+                    ws_pan_info->res_wh_pan_wide_ie_ids[pan_wide_idx] = 0;
+                    ws_pan_info->res_wh_pan_wide_ie_lens[pan_wide_idx] = 0;
+                    ws_pan_info->res_wh_pan_wide_ies[pan_wide_idx].len = 0;
+                    tr_error("memory allocation issue while reading reserved WH Pan wide IE");
+                    return(false);
+                }
+
+            }
+            else if(sub_id >= WH_FFN_WIDE_RES_IE_SUBID_MIN && sub_id <= WH_FFN_WIDE_RES_IE_SUBID_MAX)
+            {
+                //found ffn wide WH IE
+                ws_pan_info->num_res_wh_ffn_wide_ies++;
+                ws_pan_info->res_wh_ffn_wide_ie_ids[ffn_wide_idx] = sub_id;
+                ws_pan_info->res_wh_ffn_wide_ie_lens[ffn_wide_idx] = ie_len;
+
+                // copy the iE content
+                ws_pan_info->res_wh_ffn_wide_ies[ffn_wide_idx].len = ie_len;
+
+                val_ptr = ns_dyn_mem_alloc(ie_len);
+                if(val_ptr != NULL)
+                {
+                    ws_pan_info->res_wh_ffn_wide_ies[ffn_wide_idx].val = val_ptr;
+                    memcpy(ws_pan_info->res_wh_ffn_wide_ies[ffn_wide_idx].val, ie_element.content_ptr, ie_len);
+                    ffn_wide_idx++;
+                }
+                else
+                {
+                    //intentionally setting to zero to make sure stale or half read values are not used
+                    ws_pan_info->num_res_wh_ffn_wide_ies = 0;
+                    ws_pan_info->res_wh_ffn_wide_ie_ids[ffn_wide_idx] = 0;
+                    ws_pan_info->res_wh_ffn_wide_ie_lens[ffn_wide_idx] = 0;
+                    ws_pan_info->res_wh_ffn_wide_ies[ffn_wide_idx].len = 0;
+                    tr_error("memory allocation issue while reading reserved WH FFN wide IE");
+                    return(false);
+                }
+
+            }
+            else
+            {
+                //do nothing; continue processing
+            }
+
+        }
+
+        //move ahead to fetch next IE
+        length -= ie_element.length + 2;
+        header_ptr += ie_element.length + 2;
+    }
+
+    //TBD: consider putting a check on length becoming zero : else it means there are some mal formed ies
+    tr_debug("Read %d PAN Wide IEs and %d FFN Wide IEs", ws_pan_info->num_res_wh_pan_wide_ies, ws_pan_info->num_res_wh_ffn_wide_ies);
+    return(true);
+}
+
+bool ws_res_wh_pan_ffn_wide_ies_read(struct ws_pan_information_s* ws_pan_info, uint8_t *headerIeList, uint16_t headerIeListLength)
+{
+    uint8_t idx = 0;
+    bool status;
+
+    //free the memory
+    for(idx = 0; idx < ws_pan_info->num_res_wh_pan_wide_ies; idx++)
+    {
+        ns_dyn_mem_free(ws_pan_info->res_wh_pan_wide_ies[idx].val);
+        ws_pan_info->res_wh_pan_wide_ies[idx].val = NULL;
+    }
+
+    for(idx = 0; idx < ws_pan_info->num_res_wh_ffn_wide_ies; idx++)
+    {
+        ns_dyn_mem_free(ws_pan_info->res_wh_ffn_wide_ies[idx].val);
+        ws_pan_info->res_wh_ffn_wide_ies[idx].val = NULL;
+    }
+
+    //clear out counters
+    ws_pan_info->num_res_wh_pan_wide_ies = 0;
+    ws_pan_info->num_res_wh_ffn_wide_ies = 0;
+
+    //Discover all wh pan & ffn wide ies ; contents stored in ws_pan_info
+    status = ws_res_wh_sub_ids_discover(ws_pan_info, headerIeList, headerIeListLength);
+
+    return (status);
+}
+
+//function to populate the number of res WH IEs and their IDs and lengths in the cur->ws_info->pan_information data base
+bool ws_res_wp_sub_ids_discover(struct ws_pan_information_s* ws_pan_info, uint8_t *payload_ptr, uint16_t length)
+{
+    mac_nested_payload_IE_t ie_element;
+    uint8_t sub_id, ie_len;
+    uint8_t *val_ptr;
+
+    uint8_t short_pan_wide_idx = 0, short_ffn_wide_idx = 0;
+    uint8_t long_pan_wide_idx = 0, long_ffn_wide_idx = 0;
+
+    while (length >= WS_WP_SUB_IE_ELEMENT_HEADER_LENGTH) {
+
+        //fetch the Sub-IE
+        mac_ie_nested_id_parse(&ie_element, payload_ptr);
+        sub_id = ie_element.id;
+        ie_len = ie_element.length;
+
+        //assuming SUB IDs will have non zero length
+        if (ie_element.length)
+        {
+            if(0 == ie_element.type_long) //short type
+            {
+                if(sub_id >= WP_SHORT_PAN_WIDE_RES_IE_SUBID_MIN && sub_id <= WP_SHORT_PAN_WIDE_RES_IE_SUBID_MAX)
+                {
+                    //found pan wide WP IE
+                    ws_pan_info->num_res_wp_short_pan_wide_ies++;
+                    ws_pan_info->res_wp_short_pan_wide_ie_ids[short_pan_wide_idx] = sub_id;
+                    ws_pan_info->res_wp_short_pan_wide_ie_lens[short_pan_wide_idx] = ie_len;
+
+                    // copy the iE content
+                    ws_pan_info->res_wp_short_pan_wide_ies[short_pan_wide_idx].len = ie_len;
+
+                    val_ptr = ns_dyn_mem_alloc(ie_len);
+                    if(val_ptr != NULL)
+                    {
+                        ws_pan_info->res_wp_short_pan_wide_ies[short_pan_wide_idx].val = val_ptr;
+                        memcpy(ws_pan_info->res_wp_short_pan_wide_ies[short_pan_wide_idx].val, ie_element.content_ptr, ie_len);
+                        short_pan_wide_idx++;
+                    }
+                    else
+                    {
+                        //intentionally setting to zero to make sure stale or half read values are not used
+                        ws_pan_info->num_res_wp_short_pan_wide_ies = 0;
+                        ws_pan_info->res_wp_short_pan_wide_ie_ids[short_pan_wide_idx] = 0;
+                        ws_pan_info->res_wp_short_pan_wide_ie_lens[short_pan_wide_idx] = 0;
+                        ws_pan_info->res_wp_short_pan_wide_ies[short_pan_wide_idx].len = 0;
+                        tr_error("memory allocation issue while reading reserved WH Pan wide IE");
+                        return(false);
+                    }
+
+                }
+                else if(sub_id >= WP_SHORT_FFN_WIDE_RES_IE_SUBID_MIN && sub_id <= WP_SHORT_FFN_WIDE_RES_IE_SUBID_MAX)
+                {
+                    //found ffn wide WP IE
+                    ws_pan_info->num_res_wp_short_ffn_wide_ies ++;
+                    ws_pan_info->res_wp_short_ffn_wide_ie_ids[short_ffn_wide_idx] = sub_id;
+                    ws_pan_info->res_wp_short_ffn_wide_ie_lens[short_ffn_wide_idx] = ie_len;
+
+                    // copy the iE content
+                    ws_pan_info->res_wp_short_ffn_wide_ies[short_ffn_wide_idx].len = ie_len;
+
+                    val_ptr = ns_dyn_mem_alloc(ie_len);
+                    if(val_ptr != NULL)
+                    {
+                        ws_pan_info->res_wp_short_ffn_wide_ies[short_ffn_wide_idx].val = val_ptr;
+                        memcpy(ws_pan_info->res_wp_short_ffn_wide_ies[short_ffn_wide_idx].val, ie_element.content_ptr, ie_len);
+                        short_ffn_wide_idx++;
+                    }
+                    else
+                    {
+                        //intentionally setting to zero to make sure stale or half read values are not used
+                        ws_pan_info->num_res_wp_short_ffn_wide_ies = 0;
+                        ws_pan_info->res_wp_short_ffn_wide_ie_ids[short_ffn_wide_idx] = 0;
+                        ws_pan_info->res_wp_short_ffn_wide_ie_lens[short_ffn_wide_idx] = 0;
+                        ws_pan_info->res_wp_short_ffn_wide_ies[short_ffn_wide_idx].len = 0;
+                        tr_error("memory allocation issue while reading reserved WH FFN wide IE");
+                        return(false);
+                    }
+
+                }
+                // else:do nothing; continue processing
+            }// type short
+            else //type long
+            {
+                if(sub_id >= WP_LONG_PAN_WIDE_RES_IE_SUBID_MIN && sub_id <= WP_LONG_PAN_WIDE_RES_IE_SUBID_MAX)
+                {
+                    //found pan wide WP IE
+                    ws_pan_info->num_res_wp_long_pan_wide_ies++;
+                    ws_pan_info->res_wp_long_pan_wide_ie_ids[long_pan_wide_idx] = sub_id;
+                    ws_pan_info->res_wp_long_pan_wide_ie_lens[long_pan_wide_idx] = ie_len;
+
+                    // copy the iE content
+                    ws_pan_info->res_wp_long_pan_wide_ies[long_pan_wide_idx].len = ie_len;
+
+                    val_ptr = ns_dyn_mem_alloc(ie_len);
+                    if(val_ptr != NULL)
+                    {
+                        ws_pan_info->res_wp_long_pan_wide_ies[long_pan_wide_idx].val = val_ptr;
+                        memcpy(ws_pan_info->res_wp_long_pan_wide_ies[long_pan_wide_idx].val, ie_element.content_ptr, ie_len);
+                        long_pan_wide_idx++;
+                    }
+                    else
+                    {
+                        //intentionally setting to zero to make sure stale or half read values are not used
+                        ws_pan_info->num_res_wp_long_pan_wide_ies = 0;
+                        ws_pan_info->res_wp_long_pan_wide_ie_ids[long_pan_wide_idx] = 0;
+                        ws_pan_info->res_wp_long_pan_wide_ie_lens[long_pan_wide_idx] = 0;
+                        ws_pan_info->res_wp_long_pan_wide_ies[long_pan_wide_idx].len = 0;
+                        tr_error("memory allocation issue while reading reserved WH Pan wide IE");
+                        return(false);
+                    }
+
+                }
+                else if(sub_id >= WP_LONG_FFN_WIDE_RES_IE_SUBID_MIN && sub_id <= WP_LONG_FFN_WIDE_RES_IE_SUBID_MAX)
+                {
+                    //found ffn wide WP IE
+                    ws_pan_info->num_res_wp_long_ffn_wide_ies ++;
+                    ws_pan_info->res_wp_long_ffn_wide_ie_ids[long_ffn_wide_idx] = sub_id;
+                    ws_pan_info->res_wp_long_ffn_wide_ie_lens[long_ffn_wide_idx] = ie_len;
+
+                    // copy the iE content
+                    ws_pan_info->res_wp_long_ffn_wide_ies[long_ffn_wide_idx].len = ie_len;
+
+                    val_ptr = ns_dyn_mem_alloc(ie_len);
+                    if(val_ptr != NULL)
+                    {
+                        ws_pan_info->res_wp_long_ffn_wide_ies[long_ffn_wide_idx].val = val_ptr;
+                        memcpy(ws_pan_info->res_wp_long_ffn_wide_ies[long_ffn_wide_idx].val, ie_element.content_ptr, ie_len);
+                        long_ffn_wide_idx++;
+                    }
+                    else
+                    {
+                        //intentionally setting to zero to make sure stale or half read values are not used
+                        ws_pan_info->num_res_wp_long_ffn_wide_ies = 0;
+                        ws_pan_info->res_wp_long_ffn_wide_ie_ids[long_ffn_wide_idx] = 0;
+                        ws_pan_info->res_wp_long_ffn_wide_ie_lens[long_ffn_wide_idx] = 0;
+                        ws_pan_info->res_wp_long_ffn_wide_ies[long_ffn_wide_idx].len = 0;
+                        tr_error("memory allocation issue while reading reserved WH FFN wide IE");
+                        return(false);
+                    }
+
+                }
+                // else:do nothing; continue processing
+
+            } //type long
+
+        }//check for IE Length
+
+        //move ahead to fetch next SUB IE
+        length -= ie_element.length + 2;
+        payload_ptr += ie_element.length + 2;
+    }
+
+    return(true);
+}
+
+bool ws_res_wp_pan_ffn_wide_ies_read(struct ws_pan_information_s* ws_pan_info, uint8_t *payloadIeList, uint16_t paylaodIeListLength)
+{
+    uint8_t idx = 0;
+    bool status;
+
+    //free the memory
+    //short pan wide
+    for(idx = 0; idx < ws_pan_info->num_res_wp_short_pan_wide_ies; idx++)
+    {
+        ns_dyn_mem_free(ws_pan_info->res_wp_short_pan_wide_ies[idx].val);
+        ws_pan_info->res_wp_short_pan_wide_ies[idx].val = NULL;
+    }
+    //short ffn wide
+    for(idx = 0; idx < ws_pan_info->num_res_wp_short_ffn_wide_ies; idx++)
+    {
+        ns_dyn_mem_free(ws_pan_info->res_wp_short_ffn_wide_ies[idx].val);
+        ws_pan_info->res_wp_short_ffn_wide_ies[idx].val = NULL;
+    }
+    //long pan wide
+    for(idx = 0; idx < ws_pan_info->num_res_wp_long_pan_wide_ies; idx++)
+    {
+        ns_dyn_mem_free(ws_pan_info->res_wp_long_pan_wide_ies[idx].val);
+        ws_pan_info->res_wp_long_pan_wide_ies[idx].val = NULL;
+    }
+    //long ffn wide
+    for(idx = 0; idx < ws_pan_info->num_res_wp_long_ffn_wide_ies; idx++)
+    {
+        ns_dyn_mem_free(ws_pan_info->res_wp_long_ffn_wide_ies[idx].val);
+        ws_pan_info->res_wp_long_ffn_wide_ies[idx].val = NULL;
+    }
+
+    //clear out counters
+    ws_pan_info->num_res_wp_short_pan_wide_ies = 0;
+    ws_pan_info->num_res_wp_short_ffn_wide_ies = 0;
+    ws_pan_info->num_res_wp_long_pan_wide_ies = 0;
+    ws_pan_info->num_res_wp_long_ffn_wide_ies = 0;
+
+    //Discover all wh pan & ffn wide ies ; contents stored in ws_pan_info
+    status = ws_res_wp_sub_ids_discover(ws_pan_info, payloadIeList, paylaodIeListLength);
+
+    return (status);
+}
+#endif //WISUN_FAN_CORE_1_1
 static uint8_t *ws_channel_plan_zero_read(uint8_t *ptr, ws_channel_plan_zero_t *plan)
 {
     plan->regulator_domain = *ptr++;
@@ -495,12 +981,19 @@ static uint8_t *ws_channel_plan_zero_read(uint8_t *ptr, ws_channel_plan_zero_t *
 
 static uint8_t *ws_channel_plan_one_read(uint8_t *ptr, ws_channel_plan_one_t *plan)
 {
+    /* Channel 0 frequency (KHz) */
     plan->ch0 = common_read_24_bit_inverse(ptr);
-    plan->ch0 /= 100;
     ptr += 3;
     plan->channel_spacing = *ptr++;
     plan->number_of_channel = common_read_16_bit_inverse(ptr);
     ptr += 2;
+    return ptr;
+}
+
+static uint8_t *ws_channel_plan_two_read(uint8_t *ptr, ws_channel_plan_two_t *plan)
+{
+    plan->regulator_domain = *ptr++;
+    plan->channel_plan_id = *ptr++;
     return ptr;
 }
 
@@ -550,6 +1043,10 @@ bool ws_wp_nested_us_read(uint8_t *data, uint16_t length, struct ws_us_ie *us_ie
         case 1:
             data = ws_channel_plan_one_read(data, &us_ie->plan.one);
             break;
+
+        case 2:
+            data = ws_channel_plan_two_read(data, &us_ie->plan.two);
+            break;
         default:
             return false;
 
@@ -569,19 +1066,14 @@ bool ws_wp_nested_us_read(uint8_t *data, uint16_t length, struct ws_us_ie *us_ie
             break;
 
         case 1:
+            /* TR51CF, we don't support */
+            return false;
         case 2:
             break;
 
         case 3:
-
-            data = ws_channel_function_three_read(data, &us_ie->function.three);
-            info_length = us_ie->function.three.channel_hop_count;
-            if (nested_payload_ie.length < info_length) {
-                return false;
-            }
-            nested_payload_ie.length -= info_length;
-            data += info_length;
-            break;
+            /* vendor defined channel function */
+            return false;
         default:
             return false;
 
@@ -655,6 +1147,9 @@ bool ws_wp_nested_bs_read(uint8_t *data, uint16_t length, struct ws_bs_ie *bs_ie
         case 1:
             data = ws_channel_plan_one_read(data, &bs_ie->plan.one);
             break;
+        case 2:
+            data = ws_channel_plan_two_read(data, &bs_ie->plan.two);
+            break;
         default:
             return false;
 
@@ -672,18 +1167,15 @@ bool ws_wp_nested_bs_read(uint8_t *data, uint16_t length, struct ws_bs_ie *bs_ie
             break;
 
         case 1:
+            /* TR51CF, we don't support */
+            return false;
+
         case 2:
             break;
 
         case 3:
-            data = ws_channel_function_three_read(data, &bs_ie->function.three);
-            info_length = bs_ie->function.three.channel_hop_count;
-            if (nested_payload_ie.length < info_length) {
-                return false;
-            }
-            nested_payload_ie.length -= info_length;
-            data += info_length;
-            break;
+            /* vendor defined channel function */
+            return false;
         default:
             return false;
 
@@ -821,29 +1313,68 @@ bool ws_wp_nested_jm_read(uint8_t *data, uint16_t length, struct ws_jm_ie_s *ptr
     nested_payload_ie.id = WP_PAYLOAD_IE_JM;
     nested_payload_ie.type_long = false;
 
-    uint8_t metric_id, metric_len, *pdata;
+    uint8_t metric_id = 0, metric_len = 0, metric_idx = 0, *pdata = NULL, toParseLen = 0;
+
+    //set jm_ie read to all zeros to start with
+    memset(ptr_jm_ie, 0, sizeof(ws_jm_ie_t));
 
     if (0 == mac_ie_nested_discover(data, length, &nested_payload_ie)) {
         return false;
     }
     pdata = nested_payload_ie.content_ptr;
+    toParseLen = nested_payload_ie.length;
 
     ptr_jm_ie->version = *pdata++;
+    toParseLen--;
+    g_num_jm_metrics_len = 1; //if JM-IE is present: atleast content verison will be present; minimum lenght is 1
 
-    // PAN Load Factor
-    metric_id = (*pdata & WS_WPIE_JM_METRIC_ID_MASK) >> WS_WPIE_JM_METRIC_ID_SHIFT;
-    metric_len = (*pdata & WS_WPIE_JM_METRIC_LEN_MASK);
-    if (metric_id != WS_JM_PLF || metric_len != 1)
+    //parse the generic metrics
+    //keeping code simple : no checks on len matching all metric ids content
+    while(toParseLen > 0)
     {
-        return false;
+        // read the metric ID and Len
+        metric_id = (*pdata & WS_WPIE_JM_METRIC_ID_MASK) >> WS_WPIE_JM_METRIC_ID_SHIFT;
+        metric_len = (*pdata & WS_WPIE_JM_METRIC_LEN_MASK) >> WS_WPIE_JM_METRIC_LEN_SHIFT;
+        metric_len = (metric_len == 0x3? 4: metric_len);
+        pdata++;
+        toParseLen--;
+
+        ptr_jm_ie->jm_metric_ids[metric_idx] = metric_id;
+        ptr_jm_ie->jm_metric_lens[metric_idx] = metric_len;
+        g_num_jm_metrics_len += (1 + metric_len); // 1 is for the byte containing metric and metric len
+        memcpy(&ptr_jm_ie->jm_metric_values[metric_idx][0], pdata, metric_len);
+        pdata += metric_len;
+        toParseLen -= metric_len;
+
+        //add check if it is JM_PLF
+        if (metric_id == WS_JM_PLF)
+        {
+            if(metric_len != WS_WPIE_JM_IE_PLF_METRIC_LENGTH)
+            {
+                return false;
+            }
+            ptr_jm_ie->plf = ptr_jm_ie->jm_metric_values[metric_idx][0]; //just 1 byte anyway
+        }
+
+        //to the next metric ID
+        metric_idx++;
+
+        if(toParseLen == 0) //parsed all JM metrics: break out of the loop.
+        {
+            break;
+        }
+
+        //should not have come here if no rules are violated. There cannot be more than 4 JM metrics
+        if(metric_idx >= WS_WPIE_JM_IE_MAX_NUM_METRICS)
+        {
+            return false;
+        }
     }
-    pdata++;
 
-    ptr_jm_ie->plf = *pdata++;
-
+    ptr_jm_ie->jm_num_of_metrics = metric_idx;
     return true;
 }
-#endif
+#endif //WISUN_FAN_CORE_1_1
 
 #ifdef FEATURE_WISUN_SUPPORT
 #define MSG_ID_PANID     (0x01)

@@ -1,3 +1,0 @@
-/* ======== RTOS ======== */
-const RTOS = scripting.addModule("/ti/drivers/RTOS");
-RTOS.name = "TI-RTOS";

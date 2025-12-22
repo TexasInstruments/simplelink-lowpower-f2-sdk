@@ -57,8 +57,6 @@ MAC_RCP_Tasklet_DBG_s MacRcpTaskletDbg;
 rcp_lmac_dbg_t rcp_lmac_dbg;
 MT_rcp_LMAC_dbg_t MT_rcp_LMAC_dbg;
 
-extern uint8_t AppTaskId; //mcp task registered as appTask with TI MAC task
-
 /* Extern functions */
 extern void rcp_timacSetTrackParent(broadcast_timing_info_t *bc_timing_info, const bool force_synch);
 extern void ccfg_read_mac_addr(uint8_t *mac_addr);
@@ -91,6 +89,7 @@ static rcp_status_t handle_rcp_mac_config_set(rcp_mac_config_set_t *mac_config)
     rcp_mac_config_bc_timing_t *rcp_bc_timing;
     rcp_mac_config_sec_key_t *rcp_sec_key;
     rcp_mac_config_sec_frame_count_t *rcp_sec_frame_count;
+    rcp_mac_config_phy_init *phy_init_config;
 
     // MAC PIB values
     if (mac_config->attr < 0x1000) {
@@ -141,6 +140,19 @@ static rcp_status_t handle_rcp_mac_config_set(rcp_mac_config_set_t *mac_config)
             case RCP_CONFIG_SEC_FRAME_COUNT:
                 rcp_sec_frame_count = (rcp_mac_config_sec_frame_count_t *) mac_config->val;
                 rcp_lmac_store.key_descriptors[rcp_sec_frame_count->key_index].frameCounter = rcp_sec_frame_count->frame_count;
+                break;
+            case RCP_CONFIG_PHY_INIT:
+                phy_init_config = (rcp_mac_config_phy_init *) mac_config->val;
+                memset(&rcp_lmac_store.phy_descriptor, 0, sizeof(rcp_lmac_store.phy_descriptor));
+                rcp_lmac_store.ffd = phy_init_config->ffd;
+                rcp_lmac_store.phy_descriptor.firstChCentrFreq = phy_init_config->ch0_center_frequency;
+                rcp_lmac_store.phy_descriptor.channelSpacing = phy_init_config->config_channel_spacing;
+                rcp_lmac_store.phy_descriptor.noOfChannels = phy_init_config->config_number_of_channels;
+                rcp_lmac_store.phy_descriptor.fskModIndex = phy_init_config->mod_index;
+                rcp_lmac_store.phy_descriptor.fskModScheme = phy_init_config->mod_scheme;
+                rcp_lmac_store.phy_descriptor.symbolRate = phy_init_config->symbol_rate;
+                rcp_lmac_store.phy_descriptor.ccaType = phy_init_config->cca_type;
+                rcp_lmac_store.start_flag = true; // Set the start flag to start the MAC task
                 break;
             default:
                 rcp_lmac_dbg.num_err_wrong_type++;
@@ -250,7 +262,7 @@ void rcp_lmac_to_host(uint8_t cmd_type, void *pData)
     //send message to mcp/ app task 
     if(pMsg != NULL)
     {
-        OsalPort_msgSend(AppTaskId, (uint8 *)pMsg);
+        OsalPort_msgSend(rcp_lmac_store.app_task_id, (uint8 *)pMsg);
     }
 
 #endif // WISUN_RCP_LMAC
@@ -263,6 +275,7 @@ rcp_status_t rcp_lmac_from_host(rcp_cmd_t *rcp_cmd)
     uint8_t mac_ret;
     rcp_data_cnf_t data_cnf_reject;
     rcp_mac_config_set_cnf_t mac_config_set_cnf;
+    ApiMac_mlmeStartReq_t *mac_init_start_req;
 
     switch(rcp_cmd->rcp_cmd_type) {
         case RCP_DATA_REQ:
@@ -291,7 +304,8 @@ rcp_status_t rcp_lmac_from_host(rcp_cmd_t *rcp_cmd)
             handle_rcp_init(); // Sends RCP init CNF
             break;
         case RCP_MAC_INIT:
-            mac_ret = MAC_MlmeStartReq((ApiMac_mlmeStartReq_t *) rcp_cmd->rcp_data);
+            mac_init_start_req = (ApiMac_mlmeStartReq_t *) rcp_cmd->rcp_data;
+            mac_ret = MAC_MlmeStartReq(mac_init_start_req);
             if (mac_ret == MAC_SUCCESS) {
                 mac_config_set_cnf.status = RCP_SUCCESS;
             } else {

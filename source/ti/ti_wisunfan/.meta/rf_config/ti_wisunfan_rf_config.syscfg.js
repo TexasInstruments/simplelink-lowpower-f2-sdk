@@ -230,6 +230,14 @@ function getRfDesignOptions()
     {
         newRfDesignOptions = [{name: "LP_EM_CC1312PSIP"}];
     }
+    else if(deviceId === "CC1311R3RGZ" || deviceId === "CC1311R3RKP")
+    {
+        newRfDesignOptions = [{name: "LP_CC1311R3"}];
+    }
+    else if(deviceId === "CC1311P3RGZ")
+    {
+        newRfDesignOptions = [{name: "LP_CC1311P3"}];
+    }
     else if(deviceId === "CC1314R10RSK")
     {
         newRfDesignOptions = [{name: "LP_EM_CC1314R10"}];
@@ -261,6 +269,29 @@ function getRfDesignOptions()
         throw new Error("Unknown deviceId " + deviceId + ".");
     }
     return(newRfDesignOptions);
+}
+
+/*!
+ * ======== setRfSettingHiddenState ========
+ * Sets the hidden state for RF submodule
+ *
+ * @param inst - module instance
+ */
+function setRfSettingHiddenState(inst, ui)
+{
+    if (inst != null && inst.project.includes("rcplmac"))
+    {
+        ui["region"].hidden = true;
+        ui["regDomain"].hidden = true;
+        ui["phyModeID"].hidden = true;
+        ui["opModeID"].hidden = true;
+        ui["opModeClass"].hidden = true;
+        ui["ChanPlanID"].hidden = true;
+        ui["customPhy"].hidden = true;
+        ui["centerFrequency"].hidden = true;
+        ui["channelSpacing"].hidden = true;
+        ui["totalChannels"].hidden = true;
+    }
 }
 
 /*
@@ -629,13 +660,13 @@ function validate(inst, validation)
  *  Creates an RF setting dependency module
  *
  * @param inst  - Module instance containing the config that changed
+ * @param targetPhy - PHY to create RF instance for. If null, use the phy indicated by the phyModeID selection
  * @returns dictionary - containing a single RF setting dependency module
  */
-function addRFSettingDependency(inst)
+function addRFSettingDependency(inst, targetPhy=null)
 {
-    const phyType = getSafePhyType(inst);
     // Get proprietary Sub-1 GHz RF defaults for the device being used
-    const propPhySettings = rfCommon.getPropPhySettings(inst);
+    const propPhySettings = rfCommon.getPropPhySettings(inst, targetPhy);
 
     /* Since phy is selected based on region and op code, there should only be 1 phy choice in the list at all times. */
     let selectedPhy = _.first(propPhySettings);
@@ -675,7 +706,7 @@ function addRFSettingDependency(inst)
 
 
     return({
-        name: "radioConfig",
+        name: "radioConfig" + radioConfigArgs.phyType868,
         displayName: selectedPhy.phyDropDownOption.displayName,
         moduleName: selectedPhy.moduleName,
         description: "Radio configuration",
@@ -696,8 +727,20 @@ function addRFSettingDependency(inst)
  */
 function moduleInstances(inst)
 {
+    const dependencyModule = [];
+    if (inst != null)
+    {
+        // RCP projects need all available PHYs
+        const phyIDList = rfCommon.getSupportedPhyIDMode("ALL_PHY_IDS");
+        _.each(phyIDList, (phyID) =>
+        {
+            let dep = addRFSettingDependency(inst, phyID);
+            dependencyModule.push(dep);
+        });
+    }
+
     // Add radio config module associated with phy selected
-    return(addRFSettingDependency(inst));
+    return(dependencyModule);
 }
 
 // Exports to the top level 15.4 module
@@ -708,5 +751,6 @@ exports = {
     getPhyTypeOptions: getPhyTypeOptions,
     getPhy154Settings: getPhy154Settings,
     setRFConfigHiddenState: setRFConfigHiddenState,
-    getRFConfigHiddenState: getRFConfigHiddenState
+    getRFConfigHiddenState: getRFConfigHiddenState,
+    setRfSettingHiddenState: setRfSettingHiddenState
 };

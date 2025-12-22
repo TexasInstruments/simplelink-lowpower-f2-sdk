@@ -135,7 +135,7 @@ MAC_INTERNAL_API void macTxHaltCleanup(void);
 MAC_INTERNAL_API void macTxStartQueuedFrame(void);
 MAC_INTERNAL_API void macTxChannelBusyCallback(bool bForceComplete);
 MAC_INTERNAL_API void macTxDoneCallback(void);
-MAC_INTERNAL_API void macTxAckReceivedCallback(uint8 seqn, uint8 pendingFlag);
+MAC_INTERNAL_API bool macTxAckReceivedCallback(uint8 seqn, uint8 pendingFlag);
 MAC_INTERNAL_API void macTxAckNotReceivedCallback(uint8 param);
 MAC_INTERNAL_API void macTxTimestampCallback(void);
 MAC_INTERNAL_API void macTxCollisionWithRxCallback(void);

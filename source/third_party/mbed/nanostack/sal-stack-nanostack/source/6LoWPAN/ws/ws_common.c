@@ -44,6 +44,8 @@
 #include "ws_management_api.h"
 #include "mac_api.h"
 
+#include "application.h"
+
 #ifdef HAVE_WS
 #define TRACE_GROUP "wscm"
 
@@ -58,12 +60,27 @@ uint16_t test_max_child_count_override = 0xffff;
 uint16_t test_max_child_count_override = 1000;
 #endif
 
+extern configurable_props_t cfg_props;
+
 static int8_t ws_disable_channels_in_range(uint8_t *channel_mask, uint16_t number_of_channels, uint16_t range_start, uint16_t range_stop)
 {
     for (uint16_t i = 0; i < number_of_channels; i++) {
         if (i >= range_start && i <= range_stop) {
             channel_mask[0 + (i / 8)] &= ~(1 << (i % 8));
         }
+    }
+    return 0;
+}
+
+int8_t ws_generate_channel_list_on_chan_plan_one(uint8_t *channel_mask, uint16_t number_of_channels)
+{
+    // Clear channel mask
+    for (uint8_t i = 0; i < NUM_BYTES_IN_CHAN_MASK; i++) {
+        channel_mask[i] = 0;
+    }
+    // Enable all channels
+    for (uint16_t i = 0; i < number_of_channels; i++) {
+        channel_mask[0 + (i / 8)] |= (1 << (i % 8));
     }
     return 0;
 }
@@ -78,22 +95,81 @@ int8_t ws_generate_channel_list(uint8_t *channel_mask, uint16_t number_of_channe
     for (uint16_t i = 0; i < number_of_channels; i++) {
         channel_mask[0 + (i / 8)] |= (1 << (i % 8));
     }
+
+    /* if regulatory domain is not NA, BZ, and JP
+       It implies to use the user provided regulatory channel mask
+    */
+    if ((regulatory_domain != REG_DOMAIN_NA) &&
+        (regulatory_domain != REG_DOMAIN_EU) &&
+        (regulatory_domain != REG_DOMAIN_BZ) &&
+        (regulatory_domain != REG_DOMAIN_JP) ) {
+
+        for (uint8_t i = 0; i < NUM_BYTES_IN_CHAN_MASK; i++) {
+            channel_mask[i] = cfg_props.regulatory_channel_list[i];
+        }
+        return 0;
+    }
+
     // Disable unsupported channels per regional frequency bands
     if (regulatory_domain == REG_DOMAIN_NA) {
         //do nothing as there are no gaps in the regulatory channel mask
     }
+
     if (regulatory_domain == REG_DOMAIN_BZ) {
         if ((operating_class == 1) || (channel_plan_id == 1)){
-            ws_disable_channels_in_range(channel_mask, number_of_channels, 26, 64);           
+#ifndef PHY_SPEC_2V03
+            ws_disable_channels_in_range(channel_mask, number_of_channels, 26, 64);
+#else
+            // PHY 2V03 Spec Mask: 00:C0:FF:FF:FF:FF:FF:FF:01:00:00:00:00:00:00:00:FE
+            //  exclude: 14 -- 64 (total number of channels = 78)
+            ws_disable_channels_in_range(channel_mask, number_of_channels, 14, 64);
+#endif
         } else if ((operating_class == 2) || (channel_plan_id == 2)) {
-            ws_disable_channels_in_range(channel_mask, number_of_channels, 12, 31);
+#ifndef PHY_SPEC_2V03
+            // PHY Technical Profile Specification 2V00 Table 7
+            // mask: 00:0F:FF:FF:01:00:00:00
+            ws_disable_channels_in_range(channel_mask, number_of_channels, 12, 32);
+#else
+            // PHY 2V03 Spec mask: C0:FF:FF:FF:01:00:00:00
+            //  exclude: 6 -- 32 (total number of channels = 37)
+            ws_disable_channels_in_range(channel_mask, number_of_channels, 6, 32);
+#endif
         } else if ((operating_class == 3) || (channel_plan_id == 3)) {
+#ifndef PHY_SPEC_2V03
+            // PHY Technical Profile Specification 2V00 Table 7
+            // mask: 00:FF:3F:00:00:FC
             ws_disable_channels_in_range(channel_mask, number_of_channels, 8, 21);
+#else
+            // PHY 2V03 Spec Mask  F0:FF:3F:00:00:FC
+            //  exclude: 4 -- 21 (total number of channels = 24)
+            ws_disable_channels_in_range(channel_mask, number_of_channels, 4, 21);
+#endif
         } else if (channel_plan_id == 4) {
             ws_disable_channels_in_range(channel_mask, number_of_channels, 6, 15);
         } else if (channel_plan_id == 5) {
             ws_disable_channels_in_range(channel_mask, number_of_channels, 3, 10);
-        }  
+        }
+    }
+
+    if (regulatory_domain == REG_DOMAIN_JP) {
+        if ((operating_class == 1) || (channel_plan_id == 21)){
+            // PHY 2V03 Spec FF:01:00:00:C0
+            //  exclude: 0 - 8 (total valid = 29) Total = 38
+            ws_disable_channels_in_range(channel_mask, number_of_channels, 0, 8);
+        } else if ((operating_class == 2) || (channel_plan_id == 22)) {
+            // PHY 2V03 Spec mask 0F:00:FC
+            // exclude: 0-3 (total valid = 14) Total = 18
+            ws_disable_channels_in_range(channel_mask, number_of_channels, 0, 3);
+        } else if ((operating_class == 3) || (channel_plan_id == 23)) {
+            // PHY 2V03 Spec mask 07:F0
+            // exclude 0:2 (total valid = 9) Total = 12
+            ws_disable_channels_in_range(channel_mask, number_of_channels, 0, 2);
+        } else if (channel_plan_id == 24) {
+            // PHY 2V03 Spec mask 03:FE
+            // exclude 0:1 (total valid = 7) Total = 9
+            ws_disable_channels_in_range(channel_mask, number_of_channels, 0, 1);
+
+        }
     }
     return 0;
 }
@@ -126,6 +202,27 @@ uint32_t ws_decode_channel_spacing(uint8_t channel_spacing)
         return 800000;
     } else if (CHANNEL_SPACING_1200 == channel_spacing) {
         return 1200000;
+    }
+    return 0;
+}
+
+uint8_t ws_encode_channel_spacing(uint32_t channel_spacing)
+{
+    /* unit is Khz,*/
+    if (100 == channel_spacing) {
+        return CHANNEL_SPACING_100;
+    } else if (200 == channel_spacing) {
+        return CHANNEL_SPACING_200;
+    } else if (250 == channel_spacing) {
+        return CHANNEL_SPACING_250;
+    } else if (400 == channel_spacing) {
+        return CHANNEL_SPACING_400;
+    } else if (600 == channel_spacing) {
+        return CHANNEL_SPACING_600;
+    } else if (800 == channel_spacing) {
+        return CHANNEL_SPACING_800;
+    } else if (1200 == channel_spacing) {
+        return CHANNEL_SPACING_1200;
     }
     return 0;
 }
@@ -217,6 +314,25 @@ int8_t ws_common_regulatory_domain_config(protocol_interface_info_entry_t *cur, 
         return -1;
     }
 
+    /* if regulatory domain is not NA, BZ, and JP
+       It implies to use the following values fror cfg_props
+
+       hopping_schdule->ch0_freq
+       hopping_schdule->channel_spacing
+       hopping_schdule->channel_plan = 0
+       hopping_schdule->number_of_channels
+    */
+    if ((hopping_schdule->regulatory_domain != REG_DOMAIN_NA) &&
+        (hopping_schdule->regulatory_domain != REG_DOMAIN_EU) &&
+        (hopping_schdule->regulatory_domain != REG_DOMAIN_BZ) &&
+        (hopping_schdule->regulatory_domain != REG_DOMAIN_JP)) {
+
+        hopping_schdule->ch0_freq = cfg_props.ch0_center_frequency;
+        hopping_schdule->channel_spacing = cfg_props.config_channel_spacing;
+        hopping_schdule->channel_plan = 0;
+        hopping_schdule->number_of_channels = cfg_props.config_number_of_channels;
+        return 0;
+    }
     // Validate PHY mode ID
     if (hopping_schdule->phy_mode_id != 255) {
         uint8_t phy_mode_id = hopping_schdule->phy_mode_id;
@@ -249,7 +365,11 @@ int8_t ws_common_regulatory_domain_config(protocol_interface_info_entry_t *cur, 
             }
         }
     }
-    hopping_schdule->channel_plan = 0;
+
+    if (hopping_schdule->channel_plan == 1)
+    {   /* user defined channel plan , do not update ch0, channel spacing and number of channels*/
+        return 0;
+    }
 
     if (hopping_schdule->regulatory_domain == REG_DOMAIN_KR) {
         if (hopping_schdule->operating_class == 1) {
@@ -308,7 +428,13 @@ int8_t ws_common_regulatory_domain_config(protocol_interface_info_entry_t *cur, 
             } else if (hopping_schdule->channel_plan_id == 2) {
                 hopping_schdule->ch0_freq = 9024;
                 hopping_schdule->channel_spacing = CHANNEL_SPACING_400;
-            } else if (hopping_schdule->channel_plan_id == 5) {
+            }else if (hopping_schdule->channel_plan_id == 3) {
+                hopping_schdule->ch0_freq = 9026;
+                hopping_schdule->channel_spacing = CHANNEL_SPACING_600;
+            }else if (hopping_schdule->channel_plan_id == 4) {
+                hopping_schdule->ch0_freq = 9028;
+                hopping_schdule->channel_spacing = CHANNEL_SPACING_800;
+            }else if (hopping_schdule->channel_plan_id == 5) {
                 hopping_schdule->ch0_freq = 9032;
                 hopping_schdule->channel_spacing = CHANNEL_SPACING_1200;
             } else {
@@ -336,7 +462,13 @@ int8_t ws_common_regulatory_domain_config(protocol_interface_info_entry_t *cur, 
             } else if (hopping_schdule->channel_plan_id == 2) {
                 hopping_schdule->ch0_freq = 9024;
                 hopping_schdule->channel_spacing = CHANNEL_SPACING_400;
-            } else if (hopping_schdule->channel_plan_id == 5) {
+            }else if (hopping_schdule->channel_plan_id == 3) {
+                hopping_schdule->ch0_freq = 9026;
+                hopping_schdule->channel_spacing = CHANNEL_SPACING_600;
+            }else if (hopping_schdule->channel_plan_id == 4) {
+                hopping_schdule->ch0_freq = 9028;
+                hopping_schdule->channel_spacing = CHANNEL_SPACING_800;
+            }else if (hopping_schdule->channel_plan_id == 5) {
                 hopping_schdule->ch0_freq = 9032;
                 hopping_schdule->channel_spacing = CHANNEL_SPACING_1200;
             } else {
@@ -379,6 +511,22 @@ int8_t ws_common_regulatory_domain_config(protocol_interface_info_entry_t *cur, 
 
 uint16_t ws_common_channel_number_calc(uint8_t regulatory_domain, uint8_t operating_class, uint8_t channel_plan_id)
 {
+    /* if regulatory domain is not NA, EU, BZ, and JP
+       It implies to use the following values fror cfg_props
+
+       hopping_schdule->ch0_freq
+       hopping_schdule->channel_spacing
+       hopping_schdule->channel_plan = 0
+       hopping_schdule->number_of_channels
+    */
+    if ((regulatory_domain != REG_DOMAIN_NA) &&
+        (regulatory_domain != REG_DOMAIN_EU) &&
+        (regulatory_domain != REG_DOMAIN_BZ) &&
+        (regulatory_domain != REG_DOMAIN_JP)) {
+
+        return cfg_props.config_number_of_channels;
+    }
+
     if (regulatory_domain == REG_DOMAIN_KR) {
         if (operating_class == 1) {
             return 32;
@@ -409,23 +557,52 @@ uint16_t ws_common_channel_number_calc(uint8_t regulatory_domain, uint8_t operat
                 return 64;
             } else if (operating_class == 3) {
                 return 42;
+            } else {
+                tr_debug("invalid operating class: %d", operating_class);
+                return(0);
             }
         } else {
             if (channel_plan_id == 1) {
-                return 136;
+                return 129;
             } else if (channel_plan_id == 2) {
                 return 64;
+            } else if (channel_plan_id == 3) {
+                return 42;
+            } else if (channel_plan_id == 4) {
+                return 32;
             } else if (channel_plan_id == 5) {
-                return 24;
+                return 21;
+            } else {
+                tr_debug("invalid channel plan id: %d", channel_plan_id);
+                return(0);
             }
         }
     } else if (regulatory_domain == REG_DOMAIN_JP) {
-        if (operating_class == 1) {
-            return 38;
-        } else if (operating_class == 2) {
-            return 18;
-        } else if (operating_class == 3) {
-            return 12;
+        // check PHY2V03 and the total channel defined in SYSCFG
+        if (channel_plan_id == 255) {
+            if (operating_class == 1) {
+                return 38;
+            } else if (operating_class == 2) {
+                return 18;
+            } else if (operating_class == 3) {
+                return 12;
+            } else{
+                tr_debug("invalid operating class: %d", operating_class);
+                return(0);
+            }
+        }else{
+            if (channel_plan_id == 21) {
+                return 38;
+            } else if (channel_plan_id == 22) {
+                return 18;
+            } else if (channel_plan_id == 23) {
+                return 12;
+            } else if (channel_plan_id == 24) {
+                return 9;
+            } else {
+                tr_debug("invalid channel plan id: %d", channel_plan_id);
+                return(0);
+            }
         }
     } else if (regulatory_domain == REG_DOMAIN_BZ) {
         if (channel_plan_id == 255) {
@@ -435,14 +612,24 @@ uint16_t ws_common_channel_number_calc(uint8_t regulatory_domain, uint8_t operat
                 return 64;
             } else if (operating_class == 3) {
                 return 42;
+            }else {
+                tr_debug("invalid operating class: %d", operating_class);
+                return(0);
             }
         } else {
             if (channel_plan_id == 1) {
-                return 136;
+                return 129;
             } else if (channel_plan_id == 2) {
                 return 64;
+            } else if (channel_plan_id == 3) {
+                return 42;
+            } else if (channel_plan_id == 4) {
+                return 32;
             } else if (channel_plan_id == 5) {
-                return 24;
+                return 21;
+            } else {
+                tr_debug("invalid channel plan id: %d", channel_plan_id);
+                return(0);
             }
         }
     } else if (regulatory_domain == REG_DOMAIN_WW) {
@@ -453,6 +640,7 @@ uint16_t ws_common_channel_number_calc(uint8_t regulatory_domain, uint8_t operat
             return 207;
         }
     }
+
     return 0;
 }
 
@@ -477,8 +665,11 @@ int8_t ws_common_allocate_and_init(protocol_interface_info_entry_t *cur)
     cur->ws_info->pan_information.use_parent_bs = true;
     cur->ws_info->pan_information.rpl_routing_method = true;
     cur->ws_info->pan_information.pan_version_set = false;
+#ifdef WISUN_FAN_CORE_1_1
+    cur->ws_info->pan_information.version = WS_FAN_VERSION_1_1;
+#else
     cur->ws_info->pan_information.version = WS_FAN_VERSION_1_0;
-
+#endif
     cur->ws_info->pending_key_index_info.state = NO_PENDING_PROCESS;
 
     cur->ws_info->hopping_schdule.regulatory_domain = REG_DOMAIN_EU;
@@ -560,14 +751,11 @@ static void ws_common_neighbour_address_reg_link_update(protocol_interface_info_
     mac_neighbor_table_entry_t *mac_neighbor = mac_neighbor_entry_get_by_mac64(mac_neighbor_info(interface), eui64, false, false);
 
     if (mac_neighbor) {
-        if (mac_neighbor->link_lifetime < link_lifetime) {
             //Set Stable timeout for temporary entry here
-            if (link_lifetime > WS_NEIGHBOUR_TEMPORARY_NEIGH_MAX_LIFETIME && mac_neighbor->link_lifetime  < WS_NEIGHBOUR_TEMPORARY_NEIGH_MAX_LIFETIME) {
-                tr_info("Added new neighbor %s : index:%u", trace_array(eui64, 8), mac_neighbor->index);
-            }
-            mac_neighbor->link_lifetime = WS_NEIGHBOR_LINK_TIMEOUT;
-
+        if (link_lifetime > WS_NEIGHBOUR_TEMPORARY_NEIGH_MAX_LIFETIME && mac_neighbor->link_lifetime  < WS_NEIGHBOUR_TEMPORARY_NEIGH_MAX_LIFETIME) {
+            tr_info("Added new neighbor %s : index:%u", trace_array(eui64, 8), mac_neighbor->index);
         }
+        mac_neighbor->link_lifetime = link_lifetime; // Assign link lifetime based on ARO
         //Refresh
         mac_neighbor->lifetime = mac_neighbor->link_lifetime;
     }
@@ -582,8 +770,13 @@ uint8_t ws_common_allow_child_registration(protocol_interface_info_entry_t *inte
         //DeRegister Address Reg
         return ARO_SUCCESS;
     }
+#ifdef WISUN_CERT_CONFIG
+    // Prevent timing issues from link timing out too late in BR lifetime test
+    uint32_t link_lifetime = ((aro_timeout * 60) > 15) ? (aro_timeout * 60) - 15 : 1;
+#else
     uint32_t link_lifetime = (aro_timeout * 60) + 1;
-
+#endif
+    tr_info("ARO Link Lifetime: %d", link_lifetime);
     // Test API to limit child count
     if (test_max_child_count_override != 0xffff) {
         max_child_count = test_max_child_count_override;

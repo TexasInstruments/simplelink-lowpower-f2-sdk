@@ -37,4 +37,4 @@
 #define HAVE_DHCPV6_SERVER
 #define EXTRA_CONSISTENCY_CHECKS
 
-#define NO_TCP
+//#define NO_TCP

@@ -37,6 +37,11 @@
 #ifndef NO_TCP
 #define TRACE_GROUP "tcp"
 
+#ifdef WISUN_NCP_ENABLE
+#include "6LoWPAN/ws/ws_common_defines.h"
+extern void nanostack_process_stream_net_from_stack(buffer_t* buf);
+#endif
+
 /* Standard flags for outgoing packets in each state, with FIN applying
  * only if there is no more data in queue (because the state is entered
  * while queue not empty).
@@ -1189,7 +1194,13 @@ buffer_t *tcp_up(buffer_t *buf)
         protocol_stats_update(STATS_IP_CKSUM_ERROR, 1);
         return buffer_free(buf);
     }
-
+#ifdef WISUN_NCP_ENABLE
+    {   // forward the whole TCP packet to host
+        nanostack_process_stream_net_from_stack(buf);
+        buffer_free(buf);
+        return NULL;
+    }
+#endif
     // save received port(s), seq_no and ack_no, data_offset, flags, window_size,
     ptr = buffer_data_pointer(buf);
     buf->src_sa.port = common_read_16_bit(ptr);

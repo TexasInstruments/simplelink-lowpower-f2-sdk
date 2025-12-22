@@ -51,6 +51,33 @@ Network Name - Wi-SUN Network
 Security - Enabled (we dont support disabling security for debug purposes at this point)
 * On modifying any of the above parameters, save the changes and proceed to build the example.
 
+Advanced Runtime Region and PHY Configuration
+---------------------------------------------
+
+If a specific region/PHY configuration is not supported via the Sysconfig region/PHY selection or you wish to use one firmware image for multiple regions/PHYs, you can directly configure the region/PHY settings at runtime before network initialization. To perform this switch, you will need to set the following parameters through either NCP commands via Python spinel CLI application or Linux wfantund and wfanctl. You may also directly modify the corresponding parameters in the `configurable_props_t cfg_props` struct in `application.c`.
+
+| Parameter                        | Range | Pyspinel parameter | wfantund parameter | cfg_props parameter       | Description |
+| --------------------------       | ----- | ------------------ | ------------------ | ------------------------- | ----------- |
+| Region/Regulatory domain         | 0-255 | region             | NCP:Region         | config_reg_domain         | Region number of region of operation, corresponding to the Wi-SUN defined region number mapping |
+| Phy Mode ID                      | 1-8   | phymodeid          | NCP:ModeID         | config_phy_id             | PHY Mode ID corresponding to Wi-SUN defined FSK PhyMode Field Enumeration |
+| Operating Class                  | 1-5   | operatingclass     | operatingclass     | operating_class           | Operating class as defined by Wi-SUN Legacy Operating Class |
+| Channel 0 Center Frequency (kHz) | *     | ch0centerfreq      | ch0centerfreq      | ch0_center_frequency      | Center frequency of channel 0, in kHz (e.g. 902200 for 902.2 MHz) |
+| Channel Spacing (kHz)            | *     | chspacing          | chspacing          | config_channel_spacing    | Channel spacing for hopping channels, in kHz |
+| Number of Channels               | 1-129 | numchannels        | numchannels        | config_number_of_channels | Number of valid channels in channel mask, starting from channel 0. Note this includes regulatory excluded channels.** |
+| Regulatory Channel List          | 1-129 | regulatorychlist   | regulationchlist   | regulatory_channel_list   | Valid regulatory channels for selected region, used to specify regulatory gaps in channel list*** |
+| Async Channel List               | 1-129 | asyncchlist        | asyncchlist        | async_channel_list        | Valid async channels. Should be modified to match regulatory channels for the region**** |
+
+*Center freq and channel spacing allowed ranges depend on PhyModeID used.
+
+**Note that number of channels includes both regulatory excluded channel within the channel mask (e.g. BZ excluded channels are still counted) and initial excluded channels (e.g. JP excluded channels at the start of the channel mask are still counted). Refer to the default settings for BZ and JP PHYs for examples of how to configure this setting.
+
+***The regulatory channel list is the assumed default channel mask all devices are expected to know based on the region (regulatory domain) and operating class. Unicast and broadcast channel list are application-specific channel masks applied on top of regulatory channel lists, further restricting them. The unicast and broadcast channel list cannot enable channels that are disabled by regulatory channel list.
+
+****Async channel list is a separate channel list that is not affected by regulatory channel list, used only for async messages. It is still recommended to set the async channel lists the same or as a subset of the regulatory channel list to meet regulation channel requirements.
+
+Note that only FSK PHYs are supported (PHY mode ID 1-8), and region/PHY parameters cannot be modified after network initialization (interface up). To switch to a different PHY, the embedded device (either embedded BR/RN or RCP) must be reset.
+
+For embedded-only use cases with a single firmware image supporting multiple PHYs, it is recommended to maintain different cfg_prop structs per region and set the appropriate settings before network startup.
 
 Secure Boot Configuration
 -------------------------

@@ -77,6 +77,12 @@ const ti_wisunfanCCFGSettings = {
     LP_CC1352P7_4_CCFG_SETTINGS: {
         forceVddr: false
     },
+    LP_CC1311R3_CCFG_SETTINGS: {
+        forceVddr: false
+    },
+    LP_CC1311P3_CCFG_SETTINGS: {
+        forceVddr: false
+    },
     LP_EM_CC1314R10_CCFG_SETTINGS: {
         forceVddr: false
     },
@@ -99,6 +105,8 @@ const deviceToBoard = {
     CC1352P: "CC1352P1_LAUNCHXL",
     CC1312R: "CC1312R1_LAUNCHXL",
     CC1312PSIP: "LP_EM_CC1312PSIP",
+    CC1311R3: "LP_CC1311R3",
+    CC1311P3: "LP_CC1311P3",
     CC1314R10: "LP_EM_CC1314R10",
     CC1354P10: "LP_EM_CC1354P10_1",
     CC1354R10: "LP_CC1354R10_RGZ",
@@ -184,7 +192,8 @@ function is433MHzDevice(inst)
 function isHighPADevice()
 {
     const board = getLaunchPadFromDevice(boardName);
-    return(board.includes("CC1352P") || board.includes("CC1312P") || board.includes("CC1354P"));
+    return(board.includes("CC1352P") || board.includes("CC1312P")
+        || board.includes("CC1311P") || board.includes("CC1354P"));
 }
 
 /*!

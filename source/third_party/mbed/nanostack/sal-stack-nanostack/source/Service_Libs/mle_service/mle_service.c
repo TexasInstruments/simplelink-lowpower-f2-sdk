@@ -1022,12 +1022,14 @@ void mle_service_interface_unregister(int8_t interface_id)
 
 int mle_service_reset_frame_counters(int8_t interfaceId)
 {
+#ifndef NO_MLE
     service_instance_t *srv_ptr = mle_service_interface_find(interfaceId);
     if (!srv_ptr) {
         return -1;
     }
     mle_service_security_set_frame_counter(interfaceId, 0);
     mle_class_set_new_key_pending(srv_ptr->interface_ptr);
+#endif
     return 0;
 }
 

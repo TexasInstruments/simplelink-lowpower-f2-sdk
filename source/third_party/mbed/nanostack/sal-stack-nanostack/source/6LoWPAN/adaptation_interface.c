@@ -1637,7 +1637,7 @@ int8_t lowpan_adaptation_interface_tx_confirm(protocol_interface_info_entry_t *c
             tr_error("MCPS Data fail by MLME_TRANSACTION_OVERFLOW");
         }
 
-        tr_error("MCPS Data fail by status %u", confirm->status);
+        tr_error("MCPS Data fail by status 0x%x", confirm->status);
         if (buf->dst_sa.addr_type == ADDR_802_15_4_SHORT) {
             tr_info("Dest addr: %x", common_read_16_bit(buf->dst_sa.address + 2));
         } else if (buf->dst_sa.addr_type == ADDR_802_15_4_LONG) {
@@ -1712,7 +1712,7 @@ void lowpan_adaptation_interface_data_ind(protocol_interface_info_entry_t *cur, 
     }
     uint8_t *ptr;
     buffer_data_add(buf, data_ind->msdu_ptr, data_ind->msduLength);
-    //tr_debug("MAC Paylod size %u %s",data_ind->msduLength, trace_array(data_ind->msdu_ptr, 8));
+    tr_info("****LOWPAN MAC Payload size %u %s",data_ind->msduLength, trace_array(data_ind->msdu_ptr, 8));
     buf->options.lqi = data_ind->mpduLinkQuality;
     buf->options.dbm = data_ind->signal_dbm;
     buf->src_sa.addr_type = (addrtype_t)data_ind->SrcAddrMode;

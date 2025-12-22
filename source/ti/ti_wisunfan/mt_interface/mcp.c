@@ -55,6 +55,7 @@
 #include "mcp.h"
 #include "mt.h"
 #include "mt_mac.h"
+#include "rcp_lmac.h"
 
 #include "ti_drivers_config.h"
 #ifdef TI154STACK_BLINK_LEDS_DURING_MESSAGING
@@ -73,7 +74,6 @@
  External variables
  *****************************************************************************/
 #ifdef OSAL_PORT2TIRTOS
-extern uint8_t appTaskId;
 extern uint8_t npiAppEntityID;
 #else
 /* ICall thread entity for ApiMac */
@@ -299,7 +299,7 @@ static void relayRxMsg(void *pMsg)
 
 #ifdef OSAL_PORT2TIRTOS
     /* Relay the message to ApiMac */
-    OsalPort_msgSend(appTaskId, (uint8_t*)pMacNpiMtMsg );
+    OsalPort_msgSend(rcp_lmac_store.app_task_id, (uint8_t*)pMacNpiMtMsg );
     MT_total_numRxMsgs += 1;
 #else
     /* Relay the message to ApiMac */

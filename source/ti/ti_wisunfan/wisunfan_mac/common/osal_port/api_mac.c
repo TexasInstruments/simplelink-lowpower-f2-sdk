@@ -93,6 +93,7 @@
 #include <driverlib/ioc.h>
 
 #include "rcp_types.h"
+#include "rcp_lmac.h"
 #include "mt.h"
 
 /*!
@@ -120,9 +121,6 @@ static uint8_t stackTaskId;
 /*! MAC callback table, initialized to no callback table */
 static ApiMac_callbacks_t *pMacCallbacks = (ApiMac_callbacks_t *) NULL;
 
-uint8_t appTaskId;
-
-
 static uint16_t processIncomingICallMsg(macCbackEvent_t *pMsg);
 static void copyMacAddrToApiMacAddr(ApiMac_sAddr_t *pDst, sAddr_t *pSrc);
 static void copyDataInd(ApiMac_mcpsDataInd_t *pDst, macMcpsDataInd_t *pSrc);
@@ -147,30 +145,7 @@ void *ApiMac_init(uint8_t macTaskIdParam, bool enableFH)
         while (1);
     }
 
-    appTaskId = OsalPort_registerTask(pthread_self(), &appSemHandle, &appEvents);
-
-    /* Allocate message buffer space */
-    macStackInitParams_t *pMsg = (macStackInitParams_t *)OsalPort_msgAllocate(sizeof(macStackInitParams_t));
-
-    if(pMsg != NULL)
-    {
-        /* Fill in the message content */
-        pMsg->hdr.event = MAC_STACK_INIT_PARAMS;
-        pMsg->hdr.status = 0;
-        pMsg->srctaskid = appTaskId;
-        pMsg->retransmit = 0;
-        pMsg->pendingMsg = 0;
-        pMsg->pMacCbackQueryRetransmit = NULL;
-        pMsg->pMacCbackCheckPending = NULL;
-
-        OsalPort_msgSend( stackTaskId, (uint8_t*)pMsg );
-    }
-
-    /* Let MAC task consume the message */
-#ifndef FREERTOS_SUPPORT
-    Task_sleep(10);
-#endif
-
+    rcp_lmac_store.app_task_id = OsalPort_registerTask(pthread_self(), &appSemHandle, &appEvents);
     return (&appSemHandle);
 }
 
@@ -198,7 +173,7 @@ void ApiMac_processIncoming(void)
     if( sem_wait(&appSemHandle) == 0)
     {
         /* Retrieve the response message */
-        if( (pMsg = (macCbackEvent_t*) OsalPort_msgReceive( appTaskId )) != NULL)
+        if( (pMsg = (macCbackEvent_t*) OsalPort_msgReceive( rcp_lmac_store.app_task_id )) != NULL)
         {
             /* Process the message from the MAC stack */
             processIncomingICallMsg(pMsg);
@@ -2770,7 +2745,7 @@ void timac_GetBC_Slot_BFIO(uint16_t *slot, uint32_t *bfio)
 
 void timac_setup_Test_GPIO(void)
 {
-#ifdef ENABLE_GPIO_MPL
+#ifdef ENABLE_RF_GPIO
     GPIO_setConfig(FH_UNICAST_GPIO, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW);
     GPIO_setConfig(HOST_RX_GPIO, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW);
     GPIO_setConfig(MAC_BROADCAST_GPIO, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW);
@@ -2786,28 +2761,28 @@ void timac_setup_Test_GPIO(void)
 
 void timac_Set_FH_Broadcast_GPIO(uint8_t st)
 {
-#ifdef ENABLE_GPIO_MPL
+#ifdef ENABLE_RF_GPIO
     GPIO_write(FH_BROADCAST_GPIO,st);
 #endif
 }
 
 void timac_Set_FH_UNICAST_GPIO(uint8_t st)
 {
-#ifdef ENABLE_GPIO_MPL
+#ifdef ENABLE_RF_GPIO
     GPIO_write(FH_UNICAST_GPIO,st);
 #endif
 }
 
 void timac_Set_HOST_RX_GPIO(uint8_t st)
 {
-#ifdef ENABLE_GPIO_MPL
+#ifdef ENABLE_RF_GPIO
     GPIO_write(HOST_RX_GPIO,st);
 #endif
 }
 
 void timac_Set_MAC_BROADCAST_GPIO(uint8_t st)
 {
-#ifdef ENABLE_GPIO_MPL
+#ifdef ENABLE_RF_GPIO
     GPIO_write(MAC_BROADCAST_GPIO,st);
 #endif
 }

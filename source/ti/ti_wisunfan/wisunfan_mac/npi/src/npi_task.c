@@ -65,8 +65,11 @@
 #include "inc/npi_frame.h"
 #include "inc/npi_rxbuf.h"
 #include "inc/npi_tl.h"
+#include "inc/npi_hdlc.h"
 
 #include "mt.h"
+
+extern HDLC_Dbg_s hdlc_dbg;
 
 // ****************************************************************************
 // defines
@@ -291,6 +294,8 @@ static void NPITask_process(void);
 //! \brief Callback function registered with Transport Layer
 //!
 static void NPITask_transportRXCallBack(int size);
+static void NPITask_HDLC_transportRXCallBack(int size);
+void NPITask_HDLC_transportRX_Done_CallBack(int size);
 
 //! \brief Callback function registered with Transport Layer
 //!
@@ -427,10 +432,17 @@ static void NPITask_inititializeTask(void)
     // Initialize Frame Module
     NPIFrame_initialize(&NPITask_incomingFrameCB);
 
+#ifdef USE_NPI_HDLC
+    // Initialize Network Processor Interface (NPI) and Transport Layer
+    NPITL_initTL( &NPITask_transportTxDoneCallBack,
+                  &NPITask_HDLC_transportRXCallBack,
+                  &NPITask_MRDYEventCB );
+#else
     // Initialize Network Processor Interface (NPI) and Transport Layer
     NPITL_initTL( &NPITask_transportTxDoneCallBack,
                   &NPITask_transportRXCallBack,
                   &NPITask_MRDYEventCB );
+#endif
 
 }
 
@@ -629,6 +641,33 @@ static void NPITask_process(void)
                 // - HCI for BLE
                 // - MT for ZigBee, TIMAC, RF4CE
                 // - ? for your favorite technology
+#ifdef USE_NPI_HDLC
+                {
+                    uint8_t *pdata;
+                    uint16_t length;
+
+                    /* pdata is pointer to HDLC_RxBuf
+                       length is number of byte in HDLC_RxBuf
+                       if packet is wrap around, only call partial data
+                    */
+                    pdata = NPI_HDLC_RxBuf_GetHead();
+                    length = NPI_HDLC_RxBuf_GetProcLength();
+                    hdlc_decode(pdata, length);
+                    // update the HDLC Buf Head pointer
+                    NPI_HDLC_RxBuf_UpdateHead(length);
+
+                    //check if there is more data in the HDLC RxBuf
+                    if (NPI_HDLC_RxBuf_GetRxBufCount() == 0)
+                    {   // no more data in the HDLC RxBuf
+                        NPITask_events &= ~NPITASK_TRANSPORT_RX_EVENT;
+                    }
+                    else
+                    {   // more data in the HDLC RxBuf, repost to the semaphore
+                        //NPITask_events |= NPITASK_TRANSPORT_RX_EVENT;
+                        SemaphoreP_post(npiSemHandle);
+                    }
+                }
+#else
                 NPIFrame_collectFrameData();
 
                 if (NPIRxBuf_GetRxBufCount() == 0)
@@ -648,6 +687,7 @@ static void NPITask_process(void)
                     SemaphoreP_post(npiSemHandle);
 #endif //ICALL_EVENTS
                 }
+#endif
             }
 
             // A complete frame (msg) has been received and is ready for handling
@@ -1072,6 +1112,9 @@ static void NPITask_processStackMsg(uint8_t *pMsg)
         }
     }
 }
+#ifdef USE_NPI_HDLC
+uint8_t hdlc_buf_tx[2048];
+#endif
 
 // -----------------------------------------------------------------------------
 //! \brief      Dequeue next message in the ASYNC TX Queue and send to serial
@@ -1088,15 +1131,36 @@ static void NPITask_ProcessTXQ(void)
     // in a critical section since any application
     // task can enqueue items freely
     key = MAP_ICall_enterCriticalSection();
-
     recPtr = (NPI_QueueRec*) List_get(&npiTxQueue);
 
     if (recPtr != NULL)
     {
+#ifdef USE_NPI_HDLC
+            //-- Add NLI Data
+        uint8_t *nliBuffer=NULL;
+        uint16_t nliBufferLen,hdlc_len;
+
+        nliBufferLen = 0;
+	    /* Add NLI byte to base MT Message buffer */
+        nliBuffer = add_NLI_byte(recPtr->npiMsg->pBuf, recPtr->npiMsg->pBufSize, 1, &nliBufferLen);
+
+        if (nliBuffer)
+        {   // HDLC encode before sending
+            hdlc_len = hdlc_encode(nliBuffer, nliBufferLen, hdlc_buf_tx, sizeof(hdlc_buf_tx));
+
+            NPITL_writeTL(hdlc_buf_tx, hdlc_len);
+            // free nlibuffer
+            MAP_ICall_free(nliBuffer);
+        }
+        else
+        {
+            /* Fail - couldn't add NLI byte */
+        }
+
+#else
         NPITL_writeTL(recPtr->npiMsg->pBuf, recPtr->npiMsg->pBufSize);
-
+#endif
         List_remove(&npiTxQueue, (List_Elem* )recPtr);
-
         //free the Queue record
         MAP_ICall_freeMsg(recPtr->npiMsg->pBuf);
         MAP_ICall_free(recPtr->npiMsg);
@@ -1127,8 +1191,13 @@ static void NPITask_ProcessSyncTXQ(void)
 
     if (recPtr != NULL)
     {
+#ifdef USE_NPI_HDLC
+        // HDLC encode before sending
+        size_t hdlc_len = hdlc_encode(recPtr->npiMsg->pBuf, recPtr->npiMsg->pBufSize, hdlc_buf_tx, sizeof(hdlc_buf_tx));
+        NPITL_writeTL(hdlc_buf_tx, hdlc_len);
+#else
         NPITL_writeTL(recPtr->npiMsg->pBuf, recPtr->npiMsg->pBufSize);
-
+#endif
         // Decrement the outstanding Sync REQ/RSP flag.
         syncTransactionInProgress--;
 
@@ -1408,6 +1477,73 @@ static void NPITask_transportRXCallBack(int size)
         for(;;);
     }
 }
+#ifdef USE_NPI_HDLC
+static void NPITask_HDLC_transportRXCallBack(int size)
+{
+    // Check for overflow of RxBuf:
+    // If the buffer has overflowed there is no way to safely recover. All
+    // received bytes can be packet fragments so if a packet fragment is lost
+    // the frame parser behavior becomes undefined. The only way to prevent
+    // RxBuf overflow is to enable NPI_FLOW_CTRL.
+    //
+    // If NPI_FLOW_CTRL is not enabled then there is no way to for the Peripheral to
+    // control the Controller transfer rate. With NPI_FLOW_CTRL the Peripheral has SRDY
+    // to use as a software flow control mechanism.
+    // When using NPI_FLOW_CTRL make sure to increase NPI_TL_BUF_SIZE
+    // to suit the NPI frame length that is expected to be received.
+    if ( size < NPI_HDLC_RxBuf_GetRxBufAvail() )
+    {
+        NPI_HDLC_RxBuf_Read(size);
+
+        TRANSPORT_RX_ISR_EVENT_FLAG = NPITASK_TRANSPORT_RX_EVENT;
+        SemaphoreP_post(npiSemHandle);
+
+    }
+    else
+    {
+        // Trap here for pending buffer overflow. If NPI_FLOW_CTRL is
+        // enabled, increase size of RxBuf to handle larger frames from host.
+        hdlc_dbg.num_rx_buffer_overflow++;
+        for(;;);
+    }
+}
+
+void NPITask_HDLC_transportRX_Done_CallBack(int size)
+{
+    // Check for overflow of RxBuf:
+    // copy data from HDLC output buffer to NPI RxBuf
+    if ( size < NPIRxBuf_GetRxBufAvail() )
+    {
+        NPI_HDLC_buf_output_RxBuf_Read(size);
+        // set the new event HDLC_RX_Event
+        //TRANSPORT_RX_ISR_EVENT_FLAG = NPITASK_TRANSPORT_RX_EVENT;
+        //SemaphoreP_post(npiSemHandle);
+        NPIFrame_collectFrameData();
+        // do sanity check on the RxBuf
+        // if RxBuf is empty, the whole packet is processed
+        // otherwise there are some errors. We need to force the state to SOP and skip all remaining byte
+        if (!(NPIFrame_IsSOP()))
+        {
+            // if we are not in SOP state, we have some errors
+            // reset the RxBuf to empty state
+            if (NPIRxBuf_GetRxBufCount() == 0)
+            {   // record error count
+
+            }
+
+            NPIFrame_Reset();
+            NPIRxBuf_Reset();
+        }
+
+    }
+    else
+    {
+        // Trap here for pending buffer overflow. If NPI_FLOW_CTRL is
+        // enabled, increase size of RxBuf to handle larger frames from host.
+        for(;;);
+    }
+}
+#endif
 
 // -----------------------------------------------------------------------------
 //! \brief      RX Callback provided to Transport Layer for MRDY Event
@@ -1464,4 +1600,3 @@ static void syncReqRspWatchDogTimeoutCB( uintptr_t a0 )
     }
 }
 #endif // NPI_SREQRSP
-

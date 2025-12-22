@@ -17,6 +17,8 @@
     "../../../examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec": "ns_node_src_CC1352R1_LAUNCHXL_tirtos7_ticlang_0.dependency.tirex.json",
     "../../../examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/rcp_lmac/tirtos7/iar/rcp_lmac_CC1352R1_LAUNCHXL_tirtos7_iar.ipcf": "rcp_lmac_CC1352R1_LAUNCHXL_tirtos7_iar_0.dependency.tirex.json",
     "../../../examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec": "rcp_lmac_CC1352R1_LAUNCHXL_tirtos7_ticlang_0.dependency.tirex.json",
+    "../../../examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/iar/rcp_lmac_LP_CC1311P3_tirtos7_iar.ipcf": "rcp_lmac_LP_CC1311P3_tirtos7_iar_0.dependency.tirex.json",
+    "../../../examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec": "rcp_lmac_LP_CC1311P3_tirtos7_ticlang_0.dependency.tirex.json",
     "../../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_br/freertos/iar/ns_br_LP_CC1312R7_freertos_iar.ipcf": "ns_br_LP_CC1312R7_freertos_iar_0.dependency.tirex.json",
     "../../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_br/freertos/ticlang/ns_br_LP_CC1312R7_freertos_ticlang.projectspec": "ns_br_LP_CC1312R7_freertos_ticlang_0.dependency.tirex.json",
     "../../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_br/tirtos7/iar/ns_br_LP_CC1312R7_tirtos7_iar.ipcf": "ns_br_LP_CC1312R7_tirtos7_iar_0.dependency.tirex.json",

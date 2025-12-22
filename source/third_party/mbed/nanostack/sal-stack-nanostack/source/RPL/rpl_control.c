@@ -55,6 +55,10 @@
 #include "RPL/rpl_downward.h"
 #include "RPL/rpl_policy.h"
 #include "RPL/rpl_control.h"
+#ifdef HAVE_RPL_ROOT
+#include "RPL/rpl_nvm_store.h"
+#include "RPL/rpl_nvm_data.h"
+#endif
 #include "6LoWPAN/ws/ws_common.h"
 
 #define TRACE_GROUP "rplc"
@@ -248,6 +252,33 @@ bool rpl_control_address_register_done(protocol_interface_info_entry_t *interfac
         }
     }
     return blacklist_neighbour;
+}
+
+void rpl_control_registration_refresh_handler(protocol_interface_info_entry_t *interface, const uint8_t addr[16])
+{
+    if (!interface->rpl_domain) {
+        return;
+    }
+    if (!rpl_policy_parent_confirmation_requested()) {
+        return;
+    }
+    ns_list_foreach(struct rpl_instance, instance, &interface->rpl_domain->instances) {
+        rpl_instance_registration_refresh_handler(interface, instance, addr);
+    }
+}
+
+void rpl_control_get_parent_ll_addr_from_global_addr(protocol_interface_info_entry_t *interface, const uint8_t global_addr[16], uint8_t ll_addr[16])
+{
+    if (!interface->rpl_domain) {
+        return;
+    }
+    ns_list_foreach(struct rpl_instance, instance, &interface->rpl_domain->instances) {
+        rpl_neighbour_t *neighbour = rpl_lookup_neighbour_by_global_address(instance, global_addr, interface->id);
+        if (neighbour && rpl_neighbour_ll_address(neighbour)) {
+            memcpy(ll_addr, rpl_neighbour_ll_address(neighbour), 16);
+            return;
+        }
+    }
 }
 
 bool rpl_control_is_dodag_parent(protocol_interface_info_entry_t *interface, const uint8_t ll_addr[16])
@@ -681,9 +712,31 @@ rpl_dodag_t *rpl_control_create_dodag_root(rpl_domain_t *domain, uint8_t instanc
         return NULL;
     }
 
+#ifdef HAVE_RPL_ROOT
+    // restore from NV if available 
+    nw_info_nvm_tlv_t *tlv_entry = (nw_info_nvm_tlv_t *) rpl_get_nvm_tlv();
+    tlv_entry->tag = RPL_INFO_TAG;
+    tlv_entry->len = RPL_INFO_LEN;
+    uint8_t dodag_version_from_nv;
+    uint8_t dtsn_from_nv;
+    int8_t nv_read_status = rpl_nvm_store_info_tlv_read(tlv_entry, &dodag_version_from_nv, &dtsn_from_nv);
+
     rpl_dodag_update_config(dodag, conf, NULL, NULL);
     rpl_dodag_set_root(dodag, true);
+    rpl_dodag_version_t *version;
+    if (nv_read_status == 0) {
+        // If restored from NV, set DODAG Version and override default DTSN with NV values
+        version = rpl_create_dodag_version(dodag, dodag_version_from_nv);
+        // Increment dtsn by 1 after an NV recovery event / restart
+        rpl_instance_set_dtsn(instance, dtsn_from_nv + 1);
+    }
+    else
+    {
+        version = rpl_create_dodag_version(dodag, rpl_seq_init());
+    }
+#else
     rpl_dodag_version_t *version = rpl_create_dodag_version(dodag, rpl_seq_init());
+#endif
     if (!version) {
         rpl_delete_dodag(dodag);
         tr_error("No mem for DODAG root");

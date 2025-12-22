@@ -131,7 +131,7 @@ extern void *mainThread(void *arg0);
 #define WISUNTHREADSTACKSIZE    1024
 #endif
 
-#ifdef WISUN_RCP_HOST_BR
+#ifdef WISUN_RCP_HOST
 extern bool extAddrFlag;
 #endif
 
@@ -259,7 +259,7 @@ int main(void)
 
 #ifdef WISUN_RCP_ENABLE
     rcp_init();
-#ifdef WISUN_RCP_HOST_BR
+#ifdef WISUN_RCP_HOST
     // Wait until RCP_INIT_CNF sets deviceExtAddr (only needed in 2-chip solution)
     while (extAddrFlag == false) {
         usleep(100000); // 100ms sleep

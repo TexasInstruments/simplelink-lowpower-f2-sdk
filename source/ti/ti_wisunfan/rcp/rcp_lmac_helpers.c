@@ -33,8 +33,8 @@ void macSecurityPibReset(void) {}
 void ns_put_char_blocking(const char ch) {}
 #endif
 
-#define ENABLE_GPIO_MPL
-
+/* Uncomment this flag to enable debug RF GPIOs on the pins specified below. */
+// #define ENABLE_RF_GPIO
 #define FH_UNICAST_GPIO             IOID_18
 #define HOST_RX_GPIO                IOID_19
 #define MAC_BROADCAST_GPIO          IOID_20
@@ -209,7 +209,7 @@ void ccfg_read_mac_addr(uint8_t *mac_addr)
 
 void timac_setup_Test_GPIO(void)
 {
-#ifdef ENABLE_GPIO_MPL
+#ifdef ENABLE_RF_GPIO
     GPIO_setConfig(FH_UNICAST_GPIO, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW);
     GPIO_setConfig(HOST_RX_GPIO, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW);
     GPIO_setConfig(MAC_BROADCAST_GPIO, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW);
@@ -231,28 +231,28 @@ void timac_GetBC_Slot_BFIO(uint16_t *slot, uint32_t *bfio)
 
 void timac_Set_FH_Broadcast_GPIO(uint8_t st)
 {
-#ifdef ENABLE_GPIO_MPL
+#ifdef ENABLE_RF_GPIO
     GPIO_write(FH_BROADCAST_GPIO,st);
 #endif
 }
 
 void timac_Set_FH_UNICAST_GPIO(uint8_t st)
 {
-#ifdef ENABLE_GPIO_MPL
+#ifdef ENABLE_RF_GPIO
     GPIO_write(FH_UNICAST_GPIO,st);
 #endif
 }
 
 void timac_Set_HOST_RX_GPIO(uint8_t st)
 {
-#ifdef ENABLE_GPIO_MPL
+#ifdef ENABLE_RF_GPIO
     GPIO_write(HOST_RX_GPIO,st);
 #endif
 }
 
 void timac_Set_MAC_BROADCAST_GPIO(uint8_t st)
 {
-#ifdef ENABLE_GPIO_MPL
+#ifdef ENABLE_RF_GPIO
     GPIO_write(MAC_BROADCAST_GPIO,st);
 #endif
 }

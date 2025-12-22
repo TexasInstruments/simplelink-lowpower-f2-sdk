@@ -157,6 +157,87 @@ extern "C" {
 #define MAC_FHPIB_NUM_MAX_NON_SLEEP_NODES 0x201B  /* Number of non-sleepy neighbors that can be supported */
 #define MAC_FHPIB_NUM_MAX_SLEEP_NODES     0x201C  /* Number of sleepy neighbors that can be supported */
 
+/* PHY IDs */
+/* These constants should not be used in Wisun, instead use the constant values from api_mac.h */
+/* 915MHz Frequency band operating mode #2 */
+#define MAC_50KBPS_915MHZ_PHY_1         1
+/* 915MHz Frequency band operating mode #4 */
+#define MAC_150KBPS_915MHZ_PHY_2        2
+/* 868MHz Frequency band operating mode #5 */
+#define MAC_50KBPS_868MHZ_PHY_3         3
+/*! 866MHz Frequency band operating mode #1 */
+#define MAC_50KBPS_866MHZ_PHY_4           4
+/*! 866MHz Frequency band operating mode #2 */
+#define MAC_100KBPS_866MHZ_PHY_5          5
+/* 915MHz Frequency band operating mode #3 */
+#define MAC_200KBPS_915MHZ_PHY_6      6
+/* 915MHz Frequency band operating mode #8 */
+#define MAC_300KBPS_915MHZ_PHY_7        7
+// TODO: add 300 kbps here
+/* 433MHz Frequency band operating mode #1 */
+#define MAC_50KBPS_433MHZ_PHY_128       128
+/* 915MHz LRM Frequency band operating mode #1 */
+#define MAC_5KBPS_915MHZ_PHY_129        129
+/* 433MHz LRM Frequency band operating mode #1 */
+#define MAC_5KBPS_433MHZ_PHY_130        130
+/* 868MHz LRM Frequency band operating mode #1 */
+#define MAC_5KBPS_868MHZ_PHY_131        131
+/* 915MHz Frequency band operating mode #3 */
+#define MAC_200KBPS_915MHZ_PHY_132      132
+/* 868MHz Frequency band operating mode #3 */
+#define MAC_200KBPS_868MHZ_PHY_133      133
+
+/* Symbol rate in kilo symbols per second */
+#define MAC_MRFSK_SYMBOL_RATE_20_K    20     /* 20K symbol rate */
+#define MAC_MRFSK_SYMBOL_RATE_50_K    50     /* 50K symbol rate */
+#define MAC_MRFSK_SYMBOL_RATE_100_K  100     /* 100k symbol rate */
+#define MAC_MRFSK_SYMBOL_RATE_150_K  150     /* 150k symbol rate */
+#define MAC_MRFSK_SYMBOL_RATE_200_K  200     /* 200K symbol rate */
+#define MAC_MRFSK_SYMBOL_RATE_300_K  300     /* 300K symbol rate */
+
+/* Clear channel access type */
+#define MAC_CCA_TYPE_NO_BACKOFF      0   /* No back off and CSMA/CA */
+#define MAC_CCA_TYPE_CSMA_CA         1   /* CSMA/CA */
+#define MAC_CCA_TYPE_LBT             2   /* ETSI EN 300 220 LBT */
+#define MAC_CCA_TYPE_CSMA_ONLY       3   /* CSMA only */
+
+/* Modulation scheme */
+#define MAC_2_FSK_MODULATION         0   /* 2-FSK */
+#define MAC_4_FSK_MODULATION         1   /* 4-FSK */
+
+/* Modulation Index */
+#define MAC_MODULATION_INDEX_2FSK_50K_1     15 // Modulation index 1
+#define MAC_MODULATION_INDEX_2FSK_50K_0_5   5  // Modulation index 0.5
+#define MAC_MODULATION_INDEX_2FSK_100K_1    15
+#define MAC_MODULATION_INDEX_2FSK_100K_0_5  5
+#define MAC_MODULATION_INDEX_2FSK_150K_1    15
+#define MAC_MODULATION_INDEX_2FSK_150K_0_5  5
+#define MAC_MODULATION_INDEX_2FSK_150K_1    15
+#define MAC_MODULATION_INDEX_2FSK_5K        5
+#define MAC_MODULATION_INDEX_2FSK_200K_0_5  5
+#define MAC_MODULATION_INDEX_2FSK_200K_1    15
+#define MAC_MODULATION_INDEX_2FSK_300K_0_5  5
+#define MAC_MODULATION_INDEX_2FSK_300K_1    15
+#define MAC_MODULATION_INDEX_2FSK_500K      9
+
+/* Maximum number of PHY descriptor entries */
+#define MAC_STANDARD_PHY_DESCRIPTOR_ENTRIES  10
+#define MAC_GENERIC_PHY_DESCRIPTOR_ENTRIES   10
+
+/* MRFSK Standard Phy ID start */
+#define MAC_MRFSK_STD_PHY_ID_BEGIN           MAC_50KBPS_915MHZ_PHY_1
+/* MRFSK Standard Phy ID end */
+#define MAC_MRFSK_STD_PHY_ID_END             (MAC_MRFSK_STD_PHY_ID_BEGIN + MAC_STANDARD_PHY_DESCRIPTOR_ENTRIES - 1)
+
+/* MRFSK Generic Phy ID start */
+#define MAC_MRFSK_GENERIC_PHY_ID_BEGIN       MAC_50KBPS_433MHZ_PHY_128
+/* MRFSK Generic Phy ID end */
+#define MAC_MRFSK_GENERIC_PHY_ID_END         (MAC_MRFSK_GENERIC_PHY_ID_BEGIN + MAC_GENERIC_PHY_DESCRIPTOR_ENTRIES - 1)
+
+#define RCP_PHY_MODE_UNDEF          (0)
+#define RCP_PHY_MODE_STD            (1)
+#define RCP_PHY_MODE_GEN            (2)
+
 typedef struct __attribute__((__packed__)) {
     uint32_t ufsi;
     uint32_t ref_timeStamp;

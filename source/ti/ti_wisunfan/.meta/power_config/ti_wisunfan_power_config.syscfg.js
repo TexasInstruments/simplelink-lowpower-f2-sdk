@@ -222,7 +222,8 @@ function getTxPowerRFConfig(inst, phyType, phyGroup)
     if(board.includes("CC1352P1") || board.includes("CC1312PSIP")
         || board.includes("CC1352P-4") || board.includes("CC1352P_4")
         || board.includes("CC1352P7-1") || board.includes("CC1352P7_1")
-        || board.includes("CC1354P10-1") || board.includes("CC1354P10_1"))
+        || board.includes("CC1354P10-1") || board.includes("CC1354P10_1")
+        || board.includes("CC1311P3"))
     {
         // 1352P1 and 1352P4 have high PA in Sub-1 GHz
         txPowerHiOptions = RfDesign.getTxPowerOptions(freq, true);

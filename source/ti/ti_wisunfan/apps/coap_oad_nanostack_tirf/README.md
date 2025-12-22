@@ -22,9 +22,9 @@ The CoAP OAD example requires two images to be flashed onto the device (MCUBoot 
         * If using a CC13X2X7 platform, no changes are required.
         * If using a CC13X4 platform, modify the following configurables:
             * Primary image - Base address:     0x00006000
-            * Primary image - Image size:       0x00056000
-            * Secondary image - Base address:   0x0005C000 for on-chip OAD, 0x0 for off-chip OAD
-            * Secondary image - Image size:     0x00056000
+            * Primary image - Image size:       0x0005A000
+            * Secondary image - Base address:   0x00060000 for on-chip OAD, 0x0 for off-chip OAD
+            * Secondary image - Image size:     0x0005A000
 
 * For onchip OAD projects:
     * For the `Enable External Flash` configurable, choose false (unchecked)
@@ -41,7 +41,7 @@ A no-header verison of this binary will also be found at this location, but this
 
 To update the firmware version in the MCUBoot header, check the post-build steps (Right click project -> Properties -> Build menu -> Steps tab -> Post-build steps). By default the post-build step is the following:
 
-`<SDK_INSTALL_DIR>/tools/common/mcuboot/imgtool sign --header-size 0x80 --align 4 --slot-size 0x56000 --pad --version 1.0.0 --pad-header --key <SDK_INSTALL_DIR>/source/third_party/mcuboot/root-ec-p256.pem ${ProjName}-noheader.bin ${ProjName}.bin`
+`<SDK_INSTALL_DIR>/tools/common/mcuboot/imgtool sign --header-size 0x80 --align 4 --slot-size <0x56000/0x5A000> --pad --version 1.0.0 --pad-header --key <SDK_INSTALL_DIR>/source/third_party/mcuboot/root-ec-p256.pem ${ProjName}-noheader.bin ${ProjName}.bin`
 
 To change the version number, update the --version 1.0.0 argument (e.g. --version 2.0.0). Note that MCUBoot will only boot into an image with a higher version number. Please refer to online MCUBoot documentation for details on how MCUBoot decides what image to boot into.
 

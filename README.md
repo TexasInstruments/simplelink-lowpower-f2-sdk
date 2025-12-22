@@ -25,22 +25,21 @@ also capable of supporting the following wireless solutions: Please refer to
 their respective repositories for resources and more information.
 
 * [The Matter standard](https://github.com/TexasInstruments/matter)
-* [Thread 1.1.1 networking stack based on
+* [Thread 1.x networking stack based on
   OpenThread](https://github.com/TexasInstruments/ot-ti)
 
 ## What's New
 
-This version only contains updates for TI Wi-SUN Stack and TI 15.4-Stack. Other
-components remain the same as in SIMPLELINK-LOWPOWER-F2-SDK version 8.30.01.01.
+This version only contains updates for TI Wi-SUN Stack. Other components remain
+the same as in SIMPLELINK-LOWPOWER-F2-SDK version 8.31.00.11.
 
-* The new RCP mode in ti-wisunfantund moves the majority of the Wi-SUN stack to
-  the host device. This means 1000+ nodes can be connected, depending on
-  available memory on the host device.
-* Achieve low latency and low power consumption while frequency hopping with the
-  new Low Latency Frequency Hopping Broadcast mode in TI 15.4-Stack
+* TI Wi-SUN FAN Stack is certified for Wi-SUN FAN 1.1 (FAN 1.0+ Certified) (BR and RN profile, and PHY).
+* Linux host + RCP now supports Router Node configuration.
+* Device support added for CC1311P3 and CC1311R3 for RCP mode.
+* TI Wi-SUN FAN Stack now allows to build a project with support for any FSK PHY and selecting the PHY at run time. Please see the User’s Guide for details.
 
 More details, including supported devices, IDEs, and toolchains are provided in
-the [LPF2 8.31.0.11 SDK release notes][sdk release notes].
+the [LPF2 8.32.00.07 SDK release notes][sdk release notes].
 
 ## About this Repository
 
@@ -132,8 +131,8 @@ Dependency download locations:
 
 Please consider creating a post on [TI's E2E forum](https://e2e.ti.com).
 
-[sdk release notes]: https://dev.ti.com/tirex/explore/node?node=A__ADMjnimJ4C5BfFnmM3X-jg__com.ti.SIMPLELINK_CC13XX_CC26XX_SDK__BSEc4rl__8.31.00.11
-[sdk docs]: https://dev.ti.com/tirex/explore/node?node=A__AHaph7YfvcrVy2cDlmb4sQ__com.ti.SIMPLELINK_CC13XX_CC26XX_SDK__BSEc4rl__8.31.00.11
+[sdk release notes]: https://dev.ti.com/tirex/explore/node?node=A__ADMjnimJ4C5BfFnmM3X-jg__com.ti.SIMPLELINK_CC13XX_CC26XX_SDK__BSEc4rl__8.32.00.07
+[sdk docs]: https://dev.ti.com/tirex/explore/node?node=A__AHaph7YfvcrVy2cDlmb4sQ__com.ti.SIMPLELINK_CC13XX_CC26XX_SDK__BSEc4rl__8.32.00.07
 [sysconfig download]: https://www.ti.com/tool/SYSCONFIG
 [ticlang download]: https://www.ti.com/tool/download/ARM-CGT-CLANG
 [gcc download]: https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads

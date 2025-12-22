@@ -281,18 +281,43 @@ int libdhcpv6_message_malformed_check(uint8_t *ptr, uint16_t data_len)
 {
     uint8_t *dptr;
     uint16_t length;
+    
+    // Check if this is a relay message
+    if (data_len > 0 && (*ptr == DHCPV6_RELAY_FORWARD || *ptr == DHCPV6_RELAY_REPLY)) {
+        // For relay messages, we need to handle them differently
+        dhcpv6_relay_msg_t relay_msg;
+        if (!libdhcpv6_relay_msg_read(ptr, data_len, &relay_msg)) {
+            tr_err("Invalid relay message format");
+            return -1;
+        }
+        
+        // Now check the encapsulated message in relay_options
+        if (relay_msg.relay_options.len > 0) {
+            return libdhcpv6_message_malformed_check(relay_msg.relay_options.msg_ptr, relay_msg.relay_options.len);
+        }
+        else {
+            // Length shouldn't be 0, relay msg must always have an encapsulated message as an option
+            return -1;
+        }
+
+    }
+    
+    // Regular DHCPv6 message processing
     if (data_len > 4) {
-        dptr = ptr + 4; //Skip Type & TXID
+        dptr = ptr + 4; //Skip Message Type & TXID
         data_len -= 4;
         while (data_len) {
             if (data_len >= 4) {
-
                 length = common_read_16_bit(dptr + 2); //Skip Type
                 dptr += 4;
                 data_len -= 4;
                 if (data_len >= length) {
                     data_len -= length;
                     dptr += length;
+                }
+                else
+                {
+                    return -1; //This shouldn't happen either
                 }
             } else {
                 return -1;

@@ -973,14 +973,10 @@ void ws_bbr_init(protocol_interface_info_entry_t *interface)
 uint16_t ws_bbr_bsi_generate(protocol_interface_info_entry_t *interface)
 {
     (void) interface;
-    //Give current one
-    uint16_t bsi = ws_bbr_fhss_bsi;
-    //Update value for next round
-    ws_bbr_fhss_bsi++;
-    //Store To NVN
+    //Store To BSI to NVM
     ws_bbr_bsi_write(&bbr_info_nvm_tlv, ws_bbr_fhss_bsi);
     ws_bbr_nvm_info_write(&bbr_info_nvm_tlv);
-    return bsi;
+    return ws_bbr_fhss_bsi;
 }
 
 #endif //HAVE_WS_BORDER_ROUTER

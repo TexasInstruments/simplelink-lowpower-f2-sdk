@@ -224,13 +224,14 @@ function onProjectChange(inst, ui)
     testModeScript.setTestConfigHiddenState(inst, ui,
         "sensorTestRampDataSize");*/
 
-    // Solar example defaults/hidden setting changes
+    // Solar/RCP example defaults/hidden setting changes
     networkScript.setDefaultNetname(inst);
     networkScript.setDefaultDwellTime(inst);
     wfantundScript.setDefaultWfantundSettings(inst);
     wfantundScript.setWfantundSettingsHiddenState(inst, ui);
     advancedScript.setDefaultAdvancedSettings(inst);
     advancedScript.setAdvancedSettingsHiddenState(inst, ui);
+    radioScript.setRfSettingHiddenState(inst, ui);
 
     // Specific changes for RCP LMAC project
     if (inst.project.includes("rcplmac"))
@@ -494,13 +495,40 @@ function getOpts(inst) {
         result.push("-DMAC_DUTY_CYCLE_CHECKING");
         result.push("-DMAC_DUTY_CYCLE_THRESHOLD=(" + inst.$static.dutyCycle + ")");
     }
-
     if (inst.$static.customMinTxOff) {
         result.push("-DMAC_OVERRIDE_TX_DELAY");
         result.push("-DMAC_CONFIG_MIN_TX_OFF=(" + inst.$static.minTxOff + ")");
     }
-
-    return result; 
+    if (inst.$static.enableCertTest) {
+        result.push("-DWISUN_CERT_CONFIG");
+        result.push("-DWISUN_FAN_CORE_1_1");
+        result.push("-DFAN1_1_INTEROP");
+        if (!inst.$static.certBrTlsTermination) {
+            result.push("-DWISUN_TEST_ROOT");
+        }
+        if (!inst.$static.certBrGtkRevoke) {
+            result.push("-DFIXED_GTK_KEYS");
+        }
+        if (inst.$static.certBrGtkRevoke) {
+            result.push("-DGTK_CERT_BR_REVOKE_TEST");
+        }
+        if (inst.$static.certRnGtkShortCycle) {
+            result.push("-DGTK_CERT_TEST");
+        }
+        if (inst.$static.certGtkFullCycle) {
+            result.push("-DGTK_CERT_TEST_FULL_CYCLE");
+        }
+        if (inst.$static.certBrPowerCycle) {
+            result.push("-DNV_RESTORE");
+            result.push("-DGTK_CERT_BR_POWER_CYCLE");
+        } else if (inst.$static.certRnPowerCycle) {
+            result.push("-DNV_RESTORE");
+        }
+    }
+    if (inst.$static.certEdfeTester) {
+        result.push("-DFEATURE_EDFE_TEST_MODE");
+    }
+    return result;
 }
 
 /*

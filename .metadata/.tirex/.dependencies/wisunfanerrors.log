@@ -889,6 +889,12 @@ In project: examples/rtos/CC1312R1_LAUNCHXL/ti_wisunfan/ns_node_src/tirtos7/ticl
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/CC1312R1_LAUNCHXL/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_CC1312R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/CC1312R1_LAUNCHXL/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_CC1312R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/CC1312R1_LAUNCHXL/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_CC1312R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/CC1312R1_LAUNCHXL/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_CC1312R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
@@ -1435,6 +1441,15 @@ In project: examples/rtos/CC1312R1_LAUNCHXL/ti_wisunfan/rcp_lmac/tirtos7/ticlang
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_tl_uart.c
 In project: examples/rtos/CC1312R1_LAUNCHXL/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_CC1312R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/inc/npi_hdlc.h
+In project: examples/rtos/CC1312R1_LAUNCHXL/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_CC1312R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc.c
+In project: examples/rtos/CC1312R1_LAUNCHXL/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_CC1312R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc_rxbuf.c
+In project: examples/rtos/CC1312R1_LAUNCHXL/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_CC1312R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt.c
 In project: examples/rtos/CC1312R1_LAUNCHXL/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_CC1312R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
@@ -2377,6 +2392,12 @@ In project: examples/rtos/CC1352P1_LAUNCHXL/ti_wisunfan/ns_node_src/tirtos7/ticl
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/CC1352P1_LAUNCHXL/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_CC1352P1_LAUNCHXL_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/CC1352P1_LAUNCHXL/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_CC1352P1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/CC1352P1_LAUNCHXL/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_CC1352P1_LAUNCHXL_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/CC1352P1_LAUNCHXL/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_CC1352P1_LAUNCHXL_tirtos7_ticlang.projectspec
 
@@ -2923,6 +2944,15 @@ In project: examples/rtos/CC1352P1_LAUNCHXL/ti_wisunfan/rcp_lmac/tirtos7/ticlang
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_tl_uart.c
 In project: examples/rtos/CC1352P1_LAUNCHXL/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_CC1352P1_LAUNCHXL_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/inc/npi_hdlc.h
+In project: examples/rtos/CC1352P1_LAUNCHXL/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_CC1352P1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc.c
+In project: examples/rtos/CC1352P1_LAUNCHXL/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_CC1352P1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc_rxbuf.c
+In project: examples/rtos/CC1352P1_LAUNCHXL/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_CC1352P1_LAUNCHXL_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt.c
 In project: examples/rtos/CC1352P1_LAUNCHXL/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_CC1352P1_LAUNCHXL_tirtos7_ticlang.projectspec
 
@@ -3865,6 +3895,12 @@ In project: examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/ns_node_src/tirtos7/ticl
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
@@ -4411,6 +4447,15 @@ In project: examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/rcp_lmac/tirtos7/ticlang
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_tl_uart.c
 In project: examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/inc/npi_hdlc.h
+In project: examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc.c
+In project: examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc_rxbuf.c
+In project: examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt.c
 In project: examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
@@ -4462,6 +4507,165 @@ In project: examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/rcp_lmac/tirtos7/ticlang
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/CC1352R1_LAUNCHXL/Board.html
 In project: examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/rcp_lmac/main.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/rcp_lmac/rcp_app.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/high_level/mac_cfg.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/low_level/cc13xx/mac_settings.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/low_level/cc13xx/mac_settings.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/common/boards/mac_user_config.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/common/boards/mac_user_config.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/rcp/rcp_lmac.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/rcp/rcp_lmac.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/rcp/rcp_lmac_helpers.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/rcp/rcp_types.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/common/osal_port/macTask.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/common/osal_port/macTask.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/common/osal_port/osal_port_tirtos/osal_port.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/common/osal_port/osal_port.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/common/osal_port/osal_port_tirtos/osal_port_timers.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/common/osal_port/osal_port_timers.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/common/osal_port/api_mac.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/common/osal_port/api_mac.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/common/util/util_timer.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/common/util/util_timer.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/inc/npi_client.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/inc/npi_config.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/inc/npi_data.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/inc/npi_frame.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_frame_mt.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_rxbuf.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/inc/npi_rxbuf.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_task.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/inc/npi_task.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_tl.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/inc/npi_tl.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_tl_uart.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/inc/npi_hdlc.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc_rxbuf.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt_ext.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt_ext.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt_mac.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt_mac.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt_rcp_lmac.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt_rcp_lmac.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt_pkt.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt_rpc.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt_sys.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt_sys.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt_util.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt_util.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mcp.c
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mcp.h
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_CC1311P3/Board.html
+In project: examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/border_router_nanostack_tirf/main.c
 In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_br/freertos/ticlang/ns_br_LP_CC1312R7_freertos_ticlang.projectspec
 
@@ -5603,6 +5807,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_
 In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_br_src/freertos/ticlang/ns_br_src_LP_CC1312R7_freertos_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
+In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_br_src/freertos/ticlang/ns_br_src_LP_CC1312R7_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_br_src/freertos/ticlang/ns_br_src_LP_CC1312R7_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
 In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_br_src/freertos/ticlang/ns_br_src_LP_CC1312R7_freertos_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
@@ -6787,6 +6997,12 @@ In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_br_src/tirtos7/ticlang/ns_b
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_br_src/tirtos7/ticlang/ns_br_src_LP_CC1312R7_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_br_src/tirtos7/ticlang/ns_br_src_LP_CC1312R7_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_br_src/tirtos7/ticlang/ns_br_src_LP_CC1312R7_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_br_src/tirtos7/ticlang/ns_br_src_LP_CC1312R7_tirtos7_ticlang.projectspec
 
@@ -8350,6 +8566,12 @@ In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_node_src/freertos/ticl
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_node_src/freertos/ticlang/ns_coap_node_src_LP_CC1312R7_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_node_src/freertos/ticlang/ns_coap_node_src_LP_CC1312R7_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_node_src/freertos/ticlang/ns_coap_node_src_LP_CC1312R7_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_node_src/freertos/ticlang/ns_coap_node_src_LP_CC1312R7_freertos_ticlang.projectspec
 
@@ -9521,6 +9743,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_
 In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_node_src/tirtos7/ticlang/ns_coap_node_src_LP_CC1312R7_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
+In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_node_src/tirtos7/ticlang/ns_coap_node_src_LP_CC1312R7_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_node_src/tirtos7/ticlang/ns_coap_node_src_LP_CC1312R7_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
 In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_node_src/tirtos7/ticlang/ns_coap_node_src_LP_CC1312R7_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
@@ -11140,6 +11368,12 @@ In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_oad_offchip_src/freert
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_oad_offchip_src/freertos/ticlang/ns_coap_oad_offchip_src_LP_CC1312R7_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_oad_offchip_src/freertos/ticlang/ns_coap_oad_offchip_src_LP_CC1312R7_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_oad_offchip_src/freertos/ticlang/ns_coap_oad_offchip_src_LP_CC1312R7_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_oad_offchip_src/freertos/ticlang/ns_coap_oad_offchip_src_LP_CC1312R7_freertos_ticlang.projectspec
 
@@ -12331,6 +12565,12 @@ In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_oad_offchip_src/tirtos
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/ticlang/ns_coap_oad_offchip_src_LP_CC1312R7_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/ticlang/ns_coap_oad_offchip_src_LP_CC1312R7_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/ticlang/ns_coap_oad_offchip_src_LP_CC1312R7_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/ticlang/ns_coap_oad_offchip_src_LP_CC1312R7_tirtos7_ticlang.projectspec
 
@@ -13849,6 +14089,12 @@ In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node_src/freertos/ticlang/n
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node_src/freertos/ticlang/ns_node_src_LP_CC1312R7_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node_src/freertos/ticlang/ns_node_src_LP_CC1312R7_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node_src/freertos/ticlang/ns_node_src_LP_CC1312R7_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node_src/freertos/ticlang/ns_node_src_LP_CC1312R7_freertos_ticlang.projectspec
 
@@ -15005,6 +15251,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_
 In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_CC1312R7_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
+In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_CC1312R7_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_CC1312R7_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
 In project: examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_CC1312R7_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
@@ -15553,6 +15805,15 @@ In project: examples/rtos/LP_CC1312R7/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_tl_uart.c
 In project: examples/rtos/LP_CC1312R7/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_CC1312R7_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/inc/npi_hdlc.h
+In project: examples/rtos/LP_CC1312R7/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_CC1312R7_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc.c
+In project: examples/rtos/LP_CC1312R7/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_CC1312R7_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc_rxbuf.c
+In project: examples/rtos/LP_CC1312R7/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_CC1312R7_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt.c
 In project: examples/rtos/LP_CC1312R7/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_CC1312R7_freertos_ticlang.projectspec
 
@@ -15703,6 +15964,15 @@ In project: examples/rtos/LP_CC1312R7/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_l
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_tl_uart.c
 In project: examples/rtos/LP_CC1312R7/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1312R7_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/inc/npi_hdlc.h
+In project: examples/rtos/LP_CC1312R7/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1312R7_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc.c
+In project: examples/rtos/LP_CC1312R7/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1312R7_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc_rxbuf.c
+In project: examples/rtos/LP_CC1312R7/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1312R7_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt.c
 In project: examples/rtos/LP_CC1312R7/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1312R7_tirtos7_ticlang.projectspec
 
@@ -16489,6 +16759,12 @@ In project: examples/rtos/LP_CC1312R7/wsms/wsms_ipv6base/freertos/ticlang/wsms_i
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_CC1312R7/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_CC1312R7_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1312R7/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_CC1312R7_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_CC1312R7/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_CC1312R7_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_CC1312R7/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_CC1312R7_freertos_ticlang.projectspec
 
@@ -17671,6 +17947,12 @@ In project: examples/rtos/LP_CC1312R7/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ip
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_CC1312R7/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_CC1312R7_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1312R7/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_CC1312R7_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_CC1312R7/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_CC1312R7_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_CC1312R7/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_CC1312R7_tirtos7_ticlang.projectspec
 
@@ -18844,6 +19126,12 @@ In project: examples/rtos/LP_CC1312R7/wsms/wsms_ipv6node/freertos/ticlang/wsms_i
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_CC1312R7/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_CC1312R7_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1312R7/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_CC1312R7_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_CC1312R7/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_CC1312R7_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_CC1312R7/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_CC1312R7_freertos_ticlang.projectspec
 
@@ -20017,6 +20305,12 @@ In project: examples/rtos/LP_CC1312R7/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ip
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_CC1312R7/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_CC1312R7_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1312R7/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_CC1312R7_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_CC1312R7/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_CC1312R7_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_CC1312R7/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_CC1312R7_tirtos7_ticlang.projectspec
 
@@ -21607,6 +21901,12 @@ In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_br_src/freertos/ticlang/n
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_br_src/freertos/ticlang/ns_br_src_LP_CC1352P7_1_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_br_src/freertos/ticlang/ns_br_src_LP_CC1352P7_1_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_br_src/freertos/ticlang/ns_br_src_LP_CC1352P7_1_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_br_src/freertos/ticlang/ns_br_src_LP_CC1352P7_1_freertos_ticlang.projectspec
 
@@ -22789,6 +23089,12 @@ In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_br_src/tirtos7/ticlang/ns
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_br_src/tirtos7/ticlang/ns_br_src_LP_CC1352P7_1_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_br_src/tirtos7/ticlang/ns_br_src_LP_CC1352P7_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_br_src/tirtos7/ticlang/ns_br_src_LP_CC1352P7_1_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_br_src/tirtos7/ticlang/ns_br_src_LP_CC1352P7_1_tirtos7_ticlang.projectspec
 
@@ -24352,6 +24658,12 @@ In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_node_src/freertos/ti
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_node_src/freertos/ticlang/ns_coap_node_src_LP_CC1352P7_1_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_node_src/freertos/ticlang/ns_coap_node_src_LP_CC1352P7_1_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_node_src/freertos/ticlang/ns_coap_node_src_LP_CC1352P7_1_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_node_src/freertos/ticlang/ns_coap_node_src_LP_CC1352P7_1_freertos_ticlang.projectspec
 
@@ -25523,6 +25835,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_
 In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_node_src/tirtos7/ticlang/ns_coap_node_src_LP_CC1352P7_1_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
+In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_node_src/tirtos7/ticlang/ns_coap_node_src_LP_CC1352P7_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_node_src/tirtos7/ticlang/ns_coap_node_src_LP_CC1352P7_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
 In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_node_src/tirtos7/ticlang/ns_coap_node_src_LP_CC1352P7_1_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
@@ -27142,6 +27460,12 @@ In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_oad_offchip_src/free
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_oad_offchip_src/freertos/ticlang/ns_coap_oad_offchip_src_LP_CC1352P7_1_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_oad_offchip_src/freertos/ticlang/ns_coap_oad_offchip_src_LP_CC1352P7_1_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_oad_offchip_src/freertos/ticlang/ns_coap_oad_offchip_src_LP_CC1352P7_1_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_oad_offchip_src/freertos/ticlang/ns_coap_oad_offchip_src_LP_CC1352P7_1_freertos_ticlang.projectspec
 
@@ -28333,6 +28657,12 @@ In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_oad_offchip_src/tirt
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/ticlang/ns_coap_oad_offchip_src_LP_CC1352P7_1_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/ticlang/ns_coap_oad_offchip_src_LP_CC1352P7_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/ticlang/ns_coap_oad_offchip_src_LP_CC1352P7_1_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/ticlang/ns_coap_oad_offchip_src_LP_CC1352P7_1_tirtos7_ticlang.projectspec
 
@@ -29851,6 +30181,12 @@ In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_src/freertos/ticlang
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_src/freertos/ticlang/ns_node_src_LP_CC1352P7_1_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_src/freertos/ticlang/ns_node_src_LP_CC1352P7_1_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_src/freertos/ticlang/ns_node_src_LP_CC1352P7_1_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_src/freertos/ticlang/ns_node_src_LP_CC1352P7_1_freertos_ticlang.projectspec
 
@@ -31007,6 +31343,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_
 In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_CC1352P7_1_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
+In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_CC1352P7_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_CC1352P7_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
 In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_CC1352P7_1_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
@@ -31555,6 +31897,15 @@ In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/rcp_lmac/freertos/ticlang/rc
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_tl_uart.c
 In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_CC1352P7_1_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/inc/npi_hdlc.h
+In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_CC1352P7_1_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc.c
+In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_CC1352P7_1_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc_rxbuf.c
+In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_CC1352P7_1_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt.c
 In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_CC1352P7_1_freertos_ticlang.projectspec
 
@@ -31705,6 +32056,15 @@ In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_tl_uart.c
 In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1352P7_1_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/inc/npi_hdlc.h
+In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1352P7_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc.c
+In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1352P7_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc_rxbuf.c
+In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1352P7_1_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt.c
 In project: examples/rtos/LP_CC1352P7_1/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1352P7_1_tirtos7_ticlang.projectspec
 
@@ -32491,6 +32851,12 @@ In project: examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6base/freertos/ticlang/wsms
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_CC1352P7_1_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_CC1352P7_1_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_CC1352P7_1_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_CC1352P7_1_freertos_ticlang.projectspec
 
@@ -33673,6 +34039,12 @@ In project: examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_CC1352P7_1_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_CC1352P7_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_CC1352P7_1_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_CC1352P7_1_tirtos7_ticlang.projectspec
 
@@ -34846,6 +35218,12 @@ In project: examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6node/freertos/ticlang/wsms
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_CC1352P7_1_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_CC1352P7_1_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_CC1352P7_1_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_CC1352P7_1_freertos_ticlang.projectspec
 
@@ -36017,6 +36395,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_
 In project: examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_CC1352P7_1_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
+In project: examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_CC1352P7_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_CC1352P7_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
 In project: examples/rtos/LP_CC1352P7_1/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_CC1352P7_1_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
@@ -37357,6 +37741,12 @@ In project: examples/rtos/LP_EM_CC1312PSIP/ti_wisunfan/ns_node_src/tirtos7/ticla
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1312PSIP/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_EM_CC1312PSIP_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1312PSIP/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_EM_CC1312PSIP_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1312PSIP/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_EM_CC1312PSIP_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1312PSIP/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_EM_CC1312PSIP_tirtos7_ticlang.projectspec
 
@@ -37903,6 +38293,15 @@ In project: examples/rtos/LP_EM_CC1312PSIP/ti_wisunfan/rcp_lmac/tirtos7/ticlang/
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_tl_uart.c
 In project: examples/rtos/LP_EM_CC1312PSIP/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_EM_CC1312PSIP_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/inc/npi_hdlc.h
+In project: examples/rtos/LP_EM_CC1312PSIP/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_EM_CC1312PSIP_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc.c
+In project: examples/rtos/LP_EM_CC1312PSIP/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_EM_CC1312PSIP_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc_rxbuf.c
+In project: examples/rtos/LP_EM_CC1312PSIP/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_EM_CC1312PSIP_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt.c
 In project: examples/rtos/LP_EM_CC1312PSIP/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_EM_CC1312PSIP_tirtos7_ticlang.projectspec
 
@@ -39097,6 +39496,12 @@ In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_br_src/freertos/ticlang
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_br_src/freertos/ticlang/ns_br_src_LP_EM_CC1314R10_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_br_src/freertos/ticlang/ns_br_src_LP_EM_CC1314R10_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_br_src/freertos/ticlang/ns_br_src_LP_EM_CC1314R10_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_br_src/freertos/ticlang/ns_br_src_LP_EM_CC1314R10_freertos_ticlang.projectspec
 
@@ -40279,6 +40684,12 @@ In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_br_src/tirtos7/ticlang/
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_br_src/tirtos7/ticlang/ns_br_src_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_br_src/tirtos7/ticlang/ns_br_src_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_br_src/tirtos7/ticlang/ns_br_src_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_br_src/tirtos7/ticlang/ns_br_src_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
 
@@ -41842,6 +42253,12 @@ In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_node_src/freertos/
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_node_src/freertos/ticlang/ns_coap_node_src_LP_EM_CC1314R10_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_node_src/freertos/ticlang/ns_coap_node_src_LP_EM_CC1314R10_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_node_src/freertos/ticlang/ns_coap_node_src_LP_EM_CC1314R10_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_node_src/freertos/ticlang/ns_coap_node_src_LP_EM_CC1314R10_freertos_ticlang.projectspec
 
@@ -43013,6 +43430,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_node_src/tirtos7/ticlang/ns_coap_node_src_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_node_src/tirtos7/ticlang/ns_coap_node_src_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_node_src/tirtos7/ticlang/ns_coap_node_src_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_node_src/tirtos7/ticlang/ns_coap_node_src_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
@@ -44632,6 +45055,12 @@ In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_offchip_src/fr
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_offchip_src/freertos/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1314R10_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_offchip_src/freertos/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1314R10_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_offchip_src/freertos/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1314R10_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_offchip_src/freertos/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1314R10_freertos_ticlang.projectspec
 
@@ -45823,6 +46252,12 @@ In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_offchip_src/ti
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
 
@@ -47440,6 +47875,12 @@ In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_onchip_src/fre
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_onchip_src/freertos/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1314R10_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_onchip_src/freertos/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1314R10_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_onchip_src/freertos/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1314R10_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_onchip_src/freertos/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1314R10_freertos_ticlang.projectspec
 
@@ -48631,6 +49072,12 @@ In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_onchip_src/tir
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_onchip_src/tirtos7/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_onchip_src/tirtos7/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_onchip_src/tirtos7/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_onchip_src/tirtos7/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
 
@@ -50149,6 +50596,12 @@ In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node_src/freertos/ticla
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node_src/freertos/ticlang/ns_node_src_LP_EM_CC1314R10_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node_src/freertos/ticlang/ns_node_src_LP_EM_CC1314R10_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node_src/freertos/ticlang/ns_node_src_LP_EM_CC1314R10_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node_src/freertos/ticlang/ns_node_src_LP_EM_CC1314R10_freertos_ticlang.projectspec
 
@@ -51305,6 +51758,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
@@ -51853,6 +52312,15 @@ In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/rcp_lmac/freertos/ticlang/
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_tl_uart.c
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_EM_CC1314R10_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/inc/npi_hdlc.h
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_EM_CC1314R10_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_EM_CC1314R10_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc_rxbuf.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_EM_CC1314R10_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt.c
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_EM_CC1314R10_freertos_ticlang.projectspec
 
@@ -52003,6 +52471,15 @@ In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/rcp_lmac/tirtos7/ticlang/r
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_tl_uart.c
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/inc/npi_hdlc.h
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc_rxbuf.c
+In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt.c
 In project: examples/rtos/LP_EM_CC1314R10/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
 
@@ -52789,6 +53266,12 @@ In project: examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6base/freertos/ticlang/ws
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_EM_CC1314R10_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_EM_CC1314R10_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_EM_CC1314R10_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_EM_CC1314R10_freertos_ticlang.projectspec
 
@@ -53971,6 +54454,12 @@ In project: examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6base/tirtos7/ticlang/wsm
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
 
@@ -55144,6 +55633,12 @@ In project: examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6node/freertos/ticlang/ws
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_EM_CC1314R10_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_EM_CC1314R10_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_EM_CC1314R10_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_EM_CC1314R10_freertos_ticlang.projectspec
 
@@ -56317,6 +56812,12 @@ In project: examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6node/tirtos7/ticlang/wsm
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1314R10/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_EM_CC1314R10_tirtos7_ticlang.projectspec
 
@@ -57907,6 +58408,12 @@ In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_br_src/freertos/ticla
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_br_src/freertos/ticlang/ns_br_src_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_br_src/freertos/ticlang/ns_br_src_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_br_src/freertos/ticlang/ns_br_src_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_br_src/freertos/ticlang/ns_br_src_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
 
@@ -59089,6 +59596,12 @@ In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_br_src/tirtos7/ticlan
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_br_src/tirtos7/ticlang/ns_br_src_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_br_src/tirtos7/ticlang/ns_br_src_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_br_src/tirtos7/ticlang/ns_br_src_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_br_src/tirtos7/ticlang/ns_br_src_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
 
@@ -60652,6 +61165,12 @@ In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_node_src/freerto
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_node_src/freertos/ticlang/ns_coap_node_src_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_node_src/freertos/ticlang/ns_coap_node_src_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_node_src/freertos/ticlang/ns_coap_node_src_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_node_src/freertos/ticlang/ns_coap_node_src_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
 
@@ -61823,6 +62342,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_node_src/tirtos7/ticlang/ns_coap_node_src_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_node_src/tirtos7/ticlang/ns_coap_node_src_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_node_src/tirtos7/ticlang/ns_coap_node_src_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_node_src/tirtos7/ticlang/ns_coap_node_src_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
@@ -63442,6 +63967,12 @@ In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_offchip_src/
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_offchip_src/freertos/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_offchip_src/freertos/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_offchip_src/freertos/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_offchip_src/freertos/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
 
@@ -64633,6 +65164,12 @@ In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_offchip_src/
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
 
@@ -66250,6 +66787,12 @@ In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_onchip_src/f
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_onchip_src/freertos/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_onchip_src/freertos/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_onchip_src/freertos/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_onchip_src/freertos/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
 
@@ -67441,6 +67984,12 @@ In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_onchip_src/t
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_onchip_src/tirtos7/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_onchip_src/tirtos7/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_onchip_src/tirtos7/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_onchip_src/tirtos7/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
 
@@ -68959,6 +69508,12 @@ In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node_src/freertos/tic
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node_src/freertos/ticlang/ns_node_src_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node_src/freertos/ticlang/ns_node_src_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node_src/freertos/ticlang/ns_node_src_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node_src/freertos/ticlang/ns_node_src_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
 
@@ -70115,6 +70670,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
@@ -70663,6 +71224,15 @@ In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/rcp_lmac/freertos/ticlan
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_tl_uart.c
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/inc/npi_hdlc.h
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc_rxbuf.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt.c
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
 
@@ -70813,6 +71383,15 @@ In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/rcp_lmac/tirtos7/ticlang
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_tl_uart.c
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/inc/npi_hdlc.h
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc_rxbuf.c
+In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt.c
 In project: examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
 
@@ -71599,6 +72178,12 @@ In project: examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6base/freertos/ticlang/
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
 
@@ -72781,6 +73366,12 @@ In project: examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6base/tirtos7/ticlang/w
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
 
@@ -73954,6 +74545,12 @@ In project: examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6node/freertos/ticlang/
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_EM_CC1354P10_1_freertos_ticlang.projectspec
 
@@ -75127,6 +75724,12 @@ In project: examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6node/tirtos7/ticlang/w
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1354P10_1/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec
 
@@ -76717,6 +77320,12 @@ In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_br_src/freertos/ticla
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_br_src/freertos/ticlang/ns_br_src_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_br_src/freertos/ticlang/ns_br_src_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_br_src/freertos/ticlang/ns_br_src_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_br_src/freertos/ticlang/ns_br_src_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
 
@@ -77899,6 +78508,12 @@ In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_br_src/tirtos7/ticlan
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_br_src/tirtos7/ticlang/ns_br_src_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_br_src/tirtos7/ticlang/ns_br_src_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_br_src/tirtos7/ticlang/ns_br_src_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_br_src/tirtos7/ticlang/ns_br_src_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
 
@@ -79462,6 +80077,12 @@ In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_node_src/freerto
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_node_src/freertos/ticlang/ns_coap_node_src_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_node_src/freertos/ticlang/ns_coap_node_src_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_node_src/freertos/ticlang/ns_coap_node_src_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_node_src/freertos/ticlang/ns_coap_node_src_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
 
@@ -80633,6 +81254,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_node_src/tirtos7/ticlang/ns_coap_node_src_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_node_src/tirtos7/ticlang/ns_coap_node_src_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_node_src/tirtos7/ticlang/ns_coap_node_src_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_node_src/tirtos7/ticlang/ns_coap_node_src_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
@@ -82252,6 +82879,12 @@ In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_offchip_src/
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_offchip_src/freertos/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_offchip_src/freertos/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_offchip_src/freertos/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_offchip_src/freertos/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
 
@@ -83443,6 +84076,12 @@ In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_offchip_src/
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/ticlang/ns_coap_oad_offchip_src_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
 
@@ -85060,6 +85699,12 @@ In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_onchip_src/f
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_onchip_src/freertos/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_onchip_src/freertos/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_onchip_src/freertos/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_onchip_src/freertos/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
 
@@ -86251,6 +86896,12 @@ In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_onchip_src/t
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_onchip_src/tirtos7/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_onchip_src/tirtos7/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_onchip_src/tirtos7/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_onchip_src/tirtos7/ticlang/ns_coap_oad_onchip_src_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
 
@@ -87769,6 +88420,12 @@ In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node_src/freertos/tic
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node_src/freertos/ticlang/ns_node_src_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node_src/freertos/ticlang/ns_node_src_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node_src/freertos/ticlang/ns_node_src_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node_src/freertos/ticlang/ns_node_src_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
 
@@ -88925,6 +89582,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node_src/tirtos7/ticlang/ns_node_src_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
@@ -89473,6 +90136,15 @@ In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/rcp_lmac/freertos/ticlan
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_tl_uart.c
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/inc/npi_hdlc.h
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc_rxbuf.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt.c
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/rcp_lmac/freertos/ticlang/rcp_lmac_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
 
@@ -89623,6 +90295,15 @@ In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/rcp_lmac/tirtos7/ticlang
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_tl_uart.c
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/inc/npi_hdlc.h
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/npi/src/npi_hdlc_rxbuf.c
+In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mt_interface/mt/mt.c
 In project: examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
 
@@ -90409,6 +91090,12 @@ In project: examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6base/freertos/ticlang/
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6base/freertos/ticlang/wsms_ipv6base_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
 
@@ -91591,6 +92278,12 @@ In project: examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6base/tirtos7/ticlang/w
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6base/tirtos7/ticlang/wsms_ipv6base_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
 
@@ -92764,6 +93457,12 @@ In project: examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6node/freertos/ticlang/
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
 In project: examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
 
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
+In project: examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
+
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c
 In project: examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6node/freertos/ticlang/wsms_ipv6node_LP_EM_CC1354P10_6_freertos_ticlang.projectspec
 
@@ -93935,6 +94634,12 @@ File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_
 In project: examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_upward.c
+In project: examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c
+In project: examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
+
+File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c
 In project: examples/rtos/LP_EM_CC1354P10_6/wsms/wsms_ipv6node/tirtos7/ticlang/wsms_ipv6node_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/Common/security_lib.c

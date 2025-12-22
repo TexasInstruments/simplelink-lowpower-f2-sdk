@@ -95,8 +95,19 @@ if (system.deviceData.board && system.deviceData.board.components.SPI_FLASH) {
     var SPI = NVSSPI25XDevice1.sharedSpiInstance;
     SPI.$name = "Board_SPI_0";
     NVS_EXT.externalFlash.regionBase = 0;
-    NVS_EXT.externalFlash.regionSize = 0x56000;
     NVS_EXT.externalFlash.verifyBufferSize = 64;
+    if (deviceName.includes("R10") || deviceName.includes("P10"))
+    {
+        NVS_EXT.externalFlash.regionSize = 0x5A000;
+    }
+    else if (deviceName.includes("R7") || deviceName.includes("P7"))
+    {
+        NVS_EXT.externalFlash.regionSize = 0x56000;
+    }
+    else
+    {
+        throw "Unsupported device";
+    }
 }
 
 /* ======== LED Red ======== */

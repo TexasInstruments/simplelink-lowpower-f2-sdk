@@ -61,7 +61,7 @@ typedef struct broadcast_timing_info {
     uint16_t broadcast_slot;                    /**< Broadcast slot number */
 
     uint16_t broadcast_schedule_id;             /**< Broadcast schedule identifier */
-    uint_fast24_t broadcast_interval_offset;    /**< Broadcast interval offset */
+    uint32_t broadcast_interval_offset;         /**< Broadcast interval offset */
     uint32_t broadcast_interval;                /**< Broadcast interval */
     uint32_t bt_rx_timestamp;                   /**< BT-IE reception timestamp */
 #if defined(WISUN_RCP_ENABLE)

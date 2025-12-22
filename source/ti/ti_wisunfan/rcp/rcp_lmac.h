@@ -46,7 +46,13 @@
 typedef struct rcp_lmac_internal_s {
     uint8_t async_channel_list[MAC_154G_CHANNEL_BITMAP_SIZ];
     keyDescriptor_t key_descriptors[MAC_NUM_KEY_DESCRIPTORS];
+    macMRFSKPHYDesc_t phy_descriptor; // Current LMAC PHY parameters
+    bool ffd; // Full function device (BR) or reduced function device (RN)
+    bool start_flag; // Flag to indicate ready to start to the MAC thread
+    uint8_t app_task_id; // Application task ID
 } rcp_lmac_internal_t;
+
+extern rcp_lmac_internal_t rcp_lmac_store;
 
 void rcp_lmac_data_ind_to_host(macCbackEvent_t *pData);
 

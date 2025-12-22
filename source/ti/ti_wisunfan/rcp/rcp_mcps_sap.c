@@ -375,7 +375,7 @@ int8_t mcps_sap_rcp_data_ind(rcp_data_ind_t *data_ind)
     }
     memcpy(buffer, data_ind, sizeof(rcp_data_ind_t));
 
-#ifdef WISUN_RCP_HOST_BR
+#ifdef WISUN_RCP_HOST
     //copy pkt data
     if(data_ind->data_len > 0)
     {
@@ -415,7 +415,7 @@ int8_t mcps_sap_rcp_data_cnf(rcp_data_cnf_t *data_cnf)
     }
     memcpy(buffer, data_cnf, sizeof(rcp_data_cnf_t));
 
-#ifdef WISUN_RCP_HOST_BR
+#ifdef WISUN_RCP_HOST
     //copy ack if present
     if(data_cnf->ack_frame_len > 0)
     {
@@ -461,7 +461,7 @@ int8_t mcps_sap_rcp_set_cnf(uint8_t event_type, rcp_mac_config_set_cnf_t *set_cn
             return -1;
         }
         memcpy(buffer->val, set_cnf->val, set_cnf->val_len);
-#ifndef WISUN_RCP_HOST_BR
+#ifndef WISUN_RCP_HOST
         uint8_t *buf_free;
         //free set_cnf->val
         buf_free = set_cnf->val;
@@ -494,7 +494,7 @@ static void mac_mcps_sap_data_tasklet(arm_event_s *event)
         case MCPS_SAP_RCP_DATA_CNF_EVENT:
             handle_rcp_data_cnf((rcp_data_cnf_t *) event->data_ptr);
             if (((rcp_data_cnf_t *) event->data_ptr)->ack_frame != NULL) {
-#ifdef WISUN_RCP_HOST_BR
+#ifdef WISUN_RCP_HOST
                 ns_dyn_mem_free(((rcp_data_cnf_t *)(event->data_ptr))->ack_frame);
 #else
                 uint8_t *bufptr = ((rcp_data_cnf_t *)(event->data_ptr))->buf_free;
@@ -506,7 +506,7 @@ static void mac_mcps_sap_data_tasklet(arm_event_s *event)
         case MCPS_SAP_RCP_DATA_IND_EVENT:
             handle_rcp_data_ind((rcp_data_ind_t *) event->data_ptr);
             if (((rcp_data_ind_t *) event->data_ptr)->data_ptr != NULL) {
-#ifdef WISUN_RCP_HOST_BR
+#ifdef WISUN_RCP_HOST
                 ns_dyn_mem_free(((rcp_data_ind_t *)(event->data_ptr))->data_ptr); // data_ptr for the rcp_data_ind
 #else
                 uint8_t *bufptr = ((rcp_data_ind_t *)(event->data_ptr))->buf_free;

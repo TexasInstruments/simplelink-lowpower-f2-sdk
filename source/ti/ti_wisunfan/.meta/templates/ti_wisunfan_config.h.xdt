@@ -121,59 +121,8 @@ extern "C"
 #endif
 
 % if(inst.project.includes("rcplmac")) {
-
-/*! Setting for channel spacing */
-#define CONFIG_CHANNEL_SPACING           `inst.channelSpacing`
-
-/*! Setting for total number of channels */
-#define CONFIG_TOTAL_CHANNELS            `inst.totalChannels`
-
-/*! Setting to get channel 0 center frequency in MHz*/
-#define CONFIG_CENTER_FREQ              `inst.centerFrequency`
-
-/*! Setting to get phyModeID */
-#define CONFIG_PHY_ID                   `inst.phyModeID`
-
-/*! Setting for channel page*/
-#define CONFIG_CHANNEL_PAGE             9
-
-/*! Setting for operating mode selection */
-#define CONFIG_OP_MODE_ID                 OPERATING_MODE_`inst.opModeID`
-
-/*! Setting for operating mode selection */
-#define CONFIG_OP_MODE_CLASS               `inst.opModeClass`
-
-/* Setting to get customPhy */
-#define CONFIG_CUSTOM_PHY               `inst.customPhy`
-
-/* Setting for regulatory domain */
-#define CONFIG_REG_DOMAIN               `inst.regDomain`
-
-% let channelMaskHexArr = Common.channelMaskCHexStrArr(regChannelMask);
-/*!
- Channel mask used when CONFIG_FH_ENABLE is true.
- Represents the list of channels on which the device can hop, as defined by
- the regulatory domain and operating mode. Does not change based on configured
- unicast, broadcast, or async channel masks.
- The actual sequence used shall be based on DH1CF function.
- It is represented as a bit string with LSB representing Ch0.
- e.g., 0x01 0x10 represents Ch0 and Ch12 are included.
- */
-#define CONFIG_REGULATION_CHANNEL_MASK    { `_.slice(channelMaskHexArr,0,6)`, \
-                                          `_.slice(channelMaskHexArr,6,12)`, \
-                                          `_.slice(channelMaskHexArr,12)` }
-
-/*! Setting to enable frequency hopping mode */
-#define CONFIG_FH_ENABLE                `inst.mode === "frequencyHopping" || inst.mode === "fixedChannel"`
-
-% if (!powerScript.getPowerConfigHiddenState(inst, "rxOnIdle")) {
-/*! Setting to enable RX on when idle. False for sleepy device */
-#define CONFIG_RX_ON_IDLE               `inst.rxOnIdle`
-
-% }
-
+#define CONFIG_RCP_ONLY
 % } else { // if(inst.project == "rcplmac")
-
 /*! Setting for PAN ID */
 #define CONFIG_PAN_ID                   `Common.toHexString(inst.panID)`
 
@@ -297,7 +246,11 @@ extern "C"
 % const isSub1BandSet = (inst.freqBand === "freqBandSub1");
 % const curTxPowerCfg = inst.transmitPower;
 /* ! Setting for transmit power in dBm */
+% if (inst.enableCertTest == true) {
+#define CONFIG_TRANSMIT_POWER           14
+% } else {
 #define CONFIG_TRANSMIT_POWER           `curTxPowerCfg`
+% }
 
 /*! Setting to enable frequency hopping mode */
 #define CONFIG_FH_ENABLE                `inst.mode === "frequencyHopping" || inst.mode === "fixedChannel"`

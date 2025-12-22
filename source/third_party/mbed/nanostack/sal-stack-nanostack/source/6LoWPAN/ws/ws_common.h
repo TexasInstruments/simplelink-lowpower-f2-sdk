@@ -43,6 +43,7 @@ struct ws_jm_ie_s;
 #endif
 
 typedef struct parent_info_s {
+    ns_list_link_t       link;
     uint16_t             pan_id;             /**< PAN ID */
     uint8_t              addr[8];            /**< address */
     uint8_t              link_quality;       /**< LQI value measured during reception of the MPDU */
@@ -54,7 +55,6 @@ typedef struct parent_info_s {
     uint32_t             timestamp;          /**< Timestamp when packet was received */
     uint32_t             age;          /**< Age of entry in 100ms ticks */
     uint8_t              excluded_channel_data[17]; //Channel mask Max length and it accept 8 different range
-    ns_list_link_t       link;
 } parent_info_t;
 
 typedef NS_LIST_HEAD(parent_info_t, link) parent_info_list_t;
@@ -100,6 +100,8 @@ typedef struct ws_info_s {
     parent_info_list_t parent_list_reserved;
     ws_bsi_block_t ws_bsi_block;
     uint16_t aro_registration_timer;       /**< Aro registration timer */
+    uint8_t  reg_refresh_count;            /**< Number of registration refresh requests remaining to send */
+    uint16_t reg_refresh_timer_sec;            /**< Time before next registration refresh requests in seconds. */
     uint16_t rpl_version_timer;            /**< RPL version update timeout */
     uint32_t pan_timeout_timer;            /**< routers will fallback to previous state after this */
     uint32_t uptime;                       /**< Seconds after interface has been started */
@@ -129,11 +131,14 @@ typedef struct ws_info_s {
 
 #ifdef HAVE_WS
 
+int8_t ws_generate_channel_list_on_chan_plan_one(uint8_t *channel_mask, uint16_t number_of_channels);
+
 int8_t ws_generate_channel_list(uint8_t *channel_mask, uint16_t number_of_channels, uint8_t regulatory_domain, uint8_t operating_class, uint8_t channel_plan_id);
 
 uint16_t ws_active_channel_count(uint8_t *channel_mask, uint16_t number_of_channels);
 
 uint32_t ws_decode_channel_spacing(uint8_t channel_spacing);
+uint8_t  ws_encode_channel_spacing(uint32_t channel_spacing);
 
 uint32_t ws_get_datarate_using_operating_mode(uint8_t operating_mode);
 

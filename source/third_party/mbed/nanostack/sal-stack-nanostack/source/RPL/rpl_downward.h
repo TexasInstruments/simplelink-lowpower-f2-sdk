@@ -43,8 +43,10 @@ void rpl_instance_dao_timeout(struct rpl_instance *instance, uint16_t seconds);
 void rpl_instance_dao_trigger(struct rpl_instance *instance, uint16_t delay);
 void rpl_instance_dao_acked(struct rpl_instance *instance, const uint8_t src[16], int8_t interface_id, uint8_t dao_sequence, uint8_t status);
 void rpl_instance_parent_address_reg_timer_update(struct rpl_instance *instance, uint16_t seconds);
+
 void rpl_instance_send_address_registration(rpl_instance_t *instance, const uint8_t addr[16]);
 bool rpl_instance_address_registration_done(protocol_interface_info_entry_t *interface, rpl_instance_t *instance, rpl_neighbour_t *neighbour, uint8_t status);
+void rpl_instance_registration_refresh_handler(protocol_interface_info_entry_t *interface, rpl_instance_t *instance, const uint8_t addr[16]);
 struct rpl_dao_target *rpl_instance_get_active_target_confirmation(struct rpl_instance *instance);
 bool rpl_instance_parent_selection_ready(struct rpl_instance *instance);
 

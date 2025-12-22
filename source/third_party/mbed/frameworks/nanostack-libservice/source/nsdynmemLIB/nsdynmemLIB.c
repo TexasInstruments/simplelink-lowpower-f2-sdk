@@ -328,19 +328,32 @@ static void dev_stat_update(mem_stat_t *mem_stat_info_ptr, mem_stat_update_t typ
                 mem_stat_info_ptr->heap_sector_allocated_bytes_max = mem_stat_info_ptr->heap_sector_allocated_bytes;
             }
             mem_stat_info_ptr->heap_alloc_total_bytes += size;
+#ifdef DBG_WISUN_MEM_STATS
+            tr_info("Alloc OK, size: %d", size);
+#endif
             break;
         case DEV_HEAP_ALLOC_FAIL:
             mem_stat_info_ptr->heap_alloc_fail_cnt++;
 #ifdef WISUN_RCP_SPINEL_DEBUG
             rcp_debug.heap_alloc_fail++;
 #endif
+#ifdef DBG_WISUN_MEM_STATS
+            tr_info("Alloc Fail, size: %d", size);
+#endif
             break;
         case DEV_HEAP_FREE:
             mem_stat_info_ptr->heap_sector_alloc_cnt--;
             mem_stat_info_ptr->heap_sector_allocated_bytes -= size;
+#ifdef DBG_WISUN_MEM_STATS
+            tr_info("Alloc Free, size: %d", size);
+#endif
             break;
     }
-
+#ifdef DBG_WISUN_MEM_STATS
+    tr_info("Heap size: %d, alloc count: %d, alloc bytes: %d, alloc max: %d",
+        default_book->mem_stat_info_ptr->heap_sector_size, default_book->mem_stat_info_ptr->heap_sector_alloc_cnt,
+        default_book->mem_stat_info_ptr->heap_sector_allocated_bytes, default_book->mem_stat_info_ptr->heap_sector_allocated_bytes_max);
+#endif
 }
 
 static ns_mem_word_size_t convert_allocation_size(ns_mem_book_t *book, ns_mem_block_size_t requested_bytes)

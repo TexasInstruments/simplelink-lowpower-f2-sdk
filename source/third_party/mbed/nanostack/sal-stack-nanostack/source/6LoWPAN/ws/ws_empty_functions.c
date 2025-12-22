@@ -175,10 +175,12 @@ int ws_management_network_size_validate(
 
 int ws_management_channel_mask_set(
     int8_t interface_id,
-    uint32_t channel_mask[8])
+    uint8_t uc_channel_mask[17],
+    uint8_t bc_channel_mask[17])
 {
     (void)interface_id;
-    (void)channel_mask;
+    (void)uc_channel_mask;
+    (void)bc_channel_mask;
     return -1;
 }
 

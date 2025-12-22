@@ -3,7 +3,7 @@
         "metadataVersion": "3.1.0",
         "id": "com.ti.SIMPLELINK_CC13XX_CC26XX_SDK_TI154STACK_MODULE",
         "name": "TI 15.4-Stack Stack Core",
-        "version": "8.31.00.11",
+        "version": "8.32.00.07",
         "type": "software",
         "devices": [
             "CC13x1",
@@ -18,7 +18,7 @@
         "description": "CC13XX/CC26XX TI 15.4-Stack Stack",
         "moduleOf": {
             "packageId": "com.ti.SIMPLELINK_CC13XX_CC26XX_SDK",
-            "semver": "8.31.0"
+            "semver": "8.32.0"
         }
     }
 ]

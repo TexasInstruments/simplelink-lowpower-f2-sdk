@@ -28,12 +28,10 @@
 #define TI_WISUN_FAN_OPT_ICMPV6
 
 //Additional Optimizations
-#define NO_TCP
+//#define NO_TCP
 #define NO_IPV6_PMTUD
-#define NO_IP_FRAGMENT_TX
-#define NO_MLE
-
+//#define NO_IP_FRAGMENT_TX
+#define NO_MLE // only optimize for embedded
 
 #define FEA_TRACE_SUPPORT
 #define EXTRA_CONSISTENCY_CHECKS
-

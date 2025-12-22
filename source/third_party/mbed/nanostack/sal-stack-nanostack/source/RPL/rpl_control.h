@@ -190,6 +190,8 @@ void rpl_control_set_initial_dao_ack_wait(uint16_t timeout_in_ms);
 void rpl_control_set_mrhof_parent_set_size(uint16_t parent_set_size);
 void rpl_control_register_address(struct protocol_interface_info_entry *interface, const uint8_t addr[16]);
 bool rpl_control_address_register_done(struct protocol_interface_info_entry *interface, const uint8_t ll_addr[16], uint8_t status);
+void rpl_control_registration_refresh_handler(protocol_interface_info_entry_t *interface, const uint8_t addr[16]);
+void rpl_control_get_parent_ll_addr_from_global_addr(protocol_interface_info_entry_t *interface, const uint8_t global_addr[16], uint8_t ll_addr[16]);
 
 /* Configure and return the routing lookup predicate for a specified RPL instance ID */
 ipv6_route_predicate_fn_t *rpl_control_get_route_predicate(rpl_domain_t *domain, uint8_t instance_id, const uint8_t src[16], const uint8_t dst[16]);
@@ -216,6 +218,7 @@ void rpl_control_instant_poison(struct protocol_interface_info_entry *cur, rpl_d
 #define rpl_control_free_domain_instances_from_interface(cur) ((void) 0)
 #define rpl_control_register_address(interface, addr) ((void) 0)
 #define rpl_control_address_register_done(interface, ll_addr, status) (false)
+#define rpl_control_registration_refresh_handler(interface, addr) ((void) 0)
 #define rpl_policy_mrhof_parent_set_size_get(domain) (0)
 #define rpl_control_set_mrhof_parent_set_size(parent_set_size)
 #define rpl_control_instant_poison(cur, domain) ((void) 0)

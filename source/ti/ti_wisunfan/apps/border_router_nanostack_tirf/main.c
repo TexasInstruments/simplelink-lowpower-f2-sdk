@@ -55,7 +55,7 @@
 #include <ti/drivers/apps/Button.h>
 #include <ti/drivers/apps/LED.h>
 #include <ti/drivers/SPI.h>
-#ifndef WISUN_RCP_HOST_BR
+#ifndef WISUN_RCP_HOST
 #include <ti/drivers/AESECB.h>
 #include <ti/drivers/AESCBC.h>
 #endif
@@ -114,7 +114,7 @@ NVINTF_nvFuncts_t *pNV = NULL;
 #define MAIN_ASSERT_MAC          3
 #define MAIN_ASSERT_HWI_TIRTOS   4
 
-#ifndef WISUN_RCP_HOST_BR
+#ifndef WISUN_RCP_HOST
 #ifndef USE_DEFAULT_USER_CFG
 #include "mac_user_config.h"
 /* MAC user defined configuration */
@@ -134,7 +134,7 @@ extern void *mainThread(void *arg0);
 #define WISUNTHREADSTACKSIZE    1024
 #endif
 
-#ifdef WISUN_RCP_HOST_BR
+#ifdef WISUN_RCP_HOST
 extern bool extAddrFlag;
 #endif
 
@@ -247,7 +247,7 @@ int main(void)
     Button_init();
     LED_init();
 
-#ifndef WISUN_RCP_HOST_BR
+#ifndef WISUN_RCP_HOST
 #if defined(MBEDTLS_AES_ALT)
     AESECB_init();
     AESCBC_init();
@@ -255,7 +255,7 @@ int main(void)
 #endif
 
 #ifdef FEATURE_TIMAC_SUPPORT
-#ifndef WISUN_RCP_HOST_BR
+#ifndef WISUN_RCP_HOST
 #ifndef USE_DEFAULT_USER_CFG
     macUser0Cfg[0].pAssertFP = assertHandler;
 #endif //USE_DEFAULT_USER_CFG
@@ -265,7 +265,7 @@ int main(void)
 
 #ifdef WISUN_RCP_ENABLE
     rcp_init();
-#ifdef WISUN_RCP_HOST_BR
+#ifdef WISUN_RCP_HOST
     // Wait until RCP_INIT_CNF sets deviceExtAddr (only needed in 2-chip solution)
     while (extAddrFlag == false) {
         usleep(100000); // 100ms sleep

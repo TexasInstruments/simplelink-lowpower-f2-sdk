@@ -132,6 +132,13 @@ uint16_t num_eapol_active_max_rejections = 0;
 rcp_debug_t rcp_debug = {0};
 #endif
 
+#ifdef WISUN_FAN_CORE_1_1
+#ifdef WISUN_TEST_JM_IE
+volatile uint32_t g_test_num_jm_metrics = 3 ;
+#endif //WISUN_TEST_JM_IE
+uint32_t g_num_jm_metrics_len = 0;
+#endif // WISUN_FAN_CORE_1_1
+
 void ws_bootstrap_set_MAC_panid(protocol_interface_info_entry_t *cur);
 
 //The pan id filtering changes are being done in the ws_bootstrap.c file, which
@@ -193,6 +200,7 @@ static void ws_bootstrap_rpl_scan_start(protocol_interface_info_entry_t *cur);
 static uint16_t ws_randomize_fixed_channel(uint16_t configured_fixed_channel, uint8_t number_of_channels, uint8_t *channel_mask);
 static void ws_bootstrap_panid_filter_lists_init();
 static bool ws_bootstrap_panid_filter_list_is_empty(panid_list_type_e panid_list_type);
+static uint8_t ws_generate_out_range_channel_mask(ws_hopping_schedule_t *hopping_schedule, uint16_t number_of_channels);
 
 typedef enum {
     WS_PARENT_SOFT_SYNCH = 0,  /**< let FHSS make decision if synchronization is needed*/
@@ -452,6 +460,44 @@ static int8_t ws_bootsrap_event_trig(ws_bootsrap_event_type_e event_type, int8_t
     return eventOS_event_send(&event);
 }
 
+uint8_t reg_refresh_req_tid = 255 - NCR_REQ_RETRIES + 1; // Start TID so that last TID is 255
+static void ws_registration_refresh_request(protocol_interface_info_entry_t *cur)
+{
+    aro_t earo_out;
+    uint8_t target[16];
+
+    if_address_entry_t *addr_entry = ns_list_get_first(&cur->ip_addresses);
+    if (!addr_entry) {
+        tr_warn("No IP addresses available, registration refresh cancelled");
+        return;
+    }
+    memcpy(target, addr_entry->address, 16);
+
+    // Initialise EARO
+    earo_out.is_earo = true;
+    earo_out.status = EARO_REGISTRATION_REFRESH_REQUEST;
+    earo_out.lifetime = rpl_policy_address_registration_timeout();
+    earo_out.opaque = 0;
+    earo_out.I = 0;
+    earo_out.R = 0;
+    earo_out.T = 1;
+    earo_out.TID = reg_refresh_req_tid; // TID is not used for unsolicited NA for registration refresh request. Added for cert interop
+    memcpy(earo_out.eui64, cur->mac, 8);
+    buffer_t *buf = icmpv6_build_na(cur, false, false, true, target, &earo_out, ADDR_UNSPECIFIED);
+    if (buf) {
+        tr_info("Registration refresh request sent, TID %u", reg_refresh_req_tid);
+        buf->info = (buffer_info_t)(B_FROM_ICMP | B_TO_ICMP | B_DIR_DOWN);
+        protocol_push(buf);
+        /* RFC9685 section 7.3 defines the TID value as a lollipop counter that,
+           after initial value rollover, remains between 0 - 127 */
+        if (reg_refresh_req_tid == 127) {
+            reg_refresh_req_tid = 0;
+        } else {
+            reg_refresh_req_tid++;
+        }
+    }
+}
+
 static void ws_nud_table_reset(protocol_interface_info_entry_t *cur)
 {
     //Empty active list
@@ -670,6 +716,52 @@ static void ws_bootstrap_llc_hopping_update(struct protocol_interface_info_entry
     cur->ws_info->hopping_schdule.fhss_bsi = fhss_configuration->bsi;
 }
 
+static uint8_t ws_generate_out_range_channel_mask(ws_hopping_schedule_t *hopping_schedule, uint16_t number_of_channels)
+{
+    /* based on th eregulation channel mask
+       Scan from beging, utill see bit is 1
+       scan from ending, utill see bit is 1
+    */
+    uint8_t *pdata,i;
+    uint8_t index, bit;
+
+    if ( hopping_schedule == NULL ) {
+        return 0;
+    }
+    pdata = hopping_schedule->out_range_channel_mask;
+
+    /* init to zero */
+    memset(pdata, 0x00, NUM_BYTES_IN_CHAN_MASK);
+
+    /* scan from begining, if channel mask bit is zero, set it to one
+       if channel msk bit is one, immdeiately break from loop
+    */
+    for (i=0; i < number_of_channels; i++) {
+        if (hopping_schedule->regulation_channel_mask[0 + (i / 8)] & (1 << (i % 8))) {
+            //Active channel
+            break;
+        }
+        //Exluded channel
+        pdata[0 + (i / 8)] |= 1 << ( (i % 8));
+    }
+
+    /* scan from ending, if channel mask bit is zero, set it to one
+       if channel msk bit is one, immdeiately break from loop
+    */
+    bit = ((number_of_channels +7) / 8) * 8 -1;
+
+    for (i= bit; i >= 0; i--) {
+        if (hopping_schedule->regulation_channel_mask[0 + (i / 8)] & (1 << (i % 8))) {
+            //Active channel
+            break;
+        }
+        //Exluded channel
+        pdata[0 + (i / 8)] |= 1 << ( (i % 8));
+    }
+
+    return 1;
+}
+
 static uint8_t ws_generate_exluded_channel_list_from_active_channels(ws_excluded_channel_data_t *excluded_data, const uint8_t *selected_channel_mask, const uint8_t *global_channel_mask, uint16_t number_of_channels)
 {
     bool active_range = false;
@@ -680,6 +772,7 @@ static uint8_t ws_generate_exluded_channel_list_from_active_channels(ws_excluded
     for (uint8_t i = 0; i < number_of_channels; i++) {
         if (!(global_channel_mask[0 + (i / 8)] & (1 << (i % 8)))) {
             //Global exluded channel
+            excluded_data->channel_mask4[0 + (i / 8)] |= 1 << ( (i % 8));
             if (active_range) {
                 //Mark range stop here
                 active_range = false;
@@ -729,8 +822,8 @@ static uint8_t ws_generate_exluded_channel_list_from_active_channels(ws_excluded
         excluded_data->excuded_channel_ctrl = WS_EXC_CHAN_CTRL_NONE;
     } else if (excluded_data->excluded_range_length <= WS_EXCLUDED_MAX_RANGE_TO_SEND) {
 
-        uint8_t range_length = (excluded_data->excluded_range_length * 4) + 3;
-        if (range_length <= ((number_of_channels + 7) / 8) + 6) {
+        uint8_t range_length = (excluded_data->excluded_range_length * 4) + 1;
+        if ( range_length <= ((number_of_channels + 7) / 8) ) {
             excluded_data->excuded_channel_ctrl = WS_EXC_CHAN_CTRL_RANGE;
         } else {
             excluded_data->excuded_channel_ctrl = WS_EXC_CHAN_CTRL_BITMASK;
@@ -747,14 +840,33 @@ static uint8_t ws_generate_exluded_channel_list_from_active_channels(ws_excluded
 static void ws_fhss_configure_channel_masks(protocol_interface_info_entry_t *cur, fhss_ws_configuration_t *fhss_configuration)
 {
     fhss_configuration->channel_mask_size = cur->ws_info->hopping_schdule.number_of_channels;
-    ws_generate_channel_list(fhss_configuration->channel_mask1, cur->ws_info->hopping_schdule.number_of_channels, cur->ws_info->hopping_schdule.regulatory_domain, cur->ws_info->hopping_schdule.operating_class, cur->ws_info->hopping_schdule.channel_plan_id);
-    ws_generate_channel_list(fhss_configuration->unicast_channel_mask1, cur->ws_info->hopping_schdule.number_of_channels, cur->ws_info->hopping_schdule.regulatory_domain, cur->ws_info->hopping_schdule.operating_class, cur->ws_info->hopping_schdule.channel_plan_id);
+    if (cur->ws_info->hopping_schdule.channel_plan == 1)
+    {   /* chan plan=1 user provides th etotal number of channels*/
+        ws_generate_channel_list_on_chan_plan_one(fhss_configuration->channel_mask1,fhss_configuration->channel_mask_size);
+        ws_generate_channel_list_on_chan_plan_one(fhss_configuration->unicast_channel_mask1,fhss_configuration->channel_mask_size);
+    }
+    else
+    {
+        ws_generate_channel_list(fhss_configuration->channel_mask1, cur->ws_info->hopping_schdule.number_of_channels, cur->ws_info->hopping_schdule.regulatory_domain, cur->ws_info->hopping_schdule.operating_class, cur->ws_info->hopping_schdule.channel_plan_id);
+        ws_generate_channel_list(fhss_configuration->unicast_channel_mask1, cur->ws_info->hopping_schdule.number_of_channels, cur->ws_info->hopping_schdule.regulatory_domain, cur->ws_info->hopping_schdule.operating_class, cur->ws_info->hopping_schdule.channel_plan_id);
+    }
+
+    /* save the allowed channel mask to cur->ws_info->hopping_schdule
+       for later use when we need to generate excluded channel list (US-IE or BC-IE)
+    */
+    memcpy(cur->ws_info->hopping_schdule.regulation_channel_mask, fhss_configuration->channel_mask1, NUM_BYTES_IN_CHAN_MASK);
+    if (ws_generate_out_range_channel_mask(&cur->ws_info->hopping_schdule, cur->ws_info->hopping_schdule.number_of_channels) == 0 )
+    {
+        tr_warn("Failed to generate out of range channel mask");
+    }
+
     // using bitwise AND operation for user set channel mask to remove channels not allowed in this device
     for (uint8_t n = 0; n < NUM_BYTES_IN_CHAN_MASK; n++) {
         fhss_configuration->unicast_channel_mask1[n] &= cur->ws_info->cfg->fhss.fhss_uc_channel_mask5[n];
     }
-    //Update Exluded channels
-    cur->ws_info->hopping_schdule.channel_plan = ws_generate_exluded_channel_list_from_active_channels(&cur->ws_info->hopping_schdule.excluded_channels, fhss_configuration->unicast_channel_mask1, fhss_configuration->channel_mask1, cur->ws_info->hopping_schdule.number_of_channels);
+
+    //ignore channel plan result from this function
+    ws_generate_exluded_channel_list_from_active_channels(&cur->ws_info->hopping_schdule.excluded_channels, fhss_configuration->unicast_channel_mask1, fhss_configuration->channel_mask1, cur->ws_info->hopping_schdule.number_of_channels);
 
     /* for fixed channel, override the channel exclusion*/
     if (cur->ws_info->hopping_schdule.uc_channel_function == 0)
@@ -767,13 +879,20 @@ static void ws_fhss_configure_channel_masks(protocol_interface_info_entry_t *cur
     // generate the broadcast schedule only for BR
     if (cur->bootsrap_mode == ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER)
     {
-        ws_generate_channel_list(fhss_configuration->broadcast_channel_mask1, cur->ws_info->hopping_schdule.number_of_channels, cur->ws_info->hopping_schdule.regulatory_domain, cur->ws_info->hopping_schdule.operating_class, cur->ws_info->hopping_schdule.channel_plan_id);
+        if (cur->ws_info->hopping_schdule.channel_plan == 1)
+        {   /* chan plan=1 user provides th etotal number of channels*/
+            ws_generate_channel_list_on_chan_plan_one(fhss_configuration->broadcast_channel_mask1,fhss_configuration->channel_mask_size);
+        }
+        else
+        {
+            ws_generate_channel_list(fhss_configuration->broadcast_channel_mask1, cur->ws_info->hopping_schdule.number_of_channels, cur->ws_info->hopping_schdule.regulatory_domain, cur->ws_info->hopping_schdule.operating_class, cur->ws_info->hopping_schdule.channel_plan_id);
+        }
         // using bitwise AND operation for user set channel mask to remove channels not allowed in this device
         for (uint8_t n = 0; n < NUM_BYTES_IN_CHAN_MASK; n++) {
             fhss_configuration->broadcast_channel_mask1[n] &= cur->ws_info->cfg->fhss.fhss_bc_channel_mask5[n];
         }
-        //Update Exluded broadcast channels
-        cur->ws_info->hopping_schdule.channel_plan = ws_generate_exluded_channel_list_from_active_channels(&cur->ws_info->hopping_schdule.bc_excluded_channels, fhss_configuration->broadcast_channel_mask1, fhss_configuration->channel_mask1, cur->ws_info->hopping_schdule.number_of_channels);
+        //Update Exluded broadcast channels: we dont want the channel plan returned by below function to modify existing value
+        ws_generate_exluded_channel_list_from_active_channels(&cur->ws_info->hopping_schdule.bc_excluded_channels, fhss_configuration->broadcast_channel_mask1, fhss_configuration->channel_mask1, cur->ws_info->hopping_schdule.number_of_channels);
 
         /* for fixed channel, override the channel exclusion*/
         if (cur->ws_info->hopping_schdule.bc_channel_function == 0)
@@ -811,9 +930,14 @@ void ws_bootstrap_router_broadcast_excluded_mask_set(protocol_interface_info_ent
     }
 
     //Update Exluded broadcast channels
-    cur->ws_info->hopping_schdule.channel_plan =
+    // ignore the returned value
     ws_generate_exluded_channel_list_from_active_channels(&hop_schedule->bc_excluded_channels, bc_ch_mask, chan_mask, hop_schedule->number_of_channels);
-
+    /* for fixed channel, override the channel exclusion*/
+    if (cur->ws_info->hopping_schdule.bc_channel_function == 0)
+    {
+        // if fixed channel is used, then we don't need to exclude any channels
+        cur->ws_info->hopping_schdule.bc_excluded_channels.excuded_channel_ctrl = WS_EXC_CHAN_CTRL_NONE;
+    }
 }
 
 static int8_t ws_fhss_initialize(protocol_interface_info_entry_t *cur)
@@ -1017,6 +1141,7 @@ static void ws_bootstrap_primary_parent_set(struct protocol_interface_info_entry
         neighbor_info->ws_neighbor->synch_done = true;
 
         /* need to update the BC excluded channel mask */
+        ws_bootstrap_llc_hopping_update(cur, &fhss_configuration);
         ws_bootstrap_router_broadcast_excluded_mask_set(cur,neighbor_info->ws_neighbor);
     }
 
@@ -1539,7 +1664,8 @@ static void ws_bootstrap_decode_exclude_range_to_mask_by_range(void *mask_buffer
         range_info->number_of_range--;
         for (uint16_t channel = 0; channel < number_of_channels; channel++) {
             if (channel >= range_start && channel <= range_stop) {
-                mask_ptr[0 + (channel / 8)] |= 1 << (7 - (channel % 8));
+                // channel starting from LSB to MSB in each byte
+                mask_ptr[0 + (channel / 8)] |= 1 << ((channel % 8));
             } else if (channel > range_stop) {
                 break;
             }
@@ -1574,9 +1700,19 @@ static void ws_bootstrap_candidate_parent_store(parent_info_t *parent, const str
     parent->pan_information.version = pan_information->version;
 
 #ifdef WISUN_FAN_CORE_1_1
-    parent->pan_information.jm_version = pan_information->jm_version;
-    parent->pan_information.jm_plf = pan_information->jm_plf;
+    // only if there is JM-IE to override (array bouncds check)
+    if ( ( pan_information->jm_num_of_metrics) && ( pan_information->jm_num_of_metrics <= WS_WPIE_JM_IE_MAX_NUM_METRICS ) )
+    {
+        parent->pan_information.jm_version = pan_information->jm_version;
+        parent->pan_information.jm_plf = pan_information->jm_plf;
+        parent->pan_information.jm_num_of_metrics = pan_information->jm_num_of_metrics;
+
+        memcpy(parent->pan_information.jm_metric_ids, pan_information->jm_metric_ids,  WS_WPIE_JM_IE_MAX_NUM_METRICS );
+        memcpy(parent->pan_information.jm_metric_lens, pan_information->jm_metric_lens, WS_WPIE_JM_IE_MAX_NUM_METRICS );
+        memcpy(parent->pan_information.jm_metric_values, pan_information->jm_metric_values, (WS_WPIE_JM_IE_MAX_NUM_METRICS* WS_WPIE_JM_IE_METRIC_LEN_MAX) );
+    }
 #endif
+
     // Saved from message
     parent->timestamp = data->timestamp;
     parent->pan_id = data->SrcPANId;
@@ -1791,6 +1927,9 @@ static void ws_bootstrap_pan_advertisement_analyse(struct protocol_interface_inf
     bool fhnt_delete = false;
     //Validate Pan Conrfirmation is at packet
     ws_pan_information_t pan_information;
+    // init the pan_information to zero.
+    memset(&pan_information, 0, sizeof(ws_pan_information_t));
+
     if (!ws_wp_nested_pan_read(ie_ext->payloadIeList, ie_ext->payloadIeListLength, &pan_information)) {
         // Corrupted
         tr_error("No pan information");
@@ -1802,15 +1941,23 @@ static void ws_bootstrap_pan_advertisement_analyse(struct protocol_interface_inf
     struct ws_jm_ie_s jm_ie;
     if (! ws_wp_nested_jm_read(ie_ext->payloadIeList, ie_ext->payloadIeListLength, &jm_ie))
     {
-        tr_error("No JM information");
+        tr_info("No JM information");
         jm_ie.version = 0;
         jm_ie.plf = 0;
+        jm_ie.jm_num_of_metrics = 0;
     }
-
-    if (cur->bootsrap_mode != ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER)
-    {
+    // add array bounce checking
+    if ( (cur->bootsrap_mode != ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER) && (jm_ie.jm_num_of_metrics > 0)  && (jm_ie.jm_num_of_metrics <= WS_WPIE_JM_IE_MAX_NUM_METRICS) )
+    {   // only update if there is JM-IE
         pan_information.jm_version = jm_ie.version;
         pan_information.jm_plf = jm_ie.plf;
+        pan_information.jm_num_of_metrics = jm_ie.jm_num_of_metrics;
+
+        memcpy(pan_information.jm_metric_ids, jm_ie.jm_metric_ids, WS_WPIE_JM_IE_MAX_NUM_METRICS );
+        memcpy(pan_information.jm_metric_lens, jm_ie.jm_metric_lens, WS_WPIE_JM_IE_MAX_NUM_METRICS );
+        memcpy(pan_information.jm_metric_values, jm_ie.jm_metric_values, (WS_WPIE_JM_IE_MAX_NUM_METRICS*WS_WPIE_JM_IE_METRIC_LEN_MAX));
+
+        tr_info("== RX Pan-Advert JM-IE ver %d, PLF %d%%, num metrics %d", pan_information.jm_version, pan_information.jm_plf, pan_information.jm_num_of_metrics);
     }
 
 #endif
@@ -1883,10 +2030,25 @@ static void ws_bootstrap_pan_advertisement_analyse(struct protocol_interface_inf
             cur->ws_info->pan_information.use_parent_bs = pan_information.use_parent_bs;
             cur->ws_info->pan_information.version = pan_information.version;
 #ifdef WISUN_FAN_CORE_1_1
-            cur->ws_info->pan_information.jm_version = pan_information.jm_version;
-            cur->ws_info->pan_information.jm_plf = pan_information.jm_plf;
-#endif
+            //check if an update is needed
+            //clear out current values
+            //load new values
+            if(pan_information.jm_version > cur->ws_info->pan_information.jm_version)
+            {
+                memset(cur->ws_info->pan_information.jm_metric_ids, 0, WS_WPIE_JM_IE_MAX_NUM_METRICS );
+                memset(cur->ws_info->pan_information.jm_metric_lens, 0, WS_WPIE_JM_IE_MAX_NUM_METRICS );
+                memset(cur->ws_info->pan_information.jm_metric_values, 0, (WS_WPIE_JM_IE_MAX_NUM_METRICS* WS_WPIE_JM_IE_METRIC_LEN_MAX));
 
+                cur->ws_info->pan_information.jm_version = pan_information.jm_version;
+                cur->ws_info->pan_information.jm_plf = pan_information.jm_plf;
+
+                memcpy(cur->ws_info->pan_information.jm_metric_ids, pan_information.jm_metric_ids,  WS_WPIE_JM_IE_MAX_NUM_METRICS );
+                memcpy(cur->ws_info->pan_information.jm_metric_lens, pan_information.jm_metric_lens, WS_WPIE_JM_IE_MAX_NUM_METRICS );
+                memcpy(cur->ws_info->pan_information.jm_metric_values, pan_information.jm_metric_values, (WS_WPIE_JM_IE_MAX_NUM_METRICS* WS_WPIE_JM_IE_METRIC_LEN_MAX) );
+
+            }
+
+#endif
         }
     }
 }
@@ -1955,6 +2117,7 @@ static void ws_bootstrap_pan_advertisement_solicit_analyse(struct protocol_inter
 static void ws_bootstrap_pan_config_analyse(struct protocol_interface_info_entry *cur, const struct mcps_data_ind_s *data, const struct mcps_data_ie_list *ie_ext, ws_utt_ie_t *ws_utt, ws_us_ie_t *ws_us)
 {
     bool fhnt_delete = false;
+    int8_t status;
 
     uint16_t pan_version;
     ws_bs_ie_t ws_bs_ie;
@@ -1975,7 +2138,7 @@ static void ws_bootstrap_pan_config_analyse(struct protocol_interface_info_entry
         fhnt_delete = true;
     }
 
-    /*
+     /*
      * A consistent transmission is defined as a PAN Configuration with a PAN-ID matching that of the receiving node and
      * a PANVER-IE / PAN Version greater than or equal to the receiving node’s current PAN version.
      *
@@ -1990,6 +2153,24 @@ static void ws_bootstrap_pan_config_analyse(struct protocol_interface_info_entry
         tr_warn("no version");
         fhnt_delete = true;
     }
+
+#ifdef WISUN_FAN_CORE_1_1
+    /* if pan version number >= current pan version, read the generic ies and update the data base */
+    if (!common_serial_number_greater_16(cur->ws_info->pan_information.pan_version, pan_version)) {
+        tr_info("Reading reserved WH PAN wide and FFN Wide IEs");
+        /* FAN 1.1 spec: section 6.3.2.3 Information Elements states that all unknown WH IEs should be parsed and forwarded */
+        //read & store all reserved ffn wide and pan wide IEs
+        if(!ws_res_wh_pan_ffn_wide_ies_read(&cur->ws_info->pan_information, ie_ext->headerIeList, ie_ext->headerIeListLength))
+        {
+            tr_error("Error reading reserved WH PAN wide and FFN Wide IEs");
+        }
+        if(!ws_res_wp_pan_ffn_wide_ies_read(&cur->ws_info->pan_information, ie_ext->payloadIeList, ie_ext->payloadIeListLength))
+        {
+            tr_error("Error reading reserved WP PAN wide and FFN Wide IEs");
+        }
+    }
+#endif
+
 
 #if !defined(NO_AUTH_ENABLE) || defined(MBED_LIBRARY)
     if (ti_wisun_config.auth_type != NO_AUTH) {
@@ -3015,7 +3196,11 @@ static void ws_bootstrap_fhss_activate(protocol_interface_info_entry_t *cur)
     mac_helper_pib_boolean_set(cur, macRxOnWhenIdle, true);
     cur->lowpan_info &=  ~INTERFACE_NWK_CONF_MAC_RX_OFF_IDLE;
     ws_bootstrap_mac_security_enable(cur);
-    ws_bootstrap_mac_activate(cur, cur->ws_info->cfg->fhss.fhss_uc_fixed_channel, cur->ws_info->network_pan_id, true);
+    if (cur->bootsrap_mode == ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER) {
+        ws_bootstrap_mac_activate(cur, cur->ws_info->cfg->fhss.fhss_uc_fixed_channel, cur->ws_info->network_pan_id, true);
+    } else {
+        ws_bootstrap_mac_activate(cur, cur->ws_info->cfg->fhss.fhss_uc_fixed_channel, cur->ws_info->network_pan_id, false);
+    }
     return;
 }
 
@@ -3733,6 +3918,12 @@ static void ws_bootstrap_nw_info_updated(protocol_interface_info_entry_t *cur, u
             cur->ws_info->pan_information.pan_version_set = true;
         }
 
+        // If PAN version has not been set, set it
+        if (!cur->ws_info->pan_information.pan_version_set) {
+            cur->ws_info->pan_information.pan_version = pan_version;
+            cur->ws_info->pan_information.pan_version_set = true;
+        }
+
         // If network name has not been set, set it
         if (strlen(gen_cfg.network_name) == 0) {
             strncpy(gen_cfg.network_name, network_name, 32);
@@ -4051,7 +4242,8 @@ static void ws_bootstrap_pan_advert_solicit(protocol_interface_info_entry_t *cur
 #ifdef WISUN_FAN_CORE_1_1
     // Wi-SUN FAN 1.1v09-d10 6.3.2.3.5.1
     // PAS MAY include POM-IE
-    async_req.wp_requested_nested_ie_list.pom_ie = true;
+    async_req.wp_requested_nested_ie_list.pom_ie = false;
+    async_req.wp_requested_nested_ie_list.jm_ie = false;
 #endif
     ws_set_asynch_channel_list(cur, &async_req);
 
@@ -4118,10 +4310,11 @@ static uint16_t ws_bootstrap_routing_cost_calculate(protocol_interface_info_entr
     return ws_neighbor->routing_cost + etx;
 }
 
-uint8_t jm_version  = 12;
-uint8_t jm_prev_plf = 0;
+
 #ifdef WISUN_FAN_CORE_1_1
 /* this value should be in prog_cfg */
+uint8_t jm_version  = 12;
+uint8_t jm_prev_plf = 0;
 #define WS_BBR_MAX_PAN_SIZE (100)
 uint16_t ws_bootstrap_pan_maximum_size(protocol_interface_info_entry_t *cur)
 {
@@ -4181,12 +4374,196 @@ static uint8_t ws_bootstrap_update_jm_info(protocol_interface_info_entry_t *cur)
         }
     }
 
+    //set plf and version
     cur->ws_info->pan_information.jm_version = jm_version;
     cur->ws_info->pan_information.jm_plf = cur_jm_plf;
 
+    //clear everything out to start with
+    memset(cur->ws_info->pan_information.jm_metric_ids, 0, WS_WPIE_JM_IE_MAX_NUM_METRICS);
+    memset(cur->ws_info->pan_information.jm_metric_lens, 0, WS_WPIE_JM_IE_MAX_NUM_METRICS);
+    memset(cur->ws_info->pan_information.jm_metric_values, 0, (WS_WPIE_JM_IE_MAX_NUM_METRICS*WS_WPIE_JM_IE_METRIC_LEN_MAX));
+
+#ifdef WISUN_TEST_JM_IE
+    if(g_test_num_jm_metrics == 1)
+    {   // JM-IE PLF with one byte
+        cur->ws_info->pan_information.jm_version = 1;
+
+        // 6.3.2.3.2.12.1 PAN Load Factor Join Metric
+        cur->ws_info->pan_information.jm_metric_ids[0] = WS_JM_PLF;
+        cur->ws_info->pan_information.jm_metric_lens[0] = WS_WPIE_JM_IE_PLF_METRIC_LENGTH;
+        cur->ws_info->pan_information.jm_metric_values[0][0] =  cur->ws_info->pan_information.jm_plf;
+
+        g_num_jm_metrics_len = 1+1+1;
+        cur->ws_info->pan_information.jm_num_of_metrics = 1;
+    }
+    else if(g_test_num_jm_metrics == 2)
+    {   // simulate unknow JM-IE with 4 bytes
+        cur->ws_info->pan_information.jm_version = 2;
+
+        cur->ws_info->pan_information.jm_metric_ids[0] = WS_JM_TEST_METRIC_ID_1;
+        cur->ws_info->pan_information.jm_metric_lens[0] = WS_JM_TEST_METRIC_ID_1_LEN;
+        cur->ws_info->pan_information.jm_metric_values[0][0] = 0x01;
+        cur->ws_info->pan_information.jm_metric_values[0][1] = 0x02;
+        cur->ws_info->pan_information.jm_metric_values[0][2] = 0x03;
+        cur->ws_info->pan_information.jm_metric_values[0][3] = 0x04;
+        g_num_jm_metrics_len = 1+1+4;
+
+        cur->ws_info->pan_information.jm_num_of_metrics = 1;
+    }
+    else if(g_test_num_jm_metrics == 3)
+    {
+        cur->ws_info->pan_information.jm_version = 3;
+        // first JM IE = PLF (one byte)
+        cur->ws_info->pan_information.jm_metric_ids[0] = WS_JM_PLF;
+        cur->ws_info->pan_information.jm_metric_lens[0] = WS_WPIE_JM_IE_PLF_METRIC_LENGTH;
+        cur->ws_info->pan_information.jm_metric_values[0][0] =  cur->ws_info->pan_information.jm_plf;
+
+        // simulate the unknow JM-IE (with 2 bytes)
+        cur->ws_info->pan_information.jm_metric_ids[1] = WS_JM_TEST_METRIC_ID_2;
+        cur->ws_info->pan_information.jm_metric_lens[1] = WS_JM_TEST_METRIC_ID_2_LEN;
+        cur->ws_info->pan_information.jm_metric_values[1][0] = 0x05;
+        cur->ws_info->pan_information.jm_metric_values[1][1] = 0x06;
+        cur->ws_info->pan_information.jm_metric_values[1][2] = 0x07;
+        cur->ws_info->pan_information.jm_metric_values[1][3] = 0x08;
+        g_num_jm_metrics_len = 1 + (1 + 1) + (1 + 2);
+        cur->ws_info->pan_information.jm_num_of_metrics = 2;
+
+    }
+    else if(g_test_num_jm_metrics == 0)
+    {
+        cur->ws_info->pan_information.jm_version = 4;
+        // with metric ID , but there is no data
+        cur->ws_info->pan_information.jm_metric_ids[0] = WS_JM_TEST_METRIC_ID_3;
+        cur->ws_info->pan_information.jm_metric_lens[0] = WS_JM_TEST_METRIC_ID_3_LEN;
+
+        g_num_jm_metrics_len = 1;
+        cur->ws_info->pan_information.jm_num_of_metrics = 1;
+    }
+    else
+    {
+        cur->ws_info->pan_information.jm_version = 99; //just to signify error
+    }
+#else // regular working case
+
+    //copy metric PLF into the arrays
+    // 6.3.2.3.2.12.1 PAN Load Factor Join Metric
+    cur->ws_info->pan_information.jm_metric_ids[0] = WS_JM_PLF;
+    cur->ws_info->pan_information.jm_metric_lens[0] = WS_WPIE_JM_IE_PLF_METRIC_LENGTH;
+    cur->ws_info->pan_information.jm_metric_values[0][0] =  cur->ws_info->pan_information.jm_plf;
+    g_num_jm_metrics_len = WS_WPIE_JM_IE_PLF_LENGTH;
+    // only one JM IE
+    cur->ws_info->pan_information.jm_num_of_metrics = 1;
+
+#endif //WISUN_TEST_JM_IE
+
     return 1;
 }
-#endif
+
+#ifdef WISUN_TEST_IE_PASS_THROUGH
+uint8_t test_res_wh_wp_ie_values[NUM_RESERVED_WHIE_FFN_WIDE_MAX][3] = {{0xA, 0xB,0xC}, {0xD, 0xE, 0xF}};
+
+static uint8_t ws_bootstrap_update_res_ie_info(protocol_interface_info_entry_t *cur)
+{
+    if (!cur)
+    {
+        return 0;
+    }
+
+    if (cur->bootsrap_mode != ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER)
+    {   /* for Router node, just use we received the JM_IE from parent (BR)*/
+        return (1);
+    }
+    else //border router update the values
+    {
+        uint8_t wh_idx = 0, wp_s_idx = 0, wp_l_idx = 0;
+
+        //WH-IEs
+        cur->ws_info->pan_information.num_res_wh_pan_wide_ies = 2;
+        cur->ws_info->pan_information.num_res_wh_ffn_wide_ies = 2;
+
+        cur->ws_info->pan_information.res_wh_pan_wide_ie_ids[wh_idx] = 0x80;
+        cur->ws_info->pan_information.res_wh_pan_wide_ie_lens[wh_idx]= 2;
+        cur->ws_info->pan_information.res_wh_ffn_wide_ie_ids[wh_idx] = 0xC1;
+        cur->ws_info->pan_information.res_wh_ffn_wide_ie_lens[wh_idx]= 3;
+
+        wh_idx++;
+        cur->ws_info->pan_information.res_wh_pan_wide_ie_ids[wh_idx] = 0x81;
+        cur->ws_info->pan_information.res_wh_pan_wide_ie_lens[wh_idx]= 2;
+        cur->ws_info->pan_information.res_wh_ffn_wide_ie_ids[wh_idx] = 0xC2;
+        cur->ws_info->pan_information.res_wh_ffn_wide_ie_lens[wh_idx]= 3;
+
+        for(wh_idx = 0; wh_idx < cur->ws_info->pan_information.num_res_wh_pan_wide_ies; wh_idx ++)
+        {
+            cur->ws_info->pan_information.res_wh_pan_wide_ies[wh_idx].len = cur->ws_info->pan_information.res_wh_pan_wide_ie_lens[wh_idx];
+            cur->ws_info->pan_information.res_wh_pan_wide_ies[wh_idx].val = &test_res_wh_wp_ie_values[wh_idx][0];
+        }
+
+        for(wh_idx = 0; wh_idx < cur->ws_info->pan_information.num_res_wh_ffn_wide_ies; wh_idx ++)
+        {
+            cur->ws_info->pan_information.res_wh_ffn_wide_ies[wh_idx].len = cur->ws_info->pan_information.res_wh_ffn_wide_ie_lens[wh_idx];
+            cur->ws_info->pan_information.res_wh_ffn_wide_ies[wh_idx].val = &test_res_wh_wp_ie_values[wh_idx][0];
+        }
+
+        //WP-IEs: short
+        cur->ws_info->pan_information.num_res_wp_short_pan_wide_ies = 2;
+        cur->ws_info->pan_information.num_res_wp_short_ffn_wide_ies = 2;
+
+        cur->ws_info->pan_information.res_wp_short_pan_wide_ie_ids[wp_s_idx] = 0x42;
+        cur->ws_info->pan_information.res_wp_short_pan_wide_ie_lens[wp_s_idx]= 2;
+        cur->ws_info->pan_information.res_wp_short_ffn_wide_ie_ids[wp_s_idx] = 0x60;
+        cur->ws_info->pan_information.res_wp_short_ffn_wide_ie_lens[wp_s_idx]= 3;
+
+        wp_s_idx++;
+        cur->ws_info->pan_information.res_wp_short_pan_wide_ie_ids[wp_s_idx] = 0x43;
+        cur->ws_info->pan_information.res_wp_short_pan_wide_ie_lens[wp_s_idx]= 2;
+        cur->ws_info->pan_information.res_wp_short_ffn_wide_ie_ids[wp_s_idx] = 0x61;
+        cur->ws_info->pan_information.res_wp_short_ffn_wide_ie_lens[wp_s_idx]= 3;
+
+        for(wp_s_idx = 0; wp_s_idx < cur->ws_info->pan_information.num_res_wp_short_pan_wide_ies; wp_s_idx ++)
+        {
+            cur->ws_info->pan_information.res_wp_short_pan_wide_ies[wp_s_idx].len = cur->ws_info->pan_information.res_wp_short_pan_wide_ie_lens[wp_s_idx];
+            cur->ws_info->pan_information.res_wp_short_pan_wide_ies[wp_s_idx].val = &test_res_wh_wp_ie_values[wp_s_idx][0];
+        }
+
+        for(wp_s_idx = 0; wp_s_idx < cur->ws_info->pan_information.num_res_wp_short_ffn_wide_ies; wp_s_idx ++)
+        {
+            cur->ws_info->pan_information.res_wp_short_ffn_wide_ies[wp_s_idx].len = cur->ws_info->pan_information.res_wp_short_ffn_wide_ie_lens[wp_s_idx];
+            cur->ws_info->pan_information.res_wp_short_ffn_wide_ies[wp_s_idx].val = &test_res_wh_wp_ie_values[wp_s_idx][0];
+        }
+
+        //WP IEs: long
+        cur->ws_info->pan_information.num_res_wp_long_pan_wide_ies = 2;
+        cur->ws_info->pan_information.num_res_wp_long_ffn_wide_ies = 2;
+
+        cur->ws_info->pan_information.res_wp_long_pan_wide_ie_ids[wp_l_idx] = 0x8;
+        cur->ws_info->pan_information.res_wp_long_pan_wide_ie_lens[wp_l_idx]= 2; //1 byte long for testing purposes
+        cur->ws_info->pan_information.res_wp_long_ffn_wide_ie_ids[wp_l_idx] = 0xB;
+        cur->ws_info->pan_information.res_wp_long_ffn_wide_ie_lens[wp_l_idx]= 3; //1 byte long for testing purposes
+
+        wp_l_idx++;
+        cur->ws_info->pan_information.res_wp_long_pan_wide_ie_ids[wp_l_idx] = 0x9;
+        cur->ws_info->pan_information.res_wp_long_pan_wide_ie_lens[wp_l_idx]= 2; //1 byte long for testing purposes
+        cur->ws_info->pan_information.res_wp_long_ffn_wide_ie_ids[wp_l_idx] = 0xC;
+        cur->ws_info->pan_information.res_wp_long_ffn_wide_ie_lens[wp_l_idx]= 3; //1 byte long for testing purposes
+
+        for(wp_l_idx = 0; wp_l_idx < cur->ws_info->pan_information.num_res_wp_long_pan_wide_ies; wp_l_idx ++)
+        {
+            cur->ws_info->pan_information.res_wp_long_pan_wide_ies[wp_l_idx].len = cur->ws_info->pan_information.res_wp_long_pan_wide_ie_lens[wp_l_idx];
+            cur->ws_info->pan_information.res_wp_long_pan_wide_ies[wp_l_idx].val = &test_res_wh_wp_ie_values[wp_l_idx][0];
+        }
+
+        for(wp_l_idx = 0; wp_l_idx < cur->ws_info->pan_information.num_res_wp_long_ffn_wide_ies; wp_l_idx ++)
+        {
+            cur->ws_info->pan_information.res_wp_long_ffn_wide_ies[wp_l_idx].len = cur->ws_info->pan_information.res_wp_long_ffn_wide_ie_lens[wp_l_idx];
+            cur->ws_info->pan_information.res_wp_long_ffn_wide_ies[wp_l_idx].val = &test_res_wh_wp_ie_values[wp_l_idx][0];
+        }
+
+        return(1);
+    }
+}
+#endif //#ifdef WISUN_TEST_IE_PASS_THROUGH
+
+#endif //WISUN_FAN_CORE_1_1
 
 static uint16_t ws_bootstrap_rank_get(protocol_interface_info_entry_t *cur)
 {
@@ -4243,7 +4620,10 @@ static void ws_bootstrap_pan_advert(protocol_interface_info_entry_t *cur)
         // set the JM IE in LLC
         ws_llc_set_jm_info(cur);
     }
-
+    if (cur->ws_info->pan_information.jm_num_of_metrics > 0 && cur->ws_info->pan_information.jm_num_of_metrics <= WS_WPIE_JM_IE_MAX_NUM_METRICS)
+    {
+        tr_info("== TX Pan-Advert JM-IE ver %d, PLF %d%%, num metrics %d", cur->ws_info->pan_information.jm_version, cur->ws_info->pan_information.jm_plf, cur->ws_info->pan_information.jm_num_of_metrics);
+    }
 #endif
     ws_set_asynch_channel_list(cur, &async_req);
     async_req.security.SecurityLevel = 0;
@@ -4283,6 +4663,7 @@ static void ws_bootstrap_pan_config(protocol_interface_info_entry_t *cur)
     asynch_request_t async_req;
     memset(&async_req, 0, sizeof(asynch_request_t));
     async_req.message_type = WS_FT_PAN_CONF;
+
     //Request UTT Header, Pan information and US and Net name from payload
     async_req.wh_requested_ie_list.utt_ie = true;
     async_req.wh_requested_ie_list.bt_ie = true;
@@ -4298,6 +4679,21 @@ static void ws_bootstrap_pan_config(protocol_interface_info_entry_t *cur)
 #if !defined(WISUN_RCP_ENABLE)
     async_req.wp_requested_nested_ie_list.vp_ie = true;
 #endif
+
+#ifdef WISUN_FAN_CORE_1_1
+    async_req.wh_requested_ie_list.res_wh_pan_wide_ie = true;
+    async_req.wh_requested_ie_list.res_wh_ffn_wide_ie = true;
+    async_req.wp_requested_nested_ie_list.res_wp_short_pan_wide_ie = true;
+    async_req.wp_requested_nested_ie_list.res_wp_short_ffn_wide_ie = true;
+    async_req.wp_requested_nested_ie_list.res_wp_long_pan_wide_ie = true;
+    async_req.wp_requested_nested_ie_list.res_wp_long_ffn_wide_ie = true;
+
+#ifdef WISUN_TEST_IE_PASS_THROUGH
+    ws_bootstrap_update_res_ie_info(cur);
+#endif // WISUN_TEST_IE_PASS_THROUGH
+
+#endif // WISUN_FAN_CORE_1_1
+
     ws_set_asynch_channel_list(cur, &async_req);
 
     async_req.security.SecurityLevel = mac_helper_default_security_level_get(cur);
@@ -4413,7 +4809,11 @@ static void ws_bootstrap_event_handler(arm_event_s *event)
                 cur->ws_info->pan_information.routing_cost = 0;
                 cur->ws_info->pan_information.rpl_routing_method = true;
                 cur->ws_info->pan_information.use_parent_bs = true;
+#ifdef WISUN_FAN_CORE_1_1
+                cur->ws_info->pan_information.version = WS_FAN_VERSION_1_1;
+#else
                 cur->ws_info->pan_information.version = WS_FAN_VERSION_1_0;
+#endif
 
 #if !defined(NO_AUTH_ENABLE) || defined(MBED_LIBRARY)
                 if (ti_wisun_config.auth_type != NO_AUTH) {
@@ -4778,6 +5178,23 @@ static void ws_bootstrap_state_change(protocol_interface_info_entry_t *cur, icmp
 {
     cur->bootsrap_state_machine_cnt = 1;
     cur->nwk_bootstrap_state = nwk_bootstrap_state;
+
+#ifdef WISUN_FAN_CORE_1_1
+    //get parent
+    parent_info_t *parent = ns_list_get_first(&cur->ws_info->parent_list_reserved);
+    //copy jm ie information
+
+    if (parent != NULL)
+    {
+        cur->ws_info->pan_information.jm_version = parent->pan_information.jm_version;
+        cur->ws_info->pan_information.jm_plf = parent->pan_information.jm_plf;
+
+        memcpy(cur->ws_info->pan_information.jm_metric_ids, parent->pan_information.jm_metric_ids,  WS_WPIE_JM_IE_MAX_NUM_METRICS );
+        memcpy(cur->ws_info->pan_information.jm_metric_lens, parent->pan_information.jm_metric_lens, WS_WPIE_JM_IE_MAX_NUM_METRICS );
+        memcpy(cur->ws_info->pan_information.jm_metric_values, parent->pan_information.jm_metric_values, (WS_WPIE_JM_IE_MAX_NUM_METRICS* WS_WPIE_JM_IE_METRIC_LEN_MAX) );
+
+    }
+#endif //WISUN_FAN_CORE_1_1
 }
 
 void ws_bootstrap_state_machine(protocol_interface_info_entry_t *cur)
@@ -4876,6 +5293,14 @@ void ws_bootstrap_state_machine(protocol_interface_info_entry_t *cur)
 #endif
             // Bootstrap_done event to application
             nwk_bootsrap_state_update(ARM_NWK_BOOTSTRAP_READY, cur);
+
+            // Send the registration refresh request after boot to trigger child NS (ARO).
+            cur->ws_info->reg_refresh_count = NCR_REQ_RETRIES;
+            // Add initial delay to refresh request for PC TX
+            cur->ws_info->reg_refresh_timer_sec = (NCR_RESP_WINDOW_SEC/NCR_REQ_RETRIES) + (2 * cur->ws_info->trickle_params_pan_discovery.Imin/10);
+            if (cur->ws_info->reg_refresh_timer_sec == 0) {
+                cur->ws_info->reg_refresh_timer_sec = 1;
+            }
             break;
         case ER_RPL_NETWORK_LEAVING:
             tr_debug("WS SM:RPL Leaving ready trigger discovery");
@@ -5034,6 +5459,22 @@ void ws_bootstrap_seconds_timer(protocol_interface_info_entry_t *cur, uint32_t s
             // Update all addressess. This function will update the timer value if needed
             cur->ws_info->aro_registration_timer = 0;
             ws_address_registration_update(cur, NULL);
+        }
+    }
+
+    // Registration refresh request timer/retry
+    if (cur->ws_info->reg_refresh_count) {
+        if (cur->ws_info->reg_refresh_timer_sec > seconds) {
+            cur->ws_info->reg_refresh_timer_sec -= seconds;
+        } else {
+            ws_registration_refresh_request(cur);
+            cur->ws_info->reg_refresh_count--;
+            if (cur->ws_info->reg_refresh_count) {
+                cur->ws_info->reg_refresh_timer_sec = NCR_RESP_WINDOW_SEC/NCR_REQ_RETRIES;
+                if (cur->ws_info->reg_refresh_timer_sec == 0) {
+                    cur->ws_info->reg_refresh_timer_sec = 1;
+                }
+            }
         }
     }
 

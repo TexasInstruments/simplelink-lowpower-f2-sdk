@@ -116,14 +116,16 @@ extern void NPIFrame_initialize(npiIncomingFrameCBack_t incomingFrameCB);
 extern NPIMSG_msg_t * NPIFrame_frameMsg(uint8_t *pIncomingMsg);
 
 // ----------------------------------------------------------------------------
-//! \brief      Collects serial message buffer.  Called based on events 
-//!             received from the transport layer.  When an entire message has 
-//!             been successfully received, it is passed back to NPI task via 
+//! \brief      Collects serial message buffer.  Called based on events
+//!             received from the transport layer.  When an entire message has
+//!             been successfully received, it is passed back to NPI task via
 //!             the callback function above: npiIncomingFrameCBack_t.
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
 extern void NPIFrame_collectFrameData(void);
+extern bool NPIFrame_IsSOP(void);
+extern void NPIFrame_Reset(void);
 
 #ifdef __cplusplus
 }

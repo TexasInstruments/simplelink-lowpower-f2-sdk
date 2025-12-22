@@ -31,6 +31,10 @@ typedef struct mac_nested_payload_IE_s {
     bool type_long: 1;       /**< True when Nested IE long format and false for short */
 } mac_nested_payload_IE_t;
 
+void mac_ie_header_parse(mac_header_IE_t *header_element, uint8_t *ptr);
+void mac_ie_payload_parse(mac_payload_IE_t *payload_element, uint8_t *ptr);
+void mac_ie_nested_id_parse(mac_nested_payload_IE_t *element, uint8_t *ptr);
+
 /** IE header element generic header write */
 uint8_t *mac_ie_header_base_write(uint8_t *ptr, uint8_t type, uint16_t length);
 

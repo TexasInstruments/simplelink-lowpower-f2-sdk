@@ -104,7 +104,11 @@ extern "C"
 #endif
 #else //MT_PROTOCOL_LEN_FIELD_2BYTES
 #ifndef NPI_TL_BUF_SIZE
-#define NPI_TL_BUF_SIZE         4096 // Enough space for max size UC + BC frames (1.5k each) + async frame (<500B)
+#if defined(DeviceFamily_CC13X1)
+#define NPI_TL_BUF_SIZE         2048 // Enough space for max size UC/BC frames (1.5k each). Reduced to save on RAM, but may be less performant (to be optimized).
+#else
+#define NPI_TL_BUF_SIZE         4096 // Enough space for max size UC + BC + Async frame simultaneously.
+#endif
 #endif    
 #endif //MT_PROTOCOL_LEN_FIELD_2BYTES
 

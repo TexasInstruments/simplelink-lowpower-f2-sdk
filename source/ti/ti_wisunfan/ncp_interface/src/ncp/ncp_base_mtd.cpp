@@ -121,26 +121,22 @@
 #include <ti/trx/TRX.h>
 #endif // WISUN_TRX
 
-#define WISUN_PROTOCOL_VERSION_MAJOR 1
-#define WISUN_PROTOCOL_VERSION_MINOR 0
-#define WISUN_PROTOCOL_VERSION_SECOND_MINOR 1
-
 #define INTERFACE_TYPE_WISUN 4
-
+#define MAX_VER_LEN 100
 #define STACK_NAME "TIWISUNFAN"
-#define STACK_VERSION "1.0.2"
 #define BUILD_INFO
 #define OTHER_INFO "RELEASE"
 #define TRACE_GROUP "ncp"
 
 #define PROTOCOL_NAME "Wi-SUNFAN"
-#define PROTOCOL_VERSION "1.0"
 #define CONNECTED_DEVICES_BLOCK_SIZE 2
 
-#ifdef WISUN_FAN_DEBUG
+#ifdef TI_WISUN_FAN_DEBUG
 volatile uint32_t num_drop_frame_from_host = 0;
 volatile uint32_t num_ip_packet_to_host = 0;
+extern "C" bool disable_ns_messages;
 #endif
+
 
 namespace ot {
 namespace Ncp {
@@ -154,6 +150,9 @@ uint8_t *connected_device_ipv6_addrs;
 
 // Used by DODAG_ROUTE property
 uint8_t dodag_route_dest_addr[16] = {0};
+
+extern "C" const char *wisun_stack_version;
+extern "C" const char *wisun_protocol_version;
 
 extern "C" configurable_props_t cfg_props;
 
@@ -181,22 +180,30 @@ template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_LAST_STATUS>(void)
 
 const char *GetProtocolVersionString(void)
 {
-    static const char sVersion[] = PROTOCOL_NAME "/" PROTOCOL_VERSION
-        ; // Trailing semicolon to end statement.
-
+    static char sVersion[MAX_VER_LEN];
+    static bool versionAppended = false;
+    if (!versionAppended && wisun_protocol_version) {
+        snprintf(sVersion, MAX_VER_LEN, "%s/%s", PROTOCOL_NAME, wisun_protocol_version);
+        versionAppended = true;
+    }
     return sVersion;
 }
 
 const char *GetVersionString(void)
 {
 
-    static const char sVersion[] = STACK_NAME "/" STACK_VERSION "; " OTHER_INFO
+    static char sVersion1[MAX_VER_LEN];
+    static char sVersion2[] = " ; " OTHER_INFO
 #if defined(__DATE__)
                                          "; " __DATE__ " " __TIME__
 #endif
         ; // Trailing semicolon to end statement.
-
-    return sVersion;
+    static bool versionAppended = false;
+    if (!versionAppended && wisun_stack_version) {
+        snprintf(sVersion1, MAX_VER_LEN, "%s/%s%s", STACK_NAME, wisun_stack_version, sVersion2);
+        versionAppended = true;
+    }
+    return sVersion1;
 }
 
 template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_PROTOCOL_VERSION>(void)
@@ -249,7 +256,7 @@ template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_HWADDR>(void)
     uint8_t i = 0;
 
     SuccessOrExit(error = mDecoder.ReadEui64(hwAddr));
-    
+
     for(i = 0; i < HWADDR_SIZE; i++)
     {
         cfg_props.hwaddr[i] = hwAddr.bytes[i];
@@ -470,10 +477,10 @@ template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_NET_STACK_UP>(void)
 #else  // 1312
        		IOCPortConfigureSet(IOID_13, IOC_PORT_MCU_SWV, IOC_STD_OUTPUT);
 #endif // 1312
-#endif // SWITCH_NCP_TO_TRACE              
-        
+#endif // SWITCH_NCP_TO_TRACE
+
     		//bringup the wisunstack
-        	error = nanostack_net_stack_up();        
+        	error = nanostack_net_stack_up();
 
 #ifdef WISUN_TEST_MPL_EMBEDDED
             // Set up UDP socket when network stack is up
@@ -586,9 +593,60 @@ template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_PHY_REGION>(void)
     return mEncoder.WriteUint8(cfg_props.config_reg_domain);
 }
 
+template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_PHY_REGION>(void)
+{
+    uint16_t panid;
+    otError  error = OT_ERROR_NONE;
+
+    SuccessOrExit(error = mDecoder.ReadUint8(cfg_props.config_reg_domain));
+
+exit:
+    return error;
+}
+
+template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_PHY_OPERATING_CLASS>(void)
+{
+    return mEncoder.WriteUint8(cfg_props.operating_class);
+}
+
+template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_PHY_OPERATING_CLASS>(void)
+{
+    otError  error = OT_ERROR_NONE;
+
+    SuccessOrExit(error = mDecoder.ReadUint8(cfg_props.operating_class));
+
+exit:
+    return error;
+}
+
+template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_PHY_TOTAL_NUMBER_CHANNEL>(void)
+{
+    return mEncoder.WriteUint8(cfg_props.config_number_of_channels);
+}
+
+template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_PHY_TOTAL_NUMBER_CHANNEL>(void)
+{
+    otError  error = OT_ERROR_NONE;
+
+    SuccessOrExit(error = mDecoder.ReadUint8(cfg_props.config_number_of_channels));
+
+exit:
+    return error;
+}
+
 template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_PHY_MODE_ID>(void)
 {
     return mEncoder.WriteUint8(cfg_props.config_phy_id);
+}
+
+template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_PHY_MODE_ID>(void)
+{
+    otError  error = OT_ERROR_NONE;
+
+    SuccessOrExit(error = mDecoder.ReadUint8(cfg_props.config_phy_id));
+
+exit:
+    return error;
 }
 
 template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_PHY_UNICAST_CHANNEL_LIST>(void)
@@ -698,10 +756,53 @@ template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_PHY_ASYNC_CHANNEL_LIS
        return(error);
 }
 
+template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_PHY_REGULATORY_CHANNEL_LIST>(void)
+{
+    otError error  = OT_ERROR_NONE;
+    uint8_t i = 0;
+
+    for(i = 0; i < CHANNEL_BITMAP_SIZE; i++)
+    {
+        SuccessOrExit(error = mEncoder.WriteUint8(cfg_props.regulatory_channel_list[i]));
+    }
+
+exit:
+    return(error);
+
+}
+
+template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_PHY_REGULATORY_CHANNEL_LIST>(void)
+{
+   otError error  = OT_ERROR_NONE;
+   uint8_t i = 0;
+
+   const uint8_t *chListPtr = NULL;
+   uint16_t       chListLen = 0;
+
+   SuccessOrExit(error = mDecoder.ReadDataWithLen(chListPtr, chListLen));
+
+   for(i = 0; i < CHANNEL_BITMAP_SIZE; i++)
+   {
+       cfg_props.regulatory_channel_list[i] = chListPtr[i];
+   }
+
+   exit:
+       return(error);
+}
 
 template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_PHY_CH_SPACING>(void)
 {
     return mEncoder.WriteUint16(cfg_props.config_channel_spacing);
+}
+
+template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_PHY_CH_SPACING>(void)
+{
+    otError  error = OT_ERROR_NONE;
+
+    SuccessOrExit(error = mDecoder.ReadUint16(cfg_props.config_channel_spacing));
+
+exit:
+    return error;
 }
 
 template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_PHY_CHO_CENTER_FREQ>(void)
@@ -714,6 +815,15 @@ template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_PHY_CHO_CENTER_FREQ>(
     SuccessOrExit(error = mEncoder.WriteUint16(Ch0freq_MHz));
     SuccessOrExit(error = mEncoder.WriteUint16(Ch0freq_kHz));
 
+    exit:
+        return error;
+}
+
+template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_PHY_CHO_CENTER_FREQ>(void)
+{
+    otError     error  = OT_ERROR_NONE;
+
+    SuccessOrExit(error = mDecoder.ReadUint32(cfg_props.ch0_center_frequency));
     exit:
         return error;
 }
@@ -940,6 +1050,28 @@ exit:
     return error;
 }
 
+template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_DISABLENSMESSAGES_COMMAND>(void)
+{
+    otError error = OT_ERROR_NONE;
+
+    SuccessOrExit(error = mEncoder.WriteBool(disable_ns_messages));
+exit:
+    return error;
+}
+
+template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_DISABLENSMESSAGES_COMMAND>(void)
+{
+    otError error = OT_ERROR_NONE;
+    bool enable = false;
+
+    SuccessOrExit(error = mDecoder.ReadBool(enable));
+
+    disable_ns_messages = enable;
+
+exit:
+    return error;
+}
+
 #endif //TI_WISUN_FAN_DEBUG
 
 extern "C" uint8_t *bitcopy(uint8_t *restrict dst, const uint8_t *restrict src, uint_fast8_t bits);
@@ -1036,7 +1168,7 @@ extern "C" void nanostack_process_stream_net_from_stack(buffer_t *buf)
 #ifdef WISUN_FAN_DEBUG
     num_ip_packet_to_host++;
 #endif
-    
+
     if (ncp == NULL || buf->ipv6_buf_ptr == 0xFFFF)
     {
        // tr_debug("\n NCP Instance is empty or IPv6 Buf Ptr is invalid!!!");
@@ -1733,4 +1865,3 @@ extern "C" void nanostack_process_stream_net_from_stack(buffer_t *buf)
 
 } // name space Ncp
 } // name space ot
-

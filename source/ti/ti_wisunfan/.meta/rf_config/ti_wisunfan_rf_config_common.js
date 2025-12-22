@@ -116,22 +116,70 @@ const commonSlLr5KbpsSettings = {
 };
 
 // Object containing 2GFSK, 50kbps settings for the all devices/boards
-const common2Gfsk50KbpsSettings = {
+const common2Gfsk50KbpsWisun1aSettings = {
     moduleName: "/ti/devices/radioconfig/settings/prop",
     args: {
         codeExportConfig: {
             symGenMethod: "Custom",
             useConst: true,
-            rfMode: "RF_prop_2gfsk50kbps154g",
-            txPower: "txPowerTable_2gfsk50kbps154g",
-            txPowerSize: "TX_POWER_TABLE_SIZE_2gfsk50kbps154g",
-            overrides: "pOverrides_2gfsk50kbps154g",
+            rfMode: "RF_prop_2gfsk50kbps154gWisun1a",
+            txPower: "txPowerTable_2gfsk50kbps154gWisun1a",
+            txPowerSize: "TX_POWER_TABLE_SIZE_2gfsk50kbps154gWisun1a",
+            overrides: "pOverrides_2gfsk50kbps154gWisun1a",
             cmdList_prop: ["cmdFs", "cmdPropTxAdv", "cmdPropRxAdv",
                 "cmdPropCs"],
-            cmdFs: "RF_cmdFs_2gfsk50kbps154g",
-            cmdPropTxAdv: "RF_cmdPropTxAdv_2gfsk50kbps154g",
-            cmdPropRxAdv: "RF_cmdPropRxAdv_2gfsk50kbps154g",
-            cmdPropCs: "RF_cmdPropCs_2gfsk50kbps154g",
+            cmdFs: "RF_cmdFs_2gfsk50kbps154gWisun1a",
+            cmdPropTxAdv: "RF_cmdPropTxAdv_2gfsk50kbps154gWisun1a",
+            cmdPropRxAdv: "RF_cmdPropRxAdv_2gfsk50kbps154gWisun1a",
+            cmdPropCs: "RF_cmdPropCs_2gfsk50kbps154gWisun1a",
+            useMulti: false
+        }
+    },
+    phyDropDownOption: {
+        name: "phy50kbps",
+        displayName: "50 kbps, 2-GFSK"
+    },
+    phy154Settings: {
+        freq433: {
+            ID: "APIMAC_50KBPS_433MHZ_PHY_128",
+            channelPage: "APIMAC_CHANNEL_PAGE_10",
+            channelSpacing: "200",
+            totalChannels: "7",
+            ccaType: "1"
+        },
+        freq863: {
+            ID: "APIMAC_50KBPS_868MHZ_PHY_3",
+            channelPage: "APIMAC_CHANNEL_PAGE_9",
+            channelSpacing: "200",
+            totalChannels: "34",
+            ccaType: "1"
+        },
+        freq915: {
+            ID: "APIMAC_50KBPS_915MHZ_PHY_1",
+            channelPage: "APIMAC_CHANNEL_PAGE_9",
+            channelSpacing: "200",
+            totalChannels: "129",
+            ccaType: "1"
+        }
+    }
+};
+
+const common2Gfsk50KbpsWisun1bSettings = {
+    moduleName: "/ti/devices/radioconfig/settings/prop",
+    args: {
+        codeExportConfig: {
+            symGenMethod: "Custom",
+            useConst: true,
+            rfMode: "RF_prop_2gfsk50kbps154gWisun1b",
+            txPower: "txPowerTable_2gfsk50kbps154gWisun1b",
+            txPowerSize: "TX_POWER_TABLE_SIZE_2gfsk50kbps154gWisun1b",
+            overrides: "pOverrides_2gfsk50kbps154gWisun1b",
+            cmdList_prop: ["cmdFs", "cmdPropTxAdv", "cmdPropRxAdv",
+                "cmdPropCs"],
+            cmdFs: "RF_cmdFs_2gfsk50kbps154gWisun1b",
+            cmdPropTxAdv: "RF_cmdPropTxAdv_2gfsk50kbps154gWisun1b",
+            cmdPropRxAdv: "RF_cmdPropRxAdv_2gfsk50kbps154gWisun1b",
+            cmdPropCs: "RF_cmdPropCs_2gfsk50kbps154gWisun1b",
             useMulti: false
         }
     },
@@ -165,22 +213,22 @@ const common2Gfsk50KbpsSettings = {
 };
 
 // Object containing 2GFSK, 100kbps settings for the all devices/boards
-const common2Gfsk100KbpsSettings = {
+const common2Gfsk100KbpsWisun2aSettings = {
     moduleName: "/ti/devices/radioconfig/settings/prop",
     args: {
         codeExportConfig: {
             symGenMethod: "Custom",
             useConst: true,
-            rfMode: "RF_prop_2gfsk100kbps154g",
-            txPower: "txPowerTable_2gfsk100kbps154g",
-            txPowerSize: "TX_POWER_TABLE_SIZE_2gfsk100kbps154g",
-            overrides: "pOverrides_2gfsk100kbps154g",
+            rfMode: "RF_prop_2gfsk100kbps154gWisun2a",
+            txPower: "txPowerTable_2gfsk100kbps154gWisun2a",
+            txPowerSize: "TX_POWER_TABLE_SIZE_2gfsk100kbps154gWisun2a",
+            overrides: "pOverrides_2gfsk100kbps154gWisun2a",
             cmdList_prop: ["cmdFs", "cmdPropTxAdv", "cmdPropRxAdv",
                 "cmdPropCs"],
-            cmdFs: "RF_cmdFs_2gfsk100kbps154g",
-            cmdPropRxAdv: "RF_cmdPropRxAdv_2gfsk100kbps154g",
-            cmdPropTxAdv: "RF_cmdPropTxAdv_2gfsk100kbps154g",
-            cmdPropCs: "RF_cmdPropCs_2gfsk100kbps154g",
+            cmdFs: "RF_cmdFs_2gfsk100kbps154gWisun2a",
+            cmdPropRxAdv: "RF_cmdPropRxAdv_2gfsk100kbps154gWisun2a",
+            cmdPropTxAdv: "RF_cmdPropTxAdv_2gfsk100kbps154gWisun2a",
+            cmdPropCs: "RF_cmdPropCs_2gfsk100kbps154gWisun2a",
             useMulti: false
         }
     },
@@ -196,6 +244,36 @@ const common2Gfsk100KbpsSettings = {
     }
 };
 
+const common2Gfsk100KbpsWisun2bSettings = {
+    moduleName: "/ti/devices/radioconfig/settings/prop",
+    args: {
+        codeExportConfig: {
+            symGenMethod: "Custom",
+            useConst: true,
+            rfMode: "RF_prop_2gfsk100kbps154gWisun2b",
+            txPower: "txPowerTable_2gfsk100kbps154gWisun2b",
+            txPowerSize: "TX_POWER_TABLE_SIZE_2gfsk100kbps154gWisun2b",
+            overrides: "pOverrides_2gfsk100kbps154gWisun2b",
+            cmdList_prop: ["cmdFs", "cmdPropTxAdv", "cmdPropRxAdv",
+                "cmdPropCs"],
+            cmdFs: "RF_cmdFs_2gfsk100kbps154gWisun2b",
+            cmdPropRxAdv: "RF_cmdPropRxAdv_2gfsk100kbps154gWisun2b",
+            cmdPropTxAdv: "RF_cmdPropTxAdv_2gfsk100kbps154gWisun2b",
+            cmdPropCs: "RF_cmdPropCs_2gfsk100kbps154gWisun2b",
+            useMulti: false
+        }
+    },
+    phyDropDownOption: {
+        name: "phy100kbps",
+        displayName: "100 kbps, 2-GFSK"
+    },
+    phy154Settings: {
+        freq866: {
+            ID: "APIMAC_100KBPS_866MHZ_PHY_5",
+            channelPage: "APIMAC_CHANNEL_PAGE_9"
+        }
+    }
+};
 
 // Object containing 2GFSK, 150kbps settings for the all devices/boards
 const common2Gfsk150KbpsSettings = {
@@ -230,22 +308,57 @@ const common2Gfsk150KbpsSettings = {
 };
 
 // Object containing 2GFSK, 200kbps settings for the all devices/boards
-const common2Gfsk200KbpsSettings = {
+const common2Gfsk200KbpsWisun4aSettings = {
     moduleName: "/ti/devices/radioconfig/settings/prop",
     args: {
         codeExportConfig: {
             symGenMethod: "Custom",
             useConst: true,
-            rfMode: "RF_prop_2gfsk200kbps154g",
-            txPower: "txPowerTable_2gfsk200kbps154g",
-            txPowerSize: "TX_POWER_TABLE_SIZE_2gfsk200kbps154g",
-            overrides: "pOverrides_2gfsk200kbps154g",
+            rfMode: "RF_prop_2gfsk200kbps154gWisun4a",
+            txPower: "txPowerTable_2gfsk200kbps154gWisun4a",
+            txPowerSize: "TX_POWER_TABLE_SIZE_2gfsk200kbps154gWisun4a",
+            overrides: "pOverrides_2gfsk200kbps154gWisun4a",
             cmdList_prop: ["cmdFs", "cmdPropTxAdv", "cmdPropRxAdv",
                 "cmdPropCs"],
-            cmdFs: "RF_cmdFs_2gfsk200kbps154g",
-            cmdPropRxAdv: "RF_cmdPropRxAdv_2gfsk200kbps154g",
-            cmdPropTxAdv: "RF_cmdPropTxAdv_2gfsk200kbps154g",
-            cmdPropCs: "RF_cmdPropCs_2gfsk200kbps154g",
+            cmdFs: "RF_cmdFs_2gfsk200kbps154gWisun4a",
+            cmdPropRxAdv: "RF_cmdPropRxAdv_2gfsk200kbps154gWisun4a",
+            cmdPropTxAdv: "RF_cmdPropTxAdv_2gfsk200kbps154gWisun4a",
+            cmdPropCs: "RF_cmdPropCs_2gfsk200kbps154gWisun4a",
+            useMulti: false
+        }
+    },
+    phyDropDownOption: {
+        name: "phy200kbps",
+        displayName: "200 kbps, 2-GFSK"
+    },
+    phy154Settings: {
+        freq863: {
+            ID: "APIMAC_200KBPS_868MHZ_PHY_133",
+            channelPage: "APIMAC_CHANNEL_PAGE_10"
+        },
+        freq915: {
+            ID: "APIMAC_200KBPS_915MHZ_PHY_132",
+            channelPage: "APIMAC_CHANNEL_PAGE_10"
+        }
+    }
+};
+
+const common2Gfsk200KbpsWisun4bSettings = {
+    moduleName: "/ti/devices/radioconfig/settings/prop",
+    args: {
+        codeExportConfig: {
+            symGenMethod: "Custom",
+            useConst: true,
+            rfMode: "RF_prop_2gfsk200kbps154gWisun4b",
+            txPower: "txPowerTable_2gfsk200kbps154gWisun4b",
+            txPowerSize: "TX_POWER_TABLE_SIZE_2gfsk200kbps154gWisun4b",
+            overrides: "pOverrides_2gfsk200kbps154gWisun4b",
+            cmdList_prop: ["cmdFs", "cmdPropTxAdv", "cmdPropRxAdv",
+                "cmdPropCs"],
+            cmdFs: "RF_cmdFs_2gfsk200kbps154gWisun4b",
+            cmdPropRxAdv: "RF_cmdPropRxAdv_2gfsk200kbps154gWisun4b",
+            cmdPropTxAdv: "RF_cmdPropTxAdv_2gfsk200kbps154gWisun4b",
+            cmdPropCs: "RF_cmdPropCs_2gfsk200kbps154gWisun4b",
             useMulti: false
         }
     },
@@ -636,7 +749,7 @@ const phyMap_updated2 = {
                         ChanSpacing: 200,
                         FreqBand: "902-928 MHz",
                         PhyModeID: [2, 4],
-                        ChannelMask: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128]
+                        ChannelMask: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128]
                     }
                 }
             },
@@ -649,7 +762,7 @@ const phyMap_updated2 = {
                         ChanSpacing: 200,
                         FreqBand: "902-928 MHz",
                         PhyModeID: [2, 4],
-                        ChannelMask: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128]
+                        ChannelMask: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128]
                     }
                 }
             },
@@ -662,7 +775,7 @@ const phyMap_updated2 = {
                         ChanSpacing: 400,
                         FreqBand: "902-928 MHz",
                         PhyModeID: [5, 6],
-                        ChannelMask: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63]
+                        ChannelMask: [0, 1, 2, 3, 4, 5, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63]
                     },
                 }
             },
@@ -675,7 +788,7 @@ const phyMap_updated2 = {
                         ChanSpacing: 400,
                         FreqBand: "902-928 MHz",
                         PhyModeID: [5, 6],
-                        ChannelMask: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63]
+                        ChannelMask: [0, 1, 2, 3, 4, 5,  33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63]
                     },
                 }
             },
@@ -688,7 +801,7 @@ const phyMap_updated2 = {
                         ChanSpacing: 600,
                         FreqBand: "902-928 MHz",
                         PhyModeID: [8],
-                        ChannelMask: [0, 1, 2, 3, 4, 5, 6, 7, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41]
+                        ChannelMask: [0, 1, 2, 3, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41]
                     }
                 }
             },
@@ -891,14 +1004,17 @@ function mergeRFSettings(obj1, obj2)
  * @param freqSub1 - Sub-1 GHz frequency
  * @returns Array - Array of phy settings
  */
-function getPropPhySettings(inst)
+function getPropPhySettings(inst, phyModeID=null)
 {
     // Get all Sub-1 GHz phy defaults
     let boardSpecificSettings = getBoardPhySettings(inst);
     //return boardSpecificSettings.defaultPropPhyList;
     let setting = null
+    if (phyModeID == null) {
+        phyModeID = inst.phyModeID;
+    }
 
-    switch(inst.phyModeID)
+    switch(phyModeID)
     {
         case "1":
             setting = boardSpecificSettings.default50kbpsList_12_5_dev;
@@ -924,7 +1040,6 @@ function getPropPhySettings(inst)
         case "8":
             setting = boardSpecificSettings.default300kbpsList_75dev;
             break;
-
     }
 
     if(setting == null)
@@ -1375,10 +1490,11 @@ function getSupportedPhyIDMode(region)
         case "JP":
             phyModeIDList = ["2", "4", "5", "7", "8"];
             break;
-
-        //phyModeIDList = ["1", "2", "3", "4", "5", "6", "7"];
+        case "ALL_PHY_IDS":
+            phyModeIDList = ["1", "2", "3", "4", "5", "6", "7", "8"];
+            // phyModeIDList = ["1", "2", "3", "5", "6", "8"];
+            break;
     }
-    //phyModeIDList.push("Custom");
     return phyModeIDList;
 }
 
@@ -1653,10 +1769,13 @@ function getDefaults()
 }
 exports = {
     commonSlLr5KbpsSettings: commonSlLr5KbpsSettings,
-    common2Gfsk50KbpsSettings: common2Gfsk50KbpsSettings,
-    common2Gfsk100KbpsSettings: common2Gfsk100KbpsSettings,
+    common2Gfsk50KbpsWisun1aSettings: common2Gfsk50KbpsWisun1aSettings,
+    common2Gfsk50KbpsWisun1bSettings: common2Gfsk50KbpsWisun1bSettings,
+    common2Gfsk100KbpsWisun2aSettings: common2Gfsk100KbpsWisun2aSettings,
+    common2Gfsk100KbpsWisun2bSettings: common2Gfsk100KbpsWisun2bSettings,
     common2Gfsk150KbpsSettings: common2Gfsk150KbpsSettings,
-    common2Gfsk200KbpsSettings: common2Gfsk200KbpsSettings,
+    common2Gfsk200KbpsWisun4aSettings: common2Gfsk200KbpsWisun4aSettings,
+    common2Gfsk200KbpsWisun4bSettings: common2Gfsk200KbpsWisun4bSettings,
     common2Gfsk300KbpsSettings: common2Gfsk300KbpsSettings,
     commonIEEESettings: commonIEEESettings,
     mergeRFSettings: mergeRFSettings,
@@ -1687,5 +1806,6 @@ exports = {
     getOpModeIDDisplayName: getOpModeIDDisplayName,
     setOpModeClass: setOpModeClass,
     setOpModeID: setOpModeID,
-    getSupportedOpClassOptions: getSupportedOpClassOptions
+    getSupportedOpClassOptions: getSupportedOpClassOptions,
+    getSupportedPhyIDMode: getSupportedPhyIDMode
 };

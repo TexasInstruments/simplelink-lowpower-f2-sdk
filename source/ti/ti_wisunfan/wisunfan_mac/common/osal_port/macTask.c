@@ -71,6 +71,8 @@
  
  *****************************************************************************/
 
+#include <unistd.h>
+
 #include "macTask.h"
 #include "mac_main.h"
 #include "mac_data.h"
@@ -116,7 +118,6 @@
 
 #ifdef FEATURE_FREQ_HOP_MODE
 #include "ti_wisunfan_config.h"
-extern FHIE_channelPlan_t FHIE_channelPlan[];
 #endif
 
 // TODO: move this
@@ -213,7 +214,7 @@ uint8 (*pMacCbackQueryRetransmit)() = NULL;
  */
 uint8 (*pMacCbackCheckPending)() = NULL;
 
-uint8_t AppTaskId;
+uint8_t AppTaskId; // Unused
 
 #ifdef FEATURE_SECURE_COMMISSIONING
 extern TRNG_Handle TRNG_handle;
@@ -315,6 +316,8 @@ void* macTaskGetTaskHndl(void)
 }
 
 #ifdef FEATURE_FREQ_HOP_MODE
+
+#ifndef WISUN_RCP_ENABLE
 /*
  * 0 ==> regulatory domain
  * 1 ==> explicit freq
@@ -367,6 +370,7 @@ void macFH_ChanPlanInit(void)
     }
 }
 #endif
+#endif
 
 /**************************************************************************************************
  * @fn          macInit
@@ -392,7 +396,7 @@ static void macInit(macUserCfg_t *pUserCfg)
 #endif /* USE_DMM */
 
 #ifdef FEATURE_MAC_SECURITY
-#if !defined(DeviceFamily_CC13X2) && !defined(DeviceFamily_CC26X2) && !defined(DeviceFamily_CC13X2X7) && !defined(DeviceFamily_CC13X4)
+#ifdef CC13X0_SUPPORT
   CryptoCC26XX_Params CryptoCC26XXParams;
 #elif !defined(BLE_START)
   AESCCM_Params AESCCMParams;
@@ -447,7 +451,7 @@ static void macInit(macUserCfg_t *pUserCfg)
 #endif /* USE_DMM */
 
 #ifdef FEATURE_MAC_SECURITY
-#if !defined(DeviceFamily_CC13X2) && !defined(DeviceFamily_CC26X2) && !defined(DeviceFamily_CC13X2X7) && !defined(DeviceFamily_CC13X4)
+#ifdef CC13X0_SUPPORT
   extern CryptoCC26XX_Handle Crypto_handle;
 
   CryptoCC26XX_init();
@@ -506,7 +510,7 @@ static void macInit(macUserCfg_t *pUserCfg)
       // SystemP_abort("TRNG open failed");
   }
 #endif /* FEATURE_SECURE_COMMISSIONING */
-#endif /*!defined(DeviceFamily_CC13X2) && !defined(DeviceFamily_CC26X2) && !defined(DeviceFamily_CC13X2X7) && !defined(DeviceFamily_CC13X4)*/
+#endif /* if CC13X0_SUPPORT */
 #endif /* FEATURE_MAC_SECURITY */
 
 #if defined(FEATURE_WISUN_SUPPORT) && !defined(WISUN_RCP_ENABLE)
@@ -521,23 +525,17 @@ static void macInit(macUserCfg_t *pUserCfg)
 
 #ifdef COPROCESSOR
   /* Initialize the MAC function tables and features */
-  MAC_InitDevice();
-#ifdef FEATURE_FULL_FUNCTION_DEVICE
   MAC_InitCoord();
-#endif /* FEATURE_FULL_FUNCTION_DEVICE */
 #else /* ! COPROCESSOR */
   /* Initialize the MAC function tables and features */
-
-#ifdef FEATURE_FULL_FUNCTION_DEVICE
   MAC_InitCoord();
-#else /* FEATURE_FULL_FUNCTION_DEVICE */
-  MAC_InitDevice();
-#endif
 #endif /* COPROCESSOR */
 
 #ifdef FEATURE_FREQ_HOP_MODE
   MAC_InitFH();
+#ifndef WISUN_RCP_ENABLE
   macFH_ChanPlanInit();
+#endif
 #endif /* FEATURE_FREQ_HOP_MODE */
 
    /* Initialize MAC buffer */
@@ -578,9 +576,18 @@ static void *macTaskFxn(void *a0)
   macEventHdr_t       hdr;
   uint32_t            key;
   uint8               status;
-//  uint32_t            macEvents = 0;
-
+  halIntState_t intState;
   macUserCfg_t* userCfg = (macUserCfg_t*) a0;
+
+  while (1) {
+      HAL_ENTER_CRITICAL_SECTION(intState);
+      if(rcp_lmac_store.start_flag == true) {
+          HAL_EXIT_CRITICAL_SECTION(intState);
+          break;
+      }
+      HAL_EXIT_CRITICAL_SECTION(intState);
+      usleep(100);
+  }
 
   /* initialize the MAC
    */

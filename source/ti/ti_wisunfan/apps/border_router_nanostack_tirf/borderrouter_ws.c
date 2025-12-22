@@ -353,7 +353,7 @@ static int wisun_interface_up(void)
             return -1;
         }
     }
-    ret = ws_management_channel_mask_set(ws_br_handler.ws_interface_id, NULL);
+    ret = ws_management_channel_mask_set(ws_br_handler.ws_interface_id, cfg_props.uc_channel_list, cfg_props.bc_channel_list);
     if (ret != 0) {
         return -1;
     }
@@ -835,7 +835,7 @@ void fetch_neighbor_details()
 {
     protocol_interface_info_entry_t *cur;
     cur = protocol_stack_interface_info_get(IF_6LoWPAN);
-    if(!cur || !cur->mac_parameters || !cur->mac_parameters->mac_neighbor_table)
+    if(!cur || !cur->ws_info || !cur->mac_parameters || !cur->mac_parameters->mac_neighbor_table)
     {
         tr_debug("fetch_neighbor_details: NULL pointer");
         return;

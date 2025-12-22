@@ -199,8 +199,6 @@ const uint8_t test_pa_data[100] = {
 uint8_t fixed_key[16] = { 0xB9, 0x42, 0x70, 0x4F, 0xB4, 0xEC, 0x2D, 0xFD,
                           0x53, 0x02, 0x52, 0x4D, 0x08, 0x40, 0x51, 0x00 };
 
-extern rcp_lmac_internal_t rcp_lmac_store;
-
 /*!
  Enables the Frequency hopping operation.
 
@@ -397,43 +395,40 @@ static void test_timac_initialize()
                                 excludeChannels);
     }
 
-
-#ifdef FEATURE_FULL_FUNCTION_DEVICE
-
-    ApiMac_mlmeSetFhReqUint8(ApiMac_FHAttribute_broadcastDwellInterval, cfg_props.bc_dwell_interval);
-    ApiMac_mlmeSetFhReqUint32(ApiMac_FHAttribute_BCInterval, cfg_props.bc_interval);
-    ApiMac_mlmeSetFhReqUint8(ApiMac_FHAttribute_broadcastChannelFunction, cfg_props.bc_channel_function);
-    if(cfg_props.bc_channel_function == 0) //fixed channel
-    {
-        ApiMac_mlmeSetFhReqUint16(ApiMac_FHAttribute_broadcastFixedChannel, cfg_props.bc_fixed_channel);
-    }
-    else //DH1CF
-    {
-        sizeOfChannelMask = sizeof(cfg_props.bc_channel_list)/sizeof(uint8_t);
-        if(sizeOfChannelMask > MAC_154G_CHANNEL_BITMAP_SIZ)
+    if (cfg_props.ffd) {
+        ApiMac_mlmeSetFhReqUint8(ApiMac_FHAttribute_broadcastDwellInterval, cfg_props.bc_dwell_interval);
+        ApiMac_mlmeSetFhReqUint32(ApiMac_FHAttribute_BCInterval, cfg_props.bc_interval);
+        ApiMac_mlmeSetFhReqUint8(ApiMac_FHAttribute_broadcastChannelFunction, cfg_props.bc_channel_function);
+        if(cfg_props.bc_channel_function == 0) //fixed channel
         {
-           sizeOfChannelMask = MAC_154G_CHANNEL_BITMAP_SIZ;
+            ApiMac_mlmeSetFhReqUint16(ApiMac_FHAttribute_broadcastFixedChannel, cfg_props.bc_fixed_channel);
         }
+        else //DH1CF
+        {
+            sizeOfChannelMask = sizeof(cfg_props.bc_channel_list)/sizeof(uint8_t);
+            if(sizeOfChannelMask > MAC_154G_CHANNEL_BITMAP_SIZ)
+            {
+            sizeOfChannelMask = MAC_154G_CHANNEL_BITMAP_SIZ;
+            }
 
+            memset(excludeChannels, 0, MAC_154G_CHANNEL_BITMAP_SIZ);
+
+            for(idx = 0; idx < sizeOfChannelMask; idx++)
+            {
+            excludeChannels[idx] = ~cfg_props.bc_channel_list[idx];
+            }
+            ApiMac_mlmeSetFhReqArray(ApiMac_FHAttribute_broadcastExcludedChannels,
+                                    excludeChannels);
+        }
+    } else {
+        ApiMac_mlmeSetFhReqUint8(ApiMac_FHAttribute_broadcastDwellInterval, 0);
+        ApiMac_mlmeSetFhReqUint32(ApiMac_FHAttribute_BCInterval, 0);
+        ApiMac_mlmeSetFhReqUint8(ApiMac_FHAttribute_broadcastChannelFunction, 0);
+        ApiMac_mlmeSetFhReqUint16(ApiMac_FHAttribute_broadcastFixedChannel, 0);
         memset(excludeChannels, 0, MAC_154G_CHANNEL_BITMAP_SIZ);
-
-        for(idx = 0; idx < sizeOfChannelMask; idx++)
-        {
-           excludeChannels[idx] = ~cfg_props.bc_channel_list[idx];
-        }
         ApiMac_mlmeSetFhReqArray(ApiMac_FHAttribute_broadcastExcludedChannels,
                                 excludeChannels);
     }
-
-#else
-    ApiMac_mlmeSetFhReqUint8(ApiMac_FHAttribute_broadcastDwellInterval, 0);
-    ApiMac_mlmeSetFhReqUint32(ApiMac_FHAttribute_BCInterval, 0);
-    ApiMac_mlmeSetFhReqUint8(ApiMac_FHAttribute_broadcastChannelFunction, 0);
-    ApiMac_mlmeSetFhReqUint16(ApiMac_FHAttribute_broadcastFixedChannel, 0);
-    memset(excludeChannels, 0, MAC_154G_CHANNEL_BITMAP_SIZ);
-    ApiMac_mlmeSetFhReqArray(ApiMac_FHAttribute_broadcastExcludedChannels,
-                            excludeChannels);
-#endif
 
 #ifdef MAC_DUTY_CYCLE_CHECKING
     ApiMac_mlmeSetReqBool(ApiMac_attribute_dutyCycleEnabled, true);

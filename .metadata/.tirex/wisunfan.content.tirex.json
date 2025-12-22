@@ -10012,6 +10012,74 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/README.html",
+        "resourceType": "categoryInfo",
+        "name": "rcp_lmac",
+        "devtools": [
+            "LP-CC1311P3"
+        ],
+        "devices": [
+            "CC1311P3"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1311P3"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1311P3"
+        ],
+        "devtools": [
+            "LP-CC1311P3"
+        ],
+        "location": "../../examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/ticlang/rcp_lmac_LP_CC1311P3_tirtos7_ticlang.projectspec",
+        "name": "rcp_lmac",
+        "description": "rcp_lmac",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan",
+            "rcp_lmac",
+            "TI-RTOS7",
+            "TI Clang Compiler"
+        ]
+    },
+    {
         "location": "../../examples/rtos/LP_EM_CC1312PSIP/ti_wisunfan/rcp_lmac/README.html",
         "resourceType": "categoryInfo",
         "name": "rcp_lmac",
@@ -10673,6 +10741,45 @@
             "ti_wisunfan",
             "rcp_lmac",
             "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1311P3"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1311P3"
+        ],
+        "devtools": [
+            "LP-CC1311P3"
+        ],
+        "location": "../../examples/rtos/LP_CC1311P3/ti_wisunfan/rcp_lmac/tirtos7/iar/rcp_lmac_LP_CC1311P3_tirtos7_iar.ipcf",
+        "name": "rcp_lmac",
+        "description": "rcp_lmac",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan",
+            "rcp_lmac",
+            "TI-RTOS7",
             "IAR Compiler"
         ]
     },

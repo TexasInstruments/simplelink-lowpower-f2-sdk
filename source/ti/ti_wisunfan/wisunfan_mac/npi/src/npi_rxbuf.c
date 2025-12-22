@@ -161,3 +161,44 @@ void NPIRxBuf_ReadOffsetFromRxBuf(uint8_t *buf, uint16 offset)
     buf_idx %= NPI_TL_BUF_SIZE;
     *buf = RxBuf[buf_idx];
 }
+
+void NPIRxBuf_Reset(void)
+{
+    RxBufHead = 0;
+    RxBufTail = 0;
+}
+
+#ifdef USE_NPI_HDLC
+#include "inc/npi_hdlc.h"
+extern uint8_t hdlc_buf_output[MAX_FRAME_SIZE+2];
+
+uint16 NPI_HDLC_buf_output_RxBuf_Read(uint16 len)
+{
+    uint16 partialLen = 0;
+    uint16_t rd_idx =0;
+
+    // skip the first byte in HDLC (NLI)
+    rd_idx = 1;
+    len = len - 1;
+
+    // Need to make two reads due to wrap around of circular buffer
+    if ((len + RxBufTail) > NPI_TL_BUF_SIZE)
+    {
+        partialLen = NPI_TL_BUF_SIZE - RxBufTail;
+        memcpy(&RxBuf[RxBufTail], &hdlc_buf_output[rd_idx], partialLen);
+
+        len -= partialLen;
+        rd_idx += partialLen;
+        RxBufTail = 0;
+    }
+
+    // Read remainder of data from Transport Layer
+    memcpy(&RxBuf[RxBufTail], &hdlc_buf_output[rd_idx], len);
+    NPIRXBUF_RXTAIL_INC(len);
+
+    // Return len to original size
+    len += partialLen;
+
+    return len;
+}
+#endif

@@ -48,13 +48,13 @@
 #include "rcp_queue.h"
 #include "mac_common_defines.h"
 
-#ifdef WISUN_RCP_HOST_BR
+#ifdef WISUN_RCP_HOST
 #include "mt_msg.h"
-#endif //WISUN_RCP_HOST_BR
+#endif //WISUN_RCP_HOST
 
 #define TRACE_GROUP "RCPH"
 
-#ifdef WISUN_RCP_HOST_BR
+#ifdef WISUN_RCP_HOST
 
 #define RCP_HOST_SYNC_REQ_MT_CMD0 (0x28) //SUBSYS+CMD0
 #define RCP_HOST_ASYNC_REQ_MT_CMD0 (0x48) //SUBSYS+CMD0
@@ -93,10 +93,14 @@
 /*! Key source maximum length in bytes */
 #define APIMAC_KEY_SOURCE_MAX_LEN 8
 
-#endif //WISUN_RCP_HOST_BR
+#endif //WISUN_RCP_HOST
+
+/* Stack and protocol versions */
+const char *wisun_stack_version __attribute__((retain)) = "1.1.0";
+const char *wisun_protocol_version __attribute__((retain)) = "1.0+";
 
 RCP_HOST_DBG_s rcp_host_dbg;
-#ifdef WISUN_RCP_HOST_BR
+#ifdef WISUN_RCP_HOST
 MT_rcp_Host_dbg_t MT_rcp_Host_dbg;
 #endif
 
@@ -116,7 +120,7 @@ void rcp_host_init(mac_api_t* pMac_api, struct protocol_interface_rf_mac_setup *
     rcp_tx_data_queue_init();
 }
 
-#ifdef WISUN_RCP_HOST_BR
+#ifdef WISUN_RCP_HOST
 
 /*!
  * @brief Allocate a new message
@@ -495,7 +499,7 @@ void processIncomingAresp(void)
     MT_MSG_free(pMsg);
 }
 
-#endif // WISUN_RCP_HOST_BR
+#endif // WISUN_RCP_HOST
 
 static void rcp_host_to_lmac(uint8_t cmd_type,
                            void *data)
@@ -506,7 +510,7 @@ static void rcp_host_to_lmac(uint8_t cmd_type,
     rcp_cmd.rcp_data = data;
 
     rcp_host_dbg.num_tx++;
-#ifndef WISUN_RCP_HOST_BR
+#ifndef WISUN_RCP_HOST
     rcp_lmac_from_host(&rcp_cmd);
 #else
 

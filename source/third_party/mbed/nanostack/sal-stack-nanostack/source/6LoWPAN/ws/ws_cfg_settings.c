@@ -772,11 +772,11 @@ int8_t ws_cfg_gen_set(protocol_interface_info_entry_t *cur, ws_gen_cfg_t *cfg, w
 int8_t ws_cfg_phy_default_set(ws_phy_cfg_t *cfg)
 {
     // FHSS configuration
-    cfg->regulatory_domain = REG_DOMAIN_EU;
-    cfg->operating_mode = OPERATING_MODE_3;
-    cfg->operating_class = 2;
-    cfg->phy_mode_id = 255;
-    cfg->channel_plan_id = 255;
+    cfg->regulatory_domain = cfg_props.config_reg_domain;
+    cfg->operating_mode = cfg_props.operating_mode;
+    cfg->operating_class = cfg_props.operating_class;
+    cfg->phy_mode_id = cfg_props.config_phy_id;
+    cfg->channel_plan_id = cfg_props.config_chan_plan_id;
 
     return CFG_SETTINGS_OK;
 }
@@ -850,10 +850,13 @@ int8_t ws_cfg_phy_set(protocol_interface_info_entry_t *cur, ws_phy_cfg_t *cfg, w
         } else {
             cur->ws_info->hopping_schdule.operating_mode = new_cfg->operating_mode;
         }
-        cur->ws_info->hopping_schdule.phy_mode_id = new_cfg->phy_mode_id;
-        cur->ws_info->hopping_schdule.channel_plan_id = new_cfg->channel_plan_id;
-        cur->ws_info->hopping_schdule.regulatory_domain = new_cfg->regulatory_domain;
-        cur->ws_info->hopping_schdule.operating_class = new_cfg->operating_class;
+
+        // alwayse use the cfg_props values
+        cur->ws_info->hopping_schdule.operating_mode = cfg_props.operating_mode;
+        cur->ws_info->hopping_schdule.phy_mode_id = cfg_props.config_phy_id;
+        cur->ws_info->hopping_schdule.channel_plan_id = cfg_props.config_chan_plan_id;
+        cur->ws_info->hopping_schdule.regulatory_domain = cfg_props.config_reg_domain;
+        cur->ws_info->hopping_schdule.operating_class = cfg_props.operating_class;
 
         if (ws_common_regulatory_domain_config(cur, &cur->ws_info->hopping_schdule) < 0) {
             return CFG_SETTINGS_ERROR_PHY_CONF;
@@ -1159,8 +1162,7 @@ int8_t ws_cfg_fhss_default_set(ws_fhss_cfg_t *cfg)
             FAN support version
     */
     cfg->fan_support_version = cfg_props.fan_support_version;
-    cfg->usie_chan_plan_selection = cfg_props.usie_chan_plan_selection;
-    cfg->bsie_chan_plan_selection = cfg_props.bsie_chan_plan_selection;
+    cfg->config_chan_plan = cfg_props.config_chan_plan;
 
     /* save both UC and BC channel mask from cfg_props
        cfg_props: using uint8[index] ===> total 17 bytes.
@@ -1312,8 +1314,13 @@ int8_t ws_cfg_fhss_save(protocol_interface_info_entry_t *cur)
     cur->ws_info->hopping_schdule.fhss_broadcast_interval = cfg->fhss_bc_interval;
 
     cur->ws_info->hopping_schdule.fan_support_version = cfg->fan_support_version;
-    cur->ws_info->hopping_schdule.usie_chan_plan_selection = cfg->usie_chan_plan_selection;
-    cur->ws_info->hopping_schdule.bsie_chan_plan_selection = cfg->bsie_chan_plan_selection;
+    cur->ws_info->hopping_schdule.channel_plan = cfg->config_chan_plan;
+    cur->ws_info->hopping_schdule.channel_plan_id = ws_cfg.phy.channel_plan_id;
+
+    /* chan plan =1 options ch0, spaceing and number of channels */
+    cur->ws_info->hopping_schdule.ch0_freq = cfg_props.ch0_center_frequency;
+    cur->ws_info->hopping_schdule.channel_spacing = ws_encode_channel_spacing(cfg_props.config_channel_spacing);
+    cur->ws_info->hopping_schdule.number_of_channels = cfg_props.config_number_of_channels;
 
     return CFG_SETTINGS_OK;
 }

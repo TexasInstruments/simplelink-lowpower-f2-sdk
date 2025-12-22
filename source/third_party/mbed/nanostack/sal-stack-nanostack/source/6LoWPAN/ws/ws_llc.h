@@ -43,6 +43,13 @@ typedef struct wh_ie_sub_list_s {
     bool rsl_ie: 1;  /**< Received Signal Level information */
     bool vh_ie: 1;   /**< Vendor header information */
     bool ea_ie: 1;   /**< EAPOL autheticator EUI-64 header information */
+#ifdef WISUN_FAN_CORE_1_1
+    /**< FAN 1.1 spec: section 6.3.2.3 Information Elements states that all unknown WH IEs should be parsed and forwarded */
+    // reserved WH IEs 
+    bool res_wh_pan_wide_ie: 1;  /**< Reserved pan-wide Wi-SUN Header IE */
+    bool res_wh_ffn_wide_ie: 1; /**< Reserved ffn-wide Wi-SUN Header IE */
+#endif //WISUN_FAN_CORE_1_1
+
 } wh_ie_sub_list_t;
 
 /**
@@ -59,7 +66,14 @@ typedef struct wp_nested_ie_sub_list_s {
 #ifdef WISUN_FAN_CORE_1_1
     bool pom_ie: 1;         /**< PHY Operation Mode  */
     bool jm_ie: 1;          /**< Join metrics  */
-#endif    
+    /**< FAN 1.1 spec: section 6.3.2.3 Information Elements states that all unknown WH IEs should be parsed and forwarded */
+    // reserved WP IEs : type short
+    bool res_wp_short_pan_wide_ie: 1;  /**< Reserved pan-wide Wi-SUN Payload IE : type short */
+    bool res_wp_short_ffn_wide_ie: 1; /**< Reserved ffn-wide Wi-SUN Payload IE : type short */
+    // reserved WP IEs : type long
+    bool res_wp_long_pan_wide_ie: 1;  /**< Reserved pan-wide Wi-SUN Payload IE : type long */
+    bool res_wp_long_ffn_wide_ie: 1; /**< Reserved ffn-wide Wi-SUN Payload IE : type long */
+#endif   //WISUN_FAN_CORE_1_1
 } wp_nested_ie_sub_list_t;
 
 /**

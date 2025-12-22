@@ -6,6 +6,7 @@
 
 /* api_mac includes */
 #include "mbed_config_app.h"
+#include <unistd.h>
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -55,7 +56,7 @@
 #define RF_MTU 2047
 
 /* api_mac includes */
-#define TRACE_GROUP "stub"
+#define TRACE_GROUP "hostHelp"
 
 /* Stub defines */
 #define SIZE_OF_EUI_LIST    75
@@ -83,6 +84,68 @@ void timac_BootstrapCallback(uint8_t state) {}
 void timacExtaddressRegister() {}
 static int8_t rf_interface_state_control(phy_interface_state_e new_state, uint8_t rf_channel) { return 0; }
 static int8_t rf_start_cca(uint8_t *data_ptr, uint16_t data_length, uint8_t tx_handle, data_protocol_e data_protocol) { return 0; }
+
+/* Entry index = phyID - MAC_MRFSK_STD_PHY_ID_BEGIN */
+phyIDTableEntry_t macPhyIdStdTable[MAC_STANDARD_PHY_DESCRIPTOR_ENTRIES] = 
+{
+    { MAC_2_FSK_MODULATION, MAC_MRFSK_SYMBOL_RATE_50_K,
+      MAC_MODULATION_INDEX_2FSK_50K_0_5,
+      MAC_CCA_TYPE_CSMA_CA },
+    { MAC_2_FSK_MODULATION, MAC_MRFSK_SYMBOL_RATE_50_K,
+      MAC_MODULATION_INDEX_2FSK_50K_1,
+      MAC_CCA_TYPE_CSMA_CA },
+    { MAC_2_FSK_MODULATION, MAC_MRFSK_SYMBOL_RATE_100_K,
+      MAC_MODULATION_INDEX_2FSK_100K_0_5,
+      MAC_CCA_TYPE_CSMA_CA },
+    { MAC_2_FSK_MODULATION, MAC_MRFSK_SYMBOL_RATE_100_K,
+      MAC_MODULATION_INDEX_2FSK_100K_1,
+      MAC_CCA_TYPE_CSMA_CA },
+    { MAC_2_FSK_MODULATION, MAC_MRFSK_SYMBOL_RATE_150_K,
+      MAC_MODULATION_INDEX_2FSK_150K_0_5,
+      MAC_CCA_TYPE_CSMA_CA },
+    { MAC_2_FSK_MODULATION, MAC_MRFSK_SYMBOL_RATE_150_K,
+      MAC_MODULATION_INDEX_2FSK_150K_1,
+      MAC_CCA_TYPE_CSMA_CA },
+    { MAC_2_FSK_MODULATION, MAC_MRFSK_SYMBOL_RATE_200_K,
+      MAC_MODULATION_INDEX_2FSK_200K_0_5,
+      MAC_CCA_TYPE_CSMA_CA },
+    { MAC_2_FSK_MODULATION, MAC_MRFSK_SYMBOL_RATE_200_K,
+      MAC_MODULATION_INDEX_2FSK_200K_1,
+      MAC_CCA_TYPE_CSMA_CA },
+    { MAC_2_FSK_MODULATION, MAC_MRFSK_SYMBOL_RATE_300_K,
+      MAC_MODULATION_INDEX_2FSK_300K_0_5,
+      MAC_CCA_TYPE_CSMA_CA },
+    { MAC_2_FSK_MODULATION, MAC_MRFSK_SYMBOL_RATE_300_K,
+      MAC_MODULATION_INDEX_2FSK_300K_1,
+      MAC_CCA_TYPE_CSMA_CA }
+};
+
+/* Entry index = phyID - MAC_MRFSK_GENERIC_PHY_ID_BEGIN */
+phyIDTableEntry_t macPhyIdGenericTable[MAC_GENERIC_PHY_DESCRIPTOR_ENTRIES] = 
+{
+    // Currently unused
+    { MAC_2_FSK_MODULATION, MAC_MRFSK_SYMBOL_RATE_50_K,
+      MAC_MODULATION_INDEX_2FSK_50K_1,
+      MAC_CCA_TYPE_CSMA_CA },
+    // Currently unused
+    { MAC_2_FSK_MODULATION, MAC_MRFSK_SYMBOL_RATE_20_K,
+      MAC_MODULATION_INDEX_2FSK_5K,
+      MAC_CCA_TYPE_CSMA_CA },
+    // Currently unused
+    { MAC_2_FSK_MODULATION, MAC_MRFSK_SYMBOL_RATE_20_K,
+      MAC_MODULATION_INDEX_2FSK_5K,
+      MAC_CCA_TYPE_CSMA_CA },
+    // Currently unused
+    { MAC_2_FSK_MODULATION, MAC_MRFSK_SYMBOL_RATE_20_K,
+      MAC_MODULATION_INDEX_2FSK_5K,
+      MAC_CCA_TYPE_LBT },
+    { MAC_2_FSK_MODULATION, MAC_MRFSK_SYMBOL_RATE_200_K,
+      MAC_MODULATION_INDEX_2FSK_200K_0_5,
+      MAC_CCA_TYPE_CSMA_CA },
+    { MAC_2_FSK_MODULATION, MAC_MRFSK_SYMBOL_RATE_200_K,
+      MAC_MODULATION_INDEX_2FSK_200K_1,
+      MAC_CCA_TYPE_LBT },
+};
 
 bool mac_filter_list_add_addr(uint8_t addr[8])
 {
@@ -161,12 +224,73 @@ void timacSetPanId(uint16_t panId) {
     rcp_host_store.setup->pan_id = panId;
 }
 
+uint8_t check_phy_mode(uint8_t phyID)
+{
+    /*Generic Phy Mode */
+    if ((phyID >= MAC_MRFSK_STD_PHY_ID_BEGIN)
+     && (phyID <= MAC_MRFSK_STD_PHY_ID_END))
+    {
+        return RCP_PHY_MODE_STD;
+    }
+
+    /* Standard Phy Mode */
+    if ((phyID >= MAC_MRFSK_GENERIC_PHY_ID_BEGIN)
+     && (phyID <= MAC_MRFSK_GENERIC_PHY_ID_END))
+    {
+        return RCP_PHY_MODE_GEN;
+    }
+
+    return RCP_PHY_MODE_UNDEF;
+}
+
+
 void timac_initialize(struct mac_api_s *api)
 {
     uint8_t excludeChannels[MAC_154G_CHANNEL_BITMAP_SIZ];
     uint8_t idx, sizeOfChannelMask;
     uint32_t configVal;
     uint8_t  configBool;
+    rcp_mac_config_phy_init phy_init_config = {0};
+
+    /* Initialize PHY settings and start the MAC */
+    phyIDTableEntry_t *phyEntry = NULL;
+
+    if (check_phy_mode(cfg_props.config_phy_id) == RCP_PHY_MODE_STD)
+    {
+        phyEntry = (phyIDTableEntry_t*) &macPhyIdStdTable[cfg_props.config_phy_id - MAC_MRFSK_STD_PHY_ID_BEGIN];
+    }
+    else if (check_phy_mode(cfg_props.config_phy_id) == RCP_PHY_MODE_GEN)
+    {
+        phyEntry = (phyIDTableEntry_t*) &macPhyIdGenericTable[cfg_props.config_phy_id - MAC_MRFSK_GENERIC_PHY_ID_BEGIN];
+    }
+    else
+    {
+        tr_error("Invalid PHY ID %d", cfg_props.config_phy_id);
+        MAC_ASSERT(0);
+    }
+
+    phy_init_config.phy_id = cfg_props.config_phy_id;
+    phy_init_config.ffd = cfg_props.ffd;
+    phy_init_config.ch0_center_frequency = cfg_props.ch0_center_frequency;
+    phy_init_config.config_channel_spacing = cfg_props.config_channel_spacing;
+    phy_init_config.config_number_of_channels = cfg_props.config_number_of_channels;
+    phy_init_config.mod_scheme = phyEntry->fskModScheme;
+    phy_init_config.symbol_rate = phyEntry->symbolRate;
+    phy_init_config.mod_index = phyEntry->fskModIndex;
+    phy_init_config.cca_type = phyEntry->ccaType;
+
+    /* Note that in the Linux host + RCP configuration, the below PHY_INIT config must be received
+     * by RCP before rcp_host_mac_init is called is received. This is because PHY_INIT unblocks
+     * the mac task. Sleep is added here to make this consistent. In the PHY_INIT fails, MAC_INIT will
+     * fail and reset must be used to recover.
+     * A flag cannot be used to block here (or in any other tasklet) as tasklets cannot preempt other
+     * tasklets, thus the PHY_INIT_CNF tasklet cannot unblock this tasklet. In order guarantee robustness,
+     * the interface up tasklet (kicked off by NCP UART RX) must be broken up into multiple tasklets
+     * to allow for a flag to update.
+     * Note that this kind of config cnf checking should be applied not just to PHY_INIT but to all
+     * SET_CNF messages.*/
+    rcp_host_set_config(RCP_CONFIG_PHY_INIT, &phy_init_config, sizeof(rcp_mac_config_phy_init));
+    usleep(10000); // Wait for MAC task to start
 
     /* Initialize FH */
     rcp_host_fh_init();
@@ -227,50 +351,49 @@ void timac_initialize(struct mac_api_s *api)
     }
 
 
-#ifdef FEATURE_FULL_FUNCTION_DEVICE
-
-    // ApiMac_mlmeSetFhReqUint8(ApiMac_FHAttribute_broadcastDwellInterval, cfg_props.bc_dwell_interval);
-    // ApiMac_mlmeSetFhReqUint32(ApiMac_FHAttribute_BCInterval, cfg_props.bc_interval);
-    // ApiMac_mlmeSetFhReqUint8(ApiMac_FHAttribute_broadcastChannelFunction, cfg_props.bc_channel_function);
-    rcp_host_set_config(RCP_CONFIG_BC_DWELL_INTERVAL, &cfg_props.bc_dwell_interval, sizeof(cfg_props.bc_dwell_interval));
-    rcp_host_set_config(RCP_CONFIG_BC_INTERVAL, &cfg_props.bc_interval, sizeof(cfg_props.bc_interval));
-    rcp_host_set_config(RCP_CONFIG_BC_CHANNEL_FUNC, &cfg_props.bc_channel_function, sizeof(cfg_props.bc_channel_function));
-    if(cfg_props.bc_channel_function == 0) //fixed channel
-    {
-        // ApiMac_mlmeSetFhReqUint16(ApiMac_FHAttribute_broadcastFixedChannel, cfg_props.bc_fixed_channel);
-        rcp_host_set_config(RCP_CONFIG_BC_FIXED_CHANNEL, &cfg_props.bc_fixed_channel, sizeof(cfg_props.bc_fixed_channel));
-    }
-    else //DH1CF
-    {
-        sizeOfChannelMask = sizeof(cfg_props.bc_channel_list)/sizeof(uint8_t);
-        if(sizeOfChannelMask > MAC_154G_CHANNEL_BITMAP_SIZ)
+    if (cfg_props.ffd) {
+        // ApiMac_mlmeSetFhReqUint8(ApiMac_FHAttribute_broadcastDwellInterval, cfg_props.bc_dwell_interval);
+        // ApiMac_mlmeSetFhReqUint32(ApiMac_FHAttribute_BCInterval, cfg_props.bc_interval);
+        // ApiMac_mlmeSetFhReqUint8(ApiMac_FHAttribute_broadcastChannelFunction, cfg_props.bc_channel_function);
+        rcp_host_set_config(RCP_CONFIG_BC_DWELL_INTERVAL, &cfg_props.bc_dwell_interval, sizeof(cfg_props.bc_dwell_interval));
+        rcp_host_set_config(RCP_CONFIG_BC_INTERVAL, &cfg_props.bc_interval, sizeof(cfg_props.bc_interval));
+        rcp_host_set_config(RCP_CONFIG_BC_CHANNEL_FUNC, &cfg_props.bc_channel_function, sizeof(cfg_props.bc_channel_function));
+        if(cfg_props.bc_channel_function == 0) //fixed channel
         {
-           sizeOfChannelMask = MAC_154G_CHANNEL_BITMAP_SIZ;
+            // ApiMac_mlmeSetFhReqUint16(ApiMac_FHAttribute_broadcastFixedChannel, cfg_props.bc_fixed_channel);
+            rcp_host_set_config(RCP_CONFIG_BC_FIXED_CHANNEL, &cfg_props.bc_fixed_channel, sizeof(cfg_props.bc_fixed_channel));
         }
+        else //DH1CF
+        {
+            sizeOfChannelMask = sizeof(cfg_props.bc_channel_list)/sizeof(uint8_t);
+            if(sizeOfChannelMask > MAC_154G_CHANNEL_BITMAP_SIZ)
+            {
+            sizeOfChannelMask = MAC_154G_CHANNEL_BITMAP_SIZ;
+            }
 
+            memset(excludeChannels, 0, MAC_154G_CHANNEL_BITMAP_SIZ);
+
+            for(idx = 0; idx < sizeOfChannelMask; idx++)
+            {
+            excludeChannels[idx] = ~cfg_props.bc_channel_list[idx];
+            }
+            // ApiMac_mlmeSetFhReqArray(ApiMac_FHAttribute_broadcastExcludedChannels, excludeChannels);
+            rcp_host_set_config(RCP_CONFIG_BC_EXCLUDED_CHANNELS, excludeChannels, sizeof(excludeChannels));
+        }
+    } else {
+        // ApiMac_mlmeSetFhReqUint8(ApiMac_FHAttribute_broadcastDwellInterval, 0);
+        // ApiMac_mlmeSetFhReqUint32(ApiMac_FHAttribute_BCInterval, 0);
+        // ApiMac_mlmeSetFhReqUint8(ApiMac_FHAttribute_broadcastChannelFunction, 0);
+        // ApiMac_mlmeSetFhReqUint16(ApiMac_FHAttribute_broadcastFixedChannel, 0);
+        configVal = 0;
+        rcp_host_set_config(RCP_CONFIG_BC_DWELL_INTERVAL, &configVal, sizeof(uint8_t));
+        rcp_host_set_config(RCP_CONFIG_BC_INTERVAL, &configVal, sizeof(uint32_t));
+        rcp_host_set_config(RCP_CONFIG_BC_CHANNEL_FUNC, &configVal, sizeof(uint8_t));
+        rcp_host_set_config(RCP_CONFIG_BC_FIXED_CHANNEL, &configVal, sizeof(uint16_t));
         memset(excludeChannels, 0, MAC_154G_CHANNEL_BITMAP_SIZ);
-
-        for(idx = 0; idx < sizeOfChannelMask; idx++)
-        {
-           excludeChannels[idx] = ~cfg_props.bc_channel_list[idx];
-        }
         // ApiMac_mlmeSetFhReqArray(ApiMac_FHAttribute_broadcastExcludedChannels, excludeChannels);
         rcp_host_set_config(RCP_CONFIG_BC_EXCLUDED_CHANNELS, excludeChannels, sizeof(excludeChannels));
     }
-#else
-    // ApiMac_mlmeSetFhReqUint8(ApiMac_FHAttribute_broadcastDwellInterval, 0);
-    // ApiMac_mlmeSetFhReqUint32(ApiMac_FHAttribute_BCInterval, 0);
-    // ApiMac_mlmeSetFhReqUint8(ApiMac_FHAttribute_broadcastChannelFunction, 0);
-    // ApiMac_mlmeSetFhReqUint16(ApiMac_FHAttribute_broadcastFixedChannel, 0);
-    configVal = 0;
-    rcp_host_set_config(RCP_CONFIG_BC_DWELL_INTERVAL, &configVal, sizeof(uint8_t));
-    rcp_host_set_config(RCP_CONFIG_BC_INTERVAL, &configVal, sizeof(uint32_t));
-    rcp_host_set_config(RCP_CONFIG_BC_CHANNEL_FUNC, &configVal, sizeof(uint8_t));
-    rcp_host_set_config(RCP_CONFIG_BC_FIXED_CHANNEL, &configVal, sizeof(uint16_t));
-    memset(excludeChannels, 0, MAC_154G_CHANNEL_BITMAP_SIZ);
-    // ApiMac_mlmeSetFhReqArray(ApiMac_FHAttribute_broadcastExcludedChannels, excludeChannels);
-    rcp_host_set_config(RCP_CONFIG_BC_EXCLUDED_CHANNELS, &excludeChannels, sizeof(excludeChannels));
-#endif
 
 #ifdef MAC_DUTY_CYCLE_CHECKING
     // ApiMac_mlmeSetReqBool(ApiMac_attribute_dutyCycleEnabled, true);

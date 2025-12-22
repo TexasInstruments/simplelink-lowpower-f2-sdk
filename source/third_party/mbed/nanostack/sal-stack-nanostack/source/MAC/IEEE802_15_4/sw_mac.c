@@ -635,6 +635,8 @@ void mlme_req(const mac_api_t *api, mlme_primitive id, void *data)
                 rcp_host_set_sec_key(dat->attr_index, key_desc->Key);
             } else if (dat->attr == macFrameCounter) {
                 rcp_host_set_tx_frame_count(dat->attr_index, *((uint32_t *) dat->value_pointer));
+            } else if (dat->attr == macMaxFrameRetries) {
+                rcp_host_set_config(dat->attr, (void *) dat->value_pointer, dat->value_size);
             }
             break;
         }

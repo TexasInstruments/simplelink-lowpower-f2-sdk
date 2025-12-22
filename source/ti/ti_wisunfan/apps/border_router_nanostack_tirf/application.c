@@ -126,6 +126,10 @@ extern JOIN_TIME_s node_join_time;
 #define MY_GROUP 1
 #endif
 
+#ifdef TI_WISUN_FAN_DEBUG
+bool disable_ns_messages = false;
+#endif
+
 ti_wisun_config_t ti_wisun_config =
 {
     .rapid_join = FEATURE_RAPID_JOIN_ENABLE,
@@ -174,21 +178,28 @@ configurable_props_t cfg_props =
     .wisun_device_type = CONFIG_WISUN_DEVICE_TYPE,
     .ch0_center_frequency = CONFIG_CENTER_FREQ * 1000,
     .config_channel_spacing = CONFIG_CHANNEL_SPACING,
+    .config_number_of_channels = CONFIG_TOTAL_CHANNELS,
     .config_phy_id = CONFIG_PHY_ID,
     .config_reg_domain = CONFIG_REG_DOMAIN,
     .operating_class = CONFIG_OP_MODE_CLASS,
     .operating_mode = CONFIG_OP_MODE_ID,
     .fan_support_version = 1,
-    .usie_chan_plan_selection = 2,
-    .bsie_chan_plan_selection = 1,
+    .config_chan_plan = 0,
+    .config_chan_plan_id = 255,
     .hwaddr = CONFIG_INVALID_HWADDR,
 #ifdef WISUN_FAN_CORE_1_1
-    .mdr_enable = 0 , 
+    .mdr_enable = 0 ,
     .num_phy_mode = 1,
-    .Phy_Mode_Id = {CONFIG_PHY_ID}, 
-#endif    
+    .Phy_Mode_Id = {CONFIG_PHY_ID},
+#endif
     .channel_page = CONFIG_CHANNEL_PAGE,
     .rx_on_when_idle = true,
+#ifdef FEATURE_FULL_FUNCTION_DEVICE
+    .ffd = true,
+#else
+    .ffd = false,
+#endif
+    .regulatory_channel_list = CONFIG_REGULATION_CHANNEL_MASK,
 };
 
 /******************************************************************************
@@ -241,17 +252,20 @@ Function definitions
  * In the Out of Box example, this macro is set to a small
  * network i.e less than or around 100 nodes
  */
-#ifndef WISUN_RCP_HOST_BR
+#ifndef WISUN_RCP_HOST
 extern const char *ti154stack_lib_version;
 extern const char *ti154stack_lib_date;
 extern const char *ti154stack_lib_time;
+extern const char *wisun_stack_version;
+extern const char *wisun_protocol_version;
 #endif
 mesh_error_t nanostack_wisunInterface_configure(void)
 {
     int ret;
-#ifndef WISUN_RCP_HOST_BR
+#ifndef WISUN_RCP_HOST
     tr_info("Library info | Date: %s, Time: %s, Version: %s", ti154stack_lib_date, ti154stack_lib_time,
             ti154stack_lib_version);
+    tr_info("Wi-SUN stack version: %s, Wi-SUN protocol version: %s", wisun_stack_version, wisun_protocol_version);
 #endif
 
     if (_configured) {

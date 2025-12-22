@@ -95,6 +95,60 @@ const config = {
             default: 7200, // 7200s, 2 hours
             description: Docs.rapidDisconnectDetectRn.description,
             longDescription: Docs.rapidDisconnectDetectRn.longDescription
+        },
+        {
+            displayName: "Certification",
+            description: "Configure settings for MAC-level operations",
+            config: [
+                {
+                    name: "enableCertTest",
+                    displayName: "Enable certification testing",
+                    default: false,
+                    hidden: true
+                },
+                {
+                    name: "certBrTlsTermination",
+                    displayName: "BR certification TLS termination",
+                    default: false,
+                    hidden: true
+                },
+                {
+                    name: "certBrGtkRevoke",
+                    displayName: "BR certification GTK revoke",
+                    default: false,
+                    hidden: true
+                },
+                {
+                    name: "certRnGtkShortCycle",
+                    displayName: "RN certification GTK short cycle",
+                    default: false,
+                    hidden: true
+                },
+                {
+                    name: "certGtkFullCycle",
+                    displayName: "Certification GTK full cycle",
+                    default: false,
+                    hidden: true
+                },
+                {
+                    name: "certBrPowerCycle",
+                    displayName: "BR certification power cycle",
+                    default: false,
+                    hidden: true
+                },
+                {
+                    name: "certRnPowerCycle",
+                    displayName: "RN certification power cycle",
+                    default: false,
+                    hidden: true
+                },
+                {
+                    name: "certEdfeTester",
+                    displayName: "BR EDFE Tester device",
+                    default: false,
+                    hidden: true
+                }
+            ]
         }
     ]
 };
@@ -230,8 +284,8 @@ function setDefaultAdvancedSettings(inst)
 }
 
 /*!
- * ======== setDefaultAdvancedSettings ========
- * Sets the default advanced settings for solar projects
+ * ======== setAdvancedSettingsHiddenState ========
+ * Set the hidden state for advanced settings submodule
  *
  * @param inst - module instance
  */

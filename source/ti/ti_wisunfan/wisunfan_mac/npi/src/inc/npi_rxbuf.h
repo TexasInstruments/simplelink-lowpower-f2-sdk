@@ -103,6 +103,10 @@ uint16 NPIRxBuf_GetRxBufAvail();
 // -----------------------------------------------------------------------------
 uint16 NPIRxBuf_ReadFromRxBuf(uint8_t *buf, uint16 len);
 
+void NPIRxBuf_Reset(void);
+
+uint16 NPI_HDLC_buf_output_RxBuf_Read(uint16 len);
+
 // -----------------------------------------------------------------------------
 //! \brief      Populates buf with byte from RxBuf offset by offset param.
 //!             Does not increment RxBufHead

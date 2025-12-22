@@ -158,7 +158,7 @@ void NPITLUART_initializeTransport(uint8_t *tRxBuf, uint8_t *tTxBuf, npiCB_t npi
     params.writeCallback = NPITLUART_writeCallBack;
 
     // Open / power on the UART.
-    uartHandle = UART2_open(CONFIG_DISPLAY_UART, &params);
+    uartHandle = UART2_open(CONFIG_UART2_0, &params);
 
 #if (NPI_FLOW_CTRL == 0)
     // This call will start repeated Uart Reads when Power Savings is disabled

@@ -20,7 +20,11 @@
 
 
 #define MBED_CONF_NANOSTACK_CONFIGURATION                                     ti_ws_router
-#define MBED_CONF_MBED_MESH_API_HEAP_SIZE                                     47000 // 52000
+#if defined(DeviceFamily_CC13X2) || defined(DeviceFamily_CC13X1) // Optimization for lower RAM boards
+#define MBED_CONF_MBED_MESH_API_HEAP_SIZE                                     49000
+#else
+#define MBED_CONF_MBED_MESH_API_HEAP_SIZE                                     52000
+#endif
 #define MBED_CONF_MBED_MESH_API_HEAP_STAT_INFO                                NULL
 #define MBED_CONF_MBED_MESH_API_USE_MALLOC_FOR_HEAP                           0
 

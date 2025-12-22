@@ -60,6 +60,10 @@ extern void ws_bootstrap_configure_network_panid(protocol_interface_info_entry_t
 #define LLC_MESSAGE_QUEUE_LIST_SIZE_MAX   16 //Do not config over 30 never
 #define MPX_USER_SIZE 2
 
+#ifdef WISUN_FAN_CORE_1_1
+extern uint32_t g_num_jm_metrics_len;
+#endif //WISUN_FAN_CORE_1_1
+
 #ifdef DBG_WISUN
 struct wisun_debug wisunDbg;
 #endif
@@ -78,7 +82,7 @@ typedef struct {
 typedef struct {
     mpx_api_t   mpx_api;                        /**< API for MPX user like Stack and EAPOL */
     mpx_user_t  mpx_user_table[MPX_USER_SIZE];  /**< MPX user list include registered call back pointers and user id's */
-    unsigned    mpx_id: 4;                      /**< MPX class sequence number */
+    unsigned    mpx_id: 5;                      /**< MPX class sequence number */
 } mpx_class_t;
 
 
@@ -96,7 +100,7 @@ typedef struct {
     uint8_t                 *vendor_payload;        /**< Vendor spesific payload data */
 #ifdef WISUN_FAN_CORE_1_1
     ws_pom_ie_t             *pom_configuration;     /**< PHY Operation Mode configururation */
-#endif    
+#endif
 } llc_ie_params_t;
 
 typedef struct {
@@ -115,10 +119,10 @@ typedef struct {
     wh_ie_sub_list_t ie_header_mask;
     wp_nested_ie_sub_list_t nested_wp_id;
 #endif
-#if defined(WISUN_RCP_ENABLE)    
+#if defined(WISUN_RCP_ENABLE)
     uint8_t utie_time_offset;       /**< offset of UTIE time from start of HIE */
     uint8_t btie_time_offset;       /**< offset of BTIE time from start of HIE */
-#endif    
+#endif
     mcps_data_req_ie_list_t ie_ext;
     mac_data_priority_t priority;
     ns_list_link_t  link;               /**< List link entry */
@@ -214,7 +218,7 @@ static bool test_skip_first_init_response = false;
 static uint8_t test_drop_data_message = 0;
 
 typedef struct __llc_dbg
-{   
+{
     uint32_t num_alloc;
     uint32_t num_alloc_data;
     uint32_t num_alloc_eapol;
@@ -417,6 +421,111 @@ static uint16_t ws_wh_headers_length(wh_ie_sub_list_t requested_list, llc_ie_par
     return length;
 }
 
+#ifdef WISUN_FAN_CORE_1_1
+
+uint16_t ws_res_wh_headers_length(struct ws_pan_information_s *pan_cfg, wh_ie_sub_list_t requested_list)
+{
+    uint16_t length = 0;
+    uint8_t idx = 0;
+    uint8_t num_res_ies = 0;
+
+    //processing pan wide wh first
+    num_res_ies = pan_cfg->num_res_wh_pan_wide_ies;
+    if ((requested_list.res_wh_pan_wide_ie) && (num_res_ies))
+    {
+        for(idx = 0; idx < num_res_ies; idx++)
+        {
+            length += WH_IE_ELEMENT_HEADER_LENGTH + pan_cfg->res_wh_pan_wide_ie_lens[idx];
+        }
+    }
+
+    //processing ffn wide wh next
+    num_res_ies = pan_cfg->num_res_wh_ffn_wide_ies;
+    if ((requested_list.res_wh_ffn_wide_ie) && (num_res_ies))
+    {
+        for(idx = 0; idx < num_res_ies; idx++)
+        {
+            length += WH_IE_ELEMENT_HEADER_LENGTH + pan_cfg->res_wh_ffn_wide_ie_lens[idx];
+        }
+    }
+
+    return(length);
+}
+
+uint8_t ws_wp_nested_JM_IE_length(struct ws_pan_information_s *pan_cfg)
+{
+    uint8_t i, len = 0, numMetrics = 0;
+
+    for(i = 0; i < WS_WPIE_JM_IE_MAX_NUM_METRICS; i++ )
+    {
+        if(0 != pan_cfg->jm_metric_ids[i])
+        {
+            numMetrics++;
+            len += pan_cfg->jm_metric_lens[i];
+        }
+    }
+
+    //every metric will have 1 byte containing metric id and length
+    len += numMetrics;
+
+    len += WS_WPIE_JM_IE_CONTENT_VERSION_LENGTH; //content version byte
+
+    g_num_jm_metrics_len = len;
+
+    return(len);
+}
+
+uint16_t ws_res_wp_nested_message_length(struct ws_pan_information_s *pan_cfg, wp_nested_ie_sub_list_t requested_list)
+{
+    uint16_t length = 0;
+    uint8_t idx = 0;
+    uint8_t num_res_ies = 0;
+
+    //processing short pan wide wp first
+    num_res_ies = pan_cfg->num_res_wp_short_pan_wide_ies;
+    if ((requested_list.res_wp_short_pan_wide_ie) && (num_res_ies))
+    {
+        for(idx = 0; idx < num_res_ies; idx++)
+        {
+            length += WS_WP_SUB_IE_ELEMENT_HEADER_LENGTH + pan_cfg->res_wp_short_pan_wide_ie_lens[idx];
+        }
+    }
+
+    //processing short ffn wide wp next
+    num_res_ies = pan_cfg->num_res_wp_short_ffn_wide_ies;
+    if ((requested_list.res_wp_short_ffn_wide_ie) && (num_res_ies))
+    {
+        for(idx = 0; idx < num_res_ies; idx++)
+        {
+            length += WS_WP_SUB_IE_ELEMENT_HEADER_LENGTH + pan_cfg->res_wp_short_ffn_wide_ie_lens[idx];
+        }
+    }
+
+    //processing long pan wide wp first
+    num_res_ies = pan_cfg->num_res_wp_long_pan_wide_ies;
+    if ((requested_list.res_wp_long_pan_wide_ie) && (num_res_ies))
+    {
+        for(idx = 0; idx < num_res_ies; idx++)
+        {
+            length += WS_WP_SUB_IE_ELEMENT_HEADER_LENGTH + pan_cfg->res_wp_long_pan_wide_ie_lens[idx];
+        }
+    }
+
+    //processing long ffn wide wp next
+    num_res_ies = pan_cfg->num_res_wp_long_ffn_wide_ies;
+    if ((requested_list.res_wp_long_ffn_wide_ie) && (num_res_ies))
+    {
+        for(idx = 0; idx < num_res_ies; idx++)
+        {
+            length += WS_WP_SUB_IE_ELEMENT_HEADER_LENGTH + pan_cfg->res_wp_long_ffn_wide_ie_lens[idx];
+        }
+    }
+
+    return(length);
+}
+
+#endif //WISUN_FAN_CORE_1_1
+
 static uint16_t ws_wp_nested_message_length(wp_nested_ie_sub_list_t requested_list, llc_ie_params_t *params)
 {
     uint16_t length = 0;
@@ -471,12 +580,11 @@ static uint16_t ws_wp_nested_message_length(wp_nested_ie_sub_list_t requested_li
 
     if (requested_list.jm_ie) {
         /* JM-IE
-          * version, metric PAn Load Factor , 
+          * version, metric PAn Load Factor ,
         */
-        length += WS_WP_SUB_IE_ELEMENT_HEADER_LENGTH + WS_WPIE_JM_IE_PLF_LENGTH;
+        length += WS_WP_SUB_IE_ELEMENT_HEADER_LENGTH + ws_wp_nested_JM_IE_length(params->pan_congiguration);
     }
-
-#endif
+#endif //WISUN_FAN_CORE_1_1
 
     return length;
 }
@@ -739,6 +847,21 @@ static mpx_user_t *ws_llc_mpx_header_parse(llc_data_base_t *base, const mcps_dat
 }
 
 
+#ifdef LOG_EDFE_PACKET
+
+#define MAX_NUM_EDFE_PACKETS 4
+#define PACKEST_LOG_SIZE 1024
+
+typedef struct edfe_dbg_packet_s {
+    //uint32_t timestamp;
+    uint16_t len;
+    uint8_t  data[PACKEST_LOG_SIZE];
+} edfe_dbg_packet_t;
+
+edfe_dbg_packet_t edfe_log[MAX_NUM_EDFE_PACKETS];
+uint8_t edfe_log_index = 0;
+#endif
+
 static void ws_llc_data_indication_cb(const mac_api_t *api, const mcps_data_ind_t *data, const mcps_data_ie_list_t *ie_ext, ws_utt_ie_t ws_utt)
 {
     llc_data_base_t *base = ws_llc_mpx_frame_common_validates(api, data, ws_utt);
@@ -752,6 +875,22 @@ static void ws_llc_data_indication_cb(const mac_api_t *api, const mcps_data_ind_
     mpx_user_t *user_cb = ws_llc_mpx_header_parse(base, ie_ext, &mpx_frame, &mpx_ie);
     if (!user_cb) {
         return;
+    }
+    // Discover the FC IE
+    bool fc_ie_inline = false;
+    ws_fc_ie_t fc_ie;
+    fc_ie_inline = ws_wh_fc_read(ie_ext->headerIeList, ie_ext->headerIeListLength, &fc_ie);
+    if (fc_ie_inline) {
+        // packet has FC IE, This is EDFE packet, print out the details
+        tr_info("=====EDFE packet (MPX-len=%d): tx flow-ctrl %u, rx flow-ctrl %u", mpx_frame.frame_length, fc_ie.tx_flow_ctrl, fc_ie.rx_flow_ctrl);
+#ifdef LOG_EDFE_PACKET
+        // save the EDFE packet edfe_log buffer, the maximum packet size is PACKEST_LOG_SIZE
+        edfe_dbg_packet_t *log_entry = &edfe_log[edfe_log_index];
+        log_entry->len = mpx_frame.frame_length < PACKEST_LOG_SIZE ? mpx_frame.frame_length : PACKEST_LOG_SIZE;
+        memcpy(log_entry->data, mpx_frame.frame_ptr, log_entry->len);
+        edfe_log_index = (edfe_log_index + 1) % MAX_NUM_EDFE_PACKETS;
+        log_entry->len = mpx_frame.frame_length;
+#endif
     }
 
     mac_payload_IE_t ws_wp_nested;
@@ -1017,7 +1156,6 @@ static void ws_llc_asynch_indication(const mac_api_t *api, const mcps_data_ind_t
 static void ws_llc_mac_indication_cb(const mac_api_t *api, const mcps_data_ind_t *data, const mcps_data_ie_list_t *ie_ext)
 {
 
-
     //Discover Header WH_IE_UTT_TYPE
     ws_utt_ie_t ws_utt;
     if (!ws_wh_utt_read(ie_ext->headerIeList, ie_ext->headerIeListLength, &ws_utt)) {
@@ -1145,7 +1283,7 @@ static void ws_llc_lowpan_mpx_data_request(llc_data_base_t *base, mpx_user_t *us
     // may include the POM IE
     nested_wp_id.pom_ie = false;
     nested_wp_id.jm_ie  = false;
-#endif    
+#endif
 
 #if !defined(FEATURE_TIMAC_SUPPORT) || defined(WISUN_RCP_ENABLE)
     uint16_t ie_header_length = ws_wh_headers_length(ie_header_mask, &base->ie_params);
@@ -1262,7 +1400,7 @@ static void ws_llc_lowpan_mpx_data_request(llc_data_base_t *base, mpx_user_t *us
             //Write POM Phy Operation Mode
             ptr = ws_wp_nested_pom_write(ptr, base->ie_params.pom_configuration);
         }
-#endif        
+#endif
     }
     // SET Payload IE Length
     message->ie_vector_list[1].iovLen = ptr - (uint8_t *)message->ie_vector_list[1].ieBase;
@@ -1429,7 +1567,7 @@ static void ws_llc_mpx_eapol_request(llc_data_base_t *base, mpx_user_t *user_cb,
     nested_wp_id.bs_ie = ie_header_mask.ea_ie;
     nested_wp_id.us_ie = true;
 
-//#ifndef FEATURE_TIMAC_SUPPORT 
+//#ifndef FEATURE_TIMAC_SUPPORT
 #if !defined(FEATURE_TIMAC_SUPPORT) || defined(WISUN_RCP_ENABLE)
     uint16_t ie_header_length = ws_wh_headers_length(ie_header_mask, &base->ie_params);
     uint16_t nested_ie_length = ws_wp_nested_message_length(nested_wp_id, &base->ie_params);
@@ -1474,7 +1612,7 @@ static void ws_llc_mpx_eapol_request(llc_data_base_t *base, mpx_user_t *user_cb,
 
     //Write UTT
     uint8_t *pBaseHie;
-    pBaseHie = ptr; 
+    pBaseHie = ptr;
 
     message->utie_time_offset = ptr - pBaseHie;
     ptr = ws_wh_utt_write(ptr, message->messsage_type);
@@ -2093,8 +2231,14 @@ int8_t ws_llc_asynch_request(struct protocol_interface_info_entry *interface, as
     request->wh_requested_ie_list.fc_ie = false; //Never should not be a part Asynch message
     request->wh_requested_ie_list.rsl_ie = false; //Never should not be a part Asynch message
     request->wh_requested_ie_list.vh_ie = false;
+
     uint16_t header_buffer_length = ws_wh_headers_length(request->wh_requested_ie_list, &base->ie_params);
     uint16_t wp_nested_payload_length = ws_wp_nested_message_length(request->wp_requested_nested_ie_list, &base->ie_params);
+
+#ifdef WISUN_FAN_CORE_1_1
+    header_buffer_length += ws_res_wh_headers_length(&interface->ws_info->pan_information, request->wh_requested_ie_list);
+    wp_nested_payload_length += ws_res_wp_nested_message_length(&interface->ws_info->pan_information, request->wp_requested_nested_ie_list);
+#endif // WISUN_FAN_CORE_1_1
 
     //Allocated
     uint16_t total_length = header_buffer_length;
@@ -2158,6 +2302,18 @@ int8_t ws_llc_asynch_request(struct protocol_interface_info_entry *interface, as
         data_req.btie_time_offset += 3;
     }
 
+#ifdef WISUN_FAN_CORE_1_1
+    //add reserved WHIEs if needed
+    if (request->wh_requested_ie_list.res_wh_pan_wide_ie)
+    {
+        ptr = ws_res_wh_pan_wide_write(ptr, &interface->ws_info->pan_information);
+    }
+    if (request->wh_requested_ie_list.res_wh_ffn_wide_ie)
+    {
+        ptr = ws_res_wh_ffn_wide_write(ptr, &interface->ws_info->pan_information);
+    }
+#endif // WISUN_FAN_CORE_1_1
+
     if (wp_nested_payload_length) {
         message->ie_vector_list[1].ieBase = ptr;
         message->ie_vector_list[1].iovLen = 2 + wp_nested_payload_length;
@@ -2194,7 +2350,8 @@ int8_t ws_llc_asynch_request(struct protocol_interface_info_entry *interface, as
             //Write JM_IE
             ptr = ws_wp_nested_jm_write(ptr, base->ie_params.pan_congiguration);
         }
-#endif
+#endif //WISUN_FAN_CORE_1_1
+
         if (request->wp_requested_nested_ie_list.pan_version_ie) {
             //Write pan version
             ptr = ws_wp_nested_pan_ver_write(ptr, base->ie_params.pan_congiguration);
@@ -2209,7 +2366,28 @@ int8_t ws_llc_asynch_request(struct protocol_interface_info_entry *interface, as
             //Write Vendor spesific payload
             ptr = ws_wp_nested_vp_write(ptr, base->ie_params.vendor_payload, base->ie_params.vendor_payload_length);
         }
-    }
+
+#ifdef WISUN_FAN_CORE_1_1
+        //add reserved WPIEs if needed
+        if (request->wp_requested_nested_ie_list.res_wp_short_pan_wide_ie)
+        {
+            ptr = ws_res_wp_short_pan_wide_write(ptr, &interface->ws_info->pan_information);
+        }
+        if (request->wp_requested_nested_ie_list.res_wp_short_ffn_wide_ie)
+        {
+            ptr = ws_res_wp_short_ffn_wide_write(ptr, &interface->ws_info->pan_information);
+        }
+        if (request->wp_requested_nested_ie_list.res_wp_long_pan_wide_ie)
+        {
+            ptr = ws_res_wp_long_pan_wide_write(ptr, &interface->ws_info->pan_information);
+        }
+        if (request->wp_requested_nested_ie_list.res_wp_long_ffn_wide_ie)
+        {
+            ptr = ws_res_wp_long_ffn_wide_write(ptr, &interface->ws_info->pan_information);
+        }
+#endif //WISUN_FAN_CORE_1_1
+
+    } //end of wp_nested_payload_length check
 
     uint8_t status;
     status = base->interface_ptr->mac_api->mcps_data_req_ext(base->interface_ptr->mac_api, &data_req, &message->ie_ext, &request->channel_list, message->priority);
@@ -2235,7 +2413,7 @@ void ws_llc_set_vendor_header_data(struct protocol_interface_info_entry *interfa
     base->ie_params.vendor_header_data = vendor_header;
     base->ie_params.vendor_header_length = vendor_header_length;
 }
-#ifdef WISUN_FAN_CORE_1_1 
+#ifdef WISUN_FAN_CORE_1_1
 void ws_llc_set_jm_info(struct protocol_interface_info_entry *interface)
 {
     llc_data_base_t *base = ws_llc_discover_by_interface(interface);
@@ -2244,6 +2422,12 @@ void ws_llc_set_jm_info(struct protocol_interface_info_entry *interface)
     }
     base->ie_params.pan_congiguration->jm_version = interface->ws_info->pan_information.jm_version;
     base->ie_params.pan_congiguration->jm_plf     = interface->ws_info->pan_information.jm_plf;
+    base->ie_params.pan_congiguration->jm_num_of_metrics = interface->ws_info->pan_information.jm_num_of_metrics;
+
+    memcpy(base->ie_params.pan_congiguration->jm_metric_ids, interface->ws_info->pan_information.jm_metric_ids, WS_WPIE_JM_IE_MAX_NUM_METRICS );
+    memcpy(base->ie_params.pan_congiguration->jm_metric_lens, interface->ws_info->pan_information.jm_metric_lens, WS_WPIE_JM_IE_MAX_NUM_METRICS );
+    memcpy(base->ie_params.pan_congiguration->jm_metric_values, interface->ws_info->pan_information.jm_metric_values, (WS_WPIE_JM_IE_MAX_NUM_METRICS*WS_WPIE_JM_IE_METRIC_LEN_MAX));
+
 }
 #endif
 void ws_llc_set_vendor_payload_data(struct protocol_interface_info_entry *interface, uint8_t *vendor_payload, uint8_t vendor_payload_length)

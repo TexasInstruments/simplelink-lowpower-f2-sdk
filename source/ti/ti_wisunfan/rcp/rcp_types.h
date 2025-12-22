@@ -79,6 +79,7 @@ typedef enum {
     RCP_CONFIG_BC_TIMING_INFO = 0x1002,
     RCP_CONFIG_SEC_KEY = 0x1003,
     RCP_CONFIG_SEC_FRAME_COUNT = 0x1004,
+    RCP_CONFIG_PHY_INIT = 0x1005,
 
     /* FH PIB Config: 0x2xxx */
     // RCP_CONFIG_TRACK_PARENT_EUI = MAC_FHPIB_TRACK_PARENT_EUI,
@@ -279,6 +280,19 @@ typedef struct rcp_btie_debug_s {
     uint16_t num_bfio_udate_negative;
 } rcp_btie_debug_t;
 
+typedef struct {
+  uint8_t fskModScheme;                 /* 0: 2-FSK/2-GFSK; 1: 4-FSK/4-GFSK */
+  uint16_t symbolRate;                   /* Symbol rate selection */
+  uint8_t fskModIndex;                  /* Modulation index as a value encoded in
+                                       * MR-FSK Generic PHY Descriptor IE
+                                       * (IEEE802.15.4g section 5.2.4.20c).
+                                       *
+                                       * 2FSK MI = 0.25 + Modulation Index * 0.05
+                                       * 4FSK MI is a third of 2FSK MI
+                                       */
+  uint8_t ccaType;                      /* Channel clearance algorithm selection */
+} phyIDTableEntry_t;
+
 typedef enum {
     RCP_INIT,
     RCP_MAC_INIT,
@@ -351,6 +365,19 @@ typedef struct { // Not packing this struct due to unaligned pointer warnings
     uint8_t key_index;
     uint32_t frame_count;
 } rcp_mac_config_sec_frame_count_t;
+
+typedef struct {
+    bool ffd;
+    uint8_t phy_id;
+    uint16_t config_channel_spacing;
+    uint32_t ch0_center_frequency; //in KHz
+    uint8_t config_number_of_channels;
+    // See phyIDTableEntry_t for details on below parameters
+    uint8_t mod_scheme;
+    uint16_t symbol_rate;
+    uint8_t mod_index;
+    uint8_t cca_type;
+} rcp_mac_config_phy_init;
 
 typedef struct __attribute__((__packed__)) {
     uint8_t cnf_type; 

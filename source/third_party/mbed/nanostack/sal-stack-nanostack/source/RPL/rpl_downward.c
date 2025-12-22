@@ -686,7 +686,6 @@ void rpl_instance_send_address_registration(rpl_instance_t *instance, const uint
     instance->pending_neighbour_confirmation = true;
 }
 
-
 /* We are optimised for sending updates to existing targets to current parents;
  * we track the state of what information DAO parents have, and manage the
  * updates together with message coalescing and ack tracking.
@@ -2072,6 +2071,45 @@ bool rpl_instance_address_registration_done(protocol_interface_info_entry_t *int
     neighbour->confirmed = true;
     dao_target->response_wait_time = 6;
     return false;
+}
+
+void rpl_instance_registration_refresh_handler(protocol_interface_info_entry_t *interface, rpl_instance_t *instance, const uint8_t addr[16])
+{
+    rpl_neighbour_t *pref_parent = rpl_instance_preferred_parent(instance);
+    rpl_neighbour_t *backup_parent = NULL;
+    rpl_neighbour_t *refresh_parent = NULL;
+
+    if (pref_parent == NULL) {
+        return;
+    }
+
+    // If registration refresh came from preferred parent, select it as the parent to send NS to.
+    if (memcmp(pref_parent->global_address, addr, sizeof(pref_parent->global_address)) == 0 ||
+        memcmp(pref_parent->ll_address, addr, sizeof(pref_parent->ll_address)) == 0) {
+        refresh_parent = pref_parent;
+    } else {
+        // If preferred parent is not a match, check if backup parent exists and do the same comparison
+        backup_parent = ns_list_get_next(&instance->candidate_neighbours, pref_parent);
+        if (!backup_parent || (!backup_parent->dodag_parent && !backup_parent->was_dodag_parent)) {
+            return;
+        }
+
+        if (memcmp(backup_parent->global_address, addr, sizeof(backup_parent->global_address)) == 0 ||
+            memcmp(backup_parent->ll_address, addr, sizeof(backup_parent->ll_address)) == 0) {
+            refresh_parent = backup_parent;
+        }
+    }
+
+    // Send own targets to refresh parent
+    if (refresh_parent) {
+        ns_list_foreach_safe(rpl_dao_target_t, dao_target, &instance->dao_targets) {
+            if (dao_target->own == false) {
+                continue;
+            }
+            if_address_entry_t *dao_address = rpl_interface_addr_get(interface, dao_target->prefix);
+            rpl_instance_push_address_registration(interface, refresh_parent, dao_address);
+        }
+    }
 }
 
 #endif /* HAVE_RPL */

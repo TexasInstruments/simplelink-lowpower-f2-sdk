@@ -111,6 +111,7 @@
 #define MAC_FH_GET_IE_LEN_FN            fhObject.pFhGetIeLenFn
 /* Frequency hopping Generate IE function */
 #define MAC_FH_GENERATE_IE_FN           fhObject.pFhGenIeFn
+#ifndef WISUN_RCP_ENABLE
 /* Frequency hopping Parse Payload IE function */
 #define MAC_FH_PARSE_PIE_FN              fhObject.pFhParsePieFn
 /* Frequency hopping Extract header IE function */
@@ -119,6 +120,9 @@
 #define MAC_FH_EXTRACT_PIE_FN           fhObject.pFhExtractPieFn
 /* Frequency hopping Parse Header IE function */
 #define MAC_FH_PARSE_HIE_FN             fhObject.pFhParseHieFn
+/* Frequency hopping MAC Add Device Callback function */
+#define MAC_FH_ADD_DEVICE_FN            fhObject.pFhAddDeviceCB
+#endif
 /* Frequency hopping Reset PIB function */
 #define MAC_FH_RESET_PIB_FN             fhObject.pFhResetPibFn
 /* Frequency hopping Set PIB function */
@@ -135,8 +139,6 @@
 #define MAC_FH_COMPLETE_RX_CB_FN        fhObject.pFhCompleteRxCbFn
 /* Frequency hopping Set state Callback function */
 #define MAC_FH_SET_STATE_CB_FN          fhObject.pFhSetStateCbFn
-/* Frequency hopping MAC Add Device Callback function */
-#define MAC_FH_ADD_DEVICE_FN            fhObject.pFhAddDeviceCB
 /* Frequency hopping Get ch hopping function of the target node */
 #define MAC_FH_GET_TX_CH_HOP_FN         fhObject.pFhGetTxChHopFn
 /* Frequency hopping Get remaining dwell time of the

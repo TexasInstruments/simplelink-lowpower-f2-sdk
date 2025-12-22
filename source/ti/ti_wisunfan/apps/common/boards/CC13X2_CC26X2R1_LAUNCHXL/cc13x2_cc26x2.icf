@@ -100,7 +100,7 @@ keep { section .ccfg };
 	IDE, makefile, and CMake library compilation */
 place in FLASH_last_region__ { section .text object nvoctp.o  };
 place in FLASH_last_region__ { section .text object *macTask.o* };
-place in FLASH_last_region__ { section .text object *api_mac.o* };
+place in FLASH_last_region__ { section .text object *rcp_mcps_sap*.o* };
 place in FLASH_last_region__ { section .text object *osal_port.o* };
 place in FLASH_last_region__ { section .text object *saddr*.o* };
 
@@ -130,9 +130,9 @@ do not initialize { section .ramVecs };
 /* Asteriks (*) are due to differing naming convetions for compiled object files between 
 	IDE, makefile, and CMake library compilation */
 place in RAM_pre_dma_region { section .bss object *fh_global*.o* };
-place in RAM_pre_dma_region { section .bss object *mac*.o* };
 place in RAM_pre_dma_region { section .bss object *osal_port*.o* };
-place in RAM_pre_dma_region { section .bss object *ipv6*.o* };
+place in RAM_pre_dma_region { section .bss object *ncp_uart*.o* };
+place in RAM_pre_dma_region { section .bss object *instance*.o* };
 
 /*
  * Define CSTACK block to contain .stack section. This enables the IAR IDE

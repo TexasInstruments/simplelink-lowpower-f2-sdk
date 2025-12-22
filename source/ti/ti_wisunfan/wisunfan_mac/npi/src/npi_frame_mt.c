@@ -379,7 +379,7 @@ void NPIFrame_collectFrameData(void)
 
                     /* Determine if it's a SYNC or ASYNC message */
                     NPIMSG_Type msgType;
-                    
+
 #if defined(NPI_SREQRSP)
                     if ((pMsg[1] & MTRPC_CMD_TYPE_MASK) == MTRPC_CMD_SREQ)
                     {
@@ -392,7 +392,7 @@ void NPIFrame_collectFrameData(void)
 #else
                     msgType = NPIMSG_Type_ASYNC;
 #endif // NPI_SREQRSP
-                    
+
                     if ( incomingFrameCBFunc )
                     {
                         incomingFrameCBFunc(MTRPC_FRAME_HDR_SZ + LEN_Token, pMsg, msgType);
@@ -410,11 +410,21 @@ void NPIFrame_collectFrameData(void)
                 break;
 
             default:
-                break;
+            break;
         }
     }
 }
 
+bool NPIFrame_IsSOP(void)
+{
+    return (state == NPIFRAMEMT_SOP_STATE);
+}
+
+void NPIFrame_Reset(void)
+{
+    // Reset the state machine
+    state = NPIFRAMEMT_SOP_STATE;
+}
 
 /******************************************************************************
  Local Functions

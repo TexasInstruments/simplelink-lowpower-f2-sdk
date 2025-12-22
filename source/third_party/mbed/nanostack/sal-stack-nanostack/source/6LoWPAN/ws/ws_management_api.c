@@ -474,7 +474,8 @@ int ws_management_network_size_validate(
 
 int ws_management_channel_mask_set(
     int8_t interface_id,
-    uint8_t channel_mask[17])
+    uint8_t uc_channel_mask[17],
+    uint8_t bc_channel_mask[17])
 {
     protocol_interface_info_entry_t *cur;
 
@@ -493,13 +494,18 @@ int ws_management_channel_mask_set(
         return -2;
     }
 
-    if (channel_mask) {
-        memcpy(cfg.fhss_uc_channel_mask5, channel_mask, sizeof(cfg.fhss_uc_channel_mask5) );
+    if (uc_channel_mask) {
+        memcpy(cfg.fhss_uc_channel_mask5, uc_channel_mask, sizeof(cfg.fhss_uc_channel_mask5) );
     } else {
         // Use the default
         memcpy(cfg.fhss_uc_channel_mask5, cfg_default.fhss_uc_channel_mask5, sizeof(cfg.fhss_uc_channel_mask5) );
     }
-
+    if (bc_channel_mask) {
+        memcpy(cfg.fhss_bc_channel_mask5, bc_channel_mask, sizeof(cfg.fhss_bc_channel_mask5) );
+    } else {
+        // Use the default
+        memcpy(cfg.fhss_bc_channel_mask5, cfg_default.fhss_bc_channel_mask5, sizeof(cfg.fhss_bc_channel_mask5) );
+    }
 
     if (ws_cfg_fhss_set(cur, NULL, &cfg, 0) < 0) {
         return -3;
@@ -510,14 +516,15 @@ int ws_management_channel_mask_set(
 
 int ws_management_channel_mask_get(
     int8_t interface_id,
-    uint8_t *channel_mask)
+    uint8_t *uc_channel_mask,
+    uint8_t *bc_channel_mask)
 {
     protocol_interface_info_entry_t *cur;
     cur = protocol_stack_interface_info_get_by_id(interface_id);
     if (interface_id >= 0 && (!cur || !ws_info(cur))) {
         return -1;
     }
-    if (!channel_mask) {
+    if (!uc_channel_mask || !bc_channel_mask) {
         return -2;
     }
 
@@ -526,7 +533,8 @@ int ws_management_channel_mask_get(
         return -2;
     }
 
-    memcpy(channel_mask, cfg.fhss_uc_channel_mask5, sizeof(cfg.fhss_uc_channel_mask5) );
+    memcpy(uc_channel_mask, cfg.fhss_uc_channel_mask5, sizeof(cfg.fhss_uc_channel_mask5) );
+    memcpy(bc_channel_mask, cfg.fhss_bc_channel_mask5, sizeof(cfg.fhss_bc_channel_mask5) );
 
     return 0;
 }
@@ -1000,4 +1008,18 @@ int ws_device_min_sens_set(
     return 0;
 }
 
+int ws_management_async_channel_mask_set(
+    uint8_t async_mask[17])
+{
+    if (!async_mask) {
+        return -1;
+    }
+
+    /* save the async channel to cfg_props */
+    if (async_mask) {
+        memcpy(cfg_props.async_channel_list, async_mask, sizeof(cfg_props.async_channel_list));
+    }
+
+    return 0;
+}
 #endif // HAVE_WS

@@ -20,6 +20,11 @@
 
 #include "ns_types.h"
 
+#define UNUSED_CHANNEL_PLAN_ID 0xFF //1 byte long
+#define UNUSED_OPERATING_CLASS 0xFF //1 byte long
+#define UNUSED_REG_DOMAIN 0xFF
+
+#define WISUN_MIN_IE_LENGTH 2
 #define WH_IE_ELEMENT_HEADER_LENGTH 3
 
 /* Header IE Sub elements */
@@ -30,6 +35,12 @@
 #define WH_IE_MHDS_TYPE             5   /**< MHDS information for mesh routing */
 #define WH_IE_VH_TYPE               6   /**< Vendor header information */
 #define WH_IE_EA_TYPE               9   /**< Eapol Auhtenticator EUI-64 header information */
+#ifdef WISUN_FAN_CORE_1_1
+#define WH_PAN_WIDE_RES_IE_SUBID_MIN 0x80 /**< Minimum WH PAN Wide Sub ID reserved for future purposes: Ref Wi-SUN-Assigned-Value-Registry-0v26.docx  */
+#define WH_PAN_WIDE_RES_IE_SUBID_MAX 0xBF /**< Maximum WH PAN Wide Sub ID reserved for future purposes: Ref Wi-SUN-Assigned-Value-Registry-0v26.docx  */
+#define WH_FFN_WIDE_RES_IE_SUBID_MIN 0xC0 /**< Minimum WH FFN Wide Sub ID reserved for future purposes: Ref Wi-SUN-Assigned-Value-Registry-0v26.docx  */
+#define WH_FFN_WIDE_RES_IE_SUBID_MAX 0xFE /**< Maximum WH FFN Wide Sub ID reserved for future purposes: Ref Wi-SUN-Assigned-Value-Registry-0v26.docx  */
+#endif //WISUN_FAN_CORE_1_1
 
 #define WS_WP_NESTED_IE             4 /**< WS nested Payload IE element'selement could include mltiple sub payload IE */
 
@@ -46,9 +57,18 @@
 #ifdef WISUN_FAN_CORE_1_1
 #define WP_PAYLOAD_IE_POM           0x08   /**< PHY Operating Mode */
 #define WP_PAYLOAD_IE_LBATS         0x09   /**< LFN Broadcast Additional Transmit Schedule */
-#define WP_PAYLOAD_IE_JM            0x0A   /**< oin Metrics */
-#endif
-
+#define WP_PAYLOAD_IE_JM            0x0A   /**< Join Metrics */
+//Reserved Short WP Sub IDs
+#define WP_SHORT_PAN_WIDE_RES_IE_SUBID_MIN 0x40 /**< Minimum WP PAN Wide Sub ID reserved for future purposes: Ref Wi-SUN-Assigned-Value-Registry-0v26.docx  */
+#define WP_SHORT_PAN_WIDE_RES_IE_SUBID_MAX 0x5F /**< Maximum WP PAN Wide Sub ID reserved for future purposes: Ref Wi-SUN-Assigned-Value-Registry-0v26.docx  */
+#define WP_SHORT_FFN_WIDE_RES_IE_SUBID_MIN 0x60 /**< Minimum WP FFN Wide Sub ID reserved for future purposes: Ref Wi-SUN-Assigned-Value-Registry-0v26.docx  */
+#define WP_SHORT_FFN_WIDE_RES_IE_SUBID_MAX 0x7E /**< Maximum WP FFN Wide Sub ID reserved for future purposes: Ref Wi-SUN-Assigned-Value-Registry-0v26.docx  */
+// Reserved Long WP Sub IDs
+#define WP_LONG_PAN_WIDE_RES_IE_SUBID_MIN 0x08 /**< Minimum WP PAN Wide Sub ID reserved for future purposes: Ref Wi-SUN-Assigned-Value-Registry-0v26.docx  */
+#define WP_LONG_PAN_WIDE_RES_IE_SUBID_MAX 0x0A /**< Maximum WP PAN Wide Sub ID reserved for future purposes: Ref Wi-SUN-Assigned-Value-Registry-0v26.docx  */
+#define WP_LONG_FFN_WIDE_RES_IE_SUBID_MIN 0x0B /**< Minimum WP FFN Wide Sub ID reserved for future purposes: Ref Wi-SUN-Assigned-Value-Registry-0v26.docx  */
+#define WP_LONG_FFN_WIDE_RES_IE_SUBID_MAX 0x0E /**< Maximum WP FFN Wide Sub ID reserved for future purposes: Ref Wi-SUN-Assigned-Value-Registry-0v26.docx  */
+#endif // WISUN_FAN_CORE_1_1
 
 /* WS frame types to WH_IE_UTT_TYPE */
 #define WS_FT_PAN_ADVERT        0          /**< PAN Advert */
@@ -68,6 +88,65 @@
 
 #define WS_EXCLUDED_MAX_RANGE_TO_SEND 3
 #define CONFIG_INVALID_HWADDR {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+
+#ifdef WISUN_FAN_CORE_1_1
+//macros related to JM-IE
+#define WS_WPIE_JM_IE_MAX_NUM_METRICS  4
+#define WS_WPIE_JM_IE_METRIC_LEN_MAX   4
+
+//IE pass through feature related
+//reserved WH IEs
+#define NUM_RESERVED_WHIE_MAX 2
+#define NUM_RESERVED_WHIE_PAN_WIDE_MAX NUM_RESERVED_WHIE_MAX
+#define NUM_RESERVED_WHIE_FFN_WIDE_MAX NUM_RESERVED_WHIE_MAX
+
+//reserved WP SUBIDs
+#define NUM_RESERVED_WPIE_MAX 2
+//type short
+#define NUM_RESERVED_WPIE_SHORT_PAN_WIDE_MAX NUM_RESERVED_WPIE_MAX
+#define NUM_RESERVED_WPIE_SHORT_FFN_WIDE_MAX NUM_RESERVED_WPIE_MAX
+//type long
+#define NUM_RESERVED_WPIE_LONG_PAN_WIDE_MAX NUM_RESERVED_WPIE_MAX
+#define NUM_RESERVED_WPIE_LONG_FFN_WIDE_MAX NUM_RESERVED_WPIE_MAX
+#endif //WISUN_FAN_CORE_1_1
+
+
+#ifdef WISUN_FAN_CORE_1_1
+
+//header IEs
+typedef struct ws_wh_pan_wide_ie_s {
+    uint8_t *val;
+    uint8_t len;
+} ws_wh_pan_wide_ie_t;
+
+typedef struct ws_wh_ffn_wide_ie_s {
+    uint8_t *val;
+    uint8_t len;
+} ws_wh_ffn_wide_ie_t;
+
+//payload IEs
+typedef struct ws_wp_short_pan_wide_ie_s {
+    uint8_t *val;
+    uint8_t len;
+} ws_wp_short_pan_wide_ie_t;
+
+typedef struct ws_wp_short_ffn_wide_ie_s {
+    uint8_t *val;
+    uint8_t len;
+} ws_wp_short_ffn_wide_ie_t;
+
+typedef struct ws_wp_long_pan_wide_ie_s {
+    uint8_t *val;
+    uint16_t len;
+} ws_wp_long_pan_wide_ie_t;
+
+typedef struct ws_wp_long_ffn_wide_ie_s {
+    uint8_t *val;
+    uint16_t len;
+} ws_wp_long_ffn_wide_ie_t;
+
+#endif //WISUN_FAN_CORE_1_1
+
 /**
  * @brief ws_pan_information_t PAN information
  */
@@ -81,9 +160,47 @@ typedef struct ws_pan_information_s {
     unsigned version: 3;        /**< Pan version support. */
 #ifdef WISUN_FAN_CORE_1_1
     uint16_t max_pan_size;      /**< Maximum PAN SIZE. */
+    uint8_t  jm_num_of_metrics; /**< Number of metrics in use, 1-4 */
     uint8_t  jm_version;        /**< JM IE version. */
     uint8_t  jm_plf;            /**< JMIE PAN Load factor. */
-#endif
+    uint8_t jm_metric_ids[WS_WPIE_JM_IE_MAX_NUM_METRICS];   /**< JMIE metric ids. */
+    uint8_t jm_metric_lens[WS_WPIE_JM_IE_MAX_NUM_METRICS];   /**< JMIE metric ids. */
+    uint8_t jm_metric_values[WS_WPIE_JM_IE_MAX_NUM_METRICS][WS_WPIE_JM_IE_METRIC_LEN_MAX];/**< JMIE metric values. */
+
+    //reserved WH IEs
+    uint8_t num_res_wh_pan_wide_ies; /**< Number of generic WH PAN wide IEs. */
+    uint8_t res_wh_pan_wide_ie_ids[NUM_RESERVED_WHIE_PAN_WIDE_MAX]; /**< Array to store the ids */
+    uint8_t res_wh_pan_wide_ie_lens[NUM_RESERVED_WHIE_PAN_WIDE_MAX]; /**< Array to store the lengths */
+    ws_wh_pan_wide_ie_t res_wh_pan_wide_ies[NUM_RESERVED_WHIE_PAN_WIDE_MAX]; /**< Array of generic WH PAN wide IEs */
+
+    uint8_t num_res_wh_ffn_wide_ies; /**< Number of generic WH FFN wide IEs. */
+    uint8_t res_wh_ffn_wide_ie_ids[NUM_RESERVED_WHIE_FFN_WIDE_MAX]; /**< Array to store the ids */
+    uint8_t res_wh_ffn_wide_ie_lens[NUM_RESERVED_WHIE_FFN_WIDE_MAX]; /**< Array to store the lengths */
+    ws_wh_ffn_wide_ie_t res_wh_ffn_wide_ies[NUM_RESERVED_WHIE_FFN_WIDE_MAX]; /**< Array of generic WH FFN wide IEs */
+
+    //reserved WPIEs : type Short
+    uint8_t num_res_wp_short_pan_wide_ies; /**< Number of generic WP Short PAN wide IEs. */
+    uint8_t res_wp_short_pan_wide_ie_ids[NUM_RESERVED_WPIE_SHORT_PAN_WIDE_MAX]; /**< Array to store the ids */
+    uint8_t res_wp_short_pan_wide_ie_lens[NUM_RESERVED_WPIE_SHORT_PAN_WIDE_MAX]; /**< Array to store the lengths */
+    ws_wp_short_pan_wide_ie_t res_wp_short_pan_wide_ies[NUM_RESERVED_WPIE_SHORT_PAN_WIDE_MAX]; /**< Array of generic WP Short PAN wide IEs */
+
+    uint8_t num_res_wp_short_ffn_wide_ies; /**< Number of generic WP Short FFN wide IEs. */
+    uint8_t res_wp_short_ffn_wide_ie_ids[NUM_RESERVED_WPIE_SHORT_FFN_WIDE_MAX]; /**< Array to store the ids */
+    uint8_t res_wp_short_ffn_wide_ie_lens[NUM_RESERVED_WPIE_SHORT_FFN_WIDE_MAX]; /**< Array to store the lengths */
+    ws_wp_short_ffn_wide_ie_t res_wp_short_ffn_wide_ies[NUM_RESERVED_WPIE_SHORT_FFN_WIDE_MAX]; /**< Array of generic WP Short FFN wide IEs */
+
+    //reserved WPIEs: type Long
+    uint8_t num_res_wp_long_pan_wide_ies; /**< Number of generic WP long PAN wide IEs. */
+    uint8_t res_wp_long_pan_wide_ie_ids[NUM_RESERVED_WPIE_LONG_PAN_WIDE_MAX]; /**< Array to store the ids */
+    uint8_t res_wp_long_pan_wide_ie_lens[NUM_RESERVED_WPIE_LONG_PAN_WIDE_MAX]; /**< Array to store the lengths */
+    ws_wp_long_pan_wide_ie_t res_wp_long_pan_wide_ies[NUM_RESERVED_WPIE_LONG_PAN_WIDE_MAX]; /**< Array of generic WP long PAN wide IEs */
+
+    uint8_t num_res_wp_long_ffn_wide_ies; /**< Number of generic WP long FFN wide IEs. */
+    uint8_t res_wp_long_ffn_wide_ie_ids[NUM_RESERVED_WPIE_LONG_FFN_WIDE_MAX]; /**< Array to store the ids */
+    uint8_t res_wp_long_ffn_wide_ie_lens[NUM_RESERVED_WPIE_LONG_FFN_WIDE_MAX]; /**< Array to store the lengths */
+    ws_wp_long_ffn_wide_ie_t res_wp_long_ffn_wide_ies[NUM_RESERVED_WPIE_LONG_FFN_WIDE_MAX]; /**< Array of generic WP long FFN wide IEs */
+
+#endif //WISUN_FAN_CORE_1_1
 } ws_pan_information_t;
 
 /**
@@ -117,7 +234,7 @@ typedef struct ws_hopping_schedule_s {
     uint8_t operating_mode;             /**< PHY operating mode default to "1b" symbol rate 50, modulation index 1 */
     uint8_t phy_mode_id;                /**< PHY mode ID, default to 255 */
     uint8_t channel_plan_id;            /**< Channel plan ID, default to 255 */
-    uint8_t channel_plan;               /**< 0: use regulatory domain values 1: application defined plan */
+    uint8_t channel_plan;               /**< 0: use RD+OC; 1: CH0 + CH spacing + num CH; 2: RD + CH plan ID */
     uint8_t uc_channel_function;        /**< 0: Fixed channel, 1:TR51CF, 2: Direct Hash, 3: Vendor defined */
     uint8_t bc_channel_function;        /**< 0: Fixed channel, 1:TR51CF, 2: Direct Hash, 3: Vendor defined */
     uint8_t channel_spacing;            /**< derived from regulatory domain. 0:200k, 1:400k, 2:600k, 3:100k */
@@ -133,10 +250,13 @@ typedef struct ws_hopping_schedule_s {
 #ifdef WISUN_RCP_ENABLE
     ws_excluded_channel_data_t bc_excluded_channels;
     /* for FAN 1.1 support */
-    uint8_t fan_support_version;          /**< 0: FAN 1.0, 1 FAN 1.1  */
-    uint8_t usie_chan_plan_selection;     /**< USIE 0: use RD+OC , 1: ch0, space + number, 2: RD+chan-ID */
-    uint8_t bsie_chan_plan_selection;     /**< BSIE 0: use RD+OC , 1: ch0, space + number, 2: RD+chan-ID */
+    uint8_t fan_support_version;     /**< 0: FAN 1.0, 1 FAN 1.1  */
 #endif
+    /* channel plan allow channel list for unicast/broadcast
+       assume the broadcast and unicast use same allowed channel mask
+    */
+    uint8_t regulation_channel_mask[NUM_BYTES_IN_CHAN_MASK];
+    uint8_t out_range_channel_mask[NUM_BYTES_IN_CHAN_MASK];
 
 } ws_hopping_schedule_t;
 
@@ -182,6 +302,14 @@ typedef struct ws_channel_plan_one {
 } ws_channel_plan_one_t;
 
 /**
+ * @brief ws_channel_plan_two_t WS channel plan 2 define reg_domain and channel_plan_id
+ */
+typedef struct ws_channel_plan_two{
+    uint8_t regulator_domain;
+    uint8_t channel_plan_id;
+} ws_channel_plan_two_t;
+
+/**
  * @brief ws_channel_function_zero_t WS function 0 fixed channel
  */
 typedef struct ws_channel_function_zero {
@@ -225,6 +353,7 @@ typedef struct ws_us_ie {
     union {
         ws_channel_plan_zero_t zero;
         ws_channel_plan_one_t one;
+        ws_channel_plan_two_t two;
     } plan;
     union {
         ws_channel_function_zero_t zero;
@@ -251,6 +380,7 @@ typedef struct ws_bs_ie {
     union {
         ws_channel_plan_zero_t zero;
         ws_channel_plan_one_t one;
+        ws_channel_plan_two_t two;
     } plan;
     union {
         ws_channel_function_zero_t zero;
@@ -283,7 +413,11 @@ typedef struct ws_pom_ie_s {
  */
 typedef struct ws_jm_ie_s {
     uint8_t version;
+    uint8_t jm_num_of_metrics; /**< Number of metrics in use, 1-4 */
     uint8_t plf;    /* PAN Load Factor Join Metric */
+    uint8_t jm_metric_ids[WS_WPIE_JM_IE_MAX_NUM_METRICS];   /**< JMIE metric ids. */
+    uint8_t jm_metric_lens[WS_WPIE_JM_IE_MAX_NUM_METRICS];   /**< JMIE metric ids. */
+    uint8_t jm_metric_values[WS_WPIE_JM_IE_MAX_NUM_METRICS][WS_WPIE_JM_IE_METRIC_LEN_MAX];/**< JMIE metric values. */
 } ws_jm_ie_t;
 #endif
 
@@ -300,6 +434,7 @@ typedef struct ws_vp_ie {
     uint8_t user_reserved[WS_VP_IE_RESERVED_LEN];
 } ws_vp_ie_t;
 
+
 #define MPX_KEY_MANAGEMENT_ENC_USER_ID 0x0001   /**< MPX Key management user ID */
 #define MPX_LOWPAN_ENC_USER_ID 0xA0ED           /**< MPX Lowpan User Id */
 
@@ -311,10 +446,15 @@ typedef struct ws_vp_ie {
 #define WS_MPX_MAX_MTU 1576
 
 #define WS_FAN_VERSION_1_0 1
+#define WS_FAN_VERSION_1_1 2
 
 #define WS_NEIGHBOR_LINK_TIMEOUT 2200
 
+#ifdef WISUN_CERT_CONFIG
+#define WS_NEIGHBOUR_TEMPORARY_NEIGH_MAX_LIFETIME 60
+#else
 #define WS_NEIGHBOUR_TEMPORARY_NEIGH_MAX_LIFETIME 240
+#endif
 #define WS_NEIGHBOUR_TEMPORARY_ENTRY_LIFETIME 5
 #define WS_NEIGHBOUR_DHCP_ENTRY_LIFETIME 60
 #define WS_NEIGHBOR_TEMPORARY_LINK_MIN_TIMEOUT_LARGE 520
@@ -401,10 +541,18 @@ typedef struct ws_vp_ie {
  * 3                        4                               1+3*1+4=20
  *
  */
+
+#ifdef WISUN_CERT_CONFIG
+// This configuration is used when bootstrap is ready
+#define WS_MAX_FRAME_RETRIES            20
+// This configuration is used during bootstrap
+#define WS_MAX_FRAME_RETRIES_BOOTSTRAP  20 //TIrevisit: KV made this 4 earlier, should it go back to 0?
+#else
 // This configuration is used when bootstrap is ready
 #define WS_MAX_FRAME_RETRIES            6
 // This configuration is used during bootstrap
 #define WS_MAX_FRAME_RETRIES_BOOTSTRAP  4 //TIrevisit: KV made this 4 earlier, should it go back to 0?
+#endif
 
 // Configuring data request restart allows MAC to push failed packet back to MAC TX queue up to WS_CCA_REQUEST_RESTART_MAX times for CCA failure and WS_TX_REQUEST_RESTART_MAX for TX failure.
 // Packet cannot be taken back to transmission before it has finished the blacklist period.

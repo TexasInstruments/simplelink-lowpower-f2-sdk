@@ -66,6 +66,13 @@ Whether flashing normally or using the serial bootloader application, you must s
 
 With both MCUBoot and the Wi-SUN secure boot image loaded, the device should successfully boot into the Wi-SUN application via MCUBoot.
 
+Migration from CC1311P3 to CC1311R3
+-----------------------------------
+
+If you need to migrate from the CC1311P3 to the CC1311R3 example, you can use the board migration feature in SysConfig. In SysConfig, press the top right button with a chip symbol (Show Device View). This will open up the chip package view. Press the switch button in this view to perform board migration. You can select None for Board Setting, and CC1311R3 for Device.
+
+After migration, you will need to implement the function rfDriverCallbackAntennaSwitching(), overriding the weak function defined in the generated file `ti_drivers_config.c`. The implementatiof this function will depend on your specific use case and board design. See the description of the function in `ti_drivers_config.c` for more details.
+
 Example Usage
 -------------
 

@@ -105,7 +105,13 @@ typedef struct aro {
     uint16_t lifetime;
     uint8_t status;
     uint8_t eui64[8];
+    uint8_t opaque;
+    uint8_t I:2;
+    uint8_t R:1;
+    uint8_t T:1;
+    uint8_t TID;
     bool present;
+    bool is_earo; // If true, EARO fields I, R, T, TID, and opaque are used
 } aro_t;
 
 typedef enum slaac_src {
@@ -120,6 +126,7 @@ typedef enum slaac_src {
 #define ARO_DUPLICATE   1
 #define ARO_FULL        2
 #define ARO_TOPOLOGICALLY_INCORRECT 8
+#define EARO_REGISTRATION_REFRESH_REQUEST 11
 
 extern void icmpv6_init(void);
 extern struct buffer *icmpv6_down(struct buffer *buf);

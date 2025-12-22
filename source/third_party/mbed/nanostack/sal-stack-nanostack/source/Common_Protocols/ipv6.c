@@ -36,6 +36,7 @@
 #include "Common_Protocols/ipv6_resolution.h"
 #include "Common_Protocols/ipv6_flow.h"
 #include "RPL/rpl_data.h"
+#include "RPL/rpl_control.h"
 #ifdef HAVE_MPL
 #include "MPL/mpl.h"
 #endif
@@ -43,6 +44,7 @@
 #include "common_functions.h"
 /* TI Wi-SUN FAN Stack Specific Change*/
 #include "6LoWPAN/ws/ws_common.h"
+#include "6LoWPAN/Bootstraps/protocol_6lowpan.h"
 
 #define TRACE_GROUP "ipv6"
 
@@ -1488,6 +1490,43 @@ buffer_t *ipv6_forwarding_up(buffer_t *buf)
                 cur->if_common_forwarding_out_cb(cur, buf);
             }
             return ipv6_consider_forwarding_unicast_packet(buf, cur, &ll_src);
+        }
+    }
+
+    /* Refresh neighbor cache if received non-link-local unicast for us */
+    if (!addr_is_ipv6_multicast(buf->dst_sa.address) && !addr_is_ipv6_link_local(buf->src_sa.address) && for_us) {
+        uint8_t src_ll_addr[16] = {0};
+        mac_neighbor_table_entry_t *mac_neighbor = NULL;
+        ipv6_neighbour_t *neighbour = NULL;
+
+        if (cur->bootsrap_mode != ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER) {
+            // Check if src address is parent if not BR
+            rpl_control_get_parent_ll_addr_from_global_addr(cur, buf->src_sa.address, src_ll_addr);
+            neighbour = ipv6_neighbour_lookup(&cur->ipv6_neighbour_cache, src_ll_addr);
+        }
+        if (neighbour == NULL) {
+            neighbour = ipv6_neighbour_lookup(&cur->ipv6_neighbour_cache, buf->src_sa.address);
+            if (neighbour != NULL) {
+                ipv6_map_ll_to_ip_link_local(cur, neighbour->ll_type, neighbour->ll_address, src_ll_addr);
+            }
+        }
+        if (neighbour) {
+            mac_neighbor = mac_neighbor_entry_get_by_ll64(mac_neighbor_info(cur), src_ll_addr, false, NULL);
+            if (mac_neighbor) {
+                tr_info("Refresh lifetimes based on unicast RX");
+                if (mac_neighbor->lifetime > 0) {
+                    tr_info("Refresh mac neighbor table lifetime based on unicast RX: %s", trace_ipv6(buf->src_sa.address));
+                    mac_neighbor->lifetime = mac_neighbor->link_lifetime;
+                }
+                tr_info("Refresh IP neighbor cache lifetime based on unicast RX: %s", trace_ipv6(buf->src_sa.address));
+                tr_info("Lifetime refreshed to: %d", mac_neighbor->link_lifetime);
+                neighbour->type = IP_NEIGHBOUR_REGISTERED;
+                neighbour->lifetime = mac_neighbor->link_lifetime;
+                ipv6_neighbour_set_state(&cur->ipv6_neighbour_cache, neighbour, IP_NEIGHBOUR_STALE);
+                /* Register with 2 seconds off the lifetime - don't want the NCE to expire before the route */
+                ipv6_route_add_metric(neighbour->ip_address, 128, cur->id, neighbour->ip_address, ROUTE_ARO, NULL, 0, neighbour->lifetime - 2, 32);
+            }
+
         }
     }
 

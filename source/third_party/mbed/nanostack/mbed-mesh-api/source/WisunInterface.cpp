@@ -388,7 +388,7 @@ mesh_error_t WisunInterface::validate_network_size(uint8_t network_size)
 
 mesh_error_t WisunInterface::set_channel_mask(uint32_t channel_mask[8])
 {
-    int status = ws_management_channel_mask_set(get_interface_id(), channel_mask);
+    int status = ws_management_channel_mask_set(get_interface_id(), channel_mask, NULL);
     if (status != 0) {
         return MESH_ERROR_UNKNOWN;
     }

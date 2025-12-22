@@ -85,17 +85,18 @@ NVS_INT1.internalFlash.regionSize = 0x4000;
 NVS_INT2.$name = "CONFIG_NVSINTERNAL1";                  // Onchip OAD image secondary slot
 if (deviceName.includes("R10") || deviceName.includes("P10"))
 {
-    NVS_INT2.internalFlash.regionBase = 0x5C000;
+    NVS_INT2.internalFlash.regionBase = 0x60000;
+    NVS_INT2.internalFlash.regionSize = 0x5A000;
 }
 else if (deviceName.includes("R7") || deviceName.includes("P7"))
 {
     NVS_INT2.internalFlash.regionBase = 0x56000;
+    NVS_INT2.internalFlash.regionSize = 0x56000;
 }
 else
 {
     throw "Unsupported device";
 }
-NVS_INT2.internalFlash.regionSize = 0x56000;
 
 /* ======== LED Red ======== */
 var LED = scripting.addModule("/ti/drivers/apps/LED");   // Add a LED module

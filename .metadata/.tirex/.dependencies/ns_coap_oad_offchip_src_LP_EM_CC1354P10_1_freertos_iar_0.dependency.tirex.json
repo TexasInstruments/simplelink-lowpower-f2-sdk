@@ -237,6 +237,8 @@
             "+../../../../../../../source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_data.c -> rpl_data.c",
             "+../../../../../../../source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_downward.c -> rpl_downward.c",
             "+../../../../../../../source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_mrhof.c -> rpl_mrhof.c",
+            "+../../../../../../../source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_data.c -> rpl_nvm_data.c",
+            "+../../../../../../../source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_nvm_store.c -> rpl_nvm_store.c",
             "+../../../../../../../source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_objective.c -> rpl_objective.c",
             "+../../../../../../../source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_of0.c -> rpl_of0.c",
             "+../../../../../../../source/third_party/mbed/nanostack/sal-stack-nanostack/source/RPL/rpl_policy.c -> rpl_policy.c",

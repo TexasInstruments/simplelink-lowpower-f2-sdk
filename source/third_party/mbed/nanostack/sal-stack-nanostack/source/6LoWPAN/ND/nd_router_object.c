@@ -939,7 +939,11 @@ bool nd_ns_aro_handler(protocol_interface_info_entry_t *cur_interface, const uin
     if (ws_info(cur_interface)) {
 
         aro_out->status = ws_common_allow_child_registration(cur_interface, aro_out->eui64, aro_out->lifetime);
-        if (aro_out->status != ARO_SUCCESS) {
+        // Workaround: Suppress NA if RN is not connected to BR yet.
+        if (aro_out->status == ARO_TOPOLOGICALLY_INCORRECT) {
+            return false;
+        }
+        else if (aro_out->status != ARO_SUCCESS) {
             aro_out->present = true;
             return true;
         }

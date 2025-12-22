@@ -25,10 +25,19 @@ struct ws_us_ie;
 struct ws_hopping_schedule_s;
 struct ws_fc_ie;
 
+
 #ifdef WISUN_FAN_CORE_1_1
 struct ws_pom_ie_s;
 struct ws_jm_ie_s;
-#endif
+
+struct ws_wh_pan_wide_ie_s;
+struct ws_wh_ffn_wide_ie_s;
+
+struct ws_wp_short_pan_wide_ie_s;
+struct ws_wp_short_ffn_wide_ie_s;
+struct ws_wp_long_pan_wide_ie_s;
+struct ws_wp_long_ffn_wide_ie_s;
+#endif //WISUN_FAN_CORE_1_1
 /**
  * @brief ws_wp_network_name_t WS nested payload network name
  */
@@ -44,12 +53,19 @@ uint8_t *ws_wh_fc_write(uint8_t *ptr, struct ws_fc_ie *fc_ie);
 uint8_t *ws_wh_rsl_write(uint8_t *ptr, uint8_t rsl);
 uint8_t *ws_wh_vh_write(uint8_t *ptr, uint8_t *vendor_header, uint8_t vendor_header_length);
 uint8_t *ws_wh_ea_write(uint8_t *ptr, uint8_t *eui64);
+#ifdef WISUN_FAN_CORE_1_1
+uint8_t *ws_res_wh_pan_wide_write(uint8_t *ptr, struct ws_pan_information_s *pan_cfg);
+uint8_t *ws_res_wh_ffn_wide_write(uint8_t *ptr, struct ws_pan_information_s *pan_cfg);
+#endif //WISUN_FAN_CORE_1_1
 
 bool ws_wh_utt_read(uint8_t *data, uint16_t length, struct ws_utt_ie *utt_ie);
 bool ws_wh_bt_read(uint8_t *data, uint16_t length, struct ws_bt_ie *bt_ie);
 bool ws_wh_fc_read(uint8_t *data, uint16_t length, struct ws_fc_ie *fc_ie);
 bool ws_wh_rsl_read(uint8_t *data, uint16_t length, int8_t *rsl);
 bool ws_wh_ea_read(uint8_t *data, uint16_t length, uint8_t *eui64);
+#ifdef WISUN_FAN_CORE_1_1
+bool ws_res_wh_pan_ffn_wide_ies_read(struct ws_pan_information_s* ws_pan_info, uint8_t *headerIeList, uint16_t headerIeListLength);
+#endif //WISUN_FAN_CORE_1_1
 
 /* WS_WP_NESTED PAYLOD IE */
 uint8_t *ws_wp_base_write(uint8_t *ptr, uint16_t length);
@@ -62,6 +78,13 @@ uint8_t *ws_wp_nested_gtkhash_write(uint8_t *ptr, uint8_t *gtkhash, uint8_t gtkh
 uint16_t ws_wp_nested_hopping_schedule_length(struct ws_hopping_schedule_s *hopping_schedule, bool unicast_schedule);
 
 #ifdef WISUN_FAN_CORE_1_1
+uint8_t *ws_res_wp_short_pan_wide_write(uint8_t *ptr, struct ws_pan_information_s *pan_cfg);
+uint8_t *ws_res_wp_short_ffn_wide_write(uint8_t *ptr, struct ws_pan_information_s *pan_cfg);
+uint8_t *ws_res_wp_long_pan_wide_write(uint8_t *ptr, struct ws_pan_information_s *pan_cfg);
+uint8_t *ws_res_wp_long_ffn_wide_write(uint8_t *ptr, struct ws_pan_information_s *pan_cfg);
+#endif //WISUN_FAN_CORE_1_1
+
+#ifdef WISUN_FAN_CORE_1_1
 uint8_t *ws_wp_nested_pom_write(uint8_t *ptr, struct ws_pom_ie_s *ptr_pom_ie);
 // Wi-SUN FAN 1.1v09-d10 Figure 6-62 Capability IE
 #define WS_WPIE_POM_PHY_OP_MODE_NUMBER_MASK 0b00001111
@@ -71,14 +94,17 @@ uint8_t *ws_wp_nested_pom_write(uint8_t *ptr, struct ws_pom_ie_s *ptr_pom_ie);
 
 uint8_t *ws_wp_nested_jm_write(uint8_t *ptr, struct ws_pan_information_s *pan_congiguration);
 // 20210201-FANWG-FANTPS-1.1v09-d10
-// Figure 68b JM-IE 
+// Figure 68b JM-IE
 // Wi-SUN FAN 1.1v06 Figure 68c JM-IE Metric
-#define WS_WPIE_JM_METRIC_ID_MASK  0xFC
-#define WS_WPIE_JM_METRIC_LEN_MASK 0x03
-#define WS_WPIE_JM_METRIC_ID_SHIFT      2
-#define WS_WPIE_JM_METRIC_LEN_SHIFT     0
 
+#define WS_WPIE_JM_METRIC_ID_MASK  0x3F
+#define WS_WPIE_JM_METRIC_LEN_MASK 0xC0
+#define WS_WPIE_JM_METRIC_ID_SHIFT      0
+#define WS_WPIE_JM_METRIC_LEN_SHIFT     6
+
+#define WS_WPIE_JM_IE_CONTENT_VERSION_LENGTH        1
 #define WS_WPIE_JM_IE_PLF_LENGTH        3
+#define WS_WPIE_JM_IE_PLF_METRIC_LENGTH       1
 
 // Wi-SUN Assigned Value Registry 0v25
 //   8. Join Metric IDs
@@ -86,7 +112,17 @@ enum {
     WS_JM_PLF = 1, // PAN Load Factor
 };
 
-#endif
+#define WS_JM_TEST_METRIC_ID_1 0x30
+#define WS_JM_TEST_METRIC_ID_1_LEN 4 //indicates 4 bytes of data
+
+#define WS_JM_TEST_METRIC_ID_2 0x31
+#define WS_JM_TEST_METRIC_ID_2_LEN 2 //indicates 2 bytes of data
+
+// simulate the JMIE only has ID, but no data
+#define WS_JM_TEST_METRIC_ID_3 0x32
+#define WS_JM_TEST_METRIC_ID_3_LEN 0 //indicates zero bytes of data
+
+#endif //WISUN_FAN_CORE_1_1
 
 bool ws_wp_nested_us_read(uint8_t *data, uint16_t length, struct ws_us_ie *us_ie);
 bool ws_wp_nested_bs_read(uint8_t *data, uint16_t length, struct ws_bs_ie *bs_ie);
@@ -98,7 +134,8 @@ uint8_t *ws_wp_nested_gtkhash_read(uint8_t *data, uint16_t length);
 #ifdef WISUN_FAN_CORE_1_1
 bool ws_wp_nested_pom_read(uint8_t *data, uint16_t length, struct ws_pom_ie_s *ptr_pom_ie);
 bool ws_wp_nested_jm_read(uint8_t *data, uint16_t length, struct ws_jm_ie_s *ptr_jm_ie);
-#endif
+bool ws_res_wp_pan_ffn_wide_ies_read(struct ws_pan_information_s* ws_pan_info, uint8_t *payloadIeList, uint16_t payloadIeListLength);
+#endif //WISUN_FAN_CORE_1_1
 
 bool ws_wp_nested_vp_read(uint8_t *data, uint16_t length, struct ws_vp_ie *vp_ie);
 bool ws_wp_nested_vp_get(uint8_t *data, uint16_t length, struct ws_vp_ie *vp_ie);

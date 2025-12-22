@@ -540,27 +540,31 @@ int ws_management_network_size_validate(
  * Default value: all channels are allowed.
  *
  * \param interface_id Network interface ID.
- * \param channel_mask set bits matching the channel 1 to allow channel 0 to disallow.
+ * \param uc_channel_mask unicast set bits matching the channel 1 to allow channel 0 to disallow.
+ * \param bc_channel_mask broadcast set bits matching the channel 1 to allow channel 0 to disallow.
  *
  * \return 0, Init OK.
  * \return <0 Init fail.
  */
 int ws_management_channel_mask_set(
     int8_t interface_id,
-    uint8_t channel_mask[17]);
+    uint8_t uc_channel_mask[17],
+    uint8_t bc_channel_mask[17]);
 
 /**
  * Get channel mask for FHSS operation.
  *
  * \param interface_id Network interface ID.
- * \param channel_mask set bits matching the channel 1 to allow channel 0 to disallow.
+ * \param uc_channel_mask unicast set bits matching the channel 1 to allow channel 0 to disallow.
+ * \param bc_channel_mask broadcastset bits matching the channel 1 to allow channel 0 to disallow.
  *
  * \return 0, OK.
  * \return <0 Fail.
  */
 int ws_management_channel_mask_get(
     int8_t interface_id,
-    uint8_t *channel_mask);
+    uint8_t *uc_channel_mask,
+    uint8_t *bc_channel_mask);
 
 /**
  * Validate channel mask for FHSS operation.
@@ -890,6 +894,19 @@ int ws_neighbor_info_get(
 int ws_device_min_sens_set(
     int8_t interface_id,
     uint8_t device_min_sens);
+
+/**
+ * Set async channel mask for FHSS operation.
+ *
+ * Default value: all channels are allowed.
+ *
+ * \param async_mask set bits matching the channel 1 to allow channel 0 to disallow.
+ *
+ * \return 0, Init OK.
+ * \return <0 Init fail.
+ */
+int ws_management_async_channel_mask_set(
+    uint8_t async_mask[17]);
 
 #ifdef __cplusplus
 }

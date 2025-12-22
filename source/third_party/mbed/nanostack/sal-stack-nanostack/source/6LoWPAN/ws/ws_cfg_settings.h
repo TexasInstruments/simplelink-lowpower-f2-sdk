@@ -88,8 +88,7 @@ typedef struct ws_fhss_cfg_s {
 #ifdef WISUN_RCP_ENABLE
     /* for FAN 1.1 support */
     uint8_t fan_support_version;        /**< 0: FAN 1.0, 1 FAN 1.1  */
-    uint8_t usie_chan_plan_selection;     /**< USIE 0: use RD+OC , 1: ch0, space + number, 2: RD+chan-ID */
-    uint8_t bsie_chan_plan_selection;     /**< BSIE 0: use RD+OC , 1: ch0, space + number, 2: RD+chan-ID */
+    uint8_t config_chan_plan;     /**< USIE 0: use RD+OC , 1: ch0, space + number, 2: RD+chan-ID */
 #endif
 } ws_fhss_cfg_t;
 

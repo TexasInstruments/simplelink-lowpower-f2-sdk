@@ -75,6 +75,7 @@ rpl_dodag_version_t *rpl_instance_predicate_match(rpl_instance_t *instance, uint
 void rpl_instance_inconsistency(rpl_instance_t *instance);
 void rpl_instance_consistent_rx(rpl_instance_t *instance);
 void rpl_instance_increment_dtsn(rpl_instance_t *instance);
+void rpl_instance_set_dtsn(rpl_instance_t *instance, uint8_t dtsn);
 void rpl_dodag_set_pref(rpl_dodag_t *dodag, uint8_t pref);
 void rpl_instance_poison(rpl_instance_t *instance, uint8_t count);
 void rpl_instance_force_leaf(rpl_instance_t *instance);
@@ -135,6 +136,7 @@ void rpl_dodag_version_raise_greediness(rpl_dodag_version_t *version, uint16_t p
 bool rpl_dodag_version_rank_indicates_possible_sub_dodag(const rpl_dodag_version_t *version, uint16_t rank);
 
 rpl_neighbour_t *rpl_lookup_neighbour_by_ll_address(const rpl_instance_t *instance, const uint8_t *addr, int8_t if_id);
+rpl_neighbour_t *rpl_lookup_neighbour_by_global_address(const rpl_instance_t *instance, const uint8_t *addr, int8_t if_id);
 rpl_neighbour_t *rpl_lookup_last_candidate_from_list(const rpl_instance_t *instance);
 rpl_neighbour_t *rpl_create_neighbour(rpl_dodag_version_t *instance, const uint8_t *ll_addr, int8_t if_id, uint8_t g_mop_prf, uint8_t dtsn);
 void rpl_delete_neighbour(rpl_instance_t *instance, rpl_neighbour_t *neighbour);
