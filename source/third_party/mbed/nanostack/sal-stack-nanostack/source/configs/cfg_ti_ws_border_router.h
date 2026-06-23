@@ -37,4 +37,8 @@
 #define HAVE_DHCPV6_SERVER
 #define EXTRA_CONSISTENCY_CHECKS
 
-//#define NO_TCP
+/* Exclude nanostack TCP stack when application-level TCP is not used.
+ * WISUN_APP_TCP_MODE=0 means no TCP sockets*/
+#if (defined(WISUN_APP_TCP_MODE)) && ((WISUN_APP_TCP_MODE )== 0)
+#define NO_TCP
+#endif

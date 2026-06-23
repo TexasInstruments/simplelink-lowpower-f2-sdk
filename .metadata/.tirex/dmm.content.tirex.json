@@ -16,7 +16,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -61,9 +61,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -84,7 +84,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -129,9 +129,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -152,7 +152,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -197,9 +197,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -220,7 +220,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -265,9 +265,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -288,7 +288,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -333,9 +333,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -356,7 +356,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -401,9 +401,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -424,7 +424,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -469,9 +469,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -492,7 +492,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -537,9 +537,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -576,9 +576,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -615,9 +615,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -654,9 +654,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -693,9 +693,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -732,9 +732,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -771,9 +771,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -810,9 +810,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -849,9 +849,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -872,7 +872,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -917,9 +917,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -940,7 +940,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -985,9 +985,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1008,7 +1008,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -1053,9 +1053,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1076,7 +1076,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -1121,9 +1121,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1144,7 +1144,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -1189,9 +1189,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1212,7 +1212,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -1257,9 +1257,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1280,7 +1280,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -1325,9 +1325,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1348,7 +1348,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -1393,9 +1393,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1416,7 +1416,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -1461,9 +1461,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1484,7 +1484,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -1529,9 +1529,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1552,7 +1552,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -1597,9 +1597,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1620,7 +1620,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -1665,9 +1665,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1704,9 +1704,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -1743,9 +1743,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -1782,9 +1782,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -1821,9 +1821,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -1860,9 +1860,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -1899,9 +1899,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -1938,9 +1938,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -1977,9 +1977,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2016,9 +2016,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2055,9 +2055,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2094,9 +2094,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2133,9 +2133,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2156,7 +2156,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -2201,9 +2201,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -2224,7 +2224,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -2269,9 +2269,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -2292,7 +2292,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -2337,9 +2337,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -2360,7 +2360,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -2405,9 +2405,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -2428,7 +2428,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -2473,9 +2473,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -2496,7 +2496,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -2541,9 +2541,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -2580,9 +2580,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2619,9 +2619,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2658,9 +2658,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2697,9 +2697,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2736,9 +2736,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2775,9 +2775,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2798,7 +2798,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -2843,9 +2843,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -2866,7 +2866,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -2911,9 +2911,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -2934,7 +2934,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -2979,9 +2979,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -3002,7 +3002,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -3047,9 +3047,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -3070,7 +3070,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -3115,9 +3115,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -3138,7 +3138,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -3183,9 +3183,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -3206,7 +3206,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -3251,9 +3251,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -3274,7 +3274,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -3319,9 +3319,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -3342,7 +3342,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -3387,9 +3387,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -3426,9 +3426,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3465,9 +3465,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3504,9 +3504,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3543,9 +3543,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3582,9 +3582,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3621,9 +3621,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3660,9 +3660,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3699,9 +3699,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3738,9 +3738,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3761,7 +3761,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -3806,9 +3806,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -3829,7 +3829,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -3874,9 +3874,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -3897,7 +3897,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -3942,9 +3942,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -3965,7 +3965,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -4010,9 +4010,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4033,7 +4033,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -4078,9 +4078,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4101,7 +4101,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -4146,9 +4146,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4169,7 +4169,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -4214,9 +4214,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4237,7 +4237,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -4282,9 +4282,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4321,9 +4321,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -4360,9 +4360,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -4399,9 +4399,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -4438,9 +4438,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -4477,9 +4477,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -4516,9 +4516,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -4555,9 +4555,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -4594,9 +4594,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -4617,7 +4617,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -4662,9 +4662,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4685,7 +4685,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -4730,9 +4730,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4753,7 +4753,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -4798,9 +4798,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4821,7 +4821,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -4866,9 +4866,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4889,7 +4889,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -4934,9 +4934,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4957,7 +4957,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -5002,9 +5002,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -5025,7 +5025,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -5070,9 +5070,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -5093,7 +5093,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -5138,9 +5138,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -5161,7 +5161,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -5206,9 +5206,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -5229,7 +5229,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -5274,9 +5274,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -5297,7 +5297,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -5342,9 +5342,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -5365,7 +5365,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -5410,9 +5410,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -5449,9 +5449,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5488,9 +5488,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5527,9 +5527,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5566,9 +5566,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5605,9 +5605,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5644,9 +5644,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5683,9 +5683,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5722,9 +5722,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5761,9 +5761,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5800,9 +5800,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5839,9 +5839,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5878,9 +5878,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154collector_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5901,7 +5901,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -5946,9 +5946,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -5969,7 +5969,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -6014,9 +6014,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6037,7 +6037,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -6082,9 +6082,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6105,7 +6105,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -6150,9 +6150,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6173,7 +6173,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -6218,9 +6218,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6241,7 +6241,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -6286,9 +6286,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6309,7 +6309,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -6354,9 +6354,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6377,7 +6377,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -6422,9 +6422,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6461,9 +6461,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -6500,9 +6500,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -6539,9 +6539,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -6578,9 +6578,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -6617,9 +6617,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -6656,9 +6656,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -6695,9 +6695,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -6734,9 +6734,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -6757,7 +6757,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -6802,9 +6802,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6825,7 +6825,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -6870,9 +6870,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6893,7 +6893,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -6938,9 +6938,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6961,7 +6961,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -7006,9 +7006,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7029,7 +7029,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -7074,9 +7074,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7097,7 +7097,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -7142,9 +7142,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7165,7 +7165,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -7210,9 +7210,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7233,7 +7233,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -7278,9 +7278,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7301,7 +7301,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -7346,9 +7346,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7369,7 +7369,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -7414,9 +7414,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7437,7 +7437,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -7482,9 +7482,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7505,7 +7505,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -7550,9 +7550,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7589,9 +7589,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7628,9 +7628,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7667,9 +7667,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7706,9 +7706,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7745,9 +7745,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7784,9 +7784,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7823,9 +7823,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7862,9 +7862,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7901,9 +7901,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7940,9 +7940,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7979,9 +7979,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8018,9 +8018,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8041,7 +8041,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -8086,9 +8086,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8109,7 +8109,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -8154,9 +8154,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8177,7 +8177,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -8222,9 +8222,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8245,7 +8245,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -8290,9 +8290,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8313,7 +8313,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -8358,9 +8358,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8381,7 +8381,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -8426,9 +8426,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8465,9 +8465,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8504,9 +8504,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8543,9 +8543,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8582,9 +8582,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8621,9 +8621,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8660,9 +8660,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8683,7 +8683,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -8728,9 +8728,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8751,7 +8751,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -8796,9 +8796,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8819,7 +8819,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -8864,9 +8864,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8887,7 +8887,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -8932,9 +8932,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8955,7 +8955,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -9000,9 +9000,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9023,7 +9023,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -9068,9 +9068,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9091,7 +9091,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -9136,9 +9136,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9159,7 +9159,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -9204,9 +9204,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9227,7 +9227,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -9272,9 +9272,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9311,9 +9311,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9350,9 +9350,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9389,9 +9389,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9428,9 +9428,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9467,9 +9467,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9506,9 +9506,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9545,9 +9545,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9584,9 +9584,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9623,9 +9623,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_remote_display_oad_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9646,7 +9646,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -9691,9 +9691,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9714,7 +9714,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -9759,9 +9759,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9782,7 +9782,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -9827,9 +9827,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9850,7 +9850,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -9895,9 +9895,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9918,7 +9918,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -9963,9 +9963,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9986,7 +9986,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -10031,9 +10031,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10054,7 +10054,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -10099,9 +10099,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10122,7 +10122,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -10167,9 +10167,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10206,9 +10206,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10245,9 +10245,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10284,9 +10284,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10323,9 +10323,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10362,9 +10362,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10401,9 +10401,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10440,9 +10440,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10479,9 +10479,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10502,7 +10502,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -10547,9 +10547,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10570,7 +10570,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -10615,9 +10615,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10638,7 +10638,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -10683,9 +10683,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10706,7 +10706,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -10751,9 +10751,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10774,7 +10774,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -10819,9 +10819,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10842,7 +10842,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -10887,9 +10887,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10910,7 +10910,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -10955,9 +10955,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10978,7 +10978,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -11023,9 +11023,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11046,7 +11046,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -11091,9 +11091,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11114,7 +11114,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -11159,9 +11159,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11182,7 +11182,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -11227,9 +11227,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11250,7 +11250,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -11295,9 +11295,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11334,9 +11334,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -11373,9 +11373,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -11412,9 +11412,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -11451,9 +11451,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -11490,9 +11490,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -11529,9 +11529,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -11568,9 +11568,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -11607,9 +11607,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -11646,9 +11646,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -11685,9 +11685,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -11724,9 +11724,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -11763,9 +11763,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_154sensor_sm_remote_display_app_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -11786,7 +11786,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -11831,9 +11831,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11854,7 +11854,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -11899,9 +11899,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11922,7 +11922,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -11967,9 +11967,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11990,7 +11990,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -12035,9 +12035,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12058,7 +12058,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -12103,9 +12103,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12126,7 +12126,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -12171,9 +12171,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12194,7 +12194,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -12239,9 +12239,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12262,7 +12262,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -12307,9 +12307,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12330,7 +12330,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -12375,9 +12375,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12398,7 +12398,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -12443,9 +12443,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12466,7 +12466,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -12511,9 +12511,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12534,7 +12534,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -12579,9 +12579,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12618,9 +12618,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12657,9 +12657,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12696,9 +12696,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12735,9 +12735,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12774,9 +12774,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12813,9 +12813,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12852,9 +12852,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12891,9 +12891,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12930,9 +12930,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12969,9 +12969,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13008,9 +13008,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13047,9 +13047,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13070,7 +13070,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -13115,9 +13115,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -13138,7 +13138,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -13183,9 +13183,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -13206,7 +13206,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -13251,9 +13251,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -13274,7 +13274,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -13319,9 +13319,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -13342,7 +13342,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -13387,9 +13387,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -13410,7 +13410,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -13455,9 +13455,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -13478,7 +13478,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -13523,9 +13523,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -13546,7 +13546,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -13591,9 +13591,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -13614,7 +13614,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -13659,9 +13659,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -13698,9 +13698,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13737,9 +13737,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13776,9 +13776,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13815,9 +13815,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13854,9 +13854,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13893,9 +13893,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13932,9 +13932,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13971,9 +13971,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14010,9 +14010,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zc_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14033,7 +14033,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -14078,9 +14078,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -14101,7 +14101,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -14146,9 +14146,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -14169,7 +14169,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -14214,9 +14214,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -14237,7 +14237,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -14282,9 +14282,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -14305,7 +14305,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -14350,9 +14350,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -14373,7 +14373,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -14418,9 +14418,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -14441,7 +14441,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -14486,9 +14486,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -14509,7 +14509,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -14554,9 +14554,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -14577,7 +14577,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -14622,9 +14622,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -14645,7 +14645,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -14690,9 +14690,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -14713,7 +14713,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -14758,9 +14758,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -14781,7 +14781,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -14826,9 +14826,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -14865,9 +14865,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14904,9 +14904,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14943,9 +14943,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14982,9 +14982,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -15021,9 +15021,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -15060,9 +15060,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -15099,9 +15099,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -15138,9 +15138,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -15177,9 +15177,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -15216,9 +15216,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -15255,9 +15255,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -15294,9 +15294,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -15317,7 +15317,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -15362,9 +15362,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15385,7 +15385,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -15430,9 +15430,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15453,7 +15453,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -15498,9 +15498,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15521,7 +15521,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -15566,9 +15566,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15589,7 +15589,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -15634,9 +15634,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15657,7 +15657,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -15702,9 +15702,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15725,7 +15725,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -15770,9 +15770,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15793,7 +15793,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -15838,9 +15838,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15861,7 +15861,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -15906,9 +15906,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15945,9 +15945,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -15984,9 +15984,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -16023,9 +16023,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -16062,9 +16062,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -16101,9 +16101,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -16140,9 +16140,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -16179,9 +16179,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -16218,9 +16218,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -16257,9 +16257,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zed_switch_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -16280,7 +16280,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -16325,9 +16325,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16348,7 +16348,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -16393,9 +16393,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16416,7 +16416,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -16461,9 +16461,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16484,7 +16484,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -16529,9 +16529,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16552,7 +16552,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -16597,9 +16597,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16620,7 +16620,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -16665,9 +16665,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16688,7 +16688,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -16733,9 +16733,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16756,7 +16756,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -16801,9 +16801,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16824,7 +16824,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -16869,9 +16869,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16892,7 +16892,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -16937,9 +16937,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16960,7 +16960,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -17005,9 +17005,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -17028,7 +17028,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -17073,9 +17073,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -17112,9 +17112,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17151,9 +17151,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17190,9 +17190,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17229,9 +17229,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17268,9 +17268,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17307,9 +17307,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17346,9 +17346,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17385,9 +17385,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17424,9 +17424,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17463,9 +17463,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17502,9 +17502,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17541,9 +17541,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17564,7 +17564,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -17609,9 +17609,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -17632,7 +17632,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -17677,9 +17677,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -17700,7 +17700,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -17745,9 +17745,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -17768,7 +17768,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -17813,9 +17813,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -17836,7 +17836,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -17881,9 +17881,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -17904,7 +17904,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -17949,9 +17949,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -17972,7 +17972,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -18017,9 +18017,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -18040,7 +18040,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -18085,9 +18085,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -18108,7 +18108,7 @@
             ]
         ],
         "subCategories": [
-            "dmm"
+            "Dynamic Multi-protocol Manager (DMM)"
         ],
         "resourceClass": [
             "example"
@@ -18153,9 +18153,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -18192,9 +18192,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -18231,9 +18231,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -18270,9 +18270,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -18309,9 +18309,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -18348,9 +18348,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -18387,9 +18387,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -18426,9 +18426,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -18465,9 +18465,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -18504,9 +18504,9 @@
             ]
         ],
         "subCategories": [
-            "dmm",
+            "Dynamic Multi-protocol Manager (DMM)",
             "dmm_zr_light_remote_display_oad_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     }

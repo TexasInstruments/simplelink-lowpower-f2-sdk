@@ -1017,6 +1017,17 @@ enum
     SPINEL_PROP_STREAM_EXT__BEGIN = 0x1700,
     SPINEL_PROP_STREAM_EXT__END   = 0x1800,
 
+     /* TCP Application vendor properties */
+    SPINEL_PROP_VENDOR_TCP_MODE           = 0x3D00,
+    SPINEL_PROP_VENDOR_TCP_SERVER_LISTEN  = 0x3D01,
+    SPINEL_PROP_VENDOR_TCP_CLIENT_CONNECT = 0x3D02,
+    SPINEL_PROP_VENDOR_TCP_SEND_ALL       = 0x3D03,
+    SPINEL_PROP_VENDOR_TCP_SEND_TO        = 0x3D04,
+    SPINEL_PROP_VENDOR_TCP_STATUS         = 0x3D05,
+    SPINEL_PROP_VENDOR_TCP_DISCONNECT     = 0x3D06,
+    SPINEL_PROP_VENDOR_TCP_STATUS_NOTIFY  = 0x3D07,  // Async notification for TCP events
+    SPINEL_PROP_VENDOR_TCP_DATA_RECV      = 0x3D08,  // Async push of received TCP data to host
+
 };
 
 typedef uint32_t spinel_prop_key_t;

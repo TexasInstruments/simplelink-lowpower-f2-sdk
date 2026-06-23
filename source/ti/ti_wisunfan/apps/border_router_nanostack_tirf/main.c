@@ -34,6 +34,21 @@
 /*
  *  ======== main_tirtos.c ========
  */
+
+/* Border Router TCP mode — default to server (1) if not set in router.opts.
+ * 0 = disabled, 1 = server (listen + accept), 2 = client (connect) */
+#ifndef WISUN_APP_TCP_MODE
+#define WISUN_APP_TCP_MODE 1
+#endif
+
+/* In client mode the peer IPv6 address must be defined here.
+ * Set this to the IPv6 address of the Router Node to connect to. */
+#if (WISUN_APP_TCP_MODE == 2)
+#ifndef TCP_PEER_ADDR_STR
+#define TCP_PEER_ADDR_STR   ""   /* TODO: set peer Router Node IPv6 address */
+#endif
+#endif
+
 #include <unistd.h>
 #include <stdint.h>
 

@@ -3,7 +3,7 @@
         "metadataVersion": "3.1.0",
         "id": "com.ti.SIMPLELINK_CC13XX_CC26XX_SDK",
         "name": "SimpleLink CC13xx CC26xx SDK",
-        "version": "8.32.00.07",
+        "version": "8.33.00.16",
         "type": "software",
         "devices": [
             "CC13x1",
@@ -18,18 +18,18 @@
         "description": "Welcome to the CC13xx and CC26xx SDK",
         "dependencies": [
             {
-                "packageId": "xdctools",
-                "version": "3.62.01.15",
-                "require": "optional"
-            },
-            {
                 "packageId": "sysconfig",
                 "version": "1.21.1",
                 "require": "mandatory"
             },
             {
                 "packageId": "ti_cgt_tiarmclang",
-                "version": "3.2.2",
+                "version": "4.0.4",
+                "require": "optional"
+            },
+            {
+                "packageId": "xdctools",
+                "version": "3.62.01.15",
                 "require": "optional"
             }
         ]

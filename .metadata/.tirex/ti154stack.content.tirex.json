@@ -63,7 +63,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -173,7 +173,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -283,7 +283,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -393,7 +393,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -503,7 +503,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -613,7 +613,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -723,7 +723,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -833,7 +833,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -943,7 +943,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1053,7 +1053,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1163,7 +1163,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1273,7 +1273,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1383,7 +1383,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1493,7 +1493,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1603,7 +1603,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1713,7 +1713,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1823,7 +1823,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1933,7 +1933,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -2043,7 +2043,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -2153,7 +2153,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -2263,7 +2263,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -2344,7 +2344,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2422,7 +2422,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2500,7 +2500,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2578,7 +2578,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2656,7 +2656,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2734,7 +2734,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2812,7 +2812,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2890,7 +2890,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2968,7 +2968,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3046,7 +3046,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3124,7 +3124,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3202,7 +3202,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3280,7 +3280,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3358,7 +3358,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3436,7 +3436,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3514,7 +3514,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3592,7 +3592,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3670,7 +3670,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3748,7 +3748,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3826,7 +3826,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3904,7 +3904,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -4011,7 +4011,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4121,7 +4121,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4231,7 +4231,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4341,7 +4341,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4451,7 +4451,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4561,7 +4561,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4671,7 +4671,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4781,7 +4781,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4862,7 +4862,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -4940,7 +4940,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5018,7 +5018,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5096,7 +5096,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5174,7 +5174,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5252,7 +5252,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5330,7 +5330,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5408,7 +5408,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5515,7 +5515,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -5625,7 +5625,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -5735,7 +5735,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -5845,7 +5845,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -5955,7 +5955,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6065,7 +6065,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6175,7 +6175,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6285,7 +6285,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6395,7 +6395,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6505,7 +6505,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6615,7 +6615,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6725,7 +6725,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6835,7 +6835,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6945,7 +6945,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7055,7 +7055,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7165,7 +7165,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7275,7 +7275,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7385,7 +7385,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7495,7 +7495,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7605,7 +7605,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7715,7 +7715,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7796,7 +7796,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7874,7 +7874,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7952,7 +7952,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8030,7 +8030,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8108,7 +8108,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8186,7 +8186,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8264,7 +8264,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8342,7 +8342,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8420,7 +8420,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8498,7 +8498,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8576,7 +8576,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8654,7 +8654,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8732,7 +8732,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8810,7 +8810,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8888,7 +8888,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8966,7 +8966,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9044,7 +9044,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9122,7 +9122,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9200,7 +9200,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9278,7 +9278,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9356,7 +9356,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9463,7 +9463,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9573,7 +9573,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9683,7 +9683,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9793,7 +9793,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9903,7 +9903,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10013,7 +10013,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10123,7 +10123,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10233,7 +10233,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10314,7 +10314,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10392,7 +10392,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10470,7 +10470,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10548,7 +10548,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10626,7 +10626,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10704,7 +10704,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10782,7 +10782,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10860,7 +10860,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "collector_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10967,7 +10967,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11077,7 +11077,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11187,7 +11187,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11297,7 +11297,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11407,7 +11407,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11517,7 +11517,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11627,7 +11627,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11737,7 +11737,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11847,7 +11847,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11957,7 +11957,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12067,7 +12067,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12177,7 +12177,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12287,7 +12287,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12397,7 +12397,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12507,7 +12507,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12617,7 +12617,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12727,7 +12727,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12837,7 +12837,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12947,7 +12947,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -13057,7 +13057,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -13167,7 +13167,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -13248,7 +13248,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13326,7 +13326,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13404,7 +13404,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13482,7 +13482,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13560,7 +13560,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13638,7 +13638,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13716,7 +13716,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13794,7 +13794,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13872,7 +13872,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13950,7 +13950,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14028,7 +14028,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14106,7 +14106,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14184,7 +14184,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14262,7 +14262,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14340,7 +14340,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14418,7 +14418,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14496,7 +14496,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14574,7 +14574,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14652,7 +14652,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14730,7 +14730,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14808,7 +14808,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "coprocessor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14915,7 +14915,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15025,7 +15025,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15135,7 +15135,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15245,7 +15245,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15355,7 +15355,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15465,7 +15465,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15575,7 +15575,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15685,7 +15685,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15795,7 +15795,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15905,7 +15905,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16015,7 +16015,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16125,7 +16125,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16235,7 +16235,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16345,7 +16345,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16455,7 +16455,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16565,7 +16565,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16675,7 +16675,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16785,7 +16785,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16895,7 +16895,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -17005,7 +17005,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -17115,7 +17115,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -17196,7 +17196,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17274,7 +17274,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17352,7 +17352,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17430,7 +17430,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17508,7 +17508,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17586,7 +17586,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17664,7 +17664,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17742,7 +17742,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17820,7 +17820,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17898,7 +17898,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17976,7 +17976,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -18054,7 +18054,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -18132,7 +18132,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -18210,7 +18210,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -18288,7 +18288,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -18366,7 +18366,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -18444,7 +18444,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -18522,7 +18522,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -18600,7 +18600,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -18678,7 +18678,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -18756,7 +18756,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -18863,7 +18863,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -18973,7 +18973,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -19083,7 +19083,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -19193,7 +19193,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -19303,7 +19303,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -19413,7 +19413,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -19523,7 +19523,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -19633,7 +19633,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -19714,7 +19714,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -19792,7 +19792,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -19870,7 +19870,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -19948,7 +19948,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -20026,7 +20026,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -20104,7 +20104,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -20182,7 +20182,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -20260,7 +20260,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -20341,7 +20341,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -20451,7 +20451,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -20535,7 +20535,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -20645,7 +20645,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -20755,7 +20755,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -20865,7 +20865,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -20975,7 +20975,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -21085,7 +21085,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -21166,7 +21166,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -21244,7 +21244,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -21322,7 +21322,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -21400,7 +21400,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -21478,7 +21478,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -21556,7 +21556,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -21637,7 +21637,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -21747,7 +21747,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -21857,7 +21857,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -21967,7 +21967,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -22051,7 +22051,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -22135,7 +22135,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -22245,7 +22245,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -22355,7 +22355,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -22465,7 +22465,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -22575,7 +22575,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -22685,7 +22685,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -22795,7 +22795,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -22905,7 +22905,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -23015,7 +23015,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -23125,7 +23125,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -23235,7 +23235,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -23345,7 +23345,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -23455,7 +23455,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -23565,7 +23565,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -23649,7 +23649,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -23759,7 +23759,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -23840,7 +23840,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -23918,7 +23918,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -23996,7 +23996,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -24074,7 +24074,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -24152,7 +24152,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -24230,7 +24230,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -24308,7 +24308,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -24386,7 +24386,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -24464,7 +24464,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -24542,7 +24542,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -24620,7 +24620,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -24698,7 +24698,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -24776,7 +24776,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -24854,7 +24854,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -24932,7 +24932,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -25010,7 +25010,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -25088,7 +25088,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_offchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -25169,7 +25169,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -25279,7 +25279,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -25363,7 +25363,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -25473,7 +25473,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -25583,7 +25583,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -25693,7 +25693,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -25803,7 +25803,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -25913,7 +25913,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -25994,7 +25994,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -26072,7 +26072,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -26150,7 +26150,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -26228,7 +26228,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -26306,7 +26306,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -26384,7 +26384,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -26491,7 +26491,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -26601,7 +26601,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -26711,7 +26711,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -26821,7 +26821,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -26931,7 +26931,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -27041,7 +27041,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -27122,7 +27122,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -27200,7 +27200,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -27278,7 +27278,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -27356,7 +27356,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -27434,7 +27434,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -27512,7 +27512,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_2_4g_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -27619,7 +27619,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -27729,7 +27729,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -27839,7 +27839,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -27949,7 +27949,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -28059,7 +28059,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -28169,7 +28169,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -28279,7 +28279,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -28389,7 +28389,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -28499,7 +28499,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -28609,7 +28609,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -28719,7 +28719,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -28829,7 +28829,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -28939,7 +28939,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -29049,7 +29049,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -29159,7 +29159,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -29269,7 +29269,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -29350,7 +29350,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -29428,7 +29428,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -29506,7 +29506,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -29584,7 +29584,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -29662,7 +29662,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -29740,7 +29740,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -29818,7 +29818,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -29896,7 +29896,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -29974,7 +29974,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -30052,7 +30052,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -30130,7 +30130,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -30208,7 +30208,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -30286,7 +30286,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -30364,7 +30364,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -30442,7 +30442,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -30520,7 +30520,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_persistent_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -30601,7 +30601,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -30711,7 +30711,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -30821,7 +30821,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -30931,7 +30931,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -31015,7 +31015,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -31099,7 +31099,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -31209,7 +31209,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -31319,7 +31319,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -31429,7 +31429,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -31539,7 +31539,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -31649,7 +31649,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -31759,7 +31759,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -31869,7 +31869,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -31979,7 +31979,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -32089,7 +32089,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -32199,7 +32199,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -32309,7 +32309,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -32419,7 +32419,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -32529,7 +32529,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -32613,7 +32613,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -32723,7 +32723,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -32804,7 +32804,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -32882,7 +32882,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -32960,7 +32960,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -33038,7 +33038,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -33116,7 +33116,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -33194,7 +33194,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -33272,7 +33272,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -33350,7 +33350,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -33428,7 +33428,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -33506,7 +33506,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -33584,7 +33584,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -33662,7 +33662,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -33740,7 +33740,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -33818,7 +33818,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -33896,7 +33896,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -33974,7 +33974,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -34052,7 +34052,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_oad_onchip_secure",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -34159,7 +34159,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -34269,7 +34269,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -34379,7 +34379,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -34489,7 +34489,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -34599,7 +34599,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -34709,7 +34709,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -34819,7 +34819,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -34929,7 +34929,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -35039,7 +35039,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -35149,7 +35149,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -35259,7 +35259,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -35369,7 +35369,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -35479,7 +35479,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -35589,7 +35589,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -35699,7 +35699,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -35809,7 +35809,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -35919,7 +35919,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -36029,7 +36029,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -36139,7 +36139,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -36249,7 +36249,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -36359,7 +36359,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -36440,7 +36440,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -36518,7 +36518,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -36596,7 +36596,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -36674,7 +36674,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -36752,7 +36752,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -36830,7 +36830,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -36908,7 +36908,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -36986,7 +36986,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -37064,7 +37064,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -37142,7 +37142,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -37220,7 +37220,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -37298,7 +37298,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -37376,7 +37376,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -37454,7 +37454,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -37532,7 +37532,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -37610,7 +37610,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -37688,7 +37688,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -37766,7 +37766,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -37844,7 +37844,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -37922,7 +37922,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -38000,7 +38000,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -38107,7 +38107,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -38217,7 +38217,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -38327,7 +38327,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -38437,7 +38437,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -38547,7 +38547,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -38657,7 +38657,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -38767,7 +38767,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -38877,7 +38877,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -38958,7 +38958,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -39036,7 +39036,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -39114,7 +39114,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -39192,7 +39192,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -39270,7 +39270,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -39348,7 +39348,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -39426,7 +39426,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -39504,7 +39504,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "sensor_sm_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -39585,7 +39585,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "tfm_collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -39627,7 +39627,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "tfm_collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -39669,7 +39669,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "tfm_collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -39711,7 +39711,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "tfm_collector",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -39753,7 +39753,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "tfm_collector_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -39795,7 +39795,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "tfm_collector_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -39837,7 +39837,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "tfm_sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -39879,7 +39879,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "tfm_sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -39921,7 +39921,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "tfm_sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -39963,7 +39963,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "tfm_sensor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -40005,7 +40005,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "tfm_sensor_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -40047,7 +40047,7 @@
         "subCategories": [
             "TI 15.4-Stack",
             "tfm_sensor_2_4g",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     }

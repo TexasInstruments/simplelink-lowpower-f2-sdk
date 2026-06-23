@@ -72,6 +72,11 @@
 #include "6LoWPAN/ws/ws_config.h"
 #include "udp.h"
 
+
+#if (WISUN_APP_TCP_MODE > 0)
+#include "Common_Protocols/tcp.h"
+#endif
+
 #include "Core/include/ns_address_internal.h"
 #include "NWK_INTERFACE/Include/protocol_abstract.h"
 #include "NWK_INTERFACE/Include/protocol.h"
@@ -88,6 +93,10 @@
 #include "RPL/rpl_upward.h"
 #include "RPL/rpl_downward.h"
 #include "RPL/rpl_structures.h"
+// #define WISUN_TEST_METRICS  /* Commented out to reduce code size */
+/* OS timeout API: timeout_t, eventOS_timeout_ms(), eventOS_timeout_cancel()
+ * Needed unconditionally for TCP reconnect timer (WISUN_APP_TCP_MODE == 2). */
+#include "eventOS_event_timer.h"
 
 #ifdef WISUN_NCP_ENABLE
 /* OpenThread Internal/Example Header files */
@@ -96,7 +105,6 @@
 #include "platform/system.h"
 #elif defined(COAP_SERVICE_ENABLE)
 #include "coap_service_api.h"
-#include "eventOS_event_timer.h"
 #endif
 
 #include "application.h"
@@ -123,6 +131,15 @@ Defines & enums
 #define MASTER_GROUP 0
 #define MY_GROUP 1
 #define NOT_INITIALIZED -1
+
+#if (WISUN_APP_TCP_MODE > 0)
+/* TCP Socket Configuration */
+#define TCP_PORT                   (5678U)     /* TCP port for LED demo */
+#define TCP_SEND_BUF_SIZE          (2048U)     /* TCP send buffer size (matches SOCKET_DEFAULT_STREAM_SNDBUF) */
+#define TCP_RECV_BUF_SIZE          (2048U)     /* TCP receive buffer size (matches SOCKET_DEFAULT_STREAM_RCVBUF) */
+#define TCP_BACKLOG                (1U)        /* TCP listen backlog */
+
+#endif
 
 #ifdef COAP_SERVICE_ENABLE
 #define COAP_JOIN_URI "join"
@@ -179,19 +196,121 @@ static connection_status_t _connect_status;
 static bool _blocking = false;
 static bool _configured = false;
 
+#ifndef WISUN_NCP_ENABLE
 static int8_t socket_id;
-static uint8_t send_buf[SEND_BUF_SIZE] = {0};
-static uint8_t send_buf_unicast[SEND_BUF_SIZE] = {0};
+static uint8_t send_buf[SEND_BUF_SIZE] ;
+static uint8_t send_buf_unicast[SEND_BUF_SIZE] ;
 
-static uint8_t recv_buffer[SEND_BUF_SIZE] = {0};
-static uint8_t multi_cast_addr[16] = {0};
-static uint8_t uni_cast_addr[16] = {0};
-static ns_address_t send_addr = {0};
-static ns_address_t send_addr_unicast = {0};
+static uint8_t recv_buffer[SEND_BUF_SIZE] ;
+static uint8_t multi_cast_addr[16] ;
+static uint8_t uni_cast_addr[16] ;
+static ns_address_t send_addr ;
+static ns_address_t send_addr_unicast ;
+static volatile bool unicast_send = false;
+static volatile bool multicast_send_pending = false;
+#endif /* !WISUN_NCP_ENABLE */
 extern bool sent_dao;
 extern uint8_t root_unicast_addr[16];
-static bool bcast_send = false;
-static bool unicast_send = true;
+
+#if (WISUN_APP_TCP_MODE > 0)
+/* TCP reconnect delay — used by OS timer, not a loop-tick counter */
+#define TCP_RECONNECT_DELAY_MS      5000U  /* ms before client retries after disconnect */
+
+/* socket_connect() returns this when the handshake is in progress (wait for callback) */
+#define TCP_CONNECT_IN_PROGRESS     (-4)
+
+/* Test payload size sent on BTN2 press */
+#define TCP_BTN_PAYLOAD_SIZE        20
+
+/******************************************************************************
+ TCP State — single unified enum used as both connection state machine and
+ event notification vocabulary.
+
+ Values 1-6 are preserved to match the NCP host (PySpinel) event protocol.
+ Values 7-8 are internal-only states not sent over NCP.
+
+ Role of each value:
+   conn_state (stored persistently): IDLE, LISTENING, CONNECTING, CONNECTED,
+                                     RECONNECT_WAIT
+   event-only  (fired, not stored):  DISCONNECTED, CLIENT_ACCEPTED,
+                                     CONNECT_FAILED, DATA_RECEIVED
+
+ State machine transitions:
+   Server (MODE 1):
+     IDLE -> tcp_socket_setup(0) -> LISTENING
+     LISTENING -> INCOMING_CONNECTION + accept -> CONNECTED
+     CONNECTED -> client closes  -> LISTENING  (listen socket preserved)
+     any       -> tcp_disconnect -> IDLE
+
+   Client (MODE 2):
+     IDLE -> tcp_client_connect() -> CONNECTING
+     CONNECTING -> SOCKET_CONNECT_DONE  -> CONNECTED
+     CONNECTING -> SOCKET_CONNECT_FAIL  -> RECONNECT_WAIT -> CONNECTING
+     CONNECTED  -> peer closes          -> RECONNECT_WAIT -> CONNECTING
+     any        -> tcp_disconnect       -> IDLE
+ *****************************************************************************/
+typedef enum {
+    TCP_STATE_IDLE            = 0, /* No socket open (initial / fully reset) */
+
+    /* 1-6: NCP protocol values — must not change without updating PySpinel */
+    TCP_STATE_CONNECTED       = 1, /* Data path open; stored + fired as event */
+    TCP_STATE_DISCONNECTED    = 2, /* Event: connection lost; conn_state → IDLE or LISTENING */
+    TCP_STATE_LISTENING       = 3, /* Server: bound+listening; stored + fired as event */
+    TCP_STATE_CLIENT_ACCEPTED = 4, /* Event (NCP only): server accepted a client */
+    TCP_STATE_CONNECT_FAILED  = 5, /* Event: connect failed; conn_state → RECONNECT_WAIT */
+    TCP_STATE_DATA_RECEIVED   = 6, /* Event (NCP informational): data arrived */
+
+    /* 7-8: Internal states — not transmitted to NCP host */
+    TCP_STATE_CONNECTING      = 7, /* Client: SYN sent, awaiting SOCKET_CONNECT_DONE */
+    TCP_STATE_RECONNECT_WAIT  = 8  /* Client: OS reconnect timer armed */
+} tcp_state_t;
+
+/* TCP connection context — owns all runtime state for one TCP connection */
+typedef struct {
+    /* Socket IDs */
+    int8_t            socket_id;           /* Main socket (server listen or client connect) */
+#if (WISUN_APP_TCP_MODE == 1)
+    int8_t            client_socket_id;    /* Accepted client socket (server mode only) */
+#endif
+
+    /* Connection state — volatile because written from callback, read from mainThread */
+    volatile tcp_state_t conn_state;
+    volatile bool        send_pending;     /* BTN2: send requested from ISR context */
+
+#if (WISUN_APP_TCP_MODE == 2)
+    uint8_t           target_peer_addr[16]; /* Target IPv6 address for client connect */
+    bool              peer_addr_valid;      /* Target address has been configured */
+#endif
+    ns_address_t      peer_addr;            /* Connected peer address (from accept/connect) */
+    uint8_t           recv_buffer[TCP_RECV_BUF_SIZE];
+    uint8_t           send_buffer[TCP_SEND_BUF_SIZE];
+} socket_info_t;
+
+/* Single TCP context instance — explicitly pre-initialised to known safe state */
+static socket_info_t g_tcp_state = {
+    .socket_id        = NOT_INITIALIZED,
+#if (WISUN_APP_TCP_MODE == 1)
+    .client_socket_id = NOT_INITIALIZED,
+#endif
+    .conn_state       = TCP_STATE_IDLE,
+    .send_pending     = false,
+#if (WISUN_APP_TCP_MODE == 2)
+    .peer_addr_valid  = false,
+#endif
+};
+
+/* OS timer handle for client-mode reconnect delay (NULL when not armed) */
+#if (WISUN_APP_TCP_MODE == 2)
+static timeout_t *tcp_reconnect_timeout = NULL;
+#endif
+
+/* NCP ABI: ncp_base_mtd.cpp reads this as extern bool tcp_connected.
+ * Updated at the end of tcp_socket_callback() and in tcp_disconnect(). */
+#ifdef WISUN_NCP_ENABLE
+bool tcp_connected = false;
+#endif
+
+#endif /* WISUN_APP_TCP_MODE */
 
 #ifdef NWK_TEST
 uint32_t ticks_before_joining = 0;
@@ -263,7 +382,7 @@ ti_wisun_config_t ti_wisun_config =
 };
 
 // Unused by non-border routers
-ti_br_config_t ti_br_config = {0};
+ti_br_config_t ti_br_config ;
 
 configurable_props_t cfg_props =
 {
@@ -319,10 +438,69 @@ mesh_error_t nanostack_wisunInterface_bringup();
 mesh_error_t nanostack_wisunInterface_connect(bool blocking);
 void nanostack_wait_till_connect();
 
+#if (WISUN_APP_TCP_MODE > 0)
+/******************************************************************************
+ TCP — private (static) forward declarations
+ *****************************************************************************/
+static void tcp_reset_state(void);
+static void tcp_socket_callback(void *cb);
+#if (WISUN_APP_TCP_MODE == 2)
+static bool tcp_init_peer_address(void);
+static void tcp_reconnect_timer_cb(void *arg);
+#endif
+#ifndef WISUN_NCP_ENABLE
+static void tcp_handle_raw_data(const uint8_t *data, uint16_t len);
+static void tcp_btn_send(void);
+#endif
+
+/******************************************************************************
+ TCP — public API
+ All callers use these functions — no direct access to g_tcp_state.
+ *****************************************************************************/
+
+/*!
+ * (MODE 1 only) Open, bind, and listen on the specified port.
+ * @param port  TCP port to listen on (0 defaults to TCP_PORT)
+ */
+bool tcp_socket_setup(uint16_t port);
+
+/*!
+ * (MODE 2 only) Open a socket and connect to the configured peer.
+ * @param addr_bytes  Raw 16-byte IPv6 address, or NULL to use TCP_PEER_ADDR_STR.
+ * @param port        Destination port (0 defaults to TCP_PORT)
+ */
+bool tcp_client_connect(const char *addr, uint16_t port);
+
+/*!
+ * Send data to the connected peer (both MODE 1 and MODE 2).
+ * Returns false if not connected, data is NULL, or socket_send fails.
+ */
+bool tcp_send_data(const uint8_t *data, uint16_t len);
+
+/*!
+ * Full shutdown: close all sockets, cancel pending timers.
+ * Safe to call in any state including IDLE.
+ */
+void tcp_disconnect(void);
+
+/*!
+ * Returns true if the connection is in TCP_STATE_CONNECTED.
+ * Use this instead of accessing g_tcp_state directly.
+ */
+bool tcp_is_connected(void);
+
+#endif /* WISUN_APP_TCP_MODE */
+
 #ifdef WISUN_NCP_ENABLE
 extern void platformNcpSendProcess();
 extern void platformNcpSendAsyncProcess();
-#endif
+
+#if (WISUN_APP_TCP_MODE > 0)
+/* NCP notification externs - implemented in ncp_base_mtd.cpp */
+extern void nanostack_notify_tcp_status(uint8_t event, uint8_t connected);
+extern void nanostack_notify_tcp_data(const uint8_t *data, uint16_t len);
+#endif /* WISUN_APP_TCP_MODE */
+#endif /* WISUN_NCP_ENABLE */
 
 #ifdef COAP_SERVICE_ENABLE
 static void pan_rediscover_tasklet_start(void);
@@ -393,6 +571,17 @@ void nanostackNetworkHandler(mesh_connection_status_t status)
                 temp_ipv6_global[12], temp_ipv6_global[13],
                 temp_ipv6_global[14], temp_ipv6_global[15]);
             _connect_status = CON_STATUS_GLOBAL_UP;
+#if (WISUN_APP_TCP_MODE > 0) && !defined(WISUN_NCP_ENABLE)
+            /* Re-initialize TCP now that global IP is available */
+            if (g_tcp_state.conn_state == TCP_STATE_IDLE)
+            {
+#if (WISUN_APP_TCP_MODE == 1)
+                tcp_socket_setup(0);
+#else
+                tcp_client_connect(NULL, 0);
+#endif
+            }
+#endif /* WISUN_APP_TCP_MODE && !WISUN_NCP_ENABLE */
         }
     } else if (status == MESH_CONNECTED_LOCAL) {
         tr_info("nanostackNetworkHandler: CON_STATUS_LOCAL_UP");
@@ -400,12 +589,26 @@ void nanostackNetworkHandler(mesh_connection_status_t status)
     } else if (status == MESH_CONNECTED_GLOBAL) {
         tr_info("nanostackNetworkHandler: CON_STATUS_GLOBAL_UP");
         _connect_status = CON_STATUS_GLOBAL_UP;
+#if (WISUN_APP_TCP_MODE > 0) && !defined(WISUN_NCP_ENABLE)
+        if (g_tcp_state.conn_state == TCP_STATE_IDLE)
+        {
+#if (WISUN_APP_TCP_MODE == 1)
+            tcp_socket_setup(0);
+#else
+            tcp_client_connect(NULL, 0);
+#endif
+        }
+#endif /* WISUN_APP_TCP_MODE && !WISUN_NCP_ENABLE */
     } else if (status == MESH_BOOTSTRAP_STARTED || status == MESH_BOOTSTRAP_FAILED) {
         tr_info("nanostackNetworkHandler: CON_STATUS_CONNECTING");
         _connect_status = CON_STATUS_CONNECTING;
     } else {
         _connect_status = CON_STATUS_DISCONNECTED;
         tr_info("nanostackNetworkHandler: CON_STATUS_DISCONNECTED");
+#if (WISUN_APP_TCP_MODE > 0)
+        /* Reset TCP — Wi-SUN network is down, sockets are invalid */
+        tcp_disconnect();
+#endif
     }
 }
 
@@ -491,6 +694,634 @@ void socket_callback(void *cb)
     }
 }
 
+#if (WISUN_APP_TCP_MODE > 0)
+
+/******************************************************************************
+ TCP Internal helpers
+ *****************************************************************************/
+
+/*!
+ * Session reset: disconnect the active data path while preserving infrastructure.
+ *
+ * MODE 1 (server): closes only the accepted client_socket_id and returns to
+ *   LISTENING — the listen socket (socket_id) stays open so new clients can
+ *   connect without calling tcp_socket_setup(0) again.
+ *
+ * MODE 2 (client): closes socket_id, cancels any pending reconnect timer, and
+ *   returns to IDLE.  tcp_reconnect_timer_cb() arms a fresh timer if needed.
+ *
+ * For a full shutdown in either mode, call tcp_disconnect() instead.
+ */
+static void tcp_reset_state(void)
+{
+    g_tcp_state.send_pending = false;
+
+#if (WISUN_APP_TCP_MODE == 1)
+    /* Close the accepted client socket; leave the listen socket alive */
+    if (g_tcp_state.client_socket_id >= 0)
+    {
+        socket_close(g_tcp_state.client_socket_id);
+        g_tcp_state.client_socket_id = NOT_INITIALIZED;
+    }
+    /* Return to LISTENING if the listen socket is still open, else IDLE */
+    g_tcp_state.conn_state = (g_tcp_state.socket_id >= 0)
+                             ? TCP_STATE_LISTENING
+                             : TCP_STATE_IDLE;
+#else
+    /* Close the client connection socket */
+    if (g_tcp_state.socket_id >= 0)
+    {
+        socket_close(g_tcp_state.socket_id);
+        g_tcp_state.socket_id = NOT_INITIALIZED;
+    }
+    g_tcp_state.conn_state = TCP_STATE_IDLE;
+
+    /* Cancel any pending reconnect timer */
+    if (tcp_reconnect_timeout != NULL)
+    {
+        eventOS_timeout_cancel(tcp_reconnect_timeout);
+        tcp_reconnect_timeout = NULL;
+    }
+#endif
+}
+
+/******************************************************************************
+ TCP Socket callback
+ *****************************************************************************/
+
+/*!
+ * Callback for handling any activity on the TCP socket
+ */
+#ifdef WISUN_NCP_ENABLE
+/* Compact NCP router callback: status notifications only, no GPIO/logging */
+static void tcp_socket_callback(void *cb)
+{
+    socket_callback_t *sock_cb = (socket_callback_t *) cb;
+    int16_t len;
+
+    switch (sock_cb->event_type & SOCKET_EVENT_MASK)
+    {
+        case SOCKET_DATA:
+            len = socket_recv(sock_cb->socket_id, g_tcp_state.recv_buffer,
+                              TCP_RECV_BUF_SIZE, 0);
+            if (len > 0)
+            {
+                GPIO_toggle(CONFIG_GPIO_GLED);
+                nanostack_notify_tcp_data(g_tcp_state.recv_buffer, (uint16_t)len);
+            }
+            else if (len == 0)
+            {
+                /* EOF: connection closed by peer */
+                tcp_reset_state();
+                nanostack_notify_tcp_status((uint8_t)TCP_STATE_DISCONNECTED, 0);
+            }
+            else
+            {
+                tr_warn("TCP: socket_recv error: %d (sock=%d)", len, sock_cb->socket_id);
+            }
+            break;
+
+        case SOCKET_CONNECT_DONE:
+            g_tcp_state.conn_state = TCP_STATE_CONNECTED;
+            nanostack_notify_tcp_status((uint8_t)TCP_STATE_CONNECTED, 1);
+            break;
+
+        case SOCKET_CONNECT_FAIL:
+            tcp_reset_state();
+            nanostack_notify_tcp_status((uint8_t)TCP_STATE_CONNECT_FAILED, 0);
+#if (WISUN_APP_TCP_MODE == 2)
+            g_tcp_state.conn_state = TCP_STATE_RECONNECT_WAIT;
+            tcp_reconnect_timeout = eventOS_timeout_ms(tcp_reconnect_timer_cb,
+                                                       TCP_RECONNECT_DELAY_MS, NULL);
+#endif
+            break;
+
+#if (WISUN_APP_TCP_MODE == 1)
+        case SOCKET_INCOMING_CONNECTION:
+            if (g_tcp_state.client_socket_id >= 0)
+            {
+                socket_close(g_tcp_state.client_socket_id);
+                g_tcp_state.client_socket_id = NOT_INITIALIZED;
+                g_tcp_state.conn_state = TCP_STATE_IDLE;
+            }
+            {
+                int8_t new_sock = socket_accept(sock_cb->socket_id,
+                                                &g_tcp_state.peer_addr,
+                                                tcp_socket_callback);
+                if (new_sock >= 0)
+                {
+                    g_tcp_state.client_socket_id = new_sock;
+                    g_tcp_state.conn_state = TCP_STATE_CONNECTED;
+                    nanostack_notify_tcp_status((uint8_t)TCP_STATE_CLIENT_ACCEPTED, 1);
+                }
+                else
+                {
+                    tr_error("TCP: socket_accept failed: %d", new_sock);
+                }
+            }
+            break;
+#endif /* WISUN_APP_TCP_MODE == 1 */
+
+        case SOCKET_CONNECT_CLOSED:
+        case SOCKET_CONNECTION_RESET:
+            tcp_reset_state();
+            nanostack_notify_tcp_status((uint8_t)TCP_STATE_DISCONNECTED, 0);
+            break;
+
+        case SOCKET_TX_DONE:
+            GPIO_toggle(CONFIG_GPIO_RLED);
+            break;
+
+        case SOCKET_TX_FAIL:
+            break;
+
+        case SOCKET_CONNECTION_PROBLEM:
+#if (WISUN_APP_TCP_MODE == 2)
+            tcp_reset_state();
+            nanostack_notify_tcp_status((uint8_t)TCP_STATE_DISCONNECTED, 0);
+            g_tcp_state.conn_state = TCP_STATE_RECONNECT_WAIT;
+            tcp_reconnect_timeout = eventOS_timeout_ms(tcp_reconnect_timer_cb,
+                                                       TCP_RECONNECT_DELAY_MS, NULL);
+#endif
+            break;
+
+        default:
+            tr_warn("tcp_socket_callback: unhandled event 0x%x", sock_cb->event_type);
+            break;
+    }
+    tcp_connected = (g_tcp_state.conn_state == TCP_STATE_CONNECTED);
+}
+
+#else /* Non-NCP: full callback with logging and GPIO */
+
+static void tcp_socket_callback(void *cb)
+{
+    socket_callback_t *sock_cb = (socket_callback_t *) cb;
+    int16_t len;
+
+    tr_info("tcp_socket_callback() sock=%d event=0x%x", sock_cb->socket_id, sock_cb->event_type);
+
+    switch (sock_cb->event_type & SOCKET_EVENT_MASK)
+    {
+        case SOCKET_DATA:
+            tr_info("tcp_socket_callback: SOCKET_DATA sock=%d bytes=%d",
+                    sock_cb->socket_id, sock_cb->d_len);
+            len = socket_recv(sock_cb->socket_id, g_tcp_state.recv_buffer,
+                              TCP_RECV_BUF_SIZE, 0);
+            if (len > 0)
+            {
+                tr_info("TCP Recv[%d bytes]", len);
+                tcp_handle_raw_data(g_tcp_state.recv_buffer, (uint16_t)len);
+            }
+            else if (len == 0)
+            {
+                tr_info("TCP: Connection closed by peer (EOF)");
+                tcp_reset_state();
+                GPIO_write(CONFIG_GPIO_GLED, CONFIG_GPIO_LED_OFF);
+            }
+            else
+            {
+                tr_warn("TCP: socket_recv error: %d (sock=%d)", len, sock_cb->socket_id);
+            }
+            break;
+
+        case SOCKET_CONNECT_DONE:
+            tr_info("tcp_socket_callback: SOCKET_CONNECT_DONE");
+            g_tcp_state.conn_state = TCP_STATE_CONNECTED;
+            GPIO_write(CONFIG_GPIO_GLED, CONFIG_GPIO_LED_ON);
+            break;
+
+        case SOCKET_CONNECT_FAIL:
+            tr_info("tcp_socket_callback: SOCKET_CONNECT_FAIL");
+            tcp_reset_state();
+            GPIO_write(CONFIG_GPIO_GLED, CONFIG_GPIO_LED_OFF);
+#if (WISUN_APP_TCP_MODE == 2)
+            tr_info("TCP: Connect failed — retrying in %u ms", TCP_RECONNECT_DELAY_MS);
+            g_tcp_state.conn_state = TCP_STATE_RECONNECT_WAIT;
+            tcp_reconnect_timeout = eventOS_timeout_ms(tcp_reconnect_timer_cb,
+                                                       TCP_RECONNECT_DELAY_MS, NULL);
+#endif
+            break;
+
+        case SOCKET_INCOMING_CONNECTION:
+            tr_info("tcp_socket_callback: SOCKET_INCOMING_CONNECTION sock=%d", sock_cb->socket_id);
+#if (WISUN_APP_TCP_MODE == 1)
+            tr_info("TCP SERVER: Accepting incoming connection");
+            if (g_tcp_state.client_socket_id >= 0)
+            {
+                socket_close(g_tcp_state.client_socket_id);
+                g_tcp_state.client_socket_id = NOT_INITIALIZED;
+                g_tcp_state.conn_state = TCP_STATE_IDLE;
+            }
+            {
+                int8_t new_sock = socket_accept(sock_cb->socket_id,
+                                                &g_tcp_state.peer_addr,
+                                                tcp_socket_callback);
+                if (new_sock >= 0)
+                {
+                    g_tcp_state.client_socket_id = new_sock;
+                    g_tcp_state.conn_state = TCP_STATE_CONNECTED;
+                    tr_info("TCP: Connection accepted client_socket=%d", g_tcp_state.client_socket_id);
+                    GPIO_write(CONFIG_GPIO_GLED, CONFIG_GPIO_LED_ON);
+                }
+                else
+                {
+                    tr_error("TCP: socket_accept failed: %d", new_sock);
+                }
+            }
+#else
+            tr_warn("TCP: Got INCOMING_CONNECTION in CLIENT mode — ignoring");
+#endif
+            break;
+
+        case SOCKET_CONNECT_CLOSED:
+            tr_info("tcp_socket_callback: SOCKET_CONNECT_CLOSED");
+            tcp_reset_state();
+            GPIO_write(CONFIG_GPIO_GLED, CONFIG_GPIO_LED_OFF);
+            break;
+
+        case SOCKET_CONNECTION_RESET:
+            tr_info("tcp_socket_callback: SOCKET_CONNECTION_RESET");
+            tcp_reset_state();
+            GPIO_write(CONFIG_GPIO_GLED, CONFIG_GPIO_LED_OFF);
+            break;
+
+        case SOCKET_TX_DONE:
+            tr_debug("tcp_socket_callback: SOCKET_TX_DONE sock=%d", sock_cb->socket_id);
+            break;
+
+        case SOCKET_TX_FAIL:
+            tr_warn("tcp_socket_callback: SOCKET_TX_FAIL sock=%d", sock_cb->socket_id);
+            break;
+
+        case SOCKET_CONNECTION_PROBLEM:
+            tr_info("tcp_socket_callback: SOCKET_CONNECTION_PROBLEM");
+#if (WISUN_APP_TCP_MODE == 2)
+            tr_info("TCP: Connection problem — retrying in %u ms", TCP_RECONNECT_DELAY_MS);
+            tcp_reset_state();
+            g_tcp_state.conn_state = TCP_STATE_RECONNECT_WAIT;
+            tcp_reconnect_timeout = eventOS_timeout_ms(tcp_reconnect_timer_cb,
+                                                       TCP_RECONNECT_DELAY_MS, NULL);
+#endif
+            break;
+
+        default:
+            tr_warn("tcp_socket_callback: unhandled event 0x%x", sock_cb->event_type);
+            break;
+    }
+}
+#endif /* WISUN_NCP_ENABLE */
+
+/******************************************************************************
+ TCP Public API
+ *****************************************************************************/
+
+#if (WISUN_APP_TCP_MODE == 2)
+/*!
+ * One-shot OS timer callback: fired after TCP_RECONNECT_DELAY_MS following
+ * a failed or dropped connection.  Issues a fresh connect attempt.
+ */
+static void tcp_reconnect_timer_cb(void *arg)
+{
+    (void)arg;
+    tcp_reconnect_timeout = NULL;
+    tr_info("TCP: Reconnect timer fired — attempting connect");
+    /* Pass NULL callbacks — existing registered callbacks are preserved in g_tcp_state */
+    tcp_client_connect(NULL, 0);
+}
+
+/*!
+ * Parse TCP_PEER_ADDR_STR into g_tcp_state.target_peer_addr.
+ * Called once before the first tcp_client_connect(); skipped on retry.
+ *
+ * @return true if address was valid and stored
+ */
+static bool tcp_init_peer_address(void)
+{
+    if (strlen(TCP_PEER_ADDR_STR) == 0)
+    {
+        tr_error("TCP: TCP_PEER_ADDR_STR is empty — set peer address in config");
+        return false;
+    }
+    if (!stoip6(TCP_PEER_ADDR_STR, strlen(TCP_PEER_ADDR_STR), g_tcp_state.target_peer_addr))
+    {
+        tr_error("TCP: Invalid peer address string: %s", TCP_PEER_ADDR_STR);
+        return false;
+    }
+    g_tcp_state.peer_addr_valid = true;
+    tr_info("TCP: Peer address configured: %s", TCP_PEER_ADDR_STR);
+    return true;
+}
+#endif /* WISUN_APP_TCP_MODE == 2 */
+
+/*!
+ * (MODE 1 only) Open, bind, and listen on TCP_PORT.
+ * @return true on success, false on any socket/bind/listen failure
+ */
+bool tcp_socket_setup(uint16_t port)
+{
+#if (WISUN_APP_TCP_MODE == 2)
+    (void)port;
+    return false;
+#else
+    int8_t ret;
+    ns_address_t bind_addr;
+    uint16_t bind_port = (port != 0) ? port : TCP_PORT;
+
+    tr_info("TCP SERVER SETUP: opening socket on port %d", bind_port);
+
+    g_tcp_state.socket_id = socket_open(SOCKET_TCP, 0, tcp_socket_callback);
+    if (g_tcp_state.socket_id < 0)
+    {
+        tr_error("TCP: socket_open failed: %d", g_tcp_state.socket_id);
+        return false;
+    }
+
+    bind_addr.type = ADDRESS_IPV6;
+    memcpy(bind_addr.address, ns_in6addr_any, 16);
+    bind_addr.identifier = bind_port;
+    ret = socket_bind(g_tcp_state.socket_id, &bind_addr);
+    if (ret < 0)
+    {
+        tr_error("TCP: socket_bind failed: %d", ret);
+        tcp_reset_state();
+        return false;
+    }
+
+    ret = socket_listen(g_tcp_state.socket_id, TCP_BACKLOG);
+    if (ret < 0)
+    {
+        tr_error("TCP: socket_listen failed: %d", ret);
+        tcp_reset_state();
+        return false;
+    }
+
+    g_tcp_state.conn_state = TCP_STATE_LISTENING;
+    tr_info("TCP SERVER READY: listening on port %d socket_id=%d",
+            bind_port, g_tcp_state.socket_id);
+#ifdef WISUN_NCP_ENABLE
+    nanostack_notify_tcp_status((uint8_t)TCP_STATE_LISTENING, 0);
+    GPIO_write(CONFIG_GPIO_GLED, CONFIG_GPIO_LED_ON);
+#endif
+    return true;
+#endif /* WISUN_APP_TCP_MODE == 2 */
+}
+
+/*!
+ * (MODE 2 only) Open a TCP socket and connect to the configured peer.
+ * If addr is non-NULL it overrides TCP_PEER_ADDR_STR; parse string → bytes here.
+ * Connection result arrives via SOCKET_CONNECT_DONE / SOCKET_CONNECT_FAIL callback.
+ *
+ * @param addr  IPv6 address string (e.g. "2020:abcd::1"), or NULL to use TCP_PEER_ADDR_STR
+ * @param port  Destination port (0 defaults to TCP_PORT)
+ * @return true if the connect attempt was issued, false on setup failure
+ */
+bool tcp_client_connect(const char *addr, uint16_t port)
+{
+#if (WISUN_APP_TCP_MODE == 1)
+    (void)addr; (void)port;
+    return false;
+#else
+    int8_t ret;
+    ns_address_t connect_addr;
+    uint16_t connect_port = (port != 0) ? port : TCP_PORT;
+
+    /* Guard: if already connecting, don't start a second attempt */
+    if (g_tcp_state.conn_state == TCP_STATE_CONNECTING)
+    {
+        tr_warn("TCP: tcp_client_connect called while already CONNECTING — ignoring");
+        return true;
+    }
+
+    /* Parse string address if provided; fall back to stored or config address */
+    if (addr != NULL)
+    {
+        if (!stoip6(addr, strlen(addr), g_tcp_state.target_peer_addr))
+        {
+            tr_error("TCP: invalid IPv6 address string: %s", addr);
+            return false;
+        }
+        g_tcp_state.peer_addr_valid = true;
+    }
+    else if (!g_tcp_state.peer_addr_valid)
+    {
+        if (!tcp_init_peer_address())
+        {
+            return false;
+        }
+    }
+
+    /* Close any leftover socket from a previous attempt */
+    if (g_tcp_state.socket_id >= 0)
+    {
+        socket_close(g_tcp_state.socket_id);
+        g_tcp_state.socket_id = NOT_INITIALIZED;
+    }
+
+    tr_info("TCP CLIENT CONNECT START port=%d", connect_port);
+    g_tcp_state.socket_id = socket_open(SOCKET_TCP, 0, tcp_socket_callback);
+    if (g_tcp_state.socket_id < 0)
+    {
+        tr_error("TCP: socket_open failed: %d", g_tcp_state.socket_id);
+        return false;
+    }
+
+    connect_addr.type       = ADDRESS_IPV6;
+    connect_addr.identifier = connect_port;
+    memcpy(connect_addr.address, g_tcp_state.target_peer_addr, 16);
+
+    ret = socket_connect(g_tcp_state.socket_id, &connect_addr, 0);
+    tr_info("TCP CLIENT: socket_connect() returned %d (%d=in_progress)",
+            ret, TCP_CONNECT_IN_PROGRESS);
+
+    if (ret < 0 && ret != TCP_CONNECT_IN_PROGRESS)
+    {
+        tr_error("TCP: socket_connect failed: %d", ret);
+        tcp_reset_state();
+        return false;
+    }
+
+    g_tcp_state.conn_state = TCP_STATE_CONNECTING;
+    tr_info("TCP CLIENT: SYN sent — waiting for SOCKET_CONNECT_DONE");
+    return true;
+#endif /* WISUN_APP_TCP_MODE == 1 */
+}
+
+#ifndef WISUN_NCP_ENABLE
+/*!
+ * Handle received TCP data — log bytes and toggle LED.
+ * Replace this function body to process incoming data.
+ */
+static void tcp_handle_raw_data(const uint8_t *data, uint16_t len)
+{
+    (void)data;
+    tr_info("TCP Rx: %d bytes", len);
+    GPIO_toggle(CONFIG_GPIO_RLED);
+}
+#endif /* !WISUN_NCP_ENABLE */
+
+/*!
+ * Send data to the currently connected peer.
+ * Works for both server (MODE 1) and client (MODE 2) roles.
+ *
+ * @param data  Pointer to data buffer
+ * @param len   Number of bytes to send
+ * @return true if socket_send() succeeded, false otherwise
+ */
+bool tcp_send_data(const uint8_t *data, uint16_t len)
+{
+    int8_t send_socket;
+
+    if (data == NULL || len == 0)
+    {
+        tr_warn("TCP: tcp_send_data called with invalid args");
+        return false;
+    }
+    if (g_tcp_state.conn_state != TCP_STATE_CONNECTED)
+    {
+        tr_warn("TCP: send attempted but not connected (state=%d)", g_tcp_state.conn_state);
+        return false;
+    }
+
+#if (WISUN_APP_TCP_MODE == 1)
+    if (g_tcp_state.client_socket_id < 0)
+    {
+        tr_warn("TCP: no accepted client socket");
+        return false;
+    }
+    send_socket = g_tcp_state.client_socket_id;
+#else
+    if (g_tcp_state.socket_id < 0)
+    {
+        tr_warn("TCP: no open socket");
+        return false;
+    }
+    send_socket = g_tcp_state.socket_id;
+#endif /* WISUN_APP_TCP_MODE == 1 */
+
+    {
+        int16_t ret = socket_send(send_socket, data, len);
+        if (ret < 0)
+        {
+            tr_error("TCP: socket_send failed: %d (sock=%d len=%d)", ret, send_socket, len);
+            return false;
+        }
+        return true;
+    }
+}
+
+#ifndef WISUN_NCP_ENABLE
+/*!
+ * Fill send buffer with a TCP_BTN_PAYLOAD_SIZE counter payload and transmit.
+ * Called on BTN2 press.
+ */
+static void tcp_btn_send(void)
+{
+    uint8_t i;
+    for (i = 0; i < TCP_BTN_PAYLOAD_SIZE; i++)
+    {
+        g_tcp_state.send_buffer[i] = i + 1;
+    }
+    if (!tcp_send_data(g_tcp_state.send_buffer, TCP_BTN_PAYLOAD_SIZE))
+    {
+        tr_error("TCP: tcp_btn_send failed");
+    }
+}
+#endif /* !WISUN_NCP_ENABLE */
+
+/*!
+ * Full shutdown: close every open socket and reset to IDLE.
+ * Unlike tcp_reset_state() (which preserves the listen socket in server mode),
+ * this always closes all sockets.  Call this on explicit disconnect or shutdown.
+ * In NCP mode, also notifies the host.
+ */
+void tcp_disconnect(void)
+{
+    tr_info("TCP: full disconnect");
+
+#if (WISUN_APP_TCP_MODE == 2)
+    /* Cancel any pending reconnect timer before closing */
+    if (tcp_reconnect_timeout != NULL)
+    {
+        eventOS_timeout_cancel(tcp_reconnect_timeout);
+        tcp_reconnect_timeout = NULL;
+    }
+#endif
+
+#if (WISUN_APP_TCP_MODE == 1)
+    if (g_tcp_state.client_socket_id >= 0)
+    {
+        socket_close(g_tcp_state.client_socket_id);
+        g_tcp_state.client_socket_id = NOT_INITIALIZED;
+    }
+#endif
+    if (g_tcp_state.socket_id >= 0)
+    {
+        socket_close(g_tcp_state.socket_id);
+        g_tcp_state.socket_id = NOT_INITIALIZED;
+    }
+
+    g_tcp_state.conn_state   = TCP_STATE_IDLE;
+    g_tcp_state.send_pending = false;
+
+#ifdef WISUN_NCP_ENABLE
+    tcp_connected = false;
+    nanostack_notify_tcp_status((uint8_t)TCP_STATE_DISCONNECTED, 0);
+#endif
+}
+
+/*!
+ * Send data to a specific client slot.
+ * Only slot 0 is supported — proxies to tcp_send_data().
+ */
+bool tcp_send_data_to(int slot, const uint8_t *data, uint16_t len)
+{
+    if (slot != 0)
+    {
+        tr_warn("TCP: send_data_to slot %d not supported (only slot 0)", slot);
+        return false;
+    }
+    return tcp_send_data(data, len);
+}
+
+/*!
+ * Returns 0 for server mode, 1 for client mode.
+ */
+int tcp_get_mode(void)
+{
+#if (WISUN_APP_TCP_MODE == 1)
+    return 0;
+#else
+    return 1;
+#endif
+}
+
+/*!
+ * Returns the number of currently connected TCP clients (0 or 1).
+ */
+int tcp_client_count(void)
+{
+#if (WISUN_APP_TCP_MODE == 1)
+    if (g_tcp_state.conn_state == TCP_STATE_CONNECTED &&
+        g_tcp_state.client_socket_id >= 0)
+        return 1;
+    return 0;
+#else
+    return 0;
+#endif
+}
+
+/*!
+ * Returns true if the connection is currently in TCP_STATE_CONNECTED.
+ */
+bool tcp_is_connected(void)
+{
+    return (g_tcp_state.conn_state == TCP_STATE_CONNECTED);
+}
+
+#endif /* WISUN_APP_TCP_MODE */
+
+#ifndef WISUN_NCP_ENABLE
 /*!
  * Setup udp socket and bind to a specific port number
  */
@@ -522,7 +1353,7 @@ bool udpSocketSetup(void)
 
     bind_addr.type = ADDRESS_IPV6;
     memcpy(bind_addr.address, ns_in6addr_any, 16);
-    bind_addr.identifier = UDP_PORT_TEST;
+    bind_addr.identifier = UDP_PORT_TEST;  /* Changed from UDP_PORT_TEST to match send port */
     ret = socket_bind(socket_id, &bind_addr);
     if (ret < 0) {
         tr_error("socket bind failed with error %d", ret);
@@ -530,6 +1361,7 @@ bool udpSocketSetup(void)
     }
     return true;
 }
+#endif /* !WISUN_NCP_ENABLE */
 
 /*!
  * Configure the network settings like network name,
@@ -691,12 +1523,16 @@ void nanostack_wait_till_connect()
 /*!
  * Interrupt handler for handling button presses on the
  * Launch pad.
- * Press button 1 to start sending of a broadcast packets.
- * To disable sending of broadcast packets, press button 2
- * again.
- * Press button 2 to trigger sending of a unicast packet.
- * To trigger sending of the next unicast packet, press
- * button 2 again.
+ *
+ * UDP Functions (Always Available):
+ *   Button 1: Send unicast + multicast UDP packets
+ *
+ * TCP Functions (When WISUN_APP_TCP_MODE is enabled):
+ *   Button 2: Send TCP counter payload to connected peer
+ *
+ * Note: UDP and TCP are independent - UDP always works regardless
+ * of TCP settings. TCP is optional and controlled by WISUN_APP_TCP_MODE.
+ *
  * These button presses should be exercised only after the
  * node joins the network.
  */
@@ -704,26 +1540,16 @@ static void btn_interrupt_handler(uint8_t index)
 {
     if(index == CONFIG_GPIO_BTN1)
     {
-        if(bcast_send == true)
-        {
-            bcast_send = false;
-        }
-        else
-        {
-            bcast_send = true;
-        }
+        /* BTN1: Send one unicast + one multicast immediately */
+        unicast_send = true;
+        multicast_send_pending = true;
     }
     else if(index == CONFIG_GPIO_BTN2)
     {
-        if(unicast_send == true)
-        {
-            unicast_send = false;
-        }
-        else
-        {
-            unicast_send = true;
-        }
-
+#if (WISUN_APP_TCP_MODE > 0)
+        /* BTN2: Send TCP counter payload to connected peer */
+        g_tcp_state.send_pending = true;
+#endif
     }
 }
 #endif //WISUN_NCP_ENABLE, NWK_TEST
@@ -1353,96 +2179,157 @@ void *mainThread(void *arg0)
                               coap_oad_cb);
 #endif // COAP_OAD_ENABLE
 
-#else
-    /* Convert string addr to ipaddr array */
+    /* Wait for Wi-SUN network connection before initializing sockets */
+    nanostack_wait_till_connect();
+
+/* Note: COAP service uses its own UDP stack internally.
+ * TCP is optional and can work alongside COAP - initialize TCP here if enabled */
+#if (WISUN_APP_TCP_MODE == 1)
+    /* Setup TCP socket in server mode */
+    if (tcp_socket_setup(0) == false)
+    {
+        tr_error("TCP: Server socket setup failed");
+    }
+    tr_info("TCP SERVER mode enabled");
+#elif (WISUN_APP_TCP_MODE == 2)
+    /* tcp_client_connect() calls tcp_init_peer_address() internally if needed */
+    if (tcp_client_connect(NULL, 0) == false)
+    {
+        tr_error("TCP: Client connect failed — will retry via OS timer");
+    }
+    tr_info("TCP CLIENT mode enabled");
+#endif /* WISUN_APP_TCP_MODE with COAP */
+
+    /* Main loop for COAP + TCP mode.
+     * TCP reconnect is handled by tcp_reconnect_timer_cb() (OS timer) — no polling needed. */
+    while (1)
+    {
+#if (WISUN_APP_TCP_MODE > 0)
+        /* Dispatch BTN2 send request from ISR flag to TCP send (safe main-loop context) */
+        if (g_tcp_state.send_pending)
+        {
+            tcp_btn_send();
+            g_tcp_state.send_pending = false;
+        }
+#endif /* WISUN_APP_TCP_MODE > 0 */
+
+        usleep(100000);
+    }
+
+#else /* !COAP_SERVICE_ENABLE */
+
+    /* Wait for Wi-SUN network connection before initializing sockets */
+    nanostack_wait_till_connect();
+
+    /* Always setup UDP socket for multicast/unicast */
     stoip6(multicast_addr_str, strlen(multicast_addr_str), multi_cast_addr);
 
     if(udpSocketSetup() == false)
     {
-        tr_debug("Socket setup failed");
+        tr_debug("UDP Socket setup failed");
+    }
+    tr_info("UDP ready - BTN1: unicast+multicast");
+
+    /* Join multicast group */
+    {
+        ns_ipv6_mreq_t mreq;
+        memcpy(mreq.ipv6mr_multiaddr, multi_cast_addr, 16);
+        mreq.ipv6mr_interface = interface_id;
+        if (socket_setsockopt(socket_id, SOCKET_IPPROTO_IPV6, SOCKET_IPV6_JOIN_GROUP, &mreq, sizeof(mreq)) == 0) {
+            tr_info("Joined multicast group ff15::810a:64d1");
+        } else {
+            tr_error("Failed to join multicast group");
+        }
     }
 
     /* Set multicast send address */
     send_addr.type = ADDRESS_IPV6;
-    send_addr.identifier = UDP_PORT;
+    send_addr.identifier = UDP_PORT_TEST;
     memcpy(send_addr.address, multi_cast_addr, 16);
 
     /* Set unicast send address */
     send_addr_unicast.type = ADDRESS_IPV6;
     send_addr_unicast.identifier = UDP_PORT_ECHO;
 
+    /* Setup TCP socket — BTN2 sends TCP payload */
+#if (WISUN_APP_TCP_MODE == 1)
+    if (tcp_socket_setup(0) == false)
+    {
+        tr_error("TCP: Server socket setup failed");
+    }
+    tr_info("TCP SERVER ready - BTN2: send payload");
+#elif (WISUN_APP_TCP_MODE == 2)
+    /* tcp_client_connect() calls tcp_init_peer_address() internally if needed */
+    if (tcp_client_connect(NULL, 0) == false)
+    {
+        tr_error("TCP: Client connect failed — will retry via OS timer");
+    }
+    tr_info("TCP CLIENT ready - BTN2: send payload");
+#endif /* WISUN_APP_TCP_MODE */
+
     while (1) {
-        int16_t len;
-        static uint32_t bcast_delay_count = 0;
-        static uint32_t unicast_delay_count = 0;
-        static bool prev_bcast_send = false;
-        static bool prev_unicast_send = false;
-        static ns_address_t source_addr = {0};
 
-        if(prev_bcast_send != bcast_send)
+        /* ==================== UDP Operations (BTN1) ==================== */
         {
-            if(bcast_send)
-            {
-                tr_info("bcast_send enabled, sending light toggle every 10s");
-                bcast_delay_count = 100;
-            }
-            else
-            {
-                tr_info("bcast_send disabled");
-            }
-        }
-        prev_bcast_send = bcast_send;
+            int16_t len;
+            static ns_address_t source_addr;
+            /* Cooldown: 5 ticks * 100ms = 500ms between sends (absorbs button bounce) */
+            static uint8_t btn_cooldown = 0;
+            if(btn_cooldown > 0) btn_cooldown--;
 
-        if(bcast_send)
-        {
-            if(bcast_delay_count==100)
+            /* Send multicast immediately on BTN1 press */
+            if(multicast_send_pending && btn_cooldown == 0)
             {
                 static bool light_state = false;
-
-                /* toggle light state */
                 light_state ^= 1;
-                /**
-                * Multicast control message is a NUL terminated string of semicolon separated
-                * <field identifier>:<value> pairs.
-                *
-                * Light control message format:
-                * t:lights;g:<group_id>;s:<1|0>;\0
-                */
                 snprintf(send_buf, sizeof(send_buf), "t:lights;g:%03d;s:%s;", MY_GROUP, (light_state ? "1" : "0"));
                 tr_debug("Sending lightcontrol message: %s", send_buf);
-                /* send every 20s */
                 tr_info("Sending multicast packet");
                 ret = socket_sendto(socket_id, &send_addr, send_buf, sizeof(send_buf));
                 tr_info("Sendto returned: %d", ret);
-
                 GPIO_toggle(CONFIG_GPIO_GLED);
-
-                bcast_delay_count = 0;
+                multicast_send_pending = false;
+                btn_cooldown = 5;  /* block further sends for 500ms */
             }
-            bcast_delay_count++;
-        }
-        if(unicast_send)
-        {
-            if(sent_dao == true) //&& !addr_ipv6_equal((const uint8_t*)root_unicast_addr, ns_in6addr_any))
-             {
-                memcpy(send_addr_unicast.address, root_unicast_addr, 16);
-                tr_info("Sending unicast packet from Router to Border Router");
-                ret = socket_sendto(socket_id, &send_addr_unicast, send_buf_unicast, sizeof(send_buf_unicast));
-                tr_info("Sendto returned: %d", ret);
-                unicast_send = false;
-             }
+            else if(multicast_send_pending && btn_cooldown > 0)
+            {
+                multicast_send_pending = false;  /* discard bounce firings */
+            }
+
+            if(unicast_send)
+            {
+                if(sent_dao == true)
+                {
+                    memcpy(send_addr_unicast.address, root_unicast_addr, 16);
+                    tr_info("Sending unicast packet from Router to Border Router");
+                    ret = socket_sendto(socket_id, &send_addr_unicast, send_buf_unicast, sizeof(send_buf_unicast));
+                    tr_info("Sendto returned: %d", ret);
+                    unicast_send = false;
+                }
+            }
+
+            len = socket_recvfrom(socket_id, recv_buffer, sizeof(recv_buffer), 0, &source_addr);
+            if(len > 0)
+            {
+                tr_info("Recv[%d]: %s, ", len, recv_buffer);
+                handle_message((char*)recv_buffer);
+            }
+            else if(NS_EWOULDBLOCK != len)
+            {
+                tr_info("Recv error %x", len);
+            }
         }
 
-        len = socket_recvfrom(socket_id, recv_buffer, sizeof(recv_buffer), 0, &source_addr);
-        if(len > 0)
+        /* ==================== TCP Operations (BTN2) ==================== */
+        /* TCP reconnect is handled by tcp_reconnect_timer_cb() (OS timer) — no polling needed. */
+#if (WISUN_APP_TCP_MODE > 0)
+        /* Dispatch BTN2 send request from ISR flag to TCP send (safe main-loop context) */
+        if (g_tcp_state.send_pending)
         {
-            tr_info("Recv[%d]: %s, ", len, recv_buffer);
-            handle_message((char*)recv_buffer);
+            tcp_btn_send();
+            g_tcp_state.send_pending = false;
         }
-        else if(NS_EWOULDBLOCK != len)
-        {
-            tr_info("Recv error %x", len);
-        }
+#endif /* WISUN_APP_TCP_MODE > 0 */
 
         usleep(100000);
     }

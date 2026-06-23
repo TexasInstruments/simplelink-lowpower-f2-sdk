@@ -147,7 +147,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -257,7 +257,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -325,7 +325,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -435,7 +435,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -503,7 +503,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -613,7 +613,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -652,7 +652,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -730,7 +730,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -769,7 +769,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -847,7 +847,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -886,7 +886,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -964,7 +964,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -1032,7 +1032,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1142,7 +1142,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1252,7 +1252,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1333,7 +1333,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -1411,7 +1411,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -1489,7 +1489,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -1596,7 +1596,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1706,7 +1706,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1816,7 +1816,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1897,7 +1897,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -1975,7 +1975,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2053,7 +2053,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2160,7 +2160,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble_profiles",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -2270,7 +2270,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble_profiles",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -2380,7 +2380,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble_profiles",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -2461,7 +2461,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble_profiles",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2539,7 +2539,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble_profiles",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2617,7 +2617,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_ble_profiles",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2724,7 +2724,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_persistent",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -2834,7 +2834,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_persistent",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -2944,7 +2944,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_persistent",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -3025,7 +3025,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_persistent",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3103,7 +3103,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_persistent",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3181,7 +3181,7 @@
         "subCategories": [
             "BLE5-Stack",
             "basic_persistent",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3288,7 +3288,7 @@
         "subCategories": [
             "BLE5-Stack",
             "connection_monitor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -3327,7 +3327,7 @@
         "subCategories": [
             "BLE5-Stack",
             "connection_monitor",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3395,7 +3395,7 @@
         "subCategories": [
             "BLE5-Stack",
             "data_stream",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -3505,7 +3505,7 @@
         "subCategories": [
             "BLE5-Stack",
             "data_stream",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -3615,7 +3615,7 @@
         "subCategories": [
             "BLE5-Stack",
             "data_stream",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -3696,7 +3696,7 @@
         "subCategories": [
             "BLE5-Stack",
             "data_stream",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3774,7 +3774,7 @@
         "subCategories": [
             "BLE5-Stack",
             "data_stream",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3852,7 +3852,7 @@
         "subCategories": [
             "BLE5-Stack",
             "data_stream",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3959,7 +3959,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4027,7 +4027,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4095,7 +4095,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4163,7 +4163,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4231,7 +4231,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4299,7 +4299,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4367,7 +4367,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4435,7 +4435,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4503,7 +4503,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4571,7 +4571,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4639,7 +4639,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4707,7 +4707,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4775,7 +4775,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4843,7 +4843,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4911,7 +4911,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4979,7 +4979,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -5018,7 +5018,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5057,7 +5057,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5096,7 +5096,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5135,7 +5135,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5174,7 +5174,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5213,7 +5213,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5252,7 +5252,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5291,7 +5291,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5330,7 +5330,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5369,7 +5369,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5408,7 +5408,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5447,7 +5447,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5486,7 +5486,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5525,7 +5525,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5564,7 +5564,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5603,7 +5603,7 @@
         "subCategories": [
             "BLE5-Stack",
             "host_test",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5671,7 +5671,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -5739,7 +5739,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -5807,7 +5807,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -5875,7 +5875,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -5943,7 +5943,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6011,7 +6011,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6079,7 +6079,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6147,7 +6147,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6215,7 +6215,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6283,7 +6283,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6351,7 +6351,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6419,7 +6419,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6487,7 +6487,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6555,7 +6555,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6623,7 +6623,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6691,7 +6691,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6730,7 +6730,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -6769,7 +6769,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -6808,7 +6808,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -6847,7 +6847,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -6886,7 +6886,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -6925,7 +6925,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -6964,7 +6964,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7003,7 +7003,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7042,7 +7042,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7081,7 +7081,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7120,7 +7120,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7159,7 +7159,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7198,7 +7198,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7237,7 +7237,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7276,7 +7276,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7315,7 +7315,7 @@
         "subCategories": [
             "BLE5-Stack",
             "multi_role",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7357,7 +7357,7 @@
         "subCategories": [
             "BLE5-Stack",
             "persistent_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7399,7 +7399,7 @@
         "subCategories": [
             "BLE5-Stack",
             "persistent_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7441,7 +7441,7 @@
         "subCategories": [
             "BLE5-Stack",
             "persistent_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7483,7 +7483,7 @@
         "subCategories": [
             "BLE5-Stack",
             "persistent_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7525,7 +7525,7 @@
         "subCategories": [
             "BLE5-Stack",
             "persistent_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7567,7 +7567,7 @@
         "subCategories": [
             "BLE5-Stack",
             "persistent_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7609,7 +7609,7 @@
         "subCategories": [
             "BLE5-Stack",
             "persistent_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7651,7 +7651,7 @@
         "subCategories": [
             "BLE5-Stack",
             "persistent_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7693,7 +7693,7 @@
         "subCategories": [
             "BLE5-Stack",
             "persistent_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7735,7 +7735,7 @@
         "subCategories": [
             "BLE5-Stack",
             "persistent_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7777,7 +7777,7 @@
         "subCategories": [
             "BLE5-Stack",
             "persistent_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7816,7 +7816,7 @@
         "subCategories": [
             "BLE5-Stack",
             "persistent_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7855,7 +7855,7 @@
         "subCategories": [
             "BLE5-Stack",
             "persistent_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7894,7 +7894,7 @@
         "subCategories": [
             "BLE5-Stack",
             "persistent_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7933,7 +7933,7 @@
         "subCategories": [
             "BLE5-Stack",
             "persistent_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7972,7 +7972,7 @@
         "subCategories": [
             "BLE5-Stack",
             "persistent_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8011,7 +8011,7 @@
         "subCategories": [
             "BLE5-Stack",
             "persistent_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8050,7 +8050,7 @@
         "subCategories": [
             "BLE5-Stack",
             "persistent_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8089,7 +8089,7 @@
         "subCategories": [
             "BLE5-Stack",
             "persistent_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8128,7 +8128,7 @@
         "subCategories": [
             "BLE5-Stack",
             "persistent_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8167,7 +8167,7 @@
         "subCategories": [
             "BLE5-Stack",
             "persistent_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8206,7 +8206,7 @@
         "subCategories": [
             "BLE5-Stack",
             "persistent_app",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8274,7 +8274,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8342,7 +8342,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8410,7 +8410,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8478,7 +8478,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8546,7 +8546,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8614,7 +8614,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8682,7 +8682,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8750,7 +8750,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8818,7 +8818,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8886,7 +8886,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8954,7 +8954,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9022,7 +9022,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9090,7 +9090,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9158,7 +9158,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9226,7 +9226,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9294,7 +9294,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9333,7 +9333,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9372,7 +9372,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9411,7 +9411,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9450,7 +9450,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9489,7 +9489,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9528,7 +9528,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9567,7 +9567,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9606,7 +9606,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9645,7 +9645,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9684,7 +9684,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9723,7 +9723,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9762,7 +9762,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9801,7 +9801,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9840,7 +9840,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9879,7 +9879,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9918,7 +9918,7 @@
         "subCategories": [
             "BLE5-Stack",
             "project_zero",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9986,7 +9986,7 @@
         "subCategories": [
             "BLE5-Stack",
             "rtls_coordinator",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10025,7 +10025,7 @@
         "subCategories": [
             "BLE5-Stack",
             "rtls_coordinator",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10093,7 +10093,7 @@
         "subCategories": [
             "BLE5-Stack",
             "rtls_passive",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10132,7 +10132,7 @@
         "subCategories": [
             "BLE5-Stack",
             "rtls_passive",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10200,7 +10200,7 @@
         "subCategories": [
             "BLE5-Stack",
             "rtls_responder",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10239,7 +10239,7 @@
         "subCategories": [
             "BLE5-Stack",
             "rtls_responder",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10307,7 +10307,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_broadcaster",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10375,7 +10375,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_broadcaster",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10443,7 +10443,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_broadcaster",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10511,7 +10511,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_broadcaster",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10579,7 +10579,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_broadcaster",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10618,7 +10618,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_broadcaster",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10657,7 +10657,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_broadcaster",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10696,7 +10696,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_broadcaster",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10735,7 +10735,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_broadcaster",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10774,7 +10774,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_broadcaster",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10842,7 +10842,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10910,7 +10910,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10978,7 +10978,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11046,7 +11046,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11114,7 +11114,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11182,7 +11182,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11250,7 +11250,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11318,7 +11318,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11386,7 +11386,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11454,7 +11454,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11522,7 +11522,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11590,7 +11590,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11658,7 +11658,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11726,7 +11726,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11794,7 +11794,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11862,7 +11862,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11901,7 +11901,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -11940,7 +11940,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -11979,7 +11979,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12018,7 +12018,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12057,7 +12057,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12096,7 +12096,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12135,7 +12135,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12174,7 +12174,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12213,7 +12213,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12252,7 +12252,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12291,7 +12291,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12330,7 +12330,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12369,7 +12369,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12408,7 +12408,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12447,7 +12447,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12486,7 +12486,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_central",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12554,7 +12554,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12622,7 +12622,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12690,7 +12690,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12758,7 +12758,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12826,7 +12826,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12894,7 +12894,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12962,7 +12962,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -13030,7 +13030,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -13098,7 +13098,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -13166,7 +13166,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -13234,7 +13234,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -13302,7 +13302,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -13370,7 +13370,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -13438,7 +13438,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -13506,7 +13506,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -13574,7 +13574,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -13613,7 +13613,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13652,7 +13652,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13691,7 +13691,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13730,7 +13730,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13769,7 +13769,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13808,7 +13808,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13847,7 +13847,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13886,7 +13886,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13925,7 +13925,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -13964,7 +13964,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14003,7 +14003,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14042,7 +14042,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14081,7 +14081,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14120,7 +14120,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14159,7 +14159,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14198,7 +14198,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14266,7 +14266,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_gatt_builder_preview",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -14334,7 +14334,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_gatt_builder_preview",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -14402,7 +14402,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_gatt_builder_preview",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -14470,7 +14470,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_gatt_builder_preview",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -14538,7 +14538,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_gatt_builder_preview",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -14606,7 +14606,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_gatt_builder_preview",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -14674,7 +14674,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_gatt_builder_preview",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -14742,7 +14742,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_gatt_builder_preview",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -14781,7 +14781,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_gatt_builder_preview",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14820,7 +14820,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_gatt_builder_preview",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14859,7 +14859,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_gatt_builder_preview",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14898,7 +14898,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_gatt_builder_preview",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14937,7 +14937,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_gatt_builder_preview",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -14976,7 +14976,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_gatt_builder_preview",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -15015,7 +15015,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_gatt_builder_preview",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -15054,7 +15054,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_gatt_builder_preview",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -15122,7 +15122,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15190,7 +15190,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15258,7 +15258,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15326,7 +15326,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15394,7 +15394,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15462,7 +15462,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15530,7 +15530,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15598,7 +15598,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15666,7 +15666,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15734,7 +15734,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15802,7 +15802,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15870,7 +15870,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15938,7 +15938,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -15977,7 +15977,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -16016,7 +16016,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -16055,7 +16055,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -16094,7 +16094,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -16133,7 +16133,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -16172,7 +16172,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -16211,7 +16211,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -16250,7 +16250,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -16289,7 +16289,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -16328,7 +16328,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -16367,7 +16367,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -16406,7 +16406,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -16445,7 +16445,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -16513,7 +16513,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16581,7 +16581,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16649,7 +16649,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16717,7 +16717,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16785,7 +16785,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16853,7 +16853,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16921,7 +16921,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -16989,7 +16989,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -17057,7 +17057,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -17125,7 +17125,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -17193,7 +17193,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -17232,7 +17232,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17271,7 +17271,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17310,7 +17310,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17349,7 +17349,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17388,7 +17388,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17427,7 +17427,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17466,7 +17466,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17505,7 +17505,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17544,7 +17544,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17583,7 +17583,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -17622,7 +17622,7 @@
         "subCategories": [
             "BLE5-Stack",
             "simple_peripheral_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     }

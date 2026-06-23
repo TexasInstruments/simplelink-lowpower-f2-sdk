@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2012-2025, Texas Instruments Incorporated
+ Copyright (c) 2012-2026, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.

@@ -2,7 +2,7 @@
     {
         "name": "Release Notes",
         "resourceType": "file",
-        "location": "../../release_notes_simplelink_cc13xx_cc26xx_sdk_8_32_00_07.html",
+        "location": "../../release_notes_simplelink_cc13xx_cc26xx_sdk_8_33_00_16.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1410,7 +1410,7 @@
     {
         "name": "TI Wi-SUN FAN Release Notes",
         "resourceType": "file",
-        "location": "../../docs/ti_wisunfan/release_notes_wisun_4_30_00_00.html",
+        "location": "../../docs/ti_wisunfan/release_notes_wisun_4_40_00_00.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"

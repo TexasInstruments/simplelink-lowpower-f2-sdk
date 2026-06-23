@@ -708,14 +708,18 @@ not_forwarding_error:
 #ifdef HAVE_RPL_ROOT
 static bool rpl_data_compute_source_route(const uint8_t *final_dest, rpl_dao_target_t *const target)
 {
+    tr_info("rpl_data_compute_source_route: dest=%s target=%p", trace_ipv6(final_dest), target);
+
     if (!rpl_data_sr) {
         rpl_data_sr = rpl_alloc(sizeof(rpl_data_sr_t) + RPL_DATA_SR_INIT_SIZE);
         if (!rpl_data_sr) {
+            tr_warn("rpl_data_compute_source_route: alloc failed");
             return false;
         }
         rpl_data_sr->iaddr_size = RPL_DATA_SR_INIT_SIZE;
         rpl_data_sr->target = NULL;
     } else if (rpl_data_sr->target == target && addr_ipv6_equal(rpl_data_sr->final_dest, final_dest)) {
+        tr_info("rpl_data_compute_source_route: using cached route");
         return true;
     }
 
@@ -725,6 +729,7 @@ static bool rpl_data_compute_source_route(const uint8_t *final_dest, rpl_dao_tar
      */
     rpl_downward_compute_paths(target->instance);
     if (!target->connected) {
+        tr_warn("rpl_data_compute_source_route: target NOT connected");
         return false;
     }
 

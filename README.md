@@ -28,19 +28,37 @@ their respective repositories for resources and more information.
 * [Thread 1.x networking stack based on
   OpenThread](https://github.com/TexasInstruments/ot-ti)
 
+This is version 8.33.00.16 of the SimpleLink Low Power F2 SDK.
+
 ## What's New
 
-This version only contains updates for TI Wi-SUN Stack. Other components remain
-the same as in SIMPLELINK-LOWPOWER-F2-SDK version 8.31.00.11.
+This version only contains updates for TI Wi-SUN Stack. Other components
+remain the same as in SIMPLELINK-LOWPOWER-F2-SDK version 8.31.00.11.
 
-* TI Wi-SUN FAN Stack is certified for Wi-SUN FAN 1.1 (FAN 1.0+ Certified) (BR and RN profile, and PHY).
-* Linux host + RCP now supports Router Node configuration.
-* Device support added for CC1311P3 and CC1311R3 for RCP mode.
-* TI Wi-SUN FAN Stack now allows to build a project with support for any FSK PHY and selecting the PHY at run time. Please see the User’s Guide for details.
+  - MQTT over TCP is now implemented and available through the
+    ns\_node\_mqtt (router node) and rcp\_lmac (border router) examples.
+  - OpenCSMP is a protocol stack developed by Cisco for industrial IOT.
+    CC1312R7, CC1352P7, CC1354P10 and CC1314R10 now support OpenCSMP.
+    Please see the csmp\_client example.
 
-More details, including supported devices, IDEs, and toolchains are provided in
-the [LPF2 8.32.00.07 SDK release notes][sdk release notes].
+Refer to the Document Overview for
+the individual release notes and details for starting development with
+each SDK component.
 
+Refer to the included Change Log for a summary of new
+features and fixed issues since the last SDK release.
+
+If you want to download or install a subset of the SimpleLink F2 SDK
+components, please use SDK composer on TI Resource Explorer. This
+feature lets you select only the SDK components you need and save up to
+1.1 GB on the installation size.
+
+  - Navigate to [this SDK on TI Resource
+    Explorer](https://dev.ti.com/tirex/explore/node?node=A__ABWp1w.mXU7n8HjfEIyLGQ__com.ti.SIMPLELINK_CC13XX_CC26XX_SDK__BSEc4rl__LATEST)
+  - In the left panel containing the folder tree, hover over the SDK.
+    This displays three dots.
+  - Click on the three dots and then on download. Now, select only the
+    components you need\!
 ## About this Repository
 
 Although TI also offers this SDK via [a classic
@@ -131,8 +149,8 @@ Dependency download locations:
 
 Please consider creating a post on [TI's E2E forum](https://e2e.ti.com).
 
-[sdk release notes]: https://dev.ti.com/tirex/explore/node?node=A__ADMjnimJ4C5BfFnmM3X-jg__com.ti.SIMPLELINK_CC13XX_CC26XX_SDK__BSEc4rl__8.32.00.07
-[sdk docs]: https://dev.ti.com/tirex/explore/node?node=A__AHaph7YfvcrVy2cDlmb4sQ__com.ti.SIMPLELINK_CC13XX_CC26XX_SDK__BSEc4rl__8.32.00.07
+[sdk release notes]: https://dev.ti.com/tirex/explore/node?node=A__ADMjnimJ4C5BfFnmM3X-jg__com.ti.SIMPLELINK_CC13XX_CC26XX_SDK__BSEc4rl__8.33.00.16
+[sdk docs]: https://dev.ti.com/tirex/explore/node?node=A__AHaph7YfvcrVy2cDlmb4sQ__com.ti.SIMPLELINK_CC13XX_CC26XX_SDK__BSEc4rl__8.33.00.16
 [sysconfig download]: https://www.ti.com/tool/SYSCONFIG
 [ticlang download]: https://www.ti.com/tool/download/ARM-CGT-CLANG
 [gcc download]: https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads

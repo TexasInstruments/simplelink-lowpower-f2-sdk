@@ -139,6 +139,11 @@ extern mesh_error_t nanostack_wisunInterface_configure(void);
 extern fhss_timer_t fhss_functions;
 //bool is_net_if_up(void);
 
+/* Auto-start TCP when BR is ready (NCP mode with TCP enabled) */
+#if defined(WISUN_NCP_ENABLE) && (WISUN_APP_TCP_MODE > 0)
+extern void tcp_init_br(void);
+#endif
+
 typedef struct {
     char *network_name;
     uint8_t regulatory_domain;
@@ -669,6 +674,12 @@ static void wisun_interface_event_handler(arm_event_s *event)
 
             tr_info("RF interface addresses:");
             print_interface_addr(ws_br_handler.ws_interface_id);
+
+#if !defined(WISUN_NCP_ENABLE) && (WISUN_APP_TCP_MODE > 0)
+            /* Auto-start TCP in non-NCP mode. In NCP mode, host starts TCP via Spinel commands. */
+            tr_info("Auto-starting TCP for Border Router...");
+            tcp_init_br();
+#endif
 
             break;
         }

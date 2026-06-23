@@ -41,6 +41,7 @@
 #include "mbed-mesh-api/mesh_interface_types.h"
 #ifdef WISUN_TEST_METRICS
 #include "saddr.h"
+#include "api_mac.h"
 #endif
 #include "NWK_INTERFACE/Include/protocol_abstract.h"
 #include "6LoWPAN/ws/ws_bootstrap.h"

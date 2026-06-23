@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2025, Texas Instruments Incorporated
+ Copyright (c) 2025-2026, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -548,13 +548,13 @@ void MtRcpLMac_RcpInitCnf(rcp_init_cnf_t *pCnfRcpInit)
 {
     uint16_t rspLen;
     uint8_t *pRspBuf;
-    
+
     rspLen = sizeof(rcp_init_cnf_t); //LMAC does not parse IEs - so len contains data and IEs
     pRspBuf = MAP_ICall_malloc(rspLen);
 
     if(pRspBuf != NULL)
-    {               
-        memcpy(pRspBuf, pCnfRcpInit->device_ext_addr, rspLen);       
+    {
+        memcpy(pRspBuf, pCnfRcpInit->device_ext_addr, rspLen);
     }
 
     MT_rcp_LMAC_dbg.num_rcp_init_cnf_sent++;
@@ -564,13 +564,16 @@ void MtRcpLMac_RcpInitCnf(rcp_init_cnf_t *pCnfRcpInit)
 
     /* Give back RespBuf memory */
     MAP_ICall_free(pRspBuf);
+
+    /* Free the input rcp_data allocated by rcp_lmac_to_host */
+    MAP_osal_msg_deallocate((uint8_t*)pCnfRcpInit);
 }
 
 void MtRcpLMac_MacCfgGetCnf(rcp_mac_config_get_cnf_t *pCnfMacCfgGet)
 {
     uint16_t rspLen;
     uint8_t *pRspBuf;
-    
+
     rspLen = sizeof(rcp_mac_config_get_cnf_t); //revisit this
     pRspBuf = MAP_ICall_malloc(rspLen);
 
@@ -586,6 +589,9 @@ void MtRcpLMac_MacCfgGetCnf(rcp_mac_config_get_cnf_t *pCnfMacCfgGet)
 
     /* Give back RespBuf memory */
     MAP_ICall_free(pRspBuf);
+
+    /* Free the input rcp_data allocated by rcp_lmac_to_host */
+    MAP_osal_msg_deallocate((uint8_t*)pCnfMacCfgGet);
 }
 
 void MtRcpLMac_MacCfgSetCnf(rcp_mac_config_set_cnf_t *pCnfMacCfgSet, uint8_t mt_cmd1)
@@ -639,6 +645,9 @@ void MtRcpLMac_MacCfgSetCnf(rcp_mac_config_set_cnf_t *pCnfMacCfgSet, uint8_t mt_
 
     /* Give back RespBuf memory */
     MAP_ICall_free(pRspBuf);
+
+    /* Free the input rcp_data allocated by rcp_lmac_to_host */
+    MAP_osal_msg_deallocate((uint8_t*)pCnfMacCfgSet);
 }
 
 #endif /* MT_RCP_LMAC_FUNC */

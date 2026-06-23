@@ -34,13 +34,27 @@
 #include "common_functions.h"
 #include "net_interface.h"
 
+/*
+ * NO_TCP Macro Configuration:
+ * ---------------------------
+ * TCP support is ENABLED by default for Wi-SUN configurations.
+ * The NO_TCP macro is used for code size optimization when TCP is not needed.
+ *
+ * To disable TCP (not recommended for Wi-SUN):
+ *   - Define NO_TCP in the config header (e.g., cfg_ti_ws_router.h)
+ *
+ * For Wi-SUN builds:
+ *   - NO_TCP is commented out in cfg_ti_ws_router.h and cfg_ti_ws_border_router.h
+ *   - TCP support is available without any configuration changes
+ *   - To use embedded TCP sockets, define WISUN_APP_TCP_MODE=1 (server) or WISUN_APP_TCP_MODE=2 (client) in router.opts
+ */
 #ifndef NO_TCP
 #define TRACE_GROUP "tcp"
 
 #ifdef WISUN_NCP_ENABLE
 #include "6LoWPAN/ws/ws_common_defines.h"
 extern void nanostack_process_stream_net_from_stack(buffer_t* buf);
-#endif
+#endif /* WISUN_NCP_ENABLE */
 
 /* Standard flags for outgoing packets in each state, with FIN applying
  * only if there is no more data in queue (because the state is entered
@@ -383,6 +397,11 @@ static buffer_t *tcp_build_reset_packet(const sockaddr_t *dst_addr, const sockad
     uint8_t *ptr;
 
     FUNC_ENTRY_TRACE("tcp_build_reset_packet()");
+
+    /* Log TCP RST packet being sent */
+    tr_info("TCP RST: Sending RST to [%s]:%u (seq=%"PRIu32", ack=%"PRIu32", flags=%s)",
+            trace_ipv6(dst_addr->address), dst_addr->port, seq, ack, trace_tcp_flags(flags));
+
     buf = buffer_get(20);
 
     if (!buf) {
@@ -488,6 +507,12 @@ tcp_error tcp_session_open(tcp_session_t *tcp_session)
     tcp_session->state = TCP_STATE_SYN_SENT;
     new_buffer->options.code = TCP_FLAG_SYN;
 
+    /* Log TCP handshake: SYN sent (client initiating connection) */
+    tr_info("TCP HANDSHAKE: Sending SYN to [%s]:%u (seq=%"PRIu32")",
+            trace_ipv6(tcp_session->inet_pcb->remote_address),
+            tcp_session->inet_pcb->remote_port,
+            tcp_session->send_next);
+
     tcp_build(new_buffer, tcp_session);
     return TCP_ERROR_NO_ERROR;
 
@@ -540,6 +565,11 @@ tcp_error tcp_session_close(tcp_session_t *tcp_session)
             // Do the state change immediately, even if data
             // pending - this deals with the API changes. Data
             // output routines need to set flags appropriately.
+            /* Log TCP teardown: FIN being sent */
+            tr_info("TCP TEARDOWN: Initiating close, sending FIN to [%s]:%u",
+                    trace_ipv6(tcp_session->inet_pcb->remote_address),
+                    tcp_session->inet_pcb->remote_port);
+
             if (tcp_session->state == TCP_STATE_CLOSE_WAIT) {
                 tcp_session->state = TCP_STATE_LAST_ACK; // RFC 1122
                 tr_debug("sLA");
@@ -691,11 +721,24 @@ static tcp_session_t *tcp_resend_segment(tcp_session_t *tcp_info)
     FUNC_ENTRY_TRACE("tcp_resend_segment()");
 
     if (tcp_info->retry >= (tcp_info->state < TCP_STATE_ESTABLISHED ? TCP_SYN_RETRIES : TCP_MAX_RETRIES)) {
+        tr_info("TCP RETRANSMIT: Too many retries (%u), connection failed to [%s]:%u",
+                tcp_info->retry,
+                trace_ipv6(tcp_info->inet_pcb->remote_address),
+                tcp_info->inet_pcb->remote_port);
         tr_debug("Too many retries");
         return tcp_session_delete_with_error(tcp_info, SOCKET_TX_FAIL);
     }
 
+    /* Log retransmission */
+    tr_info("TCP RETRANSMIT: Retry #%u to [%s]:%u (state=%s, RTO=%ums)",
+            tcp_info->retry + 1,
+            trace_ipv6(tcp_info->inet_pcb->remote_address),
+            tcp_info->inet_pcb->remote_port,
+            tcp_state_name(tcp_info),
+            tcp_info->rto * TCP_TIMER_PERIOD);
+
     if (++tcp_info->retry == TCP_PROBLEM_RETRIES) {
+        tr_info("TCP RETRANSMIT: Connection problem after %u retries", TCP_PROBLEM_RETRIES);
         socket_event_push(SOCKET_CONNECTION_PROBLEM, tcp_info->inet_pcb->socket, tcp_info->interface->id, NULL, 0);
         ipv6_neighbour_reachability_problem(tcp_info->inet_pcb->remote_address, tcp_info->interface->id);
     }
@@ -1121,6 +1164,18 @@ static void tcp_build(buffer_t *buf, tcp_session_t *tcp_info)
 
     tcp_uack_segment(buf, tcp_info, header_length);
 
+    /* Log outgoing TCP packets with flags */
+    {
+        uint8_t tx_flags = *(buffer_data_pointer(buf) + 13); /* flags at offset 13 in TCP header */
+        tr_info("TCP TX: [%s]:%u -> [%s]:%u flags=%s seq=%"PRIu32" ack=%"PRIu32" len=%"PRIu16,
+                trace_ipv6(tcp_info->inet_pcb->local_address), tcp_info->inet_pcb->local_port,
+                trace_ipv6(tcp_info->inet_pcb->remote_address), tcp_info->inet_pcb->remote_port,
+                trace_tcp_flags(tx_flags),
+                tcp_info->send_next - (buffer_data_length(buf) - header_length),
+                tcp_info->receive_next,
+                (uint16_t)(buffer_data_length(buf) - header_length));
+    }
+
     buf->info = (buffer_info_t)(B_FROM_TCP | B_TO_IPV6 | B_DIR_DOWN);
     buf->options.type = IPV6_NH_TCP;
     buf->options.code = 0;
@@ -1176,6 +1231,9 @@ buffer_t *tcp_up(buffer_t *buf)
     uint16_t seg_len;
     uint8_t flags;
 
+    /* DEBUG: Log entry to tcp_up */
+    tr_info("==== TCP_UP ENTRY ====");
+
     cur = buf->interface;
 
     /* Multicast source or link-layer destination already handled by IP */
@@ -1194,19 +1252,17 @@ buffer_t *tcp_up(buffer_t *buf)
         protocol_stats_update(STATS_IP_CKSUM_ERROR, 1);
         return buffer_free(buf);
     }
-#ifdef WISUN_NCP_ENABLE
-    {   // forward the whole TCP packet to host
-        nanostack_process_stream_net_from_stack(buf);
-        buffer_free(buf);
-        return NULL;
-    }
-#endif
-    // save received port(s), seq_no and ack_no, data_offset, flags, window_size,
+
+    // Extract port numbers first (needed for NCP filtering decision)
     ptr = buffer_data_pointer(buf);
     buf->src_sa.port = common_read_16_bit(ptr);
     ptr += 2;
     buf->dst_sa.port = common_read_16_bit(ptr);
     ptr += 2;
+
+    tr_info("TCP UP: Received packet src_port=%u dst_port=%u", buf->src_sa.port, buf->dst_sa.port);
+
+    // Continue parsing: seq_no, ack_no, data_offset, flags, window_size
     seq_no = common_read_32_bit(ptr);
     ptr += 4;
     ack_no = common_read_32_bit(ptr);
@@ -1234,6 +1290,12 @@ buffer_t *tcp_up(buffer_t *buf)
     if (flags & TCP_FLAG_FIN) {
         seg_len++;
     }
+
+    /* Log all incoming TCP packets with flags */
+    tr_info("TCP RX: [%s]:%u -> [%s]:%u flags=%s seq=%"PRIu32" ack=%"PRIu32" len=%"PRIu16,
+            trace_ipv6(buf->src_sa.address), buf->src_sa.port,
+            trace_ipv6(buf->dst_sa.address), buf->dst_sa.port,
+            trace_tcp_flags(flags), seq_no, ack_no, seg_len);
 
 #if defined(FEA_TRACE_SUPPORT) && MBED_CONF_MBED_TRACE_ENABLE && (MBED_TRACE_MAX_LEVEL >= TRACE_LEVEL_DEBUG)
     tr_debug("TCP_UP: dst_p=%d, src_p=%d, flags=%s", buf->dst_sa.port, buf->src_sa.port, trace_tcp_flags(flags));
@@ -1281,13 +1343,21 @@ bad_opts:
     }
 
     // find socket from existing connections based on local and remote addresses
+    tr_info("TCP UP: Looking up socket for dst=[%s]:%u src=[%s]:%u",
+            trace_ipv6(buf->dst_sa.address), buf->dst_sa.port,
+            trace_ipv6(buf->src_sa.address), buf->src_sa.port);
     socket_t *so = socket_lookup_ipv6(IPV6_NH_TCP, &buf->dst_sa, &buf->src_sa, false);
     inet_pcb = so ? so->inet_pcb : NULL;
     tcp_info = inet_pcb ? inet_pcb->session : NULL;
+    tr_info("TCP UP: Existing session lookup: so=%p, inet_pcb=%p, tcp_info=%p",
+            (void*)so, (void*)inet_pcb, (void*)tcp_info);
+
     // if not found, and it's a SYN, look for a listening socket
 if (tcp_info == NULL && !malformed_options) find_listen: { // Can jump here from TIME-WAIT, with tcp_info set
+        tr_info("TCP UP: No existing session, searching for LISTEN socket on port %u", buf->dst_sa.port);
         socket_t *listen_socket = tcp_find_listen_socket(buf->dst_sa.address, buf->dst_sa.port);
         if (listen_socket) {
+            tr_info("TCP UP: Found LISTEN socket! socket_id=%d", listen_socket->id);
             tr_debug("UP: Packet for LISTEN socket %d", listen_socket->id);
 #ifdef TCP_TEST
             if (rx_drops[TCP_STATE_LISTEN]) {
@@ -1305,6 +1375,12 @@ if (tcp_info == NULL && !malformed_options) find_listen: { // Can jump here from
                 return tcp_reset_response(NULL, 0, buf, ack_no, 0, TCP_FLAG_RST);
             }
             if (flags & TCP_FLAG_SYN) {
+                /* Log TCP handshake: SYN received (server receiving connection request) */
+                tr_info("TCP HANDSHAKE: Received SYN from [%s]:%u (seq=%"PRIu32")",
+                        trace_ipv6(buf->src_sa.address),
+                        buf->src_sa.port,
+                        seq_no);
+
                 socket_t *new_socket = socket_new_incoming_connection(listen_socket);
                 if (!new_socket) {
                     tr_error("Couldn't allocate socket");
@@ -1356,6 +1432,13 @@ if (tcp_info == NULL && !malformed_options) find_listen: { // Can jump here from
                 }
                 buf->options.code = TCP_FLAG_SYN | TCP_FLAG_ACK;
 
+                /* Log TCP handshake: SYN-ACK sent (server responding to connection request) */
+                tr_info("TCP HANDSHAKE: Sending SYN-ACK to [%s]:%u (seq=%"PRIu32", ack=%"PRIu32")",
+                        trace_ipv6(inet_pcb->remote_address),
+                        inet_pcb->remote_port,
+                        tcp_info->send_next,
+                        tcp_info->receive_next);
+
                 tr_debug("UP:sSR");
                 tcp_info->state = TCP_STATE_SYN_RECEIVED;
                 tcp_info->passive_open = true;
@@ -1365,6 +1448,9 @@ if (tcp_info == NULL && !malformed_options) find_listen: { // Can jump here from
             // Not RST, ACK or SYN
             tr_warn("UP, no flags to LISTEN");
             return buffer_free(buf);
+        } else {
+            /* No listening socket found for this port */
+            tr_warn("TCP UP: NO LISTEN socket found for port %u! Is TCP server started?", buf->dst_sa.port);
         } // Listening socket found
 
         // Wipe out tcp_info, for the case where we jumped into this block from TIME-WAIT, so we send
@@ -1374,7 +1460,8 @@ if (tcp_info == NULL && !malformed_options) find_listen: { // Can jump here from
     } // No existing session
 
     if (tcp_info == NULL || tcp_info->state == TCP_STATE_CLOSED || malformed_options) {
-        tr_info("No tcp_info for port=%d from %s", buf->dst_sa.port, trace_ipv6(buf->src_sa.address));
+        tr_warn("TCP UP: Cannot process packet - no tcp_info for port=%d from %s (will send RST)",
+                buf->dst_sa.port, trace_ipv6(buf->src_sa.address));
         if (flags & TCP_FLAG_RST) {
             tr_debug("RST to CLOSED");
             return buffer_free(buf);
@@ -1413,6 +1500,13 @@ if (tcp_info == NULL && !malformed_options) find_listen: { // Can jump here from
             return buffer_free(buf);
         }
         if (flags & TCP_FLAG_SYN) {
+            /* Log TCP handshake: SYN-ACK received (client receiving server response) */
+            tr_info("TCP HANDSHAKE: Received SYN-ACK from [%s]:%u (seq=%"PRIu32", ack=%"PRIu32")",
+                    trace_ipv6(buf->src_sa.address),
+                    buf->src_sa.port,
+                    seq_no,
+                    ack_no);
+
             tcp_info->receive_next = seq_no;
             tcp_info->receive_adv = seq_no;
             tcp_info->send_mss_peer = mss_option;
@@ -1422,6 +1516,13 @@ if (tcp_info == NULL && !malformed_options) find_listen: { // Can jump here from
                 tcp_info->send_wl1 = seq_no; // RFC 1122 4.2.2.20(c)
                 tcp_info->send_wl2 = ack_no;
                 tcp_info->send_window = window_size;
+
+                /* Log TCP handshake: Sending final ACK (client completing handshake) */
+                tr_info("TCP HANDSHAKE: Sending ACK to [%s]:%u (ack=%"PRIu32") - Connection ESTABLISHED",
+                        trace_ipv6(tcp_info->inet_pcb->remote_address),
+                        tcp_info->inet_pcb->remote_port,
+                        tcp_info->receive_next + 1);
+
                 tcp_session_established(cur, tcp_info);
                 goto syn_sent_to_established;
             } else {
@@ -1511,6 +1612,11 @@ if (tcp_info == NULL && !malformed_options) find_listen: { // Can jump here from
     }
 
     if (flags & TCP_FLAG_RST) {
+        /* Log TCP RST received */
+        tr_info("TCP RST: Received RST from [%s]:%u in state %s - Connection RESET",
+                trace_ipv6(buf->src_sa.address), buf->src_sa.port,
+                tcp_state_name(tcp_info));
+
         switch (tcp_info->state) {
             case TCP_STATE_SYN_RECEIVED:
                 if (tcp_info->passive_open) {
@@ -1556,6 +1662,12 @@ if (tcp_info == NULL && !malformed_options) find_listen: { // Can jump here from
 
     if (tcp_info->state == TCP_STATE_SYN_RECEIVED) {
         if (ack_no == tcp_info->send_next) {
+            /* Log TCP handshake: Final ACK received (server completing handshake) */
+            tr_info("TCP HANDSHAKE: Received ACK from [%s]:%u (ack=%"PRIu32") - Connection ESTABLISHED",
+                    trace_ipv6(buf->src_sa.address),
+                    buf->src_sa.port,
+                    ack_no);
+
             tcp_info->send_wl1 = seq_no;  // RFC 1122 4.2.2.20(f)
             tcp_info->send_wl2 = ack_no;
             tcp_info->send_window = window_size;
@@ -1683,6 +1795,12 @@ syn_sent_to_established:
     }
 
     if (flags & TCP_FLAG_FIN) {
+        /* Log TCP teardown: FIN received */
+        tr_info("TCP TEARDOWN: Received FIN from [%s]:%u (seq=%"PRIu32")",
+                trace_ipv6(buf->src_sa.address),
+                buf->src_sa.port,
+                seq_no);
+
         tr_debug("fin");
         switch (tcp_info->state) {
             case TCP_STATE_SYN_RECEIVED: // can't happen?
@@ -1690,6 +1808,7 @@ syn_sent_to_established:
                 tcp_info->state = TCP_STATE_CLOSE_WAIT;
                 tcp_info->timer = 0;
                 tr_debug("UP:sCW");
+                tr_info("TCP TEARDOWN: Sending ACK for FIN, state -> CLOSE-WAIT");
                 socket_cant_recv_more(so, cur->id);
                 break;
             case TCP_STATE_FIN_WAIT_1:

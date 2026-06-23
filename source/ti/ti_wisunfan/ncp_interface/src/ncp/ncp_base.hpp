@@ -113,6 +113,19 @@ public:
      */
     otError StreamWrite(int aStreamId, const uint8_t *aDataPtr, int aDataLen);
 
+     /**
+     * Sends raw TCP received data to wfantund as an unsolicited
+     * SPINEL_PROP_VENDOR_TCP_SEND_ALL notification.
+     */
+    otError SendTcpRxData(const uint8_t *data, uint16_t len);
+
+    /**
+     * Sends a TCP connection event to wfantund as an unsolicited
+     * SPINEL_PROP_VENDOR_TCP_STATUS notification.
+     * @param event  0 = TCP connected, 1 = TCP disconnected
+     */
+    otError SendTcpEvent(uint8_t event);
+
     /**
      * This method send an OpenThread log message to host via `SPINEL_PROP_STREAM_LOG` property.
      *
@@ -158,7 +171,8 @@ public:
     void HandleDatagramFromStack(otMessage *aMessage);
 
     otError SendRouteTableUpdate(uint8_t changed_info, uint8_t* addr_self, uint8_t len_prefix, uint8_t* addr_nexthop, uint32_t lifetime);
-
+    otError SendTcpStatusNotification(uint8_t event, uint8_t connected);
+    otError SendTcpDataRecv(const uint8_t* data, uint16_t len);
     /**
     * This method sends async responses from NCP
     */

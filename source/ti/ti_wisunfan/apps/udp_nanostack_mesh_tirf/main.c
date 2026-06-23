@@ -34,6 +34,25 @@
 /*
  *  ======== main_tirtos.c ========
  */
+
+/* Mandatory build-system define — must be set in router.opts:
+ *   -DWISUN_APP_TCP_MODE=0   TCP disabled
+ *   -DWISUN_APP_TCP_MODE=1   TCP server (listen + accept)
+ *   -DWISUN_APP_TCP_MODE=2   TCP client (connect + auto-reconnect) */
+#ifndef WISUN_APP_TCP_MODE
+#error "WISUN_APP_TCP_MODE is not defined. Add -DWISUN_APP_TCP_MODE=<0|1|2> to router.opts"
+#elif (WISUN_APP_TCP_MODE < 0 || WISUN_APP_TCP_MODE > 2)
+#error "WISUN_APP_TCP_MODE must be 0 (disabled), 1 (server), or 2 (client)"
+#endif
+
+/* In client mode the peer IPv6 address must be provided via router.opts:
+ *   -DTCP_PEER_ADDR_STR=\"2020:abcd::212:4b00:xxxx:xxxx\" */
+#if (WISUN_APP_TCP_MODE == 2)
+#ifndef TCP_PEER_ADDR_STR
+#error "TCP_PEER_ADDR_STR is not defined. In client mode add -DTCP_PEER_ADDR_STR=\"<ipv6>\" to router.opts"
+#endif
+#endif
+
 #include <unistd.h>
 #include <stdint.h>
 

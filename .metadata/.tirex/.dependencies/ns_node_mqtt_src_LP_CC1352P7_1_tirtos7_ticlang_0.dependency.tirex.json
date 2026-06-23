@@ -1,0 +1,10 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../application/defines/router.opts -> application/defines/router.opts",
+            "+../mqtt_tcp_example.syscfg -> mqtt_tcp_example.syscfg",
+            "+cc13x2x7_cc26x2x7.cmd -> cc13x2x7_cc26x2x7.cmd"
+        ]
+    }
+]

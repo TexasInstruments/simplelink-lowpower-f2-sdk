@@ -1,5 +1,345 @@
 [
     {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/csmp_client/README.html",
+        "resourceType": "categoryInfo",
+        "name": "csmp_client",
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/csmp_client/freertos/ticlang/csmp_client_LP_EM_CC1354P10_6_freertos_ticlang.projectspec",
+        "name": "csmp_client",
+        "description": "csmp_client",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "csmp_client",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/csmp_client/README.html",
+        "resourceType": "categoryInfo",
+        "name": "csmp_client",
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1314R10"
+        ],
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/csmp_client/freertos/ticlang/csmp_client_LP_EM_CC1314R10_freertos_ticlang.projectspec",
+        "name": "csmp_client",
+        "description": "csmp_client",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "csmp_client",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/csmp_client/README.html",
+        "resourceType": "categoryInfo",
+        "name": "csmp_client",
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/csmp_client/freertos/ticlang/csmp_client_LP_EM_CC1354P10_1_freertos_ticlang.projectspec",
+        "name": "csmp_client",
+        "description": "csmp_client",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "csmp_client",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/csmp_client/README.html",
+        "resourceType": "categoryInfo",
+        "name": "csmp_client",
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352P7"
+        ],
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/csmp_client/freertos/ticlang/csmp_client_LP_CC1352P7_1_freertos_ticlang.projectspec",
+        "name": "csmp_client",
+        "description": "csmp_client",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "csmp_client",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/csmp_client/README.html",
+        "resourceType": "categoryInfo",
+        "name": "csmp_client",
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312R7"
+        ],
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/csmp_client/freertos/ticlang/csmp_client_LP_CC1312R7_freertos_ticlang.projectspec",
+        "name": "csmp_client",
+        "description": "csmp_client",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "csmp_client",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
         "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_br/README.html",
         "resourceType": "categoryInfo",
         "name": "ns_br",
@@ -16,7 +356,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -61,9 +401,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -103,7 +443,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -126,7 +466,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -171,9 +511,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -213,7 +553,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -236,7 +576,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -281,9 +621,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -323,7 +663,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -346,7 +686,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -391,9 +731,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -433,7 +773,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -456,7 +796,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -501,9 +841,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -543,7 +883,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -582,9 +922,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -621,7 +961,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br",
             "FreeRTOS",
             "IAR Compiler"
@@ -660,9 +1000,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -699,7 +1039,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br",
             "FreeRTOS",
             "IAR Compiler"
@@ -738,9 +1078,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -777,7 +1117,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br",
             "FreeRTOS",
             "IAR Compiler"
@@ -816,9 +1156,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -855,7 +1195,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br",
             "FreeRTOS",
             "IAR Compiler"
@@ -894,9 +1234,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -933,7 +1273,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br",
             "FreeRTOS",
             "IAR Compiler"
@@ -956,7 +1296,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -1001,9 +1341,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1043,7 +1383,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br_src",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -1066,7 +1406,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -1111,9 +1451,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1153,7 +1493,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br_src",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -1176,7 +1516,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -1221,9 +1561,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1263,7 +1603,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br_src",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -1286,7 +1626,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -1331,9 +1671,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1373,7 +1713,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br_src",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -1396,7 +1736,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -1441,9 +1781,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1483,7 +1823,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br_src",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -1522,9 +1862,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -1561,7 +1901,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br_src",
             "FreeRTOS",
             "IAR Compiler"
@@ -1600,9 +1940,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -1639,7 +1979,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br_src",
             "FreeRTOS",
             "IAR Compiler"
@@ -1678,9 +2018,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -1717,7 +2057,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br_src",
             "FreeRTOS",
             "IAR Compiler"
@@ -1756,9 +2096,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -1795,7 +2135,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br_src",
             "FreeRTOS",
             "IAR Compiler"
@@ -1834,9 +2174,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -1873,7 +2213,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_br_src",
             "FreeRTOS",
             "IAR Compiler"
@@ -1896,7 +2236,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -1941,9 +2281,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -1983,7 +2323,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -2006,7 +2346,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -2051,9 +2391,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -2093,7 +2433,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -2116,7 +2456,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -2161,9 +2501,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -2203,7 +2543,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -2226,7 +2566,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -2271,9 +2611,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -2313,7 +2653,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -2336,7 +2676,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -2381,9 +2721,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -2423,7 +2763,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -2462,9 +2802,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2501,7 +2841,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node",
             "FreeRTOS",
             "IAR Compiler"
@@ -2540,9 +2880,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2579,7 +2919,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node",
             "FreeRTOS",
             "IAR Compiler"
@@ -2618,9 +2958,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2657,7 +2997,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node",
             "FreeRTOS",
             "IAR Compiler"
@@ -2696,9 +3036,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2735,7 +3075,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node",
             "FreeRTOS",
             "IAR Compiler"
@@ -2774,9 +3114,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -2813,7 +3153,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node",
             "FreeRTOS",
             "IAR Compiler"
@@ -2836,7 +3176,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -2881,9 +3221,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -2923,7 +3263,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node_src",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -2946,7 +3286,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -2991,9 +3331,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -3033,7 +3373,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node_src",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -3056,7 +3396,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -3101,9 +3441,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -3143,7 +3483,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node_src",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -3166,7 +3506,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -3211,9 +3551,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -3253,7 +3593,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node_src",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -3276,7 +3616,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -3321,9 +3661,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -3363,7 +3703,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node_src",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -3402,9 +3742,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3441,7 +3781,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node_src",
             "FreeRTOS",
             "IAR Compiler"
@@ -3480,9 +3820,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3519,7 +3859,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node_src",
             "FreeRTOS",
             "IAR Compiler"
@@ -3558,9 +3898,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3597,7 +3937,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node_src",
             "FreeRTOS",
             "IAR Compiler"
@@ -3636,9 +3976,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3675,7 +4015,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node_src",
             "FreeRTOS",
             "IAR Compiler"
@@ -3714,9 +4054,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -3753,7 +4093,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_node_src",
             "FreeRTOS",
             "IAR Compiler"
@@ -3776,7 +4116,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -3821,9 +4161,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -3863,7 +4203,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -3886,7 +4226,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -3931,9 +4271,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -3973,7 +4313,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -3996,7 +4336,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -4041,9 +4381,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4083,7 +4423,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -4106,7 +4446,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -4151,9 +4491,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4193,7 +4533,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -4216,7 +4556,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -4261,9 +4601,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4303,7 +4643,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -4342,9 +4682,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -4381,7 +4721,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip",
             "FreeRTOS",
             "IAR Compiler"
@@ -4420,9 +4760,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -4459,7 +4799,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip",
             "FreeRTOS",
             "IAR Compiler"
@@ -4498,9 +4838,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -4537,7 +4877,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip",
             "FreeRTOS",
             "IAR Compiler"
@@ -4576,9 +4916,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -4615,7 +4955,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip",
             "FreeRTOS",
             "IAR Compiler"
@@ -4654,9 +4994,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -4693,7 +5033,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip",
             "FreeRTOS",
             "IAR Compiler"
@@ -4716,7 +5056,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -4761,9 +5101,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4803,7 +5143,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip_src",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -4826,7 +5166,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -4871,9 +5211,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -4913,7 +5253,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip_src",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -4936,7 +5276,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -4981,9 +5321,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -5023,7 +5363,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip_src",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -5046,7 +5386,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -5091,9 +5431,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -5133,7 +5473,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip_src",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -5156,7 +5496,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -5201,9 +5541,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -5243,7 +5583,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip_src",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -5282,9 +5622,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5321,7 +5661,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip_src",
             "FreeRTOS",
             "IAR Compiler"
@@ -5360,9 +5700,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5399,7 +5739,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip_src",
             "FreeRTOS",
             "IAR Compiler"
@@ -5438,9 +5778,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5477,7 +5817,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip_src",
             "FreeRTOS",
             "IAR Compiler"
@@ -5516,9 +5856,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5555,7 +5895,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip_src",
             "FreeRTOS",
             "IAR Compiler"
@@ -5594,9 +5934,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -5633,7 +5973,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_offchip_src",
             "FreeRTOS",
             "IAR Compiler"
@@ -5656,7 +5996,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -5701,9 +6041,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -5743,7 +6083,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -5766,7 +6106,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -5811,9 +6151,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -5853,7 +6193,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -5876,7 +6216,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -5921,9 +6261,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -5963,7 +6303,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -6002,9 +6342,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -6041,7 +6381,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip",
             "FreeRTOS",
             "IAR Compiler"
@@ -6080,9 +6420,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -6119,7 +6459,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip",
             "FreeRTOS",
             "IAR Compiler"
@@ -6158,9 +6498,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -6197,7 +6537,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip",
             "FreeRTOS",
             "IAR Compiler"
@@ -6220,7 +6560,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -6265,9 +6605,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6307,7 +6647,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip_src",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -6330,7 +6670,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -6375,9 +6715,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6417,7 +6757,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip_src",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -6440,7 +6780,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -6485,9 +6825,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6527,7 +6867,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip_src",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -6566,9 +6906,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -6605,7 +6945,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip_src",
             "FreeRTOS",
             "IAR Compiler"
@@ -6644,9 +6984,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -6683,7 +7023,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip_src",
             "FreeRTOS",
             "IAR Compiler"
@@ -6722,9 +7062,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -6761,7 +7101,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_coap_oad_onchip_src",
             "FreeRTOS",
             "IAR Compiler"
@@ -6784,7 +7124,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -6829,9 +7169,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6871,7 +7211,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -6894,7 +7234,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -6939,9 +7279,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -6962,7 +7302,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -7007,9 +7347,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7049,7 +7389,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -7072,7 +7412,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -7117,9 +7457,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7159,7 +7499,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -7182,7 +7522,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -7227,9 +7567,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7269,7 +7609,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -7292,7 +7632,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -7337,9 +7677,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7360,7 +7700,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -7405,9 +7745,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7428,7 +7768,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -7473,9 +7813,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7496,7 +7836,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -7541,9 +7881,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -7583,7 +7923,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -7622,9 +7962,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7661,7 +8001,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
             "FreeRTOS",
             "IAR Compiler"
@@ -7700,9 +8040,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7739,9 +8079,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7778,7 +8118,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
             "FreeRTOS",
             "IAR Compiler"
@@ -7817,9 +8157,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7856,7 +8196,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
             "FreeRTOS",
             "IAR Compiler"
@@ -7895,9 +8235,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -7934,7 +8274,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
             "FreeRTOS",
             "IAR Compiler"
@@ -7973,9 +8313,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8012,9 +8352,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8051,9 +8391,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8090,9 +8430,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -8129,8 +8469,2744 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node_mqtt/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_mqtt",
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node_mqtt/tirtos7/ticlang/ns_node_mqtt_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "TI-RTOS 7 (kernel)",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node_mqtt/freertos/ticlang/ns_node_mqtt_LP_EM_CC1354P10_6_freertos_ticlang.projectspec",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/CC1312R1_LAUNCHXL/ti_wisunfan/ns_node_mqtt/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_mqtt",
+        "devtools": [
+            "LAUNCHXL-CC1312R1"
+        ],
+        "devices": [
+            "CC1312R1F3"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312R1F3"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312R1F3"
+        ],
+        "devtools": [
+            "LAUNCHXL-CC1312R1"
+        ],
+        "location": "../../examples/rtos/CC1312R1_LAUNCHXL/ti_wisunfan/ns_node_mqtt/tirtos7/ticlang/ns_node_mqtt_CC1312R1_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "TI-RTOS 7 (kernel)",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node_mqtt/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_mqtt",
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1314R10"
+        ],
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node_mqtt/tirtos7/ticlang/ns_node_mqtt_LP_EM_CC1314R10_tirtos7_ticlang.projectspec",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "TI-RTOS 7 (kernel)",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1314R10"
+        ],
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node_mqtt/freertos/ticlang/ns_node_mqtt_LP_EM_CC1314R10_freertos_ticlang.projectspec",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node_mqtt/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_mqtt",
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node_mqtt/tirtos7/ticlang/ns_node_mqtt_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "TI-RTOS 7 (kernel)",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node_mqtt/freertos/ticlang/ns_node_mqtt_LP_EM_CC1354P10_1_freertos_ticlang.projectspec",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_mqtt/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_mqtt",
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352P7"
+        ],
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_mqtt/tirtos7/ticlang/ns_node_mqtt_LP_CC1352P7_1_tirtos7_ticlang.projectspec",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "TI-RTOS 7 (kernel)",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352P7"
+        ],
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_mqtt/freertos/ticlang/ns_node_mqtt_LP_CC1352P7_1_freertos_ticlang.projectspec",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1312PSIP/ti_wisunfan/ns_node_mqtt/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_mqtt",
+        "devtools": [
+            "LP-EM-CC1312PSIP"
+        ],
+        "devices": [
+            "CC1312PSIP"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312PSIP"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312PSIP"
+        ],
+        "devtools": [
+            "LP-EM-CC1312PSIP"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1312PSIP/ti_wisunfan/ns_node_mqtt/tirtos7/ticlang/ns_node_mqtt_LP_EM_CC1312PSIP_tirtos7_ticlang.projectspec",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "TI-RTOS 7 (kernel)",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/ns_node_mqtt/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_mqtt",
+        "devtools": [
+            "LAUNCHXL-CC1352R1"
+        ],
+        "devices": [
+            "CC1352R1F3"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352R1F3"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352R1F3"
+        ],
+        "devtools": [
+            "LAUNCHXL-CC1352R1"
+        ],
+        "location": "../../examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/ns_node_mqtt/tirtos7/ticlang/ns_node_mqtt_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "TI-RTOS 7 (kernel)",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/CC1352P1_LAUNCHXL/ti_wisunfan/ns_node_mqtt/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_mqtt",
+        "devtools": [
+            "LAUNCHXL-CC1352P1"
+        ],
+        "devices": [
+            "CC1352P1F3"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352P1F3"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352P1F3"
+        ],
+        "devtools": [
+            "LAUNCHXL-CC1352P1"
+        ],
+        "location": "../../examples/rtos/CC1352P1_LAUNCHXL/ti_wisunfan/ns_node_mqtt/tirtos7/ticlang/ns_node_mqtt_CC1352P1_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "TI-RTOS 7 (kernel)",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node_mqtt/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_mqtt",
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312R7"
+        ],
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node_mqtt/tirtos7/ticlang/ns_node_mqtt_LP_CC1312R7_tirtos7_ticlang.projectspec",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "TI-RTOS 7 (kernel)",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312R7"
+        ],
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node_mqtt/freertos/ticlang/ns_node_mqtt_LP_CC1312R7_freertos_ticlang.projectspec",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node_mqtt/tirtos7/iar/ns_node_mqtt_LP_EM_CC1354P10_6_tirtos7_iar.ipcf",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "TI-RTOS 7 (kernel)",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node_mqtt/freertos/iar/ns_node_mqtt_LP_EM_CC1354P10_6_freertos_iar.ipcf",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312R1F3"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312R1F3"
+        ],
+        "devtools": [
+            "LAUNCHXL-CC1312R1"
+        ],
+        "location": "../../examples/rtos/CC1312R1_LAUNCHXL/ti_wisunfan/ns_node_mqtt/tirtos7/iar/ns_node_mqtt_CC1312R1_LAUNCHXL_tirtos7_iar.ipcf",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "TI-RTOS 7 (kernel)",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1314R10"
+        ],
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node_mqtt/tirtos7/iar/ns_node_mqtt_LP_EM_CC1314R10_tirtos7_iar.ipcf",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "TI-RTOS 7 (kernel)",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1314R10"
+        ],
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node_mqtt/freertos/iar/ns_node_mqtt_LP_EM_CC1314R10_freertos_iar.ipcf",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node_mqtt/tirtos7/iar/ns_node_mqtt_LP_EM_CC1354P10_1_tirtos7_iar.ipcf",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "TI-RTOS 7 (kernel)",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node_mqtt/freertos/iar/ns_node_mqtt_LP_EM_CC1354P10_1_freertos_iar.ipcf",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352P7"
+        ],
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_mqtt/tirtos7/iar/ns_node_mqtt_LP_CC1352P7_1_tirtos7_iar.ipcf",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "TI-RTOS 7 (kernel)",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352P7"
+        ],
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_mqtt/freertos/iar/ns_node_mqtt_LP_CC1352P7_1_freertos_iar.ipcf",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312PSIP"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312PSIP"
+        ],
+        "devtools": [
+            "LP-EM-CC1312PSIP"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1312PSIP/ti_wisunfan/ns_node_mqtt/tirtos7/iar/ns_node_mqtt_LP_EM_CC1312PSIP_tirtos7_iar.ipcf",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "TI-RTOS 7 (kernel)",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352R1F3"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352R1F3"
+        ],
+        "devtools": [
+            "LAUNCHXL-CC1352R1"
+        ],
+        "location": "../../examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/ns_node_mqtt/tirtos7/iar/ns_node_mqtt_CC1352R1_LAUNCHXL_tirtos7_iar.ipcf",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "TI-RTOS 7 (kernel)",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352P1F3"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352P1F3"
+        ],
+        "devtools": [
+            "LAUNCHXL-CC1352P1"
+        ],
+        "location": "../../examples/rtos/CC1352P1_LAUNCHXL/ti_wisunfan/ns_node_mqtt/tirtos7/iar/ns_node_mqtt_CC1352P1_LAUNCHXL_tirtos7_iar.ipcf",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "TI-RTOS 7 (kernel)",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312R7"
+        ],
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node_mqtt/tirtos7/iar/ns_node_mqtt_LP_CC1312R7_tirtos7_iar.ipcf",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "TI-RTOS 7 (kernel)",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312R7"
+        ],
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node_mqtt/freertos/iar/ns_node_mqtt_LP_CC1312R7_freertos_iar.ipcf",
+        "name": "ns_node_mqtt",
+        "description": "ns_node_mqtt",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node_mqtt_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_mqtt_src",
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node_mqtt_src/tirtos7/ticlang/ns_node_mqtt_src_LP_EM_CC1354P10_6_tirtos7_ticlang.projectspec",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "TI-RTOS 7 (kernel)",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node_mqtt_src/freertos/ticlang/ns_node_mqtt_src_LP_EM_CC1354P10_6_freertos_ticlang.projectspec",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/CC1312R1_LAUNCHXL/ti_wisunfan/ns_node_mqtt_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_mqtt_src",
+        "devtools": [
+            "LAUNCHXL-CC1312R1"
+        ],
+        "devices": [
+            "CC1312R1F3"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312R1F3"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312R1F3"
+        ],
+        "devtools": [
+            "LAUNCHXL-CC1312R1"
+        ],
+        "location": "../../examples/rtos/CC1312R1_LAUNCHXL/ti_wisunfan/ns_node_mqtt_src/tirtos7/ticlang/ns_node_mqtt_src_CC1312R1_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "TI-RTOS 7 (kernel)",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node_mqtt_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_mqtt_src",
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1314R10"
+        ],
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node_mqtt_src/tirtos7/ticlang/ns_node_mqtt_src_LP_EM_CC1314R10_tirtos7_ticlang.projectspec",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "TI-RTOS 7 (kernel)",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1314R10"
+        ],
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node_mqtt_src/freertos/ticlang/ns_node_mqtt_src_LP_EM_CC1314R10_freertos_ticlang.projectspec",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node_mqtt_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_mqtt_src",
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node_mqtt_src/tirtos7/ticlang/ns_node_mqtt_src_LP_EM_CC1354P10_1_tirtos7_ticlang.projectspec",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "TI-RTOS 7 (kernel)",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node_mqtt_src/freertos/ticlang/ns_node_mqtt_src_LP_EM_CC1354P10_1_freertos_ticlang.projectspec",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_mqtt_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_mqtt_src",
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352P7"
+        ],
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_mqtt_src/tirtos7/ticlang/ns_node_mqtt_src_LP_CC1352P7_1_tirtos7_ticlang.projectspec",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "TI-RTOS 7 (kernel)",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352P7"
+        ],
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_mqtt_src/freertos/ticlang/ns_node_mqtt_src_LP_CC1352P7_1_freertos_ticlang.projectspec",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1312PSIP/ti_wisunfan/ns_node_mqtt_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_mqtt_src",
+        "devtools": [
+            "LP-EM-CC1312PSIP"
+        ],
+        "devices": [
+            "CC1312PSIP"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312PSIP"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312PSIP"
+        ],
+        "devtools": [
+            "LP-EM-CC1312PSIP"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1312PSIP/ti_wisunfan/ns_node_mqtt_src/tirtos7/ticlang/ns_node_mqtt_src_LP_EM_CC1312PSIP_tirtos7_ticlang.projectspec",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "TI-RTOS 7 (kernel)",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/ns_node_mqtt_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_mqtt_src",
+        "devtools": [
+            "LAUNCHXL-CC1352R1"
+        ],
+        "devices": [
+            "CC1352R1F3"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352R1F3"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352R1F3"
+        ],
+        "devtools": [
+            "LAUNCHXL-CC1352R1"
+        ],
+        "location": "../../examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/ns_node_mqtt_src/tirtos7/ticlang/ns_node_mqtt_src_CC1352R1_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "TI-RTOS 7 (kernel)",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/CC1352P1_LAUNCHXL/ti_wisunfan/ns_node_mqtt_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_mqtt_src",
+        "devtools": [
+            "LAUNCHXL-CC1352P1"
+        ],
+        "devices": [
+            "CC1352P1F3"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352P1F3"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352P1F3"
+        ],
+        "devtools": [
+            "LAUNCHXL-CC1352P1"
+        ],
+        "location": "../../examples/rtos/CC1352P1_LAUNCHXL/ti_wisunfan/ns_node_mqtt_src/tirtos7/ticlang/ns_node_mqtt_src_CC1352P1_LAUNCHXL_tirtos7_ticlang.projectspec",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "TI-RTOS 7 (kernel)",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node_mqtt_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_mqtt_src",
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312R7"
+        ],
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node_mqtt_src/tirtos7/ticlang/ns_node_mqtt_src_LP_CC1312R7_tirtos7_ticlang.projectspec",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "TI-RTOS 7 (kernel)",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312R7"
+        ],
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node_mqtt_src/freertos/ticlang/ns_node_mqtt_src_LP_CC1312R7_freertos_ticlang.projectspec",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "ticlang"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "FreeRTOS",
+            "TI Clang Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node_mqtt_src/tirtos7/iar/ns_node_mqtt_src_LP_EM_CC1354P10_6_tirtos7_iar.ipcf",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "TI-RTOS 7 (kernel)",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node_mqtt_src/freertos/iar/ns_node_mqtt_src_LP_EM_CC1354P10_6_freertos_iar.ipcf",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312R1F3"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312R1F3"
+        ],
+        "devtools": [
+            "LAUNCHXL-CC1312R1"
+        ],
+        "location": "../../examples/rtos/CC1312R1_LAUNCHXL/ti_wisunfan/ns_node_mqtt_src/tirtos7/iar/ns_node_mqtt_src_CC1312R1_LAUNCHXL_tirtos7_iar.ipcf",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "TI-RTOS 7 (kernel)",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1314R10"
+        ],
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node_mqtt_src/tirtos7/iar/ns_node_mqtt_src_LP_EM_CC1314R10_tirtos7_iar.ipcf",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "TI-RTOS 7 (kernel)",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1314R10"
+        ],
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node_mqtt_src/freertos/iar/ns_node_mqtt_src_LP_EM_CC1314R10_freertos_iar.ipcf",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node_mqtt_src/tirtos7/iar/ns_node_mqtt_src_LP_EM_CC1354P10_1_tirtos7_iar.ipcf",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "TI-RTOS 7 (kernel)",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1354P10"
+        ],
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node_mqtt_src/freertos/iar/ns_node_mqtt_src_LP_EM_CC1354P10_1_freertos_iar.ipcf",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352P7"
+        ],
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_mqtt_src/tirtos7/iar/ns_node_mqtt_src_LP_CC1352P7_1_tirtos7_iar.ipcf",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "TI-RTOS 7 (kernel)",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352P7"
+        ],
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_mqtt_src/freertos/iar/ns_node_mqtt_src_LP_CC1352P7_1_freertos_iar.ipcf",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "FreeRTOS",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312PSIP"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312PSIP"
+        ],
+        "devtools": [
+            "LP-EM-CC1312PSIP"
+        ],
+        "location": "../../examples/rtos/LP_EM_CC1312PSIP/ti_wisunfan/ns_node_mqtt_src/tirtos7/iar/ns_node_mqtt_src_LP_EM_CC1312PSIP_tirtos7_iar.ipcf",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "TI-RTOS 7 (kernel)",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352R1F3"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352R1F3"
+        ],
+        "devtools": [
+            "LAUNCHXL-CC1352R1"
+        ],
+        "location": "../../examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/ns_node_mqtt_src/tirtos7/iar/ns_node_mqtt_src_CC1352R1_LAUNCHXL_tirtos7_iar.ipcf",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "TI-RTOS 7 (kernel)",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352P1F3"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352P1F3"
+        ],
+        "devtools": [
+            "LAUNCHXL-CC1352P1"
+        ],
+        "location": "../../examples/rtos/CC1352P1_LAUNCHXL/ti_wisunfan/ns_node_mqtt_src/tirtos7/iar/ns_node_mqtt_src_CC1352P1_LAUNCHXL_tirtos7_iar.ipcf",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "TI-RTOS 7 (kernel)",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312R7"
+        ],
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node_mqtt_src/tirtos7/iar/ns_node_mqtt_src_LP_CC1312R7_tirtos7_iar.ipcf",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "tirtos7"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
+            "TI-RTOS 7 (kernel)",
+            "IAR Compiler"
+        ]
+    },
+    {
+        "resourceType": "project.iar",
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1312R7"
+        ],
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node_mqtt_src/freertos/iar/ns_node_mqtt_src_LP_CC1312R7_freertos_iar.ipcf",
+        "name": "ns_node_mqtt_src",
+        "description": "ns_node_mqtt_src",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "iar"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN",
+            "ns_node_mqtt_src",
             "FreeRTOS",
             "IAR Compiler"
         ]
@@ -8152,7 +11228,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -8197,9 +11273,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8239,7 +11315,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -8262,7 +11338,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -8307,9 +11383,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8330,7 +11406,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -8375,9 +11451,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8417,7 +11493,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -8440,7 +11516,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -8485,9 +11561,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8527,7 +11603,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -8550,7 +11626,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -8595,9 +11671,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8637,7 +11713,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -8660,7 +11736,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -8705,9 +11781,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8728,7 +11804,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -8773,9 +11849,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8796,7 +11872,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -8841,9 +11917,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8864,7 +11940,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -8909,9 +11985,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -8951,7 +12027,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -8990,9 +12066,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9029,7 +12105,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
             "FreeRTOS",
             "IAR Compiler"
@@ -9068,9 +12144,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9107,9 +12183,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9146,7 +12222,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
             "FreeRTOS",
             "IAR Compiler"
@@ -9185,9 +12261,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9224,7 +12300,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
             "FreeRTOS",
             "IAR Compiler"
@@ -9263,9 +12339,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9302,7 +12378,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
             "FreeRTOS",
             "IAR Compiler"
@@ -9341,9 +12417,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9380,9 +12456,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9419,9 +12495,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9458,9 +12534,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -9497,7 +12573,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "ns_node_src",
             "FreeRTOS",
             "IAR Compiler"
@@ -9520,7 +12596,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -9565,9 +12641,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9607,7 +12683,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -9630,7 +12706,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -9675,9 +12751,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9698,7 +12774,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -9743,9 +12819,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9785,7 +12861,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -9808,7 +12884,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -9853,9 +12929,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -9895,7 +12971,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -9918,7 +12994,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -9963,9 +13039,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10005,7 +13081,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -10028,7 +13104,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -10073,9 +13149,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10096,7 +13172,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -10141,9 +13217,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10164,7 +13240,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -10209,9 +13285,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10232,7 +13308,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -10277,9 +13353,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10300,7 +13376,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan"
+            "TI Wi-SUN FAN"
         ],
         "resourceClass": [
             "example"
@@ -10345,9 +13421,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -10387,7 +13463,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -10426,9 +13502,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10465,7 +13541,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
             "FreeRTOS",
             "IAR Compiler"
@@ -10504,9 +13580,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10543,9 +13619,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10582,7 +13658,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
             "FreeRTOS",
             "IAR Compiler"
@@ -10621,9 +13697,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10660,7 +13736,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
             "FreeRTOS",
             "IAR Compiler"
@@ -10699,9 +13775,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10738,7 +13814,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
             "FreeRTOS",
             "IAR Compiler"
@@ -10777,9 +13853,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10816,9 +13892,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10855,9 +13931,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10894,9 +13970,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10933,9 +14009,9 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -10972,7 +14048,7 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
+            "TI Wi-SUN FAN",
             "rcp_lmac",
             "FreeRTOS",
             "IAR Compiler"
@@ -10995,7 +14071,7 @@
             ]
         ],
         "subCategories": [
-            "wsms"
+            "TI Wireless Solar Management System (WSMS)"
         ],
         "resourceClass": [
             "example"
@@ -11040,9 +14116,9 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6base",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11082,7 +14158,7 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6base",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -11105,7 +14181,7 @@
             ]
         ],
         "subCategories": [
-            "wsms"
+            "TI Wireless Solar Management System (WSMS)"
         ],
         "resourceClass": [
             "example"
@@ -11150,9 +14226,9 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6base",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11192,7 +14268,7 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6base",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -11215,7 +14291,7 @@
             ]
         ],
         "subCategories": [
-            "wsms"
+            "TI Wireless Solar Management System (WSMS)"
         ],
         "resourceClass": [
             "example"
@@ -11260,9 +14336,9 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6base",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11302,7 +14378,7 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6base",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -11325,7 +14401,7 @@
             ]
         ],
         "subCategories": [
-            "wsms"
+            "TI Wireless Solar Management System (WSMS)"
         ],
         "resourceClass": [
             "example"
@@ -11370,9 +14446,9 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6base",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11412,7 +14488,7 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6base",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -11435,7 +14511,7 @@
             ]
         ],
         "subCategories": [
-            "wsms"
+            "TI Wireless Solar Management System (WSMS)"
         ],
         "resourceClass": [
             "example"
@@ -11480,9 +14556,9 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6base",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -11522,7 +14598,7 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6base",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -11561,9 +14637,9 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6base",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -11600,7 +14676,7 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6base",
             "FreeRTOS",
             "IAR Compiler"
@@ -11639,9 +14715,9 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6base",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -11678,7 +14754,7 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6base",
             "FreeRTOS",
             "IAR Compiler"
@@ -11717,9 +14793,9 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6base",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -11756,7 +14832,7 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6base",
             "FreeRTOS",
             "IAR Compiler"
@@ -11795,9 +14871,9 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6base",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -11834,7 +14910,7 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6base",
             "FreeRTOS",
             "IAR Compiler"
@@ -11873,9 +14949,9 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6base",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -11912,7 +14988,7 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6base",
             "FreeRTOS",
             "IAR Compiler"
@@ -11935,7 +15011,7 @@
             ]
         ],
         "subCategories": [
-            "wsms"
+            "TI Wireless Solar Management System (WSMS)"
         ],
         "resourceClass": [
             "example"
@@ -11980,9 +15056,9 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12022,7 +15098,7 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6node",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -12045,7 +15121,7 @@
             ]
         ],
         "subCategories": [
-            "wsms"
+            "TI Wireless Solar Management System (WSMS)"
         ],
         "resourceClass": [
             "example"
@@ -12090,9 +15166,9 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12132,7 +15208,7 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6node",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -12155,7 +15231,7 @@
             ]
         ],
         "subCategories": [
-            "wsms"
+            "TI Wireless Solar Management System (WSMS)"
         ],
         "resourceClass": [
             "example"
@@ -12200,9 +15276,9 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12242,7 +15318,7 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6node",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -12265,7 +15341,7 @@
             ]
         ],
         "subCategories": [
-            "wsms"
+            "TI Wireless Solar Management System (WSMS)"
         ],
         "resourceClass": [
             "example"
@@ -12310,9 +15386,9 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12352,7 +15428,7 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6node",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -12375,7 +15451,7 @@
             ]
         ],
         "subCategories": [
-            "wsms"
+            "TI Wireless Solar Management System (WSMS)"
         ],
         "resourceClass": [
             "example"
@@ -12420,9 +15496,9 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "TI Clang Compiler"
         ]
     },
@@ -12462,7 +15538,7 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6node",
             "FreeRTOS",
             "TI Clang Compiler"
@@ -12501,9 +15577,9 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12540,7 +15616,7 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6node",
             "FreeRTOS",
             "IAR Compiler"
@@ -12579,9 +15655,9 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12618,7 +15694,7 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6node",
             "FreeRTOS",
             "IAR Compiler"
@@ -12657,9 +15733,9 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12696,7 +15772,7 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6node",
             "FreeRTOS",
             "IAR Compiler"
@@ -12735,9 +15811,9 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12774,7 +15850,7 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6node",
             "FreeRTOS",
             "IAR Compiler"
@@ -12813,9 +15889,9 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6node",
-            "TI-RTOS7",
+            "TI-RTOS 7 (kernel)",
             "IAR Compiler"
         ]
     },
@@ -12852,7 +15928,7 @@
             ]
         ],
         "subCategories": [
-            "wsms",
+            "TI Wireless Solar Management System (WSMS)",
             "wsms_ipv6node",
             "FreeRTOS",
             "IAR Compiler"

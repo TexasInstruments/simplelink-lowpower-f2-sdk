@@ -1108,6 +1108,45 @@ exit:
     return error;
 }
 
+extern "C" void nanostack_notify_tcp_status(uint8_t event, uint8_t connected)
+{
+    ot::Ncp::NcpBase *ncp = ot::Ncp::NcpBase::GetNcpInstance();
+    ncp->SendTcpStatusNotification(event, connected);
+}
+
+otError NcpBase::SendTcpStatusNotification(uint8_t event, uint8_t connected)
+{
+    otError error   = OT_ERROR_NONE;
+    uint8_t header  = SPINEL_HEADER_FLAG | SPINEL_HEADER_IID_0;
+
+    SuccessOrExit(error = mEncoder.BeginFrame(header, SPINEL_CMD_PROP_VALUE_IS, SPINEL_PROP_VENDOR_TCP_STATUS_NOTIFY));
+    SuccessOrExit(error = mEncoder.WriteUint8(event));
+    SuccessOrExit(error = mEncoder.WriteUint8(connected));
+    SuccessOrExit(error = mEncoder.EndFrame());
+
+exit:
+    return error;
+}
+
+extern "C" void nanostack_notify_tcp_data(const uint8_t* data, uint16_t len)
+{
+    ot::Ncp::NcpBase *ncp = ot::Ncp::NcpBase::GetNcpInstance();
+    ncp->SendTcpDataRecv(data, len);
+}
+
+otError NcpBase::SendTcpDataRecv(const uint8_t* data, uint16_t len)
+{
+    otError error   = OT_ERROR_NONE;
+    uint8_t header  = SPINEL_HEADER_FLAG | SPINEL_HEADER_IID_0;
+
+    SuccessOrExit(error = mEncoder.BeginFrame(header, SPINEL_CMD_PROP_VALUE_IS, SPINEL_PROP_VENDOR_TCP_DATA_RECV));
+    SuccessOrExit(error = mEncoder.WriteUint16(len));
+    SuccessOrExit(error = mEncoder.WriteData(data, len));
+    SuccessOrExit(error = mEncoder.EndFrame());
+
+exit:
+    return error;
+}
 
 extern "C" otError nanostack_process_stream_net_from_host(uint8_t* framePtr, uint16_t length);
 
@@ -1846,6 +1885,252 @@ exit:
     return OT_ERROR_NOT_IMPLEMENTED;
 #endif
 }
+
+
+/* ====================================================================
+ * TCP Application vendor property handlers
+ * Excluded when WISUN_APP_TCP_MODE is explicitly defined as 0.
+ * If WISUN_APP_TCP_MODE is undefined the block compiles by default.
+ * ==================================================================== */
+#if ((!defined(WISUN_APP_TCP_MODE)) || ((WISUN_APP_TCP_MODE) != 0))
+
+extern "C" {
+    bool        tcp_socket_setup(uint16_t port);
+    bool        tcp_client_connect(const char *addr, uint16_t port);
+    bool        tcp_send_data(const uint8_t *data, uint16_t len);
+    bool        tcp_send_data_to(int slot, const uint8_t *data, uint16_t len);
+    void        tcp_disconnect(void);
+    int         tcp_get_mode(void);
+    int         tcp_client_count(void);
+    bool        tcp_is_connected(void);
+}
+
+/* NcpBase instance — set when TCP connects, used by the notify functions below */
+static NcpBase *sTcpNcpBase = NULL;
+
+/* Called directly by tcp_app.c when TCP data is received.
+ * Sends unsolicited PROP_VALUE_IS(TCP_SEND_ALL) to wfantund. */
+extern "C" void ncp_notify_tcp_rx(const uint8_t *data, uint16_t len)
+{
+    if (sTcpNcpBase != NULL) {
+        sTcpNcpBase->SendTcpRxData(data, len);
+    }
+}
+
+/* Called directly by tcp_app.c on connect(0) or disconnect(1).
+ * Sends unsolicited PROP_VALUE_IS(TCP_STATUS) to wfantund. */
+extern "C" void ncp_notify_tcp_event(int event)
+{
+    if (sTcpNcpBase != NULL) {
+        sTcpNcpBase->SendTcpEvent((uint8_t)event);
+    }
+}
+
+/* ---------- GET handlers ---------- */
+
+template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_VENDOR_TCP_MODE>(void)
+{
+    // Return mode as uint8: 0 = server, 1 = client
+    int mode = tcp_get_mode();
+    return mEncoder.WriteUint8((uint8_t)mode);
+}
+
+template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_VENDOR_TCP_STATUS>(void)
+{
+    // Return status as binary data: mode(1) + connected(1) + client_count(1)
+    otError error = OT_ERROR_NONE;
+    uint8_t mode = (uint8_t)tcp_get_mode();
+    uint8_t connected = tcp_is_connected() ? 1 : 0;
+    uint8_t clients = (uint8_t)tcp_client_count();
+
+    SuccessOrExit(error = mEncoder.WriteUint8(mode));
+    SuccessOrExit(error = mEncoder.WriteUint8(connected));
+    SuccessOrExit(error = mEncoder.WriteUint8(clients));
+
+exit:
+    return error;
+}
+
+/* ---------- SET handlers ---------- */
+
+template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_VENDOR_TCP_SERVER_LISTEN>(void)
+{
+    otError error = OT_ERROR_NONE;
+    uint16_t port = 0;
+
+    // Read port as uint16 (2 bytes)
+    SuccessOrExit(error = mDecoder.ReadUint16(port));
+
+    /* Block if already running as client */
+    if (tcp_get_mode() == 1) {
+        error = OT_ERROR_ALREADY;
+        goto exit;
+    }
+
+    // Validate port
+    if (port == 0) {
+        port = 5678;
+    }
+
+    if (!tcp_socket_setup(port)) {
+        error = OT_ERROR_FAILED;
+    } 
+exit:
+    return error;
+}
+
+template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_VENDOR_TCP_CLIENT_CONNECT>(void)
+{
+    otError error = OT_ERROR_NONE;
+    spinel_ipv6addr_t ipv6_addr;
+    uint16_t port = 0;
+    char addr_str[40];
+
+    // Read IPv6 address (16 bytes)
+    SuccessOrExit(error = mDecoder.ReadIp6Address(ipv6_addr));
+
+    // Read port (2 bytes)
+    SuccessOrExit(error = mDecoder.ReadUint16(port));
+
+    /* Block if already running as server */
+    if (tcp_get_mode() == 0) {
+        error = OT_ERROR_ALREADY;
+        goto exit;
+    }
+
+    // Convert IPv6 bytes to string for tcp_client_connect
+    snprintf(addr_str, sizeof(addr_str),
+             "%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x",
+             ipv6_addr.bytes[0], ipv6_addr.bytes[1], ipv6_addr.bytes[2], ipv6_addr.bytes[3],
+             ipv6_addr.bytes[4], ipv6_addr.bytes[5], ipv6_addr.bytes[6], ipv6_addr.bytes[7],
+             ipv6_addr.bytes[8], ipv6_addr.bytes[9], ipv6_addr.bytes[10], ipv6_addr.bytes[11],
+             ipv6_addr.bytes[12], ipv6_addr.bytes[13], ipv6_addr.bytes[14], ipv6_addr.bytes[15]);
+
+    // Validate port
+    if (port == 0) {
+        port = 5678;
+    }
+    /* Store NcpBase pointer so ncp_notify_tcp_rx/event can send Spinel frames.
+     * tcp_app.c calls those functions directly — no hooks needed. */
+    sTcpNcpBase = this;
+
+    if (!tcp_client_connect(addr_str, port)) {
+        error = OT_ERROR_FAILED;
+    }
+exit:
+    return error;
+}
+
+template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_VENDOR_TCP_SEND_ALL>(void)
+{
+    otError error = OT_ERROR_NONE;
+    const uint8_t *dataPtr = NULL;
+    uint16_t dataLen = 0;
+
+    // Read data as binary blob with length
+    SuccessOrExit(error = mDecoder.ReadDataWithLen(dataPtr, dataLen));
+
+    if (dataLen == 0 || dataPtr == NULL) {
+        error = OT_ERROR_INVALID_ARGS;
+        goto exit;
+    }
+
+    if (!tcp_send_data(dataPtr, dataLen)) {
+        error = OT_ERROR_FAILED;
+    } 
+exit:
+    return error;
+}
+
+template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_VENDOR_TCP_SEND_TO>(void)
+{
+    otError error = OT_ERROR_NONE;
+    uint8_t slot = 0;
+    const uint8_t *dataPtr = NULL;
+    uint16_t dataLen = 0;
+
+    // Read slot number (1 byte)
+    SuccessOrExit(error = mDecoder.ReadUint8(slot));
+
+    // Read data as binary blob with length
+    SuccessOrExit(error = mDecoder.ReadDataWithLen(dataPtr, dataLen));
+
+    if (dataLen == 0 || dataPtr == NULL) {
+        error = OT_ERROR_INVALID_ARGS;
+        goto exit;
+    }
+    if (!tcp_send_data_to(slot, dataPtr, dataLen)) {
+        error = OT_ERROR_FAILED;
+    } 
+exit:
+    return error;
+}
+
+template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_VENDOR_TCP_DISCONNECT>(void)
+{
+    tcp_disconnect();
+    return OT_ERROR_NONE;
+}
+
+/* ---- NcpBase methods for sending TCP data/events to wfantund ---- */
+
+otError NcpBase::SendTcpRxData(const uint8_t *data, uint16_t len)
+{
+    otError error = OT_ERROR_NONE;
+    SuccessOrExit(error = mEncoder.BeginFrame(
+        SPINEL_HEADER_FLAG | SPINEL_HEADER_IID_0,
+        SPINEL_CMD_PROP_VALUE_IS,
+        SPINEL_PROP_VENDOR_TCP_SEND_ALL));
+    SuccessOrExit(error = mEncoder.WriteDataWithLen(data, len));
+    SuccessOrExit(error = mEncoder.EndFrame());
+exit:
+    return error;
+}
+
+otError NcpBase::SendTcpEvent(uint8_t event)
+{
+    /* Send current TCP status as an unsolicited notification.
+     * wfantund reads status_data[1] (connected flag) to detect connect/disconnect. */
+    otError error     = OT_ERROR_NONE;
+    uint8_t mode      = (uint8_t)tcp_get_mode();
+    uint8_t connected = (event == 0) ? 1 : 0;  /* 0=connected event, 1=disconnected event */
+    uint8_t clients   = (uint8_t)tcp_client_count();
+
+    SuccessOrExit(error = mEncoder.BeginFrame(
+        SPINEL_HEADER_FLAG | SPINEL_HEADER_IID_0,
+        SPINEL_CMD_PROP_VALUE_IS,
+        SPINEL_PROP_VENDOR_TCP_STATUS));
+    SuccessOrExit(error = mEncoder.WriteUint8(mode));
+    SuccessOrExit(error = mEncoder.WriteUint8(connected));
+    SuccessOrExit(error = mEncoder.WriteUint8(clients));
+    SuccessOrExit(error = mEncoder.EndFrame());
+exit:
+    return error;
+}
+
+#else /* WISUN_APP_TCP_MODE == 0 — stubs required by ncp_base_dispatcher.cpp.o in prebuilt lib */
+
+extern "C" void ncp_notify_tcp_rx(const uint8_t *, uint16_t) {}
+extern "C" void ncp_notify_tcp_event(int) {}
+
+template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_VENDOR_TCP_MODE>(void)
+    { return OT_ERROR_NOT_IMPLEMENTED; }
+template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_VENDOR_TCP_STATUS>(void)
+    { return OT_ERROR_NOT_IMPLEMENTED; }
+template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_VENDOR_TCP_SERVER_LISTEN>(void)
+    { return OT_ERROR_NOT_IMPLEMENTED; }
+template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_VENDOR_TCP_CLIENT_CONNECT>(void)
+    { return OT_ERROR_NOT_IMPLEMENTED; }
+template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_VENDOR_TCP_SEND_ALL>(void)
+    { return OT_ERROR_NOT_IMPLEMENTED; }
+template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_VENDOR_TCP_SEND_TO>(void)
+    { return OT_ERROR_NOT_IMPLEMENTED; }
+template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_VENDOR_TCP_DISCONNECT>(void)
+    { return OT_ERROR_NOT_IMPLEMENTED; }
+otError NcpBase::SendTcpRxData(const uint8_t *, uint16_t) { return OT_ERROR_NOT_IMPLEMENTED; }
+otError NcpBase::SendTcpEvent(uint8_t)                    { return OT_ERROR_NOT_IMPLEMENTED; }
+
+#endif /* !defined(WISUN_APP_TCP_MODE) || WISUN_APP_TCP_MODE != 0 */
 
 #else // WISUN_NCP_ENABLE
 extern "C" void nanostack_process_routing_table_update_from_stack(uint8_t changed_info, uint8_t* prefix, uint8_t len_prefix, uint8_t* addr_nexthop, uint32_t lifetime)

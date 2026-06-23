@@ -195,7 +195,6 @@ function validate(inst, validation)
             Wi-SUN MPL features and is not Wi-SUN standard compliant",
             inst, "mplLowLatency");
     }
-
     if(inst.rapidDisconnectDetectBr > 65535)
     {
         validation.logError("Disconnection detection time cannot \

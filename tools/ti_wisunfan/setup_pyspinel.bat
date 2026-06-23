@@ -5,7 +5,7 @@ cd %repoDir%
 git clone https://github.com/TexasInstruments/ti-wisunfan-pyspinel
 cd pyspinel_repo
 cd ti-wisunfan-pyspinel
-git checkout TI_WiSUN_STACK_01_00_10
+git checkout TI_WiSUN_STACK_01_01_01
 pip install -r requirements.txt
 
 TIMEOUT /T 10000

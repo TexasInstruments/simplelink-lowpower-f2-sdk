@@ -31,7 +31,6 @@
  */
 
 #include "ncp_base.hpp"
-
 namespace ot {
 namespace Ncp {
 
@@ -118,6 +117,11 @@ NcpBase::PropertyHandler NcpBase::FindGetPropertyHandler(spinel_prop_key_t aKey)
         OT_NCP_GET_HANDLER_ENTRY(SPINEL_PROP_DISABLENSMESSAGES_COMMAND),
 #endif
         /* Tech specific: NET Extended properties */
+
+        /* TCP Application vendor properties */
+#if ((!defined(WISUN_APP_TCP_MODE)) || ((WISUN_APP_TCP_MODE) != 0))
+        OT_NCP_GET_HANDLER_ENTRY(SPINEL_PROP_VENDOR_TCP_STATUS),
+#endif
     };
 
 #undef OT_NCP_GET_HANDLER_ENTRY
@@ -195,6 +199,14 @@ NcpBase::PropertyHandler NcpBase::FindSetPropertyHandler(spinel_prop_key_t aKey)
 #endif
         /* Tech specific: NET Extended properties */
         OT_NCP_SET_HANDLER_ENTRY(SPINEL_PROP_REVOKE_GTK_HWADDR),
+
+        /* TCP Application vendor properties */
+#if ((!defined(WISUN_APP_TCP_MODE)) || ((WISUN_APP_TCP_MODE) != 0))
+        OT_NCP_SET_HANDLER_ENTRY(SPINEL_PROP_VENDOR_TCP_SERVER_LISTEN),
+        OT_NCP_SET_HANDLER_ENTRY(SPINEL_PROP_VENDOR_TCP_CLIENT_CONNECT),
+        OT_NCP_SET_HANDLER_ENTRY(SPINEL_PROP_VENDOR_TCP_SEND_ALL),
+        OT_NCP_SET_HANDLER_ENTRY(SPINEL_PROP_VENDOR_TCP_DISCONNECT),
+#endif
     };
 
 #undef OT_NCP_SET_HANDLER_ENTRY

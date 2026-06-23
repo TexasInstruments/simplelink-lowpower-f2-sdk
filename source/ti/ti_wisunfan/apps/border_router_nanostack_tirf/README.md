@@ -8,9 +8,9 @@ TI Wi-SUN FAN Border Router, Router Node, and CoAP Node Examples (`ns_br`, `ns_n
 
 The Border Router and Router Node examples run as Network Co-Processors (NCP) for Wi-SUN FAN stack operation, with a host communicating with the NCPs, while the CoAP application runs as a fully embedded implementation of a CoAP server on the Wi-SUN FAN stack. Refer to Example Usage section in this readme for more information.
 
-Software layer architecture of these examples are as defined by the Wi-SUN FAN v1.0, with application code utilizing the services provided by UDP protocol.The UDP packets are sent/received using the services of 6LoWPAN and underlying MAC, PHY constructs.
+Software layer architecture of these examples are as defined by the Wi-SUN FAN v1.0, with application code utilizing the services provided by UDP or TCP protocols. The UDP/TCP packets are sent/received using the services of 6LoWPAN and underlying MAC, PHY constructs.
 
-6LoWPAN, RPL, IPv6, ICMPv6, UDP layers have been adapted from ARM mbed-os nanostack. (https://github.com/ARMmbed/mbed-os/tree/master/connectivity/nanostack)
+6LoWPAN, RPL, IPv6, ICMPv6, UDP, and TCP layers have been adapted from ARM mbed-os nanostack. (https://github.com/ARMmbed/mbed-os/tree/master/connectivity/nanostack)
 
 Refer to the src projects variant to be able to access the source code of the Wi-SUN stack and NCP interface. MAC layer is TI proprietary software and hence will be included as a library only. 
 
@@ -49,6 +49,7 @@ Async Channel Mask - all 129 channels as defined by Wi-SUN FAN PHY spec
 Broadcast Channel Mask (applicable on Border Router side alone) - all 129 channels as defined by Wi-SUN FAN PHY spec
 Network Name - Wi-SUN Network
 Security - Enabled (we dont support disabling security for debug purposes at this point)
+Rapid Join - Enabled (optimizes trickle and RPL timers for faster network join; recommended for networks of ~50 or fewer devices)
 * On modifying any of the above parameters, save the changes and proceed to build the example.
 
 Advanced Runtime Region and PHY Configuration

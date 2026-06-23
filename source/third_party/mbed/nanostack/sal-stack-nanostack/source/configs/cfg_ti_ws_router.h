@@ -28,7 +28,11 @@
 #define TI_WISUN_FAN_OPT_ICMPV6
 
 //Additional Optimizations
-//#define NO_TCP
+/* Exclude nanostack TCP stack when application-level TCP is not used.
+ * WISUN_APP_TCP_MODE=0 means no TCP sockets*/
+#if (defined(WISUN_APP_TCP_MODE)) && ((WISUN_APP_TCP_MODE) == 0)
+#define NO_TCP
+#endif
 #define NO_IPV6_PMTUD
 //#define NO_IP_FRAGMENT_TX
 #define NO_MLE // only optimize for embedded

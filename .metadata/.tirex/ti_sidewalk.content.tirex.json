@@ -16,7 +16,8 @@
             ]
         ],
         "subCategories": [
-            "TI Amazon Sidewalk"
+            "TI Amazon Sidewalk",
+            "TI Amazon Sidewalk Stack"
         ],
         "resourceClass": [
             "example"
@@ -62,6 +63,7 @@
         ],
         "subCategories": [
             "TI Amazon Sidewalk",
+            "TI Amazon Sidewalk Stack",
             "sid_demo",
             "FreeRTOS",
             "GCC Compiler"
@@ -84,7 +86,8 @@
             ]
         ],
         "subCategories": [
-            "TI Amazon Sidewalk"
+            "TI Amazon Sidewalk",
+            "TI Amazon Sidewalk Stack"
         ],
         "resourceClass": [
             "example"
@@ -130,6 +133,7 @@
         ],
         "subCategories": [
             "TI Amazon Sidewalk",
+            "TI Amazon Sidewalk Stack",
             "sid_demo",
             "FreeRTOS",
             "GCC Compiler"
